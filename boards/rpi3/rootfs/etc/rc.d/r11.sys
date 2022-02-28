@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. /boot/conf.sys
+
+LAN=$BRINTERFACE
+WAN=$STAINTERFACE
+
+NFTCONF=/var/tmp/nft.conf
+
+[ "$USEAP" = "1" -a "$USESTA" = "1" ] || exit
+
+case $1 in
+	"start")
+		cat > $NFTCONF <<-EOF
+		flush ruleset 
+
+		table inet nat {
+			chain prerouting {
+                		type nat hook prerouting priority 0; policy accept;
+        		}
+
+        		chain postrouting {
+                		type nat hook postrouting priority 100; policy accept;
+                		oifname "$WAN" masquerade
+        		}
+		}
+		EOF
+
+		##
+		## NFTable setting....
+		nft -f $NFTCONF
+
+		# IPv4 forwarding enable 
+		echo 1 > /proc/sys/net/ipv4/ip_forward
+
+		# IPv6 forwarding enable 
+		## echo 1 > /proc/sys/net/ipv6/conf/$WAN/forwarding
+		## echo 1 > /proc/sys/net/ipv6/conf/$LAN/forwarding
+		;;
+	"stop")
+		nft flush ruleset
+		;;
+esac
+

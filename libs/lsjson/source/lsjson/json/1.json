@@ -1,0 +1,98 @@
+{
+  "firstName": "John",
+  "lastName" : "doe",
+  "age"      : 26,
+  "address"  : {
+    "streetAddress": "naist street",
+    "city"         : "Nara",
+    "hello" : {
+	    "mygod": {
+		    "vaccine": {
+			    "job": {
+				    "EEEE": "VAC"
+			    }
+		    }
+	    }
+    },
+    "XX" : {
+	"PP": [ "HELLO", "MISTER", "KEY" ],
+	"ZZ": [ "11111", "22222", "33333",
+		{
+		"BEEF" : {
+			"STEAK": "WELLDONE"
+		}
+		}	
+	], 
+	"YY": [
+		{"Cider": {
+			"Xyy": "Zyy",
+			"Cyy": "Ayy"
+		}},
+		{"XCUB": [
+				{"Kara": {
+				"Eyy": "00000000",
+				"Myy": "11111111"}
+				},
+				{"Memphis": {
+				"Jyy": "22222222222222",
+				"Tyy": "33"}
+				},
+				{"Dorothy": {
+				"Vyy": "999999999",
+				"Qyy": "7777777777"}
+				}
+		]},
+		{"GreenTea": [ "111111" , "2222222", "333333", "444444" ]},
+		{"Beer": {
+			"EEE": "Zyy",
+			"JJJ": "Ayy"
+		}}
+
+	],
+	"VV": "BBBB"
+    },
+    "postalCode"   : "630-0192"
+  },
+  "aa" : {
+    "bb": "bb11",
+    "cX": [ "cc11", "cc22", "cc33", "cc44" ],
+    "dd": "dd11",
+    "dx" : [
+      	{
+	      "d1" : {
+		      "d2": {
+			      "d3" : {
+				      "d4" : "fufufufuf"
+			      }
+		      }
+	      }
+       },
+      	{
+	      "dn1" : {
+		      "dn2": {
+			      "dn3" : {
+				      "dn4" : "jujuju"
+			      }
+		      }
+	      }
+       } ]
+  },
+  "phoneNumbers": [
+    {
+      "type"  : "iPhone",
+      "number": "0123-4567-8888"
+    },
+    {
+      "type"  : "home",
+      "number": "0123-4567-8910"
+    },
+    {
+	"type" : "company",
+	"teams" : [
+		{  "hr": "111-2222" },
+		{  "rnd" : "2222-3333" },
+   		{  "pm" : "333-4444" }
+	]
+    }
+  ]
+}

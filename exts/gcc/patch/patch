@@ -1,0 +1,13 @@
+diff -uNr gcc-8.3.0-orig/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc gcc-8.3.0/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc
+--- gcc-8.3.0-orig/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc	2018-05-31 02:58:32.000000000 -0700
++++ gcc-8.3.0/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc	2021-11-11 14:07:23.409110808 -0800
+@@ -1149,7 +1149,8 @@
+ CHECK_SIZE_AND_OFFSET(ipc_perm, cgid);
+ #if !defined(__aarch64__) || !SANITIZER_LINUX || __GLIBC_PREREQ (2, 21)
+ /* On aarch64 glibc 2.20 and earlier provided incorrect mode field.  */
+-CHECK_SIZE_AND_OFFSET(ipc_perm, mode);
++/* We git it up. Todd */
++/* CHECK_SIZE_AND_OFFSET(ipc_perm, mode); */
+ #endif
+ 
+ CHECK_TYPE_SIZE(shmid_ds);

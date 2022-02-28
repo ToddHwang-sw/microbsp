@@ -1,0 +1,12 @@
+diff -uNr e2fsprogs-1.45.3-original/lib/ext2fs/dirhash.c e2fsprogs-1.45.3/lib/ext2fs/dirhash.c
+--- e2fsprogs-1.45.3-original/lib/ext2fs/dirhash.c	2019-07-14 18:03:14.000000000 -0700
++++ e2fsprogs-1.45.3/lib/ext2fs/dirhash.c	2020-06-29 10:50:42.099592257 -0700
+@@ -14,7 +14,7 @@
+ #include "config.h"
+ #include <stdio.h>
+ #include <string.h>
+-#include <limits.h>
++#include <linux/limits.h>
+ 
+ #include "ext2_fs.h"
+ #include "ext2fs.h"

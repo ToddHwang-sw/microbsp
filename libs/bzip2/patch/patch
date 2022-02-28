@@ -1,0 +1,16 @@
+diff --git a/Makefile-libbz2_so b/Makefile-libbz2_so
+index fb0f230..5063660 100644
+--- a/Makefile-libbz2_so
++++ b/Makefile-libbz2_so
+@@ -57,3 +57,11 @@ decompress.o: decompress.c
+ 	$(CC) $(CFLAGS) -c decompress.c
+ bzlib.o: bzlib.c
+ 	$(CC) $(CFLAGS) -c bzlib.c
++
++install: 
++	if ( test ! -d $(PREFIX)/lib ) ; then mkdir -p $(PREFIX)/lib ; fi
++	if ( test ! -d $(PREFIX)/include ) ; then mkdir -p $(PREFIX)/include ; fi
++	cp -f bzlib.h $(PREFIX)/include
++	chmod a+r $(PREFIX)/include/bzlib.h
++	cp -f libbz2.so* $(PREFIX)/lib
++

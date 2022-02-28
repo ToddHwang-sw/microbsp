@@ -1,0 +1,71 @@
+{
+"address":  {
+  "XX":  {
+    "YY":  {
+        "XCUB":  {
+            "Dorothy":  {
+              "Qyy": "CCCCCCC",
+	      "Vyy": "0000000"
+              },
+            "Jackson":  {
+              "Hdd": "00000000",
+              "Pcs": "11111"
+              }
+            }
+        },
+     "ZZ": [ {"HH" : {"REPLY": {
+			"CERTAIN": "YAHH" ,
+			"MYTURN": "FOREVER"
+			}}
+	     },
+	{"PP" : {
+		"FORD": "BIG",
+		"CINDER": "SMALL"
+	}},
+	{"WW" : {
+		"COOKIE": "SWEET",
+		"CARROT": "11111111"
+	}},
+	{"XXXXX" : {
+		"LAPTOP": "SAMSUNG",
+		"PAD": "ASUS",
+		"BEATTLES": "SUBMARINE",
+		"AEROS": "HEY"
+	}}
+     ]
+  },
+  "ZZ": {
+	    "DD": {
+		    "MM" : "Yes!!",
+		    "LL" : "DOIT!!"
+	    }
+  	}
+},
+"aa": { "dx": { "TEST" : "VALUE" } ,
+	"dxTEST": "VALUE2"
+},
+"HEAD": {
+   "SETS": [
+	   { "TASTE": {
+		"FOOD": {
+			"SPICY" : "VERY SPICY",
+			"SALT"  : "VERY SALTY"
+		}
+	}},
+	{"FLAVOR": {
+		"FOOD": {
+			"GOOD" : "VERY SWEETY",
+			"BAD"  : "VERY SMELL"
+		}
+	}},
+	{"COLOR": {
+		"SPORTS": {
+			"TENNIS" : "BLACK",
+			"SOCCER" : "RED"
+		}
+	}}
+   ]
+}
+
+}
+

@@ -1,0 +1,15 @@
+diff -uNr strace-5.3-original/defs.h strace-5.3/defs.h
+--- strace-5.3-original/defs.h	2019-09-24 18:02:03.000000000 -0700
++++ strace-5.3/defs.h	2020-06-30 11:10:11.798453001 -0700
+@@ -24,6 +24,11 @@
+ # include <unistd.h>
+ # include <stdlib.h>
+ # include <stdio.h>
++# include <linux/limits.h>
++# ifndef IOV_MAX
++	#define IOV_MAX 1024
++# endif 
++
+ /* Open-coding isprint(ch) et al proved more efficient than calling
+  * generalized libc interface. We don't *want* to do non-ASCII anyway.
+  */

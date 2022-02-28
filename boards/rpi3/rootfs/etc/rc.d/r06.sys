@@ -1,0 +1,28 @@
+#!/bin/sh
+
+. /boot/conf.sys
+
+case $1 in
+	"start")
+		echo "[WLAN] BRCM Loading modules..."
+		modprobe brcmutil
+		modprobe brcmfmac
+	
+		## eth0 interface
+		ifconfig $ETHINTERFACE up
+
+		/etc/scripts/wlan_ap.sh start 		
+		;;
+	"stop")
+		/etc/scripts/wlan_ap.sh stop
+
+		## eth0 interface
+		ifconfig $ETHINTERFACE down 
+
+		echo "[WLAN] BRCM Unloading modules..."
+		rmmod brcmfmac
+		rmmod brcmutil
+		;;
+	"*")
+		;;
+esac

@@ -1,0 +1,3 @@
+tty0::respawn:/sbin/getty -l /bin/bash -n 0 tty0
+::sysinit:/etc/rc.init
+::shutdown:/etc/rc.shutdown

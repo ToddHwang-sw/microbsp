@@ -1,0 +1,48 @@
+diff --git a/ext/x264/gstencoderbitrateprofilemanager.c b/ext/x264/gstencoderbitrateprofilemanager.c
+index 5ef83eec..47d46fb4 100644
+--- a/ext/x264/gstencoderbitrateprofilemanager.c
++++ b/ext/x264/gstencoderbitrateprofilemanager.c
+@@ -107,7 +107,7 @@ gst_encoder_bitrate_profile_manager_add_profile (GstEncoderBitrateProfileManager
+   profile->name = g_strdup (profile_name);
+   profile->n_vals = n_vals;
+   profile->map
+-      = g_memdup (map, sizeof (GstEncoderBitrateTargetForPixelsMap) * n_vals);
++      = g_memdup2 (map, sizeof (GstEncoderBitrateTargetForPixelsMap) * n_vals);
+   self->profiles = g_list_prepend (self->profiles, profile);
+ }
+ 
+diff --git a/gst/asfdemux/gstasfdemux.c b/gst/asfdemux/gstasfdemux.c
+index 833d5464..252a44cc 100644
+--- a/gst/asfdemux/gstasfdemux.c
++++ b/gst/asfdemux/gstasfdemux.c
+@@ -2463,7 +2463,7 @@ gst_asf_demux_get_bytes (guint8 ** p_buf, guint num_bytes_to_read,
+   if (*p_size < num_bytes_to_read)
+     return FALSE;
+ 
+-  *p_buf = g_memdup (*p_data, num_bytes_to_read);
++  *p_buf = g_memdup2 (*p_data, num_bytes_to_read);
+   *p_data += num_bytes_to_read;
+   *p_size -= num_bytes_to_read;
+   return TRUE;
+diff --git a/gst/realmedia/rtspreal.c b/gst/realmedia/rtspreal.c
+index e0e7a932..5e59954b 100644
+--- a/gst/realmedia/rtspreal.c
++++ b/gst/realmedia/rtspreal.c
+@@ -436,7 +436,7 @@ rtsp_ext_real_parse_sdp (GstRTSPExtension * ext, GstSDPMessage * sdp,
+     if (strncmp (opaque_data, "MLTI", 4)) {
+       GST_DEBUG_OBJECT (ctx, "no MLTI found, appending all");
+       stream->type_specific_data_len = opaque_data_len;
+-      stream->type_specific_data = g_memdup (opaque_data, opaque_data_len);
++      stream->type_specific_data = g_memdup2 (opaque_data, opaque_data_len);
+       goto no_type_specific;
+     }
+     opaque_data += 4;
+@@ -530,7 +530,7 @@ rtsp_ext_real_parse_sdp (GstRTSPExtension * ext, GstSDPMessage * sdp,
+       goto strange_opaque_data;
+     }
+     stream->type_specific_data =
+-        g_memdup (opaque_data, stream->type_specific_data_len);
++        g_memdup2 (opaque_data, stream->type_specific_data_len);
+ 
+   no_type_specific:
+     size =

@@ -1,0 +1,54 @@
+diff -uNr ncftp-3.2.6-original/configure ncftp-3.2.6/configure
+--- ncftp-3.2.6-original/configure	2016-12-04 10:54:11.000000000 -0800
++++ ncftp-3.2.6/configure	2019-10-28 22:17:04.814456125 -0700
+@@ -11156,13 +11156,7 @@
+ 	LIBS="$ac_save_LIBS";
+ fi
+ 
+-if test "x$LIBCURSES" = "x" ; then
+-	VIS_DPROGS="# ../bin/ncftpbookmarks${EXEEXT}"
+-else
+-	VIS_DPROGS="../bin/ncftpbookmarks${EXEEXT}"
+-fi
+-
+-
++VIS_DPROGS=""
+ 
+ echo $ac_n "checking for long file names""... $ac_c" 1>&6
+ echo "configure:11169: checking for long file names" >&5
+diff -uNr ncftp-3.2.6-original/Makefile.bin.in ncftp-3.2.6/Makefile.bin.in
+--- ncftp-3.2.6-original/Makefile.bin.in	2001-10-25 14:46:50.000000000 -0700
++++ ncftp-3.2.6/Makefile.bin.in	2019-10-28 22:11:40.058310400 -0700
+@@ -24,11 +24,7 @@
+ 	done
+ 	-@/bin/rm -f $(prefix)/bin/ncftpspooler
+ 	-ln $(prefix)/bin/ncftpbatch $(prefix)/bin/ncftpspooler
+-	-@cp bin/ncftpbookmarks $(prefix)/bin/ncftpbookmarks 2>/dev/null
+-	-@chmod 755 $(prefix)/bin/ncftpbookmarks 2>/dev/null
+-	-@chown bin $(prefix)/bin/ncftpbookmarks 2>/dev/null
+-	-@chgrp bin $(prefix)/bin/ncftpbookmarks 2>/dev/null
+-	-@/bin/ls -l $(prefix)/bin/ncftp $(prefix)/bin/ncftpget $(prefix)/bin/ncftpput $(prefix)/bin/ncftpbatch $(prefix)/bin/ncftpspooler $(prefix)/bin/ncftpls $(prefix)/bin/ncftpbookmarks
++	-@/bin/ls -l $(prefix)/bin/ncftp $(prefix)/bin/ncftpget $(prefix)/bin/ncftpput $(prefix)/bin/ncftpbatch $(prefix)/bin/ncftpspooler $(prefix)/bin/ncftpls 
+ 	-@echo '..... Installing the manual pages .....'
+ 	for f in ncftp.1 ncftpget.1 ncftpput.1 ncftpbatch.1 ncftpspooler.1  ncftpls.1 ; do \
+ 		/bin/rm -f $(mandir)/man1/$$f ; \
+diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
+--- ncftp-3.2.6-original/Makefile.in	2016-08-13 19:16:09.000000000 -0700
++++ ncftp-3.2.6/Makefile.in	2019-10-28 22:12:02.014269741 -0700
+@@ -56,7 +56,6 @@
+ #
+ # The visual programs are only built if a working Curses was found.
+ #
+-	-test -f bin/ncftpbookmarks@EXEEXT@ && $(INSTALL_PROGRAM) bin/ncftpbookmarks@EXEEXT@ "$(DESTDIR)$(BINDIR)/ncftpbookmarks@EXEEXT@"
+ 	-@echo '..... Installing the manual pages .....'
+ 	$(INSTALL_DATA) doc/man/ncftp.1 "$(DESTDIR)$(mandir)/man1/ncftp.1"
+ 	$(INSTALL_DATA) doc/man/ncftpget.1 "$(DESTDIR)$(mandir)/man1/ncftpget.1"
+@@ -65,7 +64,7 @@
+ 	$(INSTALL_DATA) doc/man/ncftpspooler.1 "$(DESTDIR)$(mandir)/man1/ncftpspooler.1"
+ 	$(INSTALL_DATA) doc/man/ncftpls.1 "$(DESTDIR)$(mandir)/man1/ncftpls.1"
+ 	-@echo '..... Finishing up .....'
+-	-@( cd "$(DESTDIR)$(BINDIR)" ; echo ""; echo "$(DESTDIR)$(BINDIR):" ; /bin/ls -l "ncftp@EXEEXT@" "ncftpget@EXEEXT@" "ncftpput@EXEEXT@" "ncftpls@EXEEXT@" "ncftpbatch@EXEEXT@" "ncftpspooler@EXEEXT@" "ncftpbookmarks@EXEEXT@" 2>/dev/null | sed 's/^/  /;' ; echo "" )
++	-@( cd "$(DESTDIR)$(BINDIR)" ; echo ""; echo "$(DESTDIR)$(BINDIR):" ; /bin/ls -l "ncftp@EXEEXT@" "ncftpget@EXEEXT@" "ncftpput@EXEEXT@" "ncftpls@EXEEXT@" "ncftpbatch@EXEEXT@" "ncftpspooler@EXEEXT@" 2>/dev/null | sed 's/^/  /;' ; echo "" )
+ 	-@echo 'Done installing NcFTP.'
+ 
+ clean:

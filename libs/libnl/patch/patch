@@ -1,0 +1,12 @@
+diff -uNr libnl-3.5.0-original/lib/route/qdisc/netem.c libnl-3.5.0/lib/route/qdisc/netem.c
+--- libnl-3.5.0-original/lib/route/qdisc/netem.c	2019-09-01 05:44:42.000000000 -0700
++++ libnl-3.5.0/lib/route/qdisc/netem.c	2020-07-07 10:59:32.469271675 -0700
+@@ -26,6 +26,8 @@
+ #include <netlink/route/qdisc.h>
+ #include <netlink/route/qdisc/netem.h>
+ 
++#include <linux/limits.h>
++
+ /** @cond SKIP */
+ #define SCH_NETEM_ATTR_LATENCY		0x0001
+ #define SCH_NETEM_ATTR_LIMIT		0x0002

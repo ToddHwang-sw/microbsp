@@ -1,0 +1,241 @@
+diff --git a/ext/alsa/gstalsamidisrc.c b/ext/alsa/gstalsamidisrc.c
+index d7cc6197f..894c17d64 100644
+--- a/ext/alsa/gstalsamidisrc.c
++++ b/ext/alsa/gstalsamidisrc.c
+@@ -418,7 +418,7 @@ push_buffer (GstAlsaMidiSrc * alsamidisrc, gpointer data, guint size,
+   GST_BUFFER_DTS (buffer) = time;
+   GST_BUFFER_PTS (buffer) = time;
+ 
+-  local_data = g_memdup (data, size);
++  local_data = g_memdup2 (data, size);
+ 
+   gst_buffer_append_memory (buffer,
+       gst_memory_new_wrapped (0, local_data, size, 0, size, local_data,
+diff --git a/ext/ogg/gstoggdemux.c b/ext/ogg/gstoggdemux.c
+index 2ce279dd7..4288b0594 100644
+--- a/ext/ogg/gstoggdemux.c
++++ b/ext/ogg/gstoggdemux.c
+@@ -86,7 +86,7 @@ _ogg_packet_copy (const ogg_packet * packet)
+   ogg_packet *ret = g_slice_new (ogg_packet);
+ 
+   *ret = *packet;
+-  ret->packet = g_memdup (packet->packet, packet->bytes);
++  ret->packet = g_memdup2 (packet->packet, packet->bytes);
+ 
+   return ret;
+ }
+@@ -104,9 +104,9 @@ gst_ogg_page_copy (ogg_page * page)
+   ogg_page *p = g_slice_new (ogg_page);
+ 
+   /* make a copy of the page */
+-  p->header = g_memdup (page->header, page->header_len);
++  p->header = g_memdup2 (page->header, page->header_len);
+   p->header_len = page->header_len;
+-  p->body = g_memdup (page->body, page->body_len);
++  p->body = g_memdup2 (page->body, page->body_len);
+   p->body_len = page->body_len;
+ 
+   return p;
+diff --git a/ext/ogg/gstoggstream.c b/ext/ogg/gstoggstream.c
+index 3894ae741..a287dcdf7 100644
+--- a/ext/ogg/gstoggstream.c
++++ b/ext/ogg/gstoggstream.c
+@@ -2097,7 +2097,7 @@ setup_opus_mapper (GstOggStream * pad, ogg_packet * packet)
+       -pad->granule_offset);
+ 
+   buffer =
+-      gst_buffer_new_wrapped (g_memdup (packet->packet, packet->bytes),
++      gst_buffer_new_wrapped (g_memdup2 (packet->packet, packet->bytes),
+       packet->bytes);
+   pad->caps = gst_codec_utils_opus_create_caps_from_header (buffer, NULL);
+   gst_buffer_unref (buffer);
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index 731ee9f5e..6ec5ab492 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -562,7 +562,7 @@ if need_win_wayland != 'no'
+ 
+     if wayland_client_dep.found() and wayland_cursor_dep.found() and wayland_egl_dep.found() and wayland_protocols_dep.found() and wayland_scanner.found()
+       # Generate the XDG shell interface
+-      wayland_protocols_basedir = wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
++      wayland_protocols_basedir = get_option('base-install') + wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
+       xdg_shell_xml_spec = join_paths(wayland_protocols_basedir, 'stable', 'xdg-shell', 'xdg-shell.xml')
+       xdg_shell_header = custom_target('xdg-shell-client-header',
+         command: [ wayland_scanner, 'client-header', '@INPUT@', '@OUTPUT@' ],
+diff --git a/gst-libs/gst/riff/riff-read.c b/gst-libs/gst/riff/riff-read.c
+index 4972979fe..5e9f331d9 100644
+--- a/gst-libs/gst/riff/riff-read.c
++++ b/gst-libs/gst/riff/riff-read.c
+@@ -293,7 +293,7 @@ gst_riff_parse_strh (GstElement * element,
+   if (info.size < sizeof (gst_riff_strh))
+     goto too_small;
+ 
+-  strh = g_memdup (info.data, info.size);
++  strh = g_memdup2 (info.data, info.size);
+   gst_buffer_unmap (buf, &info);
+ 
+   gst_buffer_unref (buf);
+@@ -384,7 +384,7 @@ gst_riff_parse_strf_vids (GstElement * element,
+   if (info.size < sizeof (gst_riff_strf_vids))
+     goto too_small;
+ 
+-  strf = g_memdup (info.data, info.size);
++  strf = g_memdup2 (info.data, info.size);
+   gst_buffer_unmap (buf, &info);
+ 
+ #if (G_BYTE_ORDER == G_BIG_ENDIAN)
+@@ -482,7 +482,7 @@ gst_riff_parse_strf_auds (GstElement * element,
+   if (info.size < sizeof (gst_riff_strf_auds))
+     goto too_small;
+ 
+-  strf = g_memdup (info.data, info.size);
++  strf = g_memdup2 (info.data, info.size);
+ 
+ #if (G_BYTE_ORDER == G_BIG_ENDIAN)
+   strf->format = GUINT16_FROM_LE (strf->format);
+@@ -574,7 +574,7 @@ gst_riff_parse_strf_iavs (GstElement * element,
+   if (info.size < sizeof (gst_riff_strf_iavs))
+     goto too_small;
+ 
+-  strf = g_memdup (info.data, info.size);
++  strf = g_memdup2 (info.data, info.size);
+   gst_buffer_unmap (buf, &info);
+ 
+   gst_buffer_unref (buf);
+diff --git a/gst-libs/gst/rtp/gstrtcpbuffer.c b/gst-libs/gst/rtp/gstrtcpbuffer.c
+index 29dfd82a0..876c4a9ef 100644
+--- a/gst-libs/gst/rtp/gstrtcpbuffer.c
++++ b/gst-libs/gst/rtp/gstrtcpbuffer.c
+@@ -84,7 +84,7 @@ gst_rtcp_buffer_new_take_data (gpointer data, guint len)
+ GstBuffer *
+ gst_rtcp_buffer_new_copy_data (gconstpointer data, guint len)
+ {
+-  return gst_rtcp_buffer_new_take_data (g_memdup (data, len), len);
++  return gst_rtcp_buffer_new_take_data (g_memdup2 (data, len), len);
+ }
+ 
+ static gboolean
+@@ -1213,7 +1213,7 @@ gst_rtcp_packet_copy_profile_specific_ext (GstRTCPPacket * packet,
+     if (data != NULL) {
+       guint8 *ptr = packet->rtcp->map.data + packet->offset;
+       ptr += ((packet->length + 1 - pse_len) * sizeof (guint32));
+-      *data = g_memdup (ptr, pse_len * sizeof (guint32));
++      *data = g_memdup2 (ptr, pse_len * sizeof (guint32));
+     }
+ 
+     return TRUE;
+diff --git a/gst-libs/gst/rtp/gstrtpbuffer.c b/gst-libs/gst/rtp/gstrtpbuffer.c
+index ae519f313..e6fd41ac2 100644
+--- a/gst-libs/gst/rtp/gstrtpbuffer.c
++++ b/gst-libs/gst/rtp/gstrtpbuffer.c
+@@ -184,7 +184,7 @@ gst_rtp_buffer_new_take_data (gpointer data, gsize len)
+ GstBuffer *
+ gst_rtp_buffer_new_copy_data (gconstpointer data, gsize len)
+ {
+-  return gst_rtp_buffer_new_take_data (g_memdup (data, len), len);
++  return gst_rtp_buffer_new_take_data (g_memdup2 (data, len), len);
+ }
+ 
+ /**
+diff --git a/gst-libs/gst/rtsp/gstrtspconnection.c b/gst-libs/gst/rtsp/gstrtspconnection.c
+index 76459246e..701f5782c 100644
+--- a/gst-libs/gst/rtsp/gstrtspconnection.c
++++ b/gst-libs/gst/rtsp/gstrtspconnection.c
+@@ -4607,7 +4607,7 @@ gst_rtsp_watch_write_serialized_messages (GstRTSPWatch * watch,
+      * we don't own them here */
+     if (local_message.body_data) {
+       local_message.body_data =
+-          g_memdup (local_message.body_data, local_message.body_data_size);
++          g_memdup2 (local_message.body_data, local_message.body_data_size);
+     } else if (local_message.body_buffer) {
+       gst_buffer_ref (local_message.body_buffer);
+     }
+diff --git a/gst-libs/gst/rtsp/gstrtspmessage.c b/gst-libs/gst/rtsp/gstrtspmessage.c
+index 3b693fa16..dea542120 100644
+--- a/gst-libs/gst/rtsp/gstrtspmessage.c
++++ b/gst-libs/gst/rtsp/gstrtspmessage.c
+@@ -943,7 +943,7 @@ gst_rtsp_message_set_body (GstRTSPMessage * msg, const guint8 * data,
+ {
+   g_return_val_if_fail (msg != NULL, GST_RTSP_EINVAL);
+ 
+-  return gst_rtsp_message_take_body (msg, g_memdup (data, size), size);
++  return gst_rtsp_message_take_body (msg, g_memdup2 (data, size), size);
+ }
+ 
+ /**
+diff --git a/gst-libs/gst/sdp/gstmikey.c b/gst-libs/gst/sdp/gstmikey.c
+index 4f8a31389..13813afb0 100644
+--- a/gst-libs/gst/sdp/gstmikey.c
++++ b/gst-libs/gst/sdp/gstmikey.c
+@@ -66,7 +66,7 @@ G_STMT_START {                    \
+ #define INIT_MEMDUP(field, data, len)            \
+ G_STMT_START {                                   \
+   g_free ((field));                              \
+-  (field) = g_memdup (data, len);                \
++  (field) = g_memdup2 (data, len);                \
+ } G_STMT_END
+ #define FREE_MEMDUP(field)                       \
+ G_STMT_START {                                   \
+@@ -2491,7 +2491,7 @@ gst_mikey_message_to_caps (const GstMIKEYMessage * msg, GstCaps * caps)
+ 
+     pkd = (GstMIKEYPayloadKeyData *) sub;
+     buf =
+-        gst_buffer_new_wrapped (g_memdup (pkd->key_data, pkd->key_len),
++        gst_buffer_new_wrapped (g_memdup2 (pkd->key_data, pkd->key_len),
+         pkd->key_len);
+     gst_caps_set_simple (caps, "srtp-key", GST_TYPE_BUFFER, buf, NULL);
+     gst_buffer_unref (buf);
+diff --git a/gst-libs/gst/video/video-anc.c b/gst-libs/gst/video/video-anc.c
+index 638266d06..080c15a54 100644
+--- a/gst-libs/gst/video/video-anc.c
++++ b/gst-libs/gst/video/video-anc.c
+@@ -1042,7 +1042,7 @@ gst_buffer_add_video_caption_meta (GstBuffer * buffer,
+   g_return_val_if_fail (meta != NULL, NULL);
+ 
+   meta->caption_type = caption_type;
+-  meta->data = g_memdup (data, size);
++  meta->data = g_memdup2 (data, size);
+   meta->size = size;
+ 
+   return meta;
+diff --git a/meson_options.txt b/meson_options.txt
+index bb3cb3c4e..b4591b743 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -87,3 +87,5 @@ option('package-origin', type : 'string', value : 'Unknown package origin', yiel
+        description : 'package origin URL to use in plugins')
+ option('doc', type : 'feature', value : 'auto', yield: true,
+        description: 'Enable documentation.')
++
++option('base-install', type : 'string', yield : true, description : 'Installation Location')
+diff --git a/tests/check/libs/rtp.c b/tests/check/libs/rtp.c
+index f5a13cdf6..fc6a9d981 100644
+--- a/tests/check/libs/rtp.c
++++ b/tests/check/libs/rtp.c
+@@ -2058,7 +2058,7 @@ create_feedback_buffer (gboolean with_padding)
+       0x00, 0x14, 0x00, 0x02,
+     };
+ 
+-    return gst_buffer_new_wrapped (g_memdup (transport_wide_cc_padding_buffer,
++    return gst_buffer_new_wrapped (g_memdup2 (transport_wide_cc_padding_buffer,
+             sizeof (transport_wide_cc_padding_buffer)),
+         sizeof (transport_wide_cc_padding_buffer));
+   } else {
+@@ -2073,7 +2073,7 @@ create_feedback_buffer (gboolean with_padding)
+       0x14, 0x14, 0x15, 0x29,
+       0x18, 0x12, 0x15, 0x16,
+     };
+-    return gst_buffer_new_wrapped (g_memdup (transport_wide_cc_buffer,
++    return gst_buffer_new_wrapped (g_memdup2 (transport_wide_cc_buffer,
+             sizeof (transport_wide_cc_buffer)),
+         sizeof (transport_wide_cc_buffer));
+   }
+@@ -2090,7 +2090,7 @@ create_remb_buffer ()
+     0x00, 0x0b, 0xd0, 0x90,
+   };
+ 
+-  return gst_buffer_new_wrapped (g_memdup (remb_buffer, sizeof (remb_buffer)),
++  return gst_buffer_new_wrapped (g_memdup2 (remb_buffer, sizeof (remb_buffer)),
+       sizeof (remb_buffer));
+ }
+ 

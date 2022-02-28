@@ -1,0 +1,87 @@
+#!/bin/sh
+
+cat /etc/motd
+
+## mount file systems 
+mount -t proc     proc   /proc
+mount -t tmpfs    ram    /var  -o size=32m
+mount -t sysfs    sys    /sys
+mount -t devtmpfs devfs /dev 
+
+## basic..
+mkdir /var/config/ /var/db/ /var/tmp /var/log /var/run /var/lock /var/empty
+
+## extern..
+mkdir /var/tmp/tmp 
+mkdir /var/share
+mkdir /var/tmp/root
+mkdir /var/tmp/home
+mkdir /var/tmp/home/tmp
+
+## PTS...
+mkdir /dev/pts
+mount -t devpts devpts  /dev/pts
+
+##
+## Export Libraries...
+##
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64
+
+##
+## Export Path....
+##
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+## resolv.conf - name server
+touch /var/tmp/resolv.conf
+
+## mtab - mount tab
+touch /var/tmp/mtab
+
+## fstab - file system tab 
+touch /var/tmp/fstab
+
+## password file
+touch /var/tmp/passwd
+
+## group file
+touch /var/tmp/group
+
+## shadow file
+touch /var/tmp/shadow
+
+## issue file - telnetd
+touch /var/tmp/issue
+
+## lo interface
+ifconfig lo up
+
+## eth0 interface
+echo ""
+echo "Network - VMware should use Host-only interface for this OS"
+echo ""
+modprobe e1000
+udhcpc -i eth0 
+###ifconfig eth0 192.168.47.100 netmask 255.255.255.0 up
+
+## group file for root 
+echo "root:x:0:" > /etc/group
+
+## register root user
+echo "root:x:0:0:root:/root:/bin/sh" > /etc/passwd
+
+## shadow file for password 
+echo "root:*:16897:0:99999:7:::" > /etc/shadow
+
+## password 
+echo "root:" | chpasswd
+
+DATEVAL="2021.11.25-12:00:00"
+date $DATEVAL
+
+syslogd -s 10240 -b 0 -l 8 -O /var/log/messages
+klogd
+
+echo "TELNET daemon"
+telnetd 
+

@@ -1,0 +1,58 @@
+diff -uNr gcc-8.3.0-original/gcc/gcc.c gcc-8.3.0/gcc/gcc.c
+--- gcc-8.3.0-original/gcc/gcc.c	2018-02-08 22:44:06.000000000 -0800
++++ gcc-8.3.0/gcc/gcc.c	2019-10-02 15:18:19.480327105 -0700
+@@ -1468,6 +1468,11 @@
+ #define STANDARD_STARTFILE_PREFIX_2 "/usr/lib/"
+ #endif
+ 
++#undef  STANDARD_STARTFILE_PREFIX_1
++#define STANDARD_STARTFILE_PREFIX_1 ""
++#undef  STANDARD_STARTFILE_PREFIX_2
++#define STANDARD_STARTFILE_PREFIX_2 ""
++
+ #ifdef CROSS_DIRECTORY_STRUCTURE  /* Don't use these prefixes for a cross compiler.  */
+ #undef MD_EXEC_PREFIX
+ #undef MD_STARTFILE_PREFIX
+diff -uNr gcc-8.3.0-original/libstdc++-v3/Makefile.am gcc-8.3.0/libstdc++-v3/Makefile.am
+--- gcc-8.3.0-original/libstdc++-v3/Makefile.am	2018-01-03 02:03:58.000000000 -0800
++++ gcc-8.3.0/libstdc++-v3/Makefile.am	2019-10-02 15:18:19.480327105 -0700
+@@ -24,7 +24,7 @@
+ 
+ if GLIBCXX_HOSTED
+ ## Note that python must come after src.
+-  hosted_source = src doc po testsuite python
++  hosted_source = src doc testsuite python
+ endif
+ 
+ ## Keep this list sync'd with acinclude.m4:GLIBCXX_CONFIGURE.
+diff -uNr gcc-8.3.0-original/libstdc++-v3/Makefile.in gcc-8.3.0/libstdc++-v3/Makefile.in
+--- gcc-8.3.0-original/libstdc++-v3/Makefile.in	2017-11-17 13:28:10.000000000 -0800
++++ gcc-8.3.0/libstdc++-v3/Makefile.in	2019-10-02 15:18:19.480327105 -0700
+@@ -117,7 +117,7 @@
+ 	$(RECURSIVE_CLEAN_TARGETS:-recursive=) tags TAGS ctags CTAGS
+ ETAGS = etags
+ CTAGS = ctags
+-DIST_SUBDIRS = include libsupc++ src doc po testsuite python
++DIST_SUBDIRS = include libsupc++ src doc testsuite python
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -343,7 +343,7 @@
+ 
+ # -I/-D flags to pass when compiling.
+ AM_CPPFLAGS = $(GLIBCXX_INCLUDES) $(CPPFLAGS)
+-@GLIBCXX_HOSTED_TRUE@hosted_source = src doc po testsuite python
++@GLIBCXX_HOSTED_TRUE@hosted_source = src doc testsuite python
+ SUBDIRS = include libsupc++ $(hosted_source)
+ ACLOCAL_AMFLAGS = -I . -I .. -I ../config
+ @BUILD_XML_FALSE@STAMP_XML = 
+diff -uNr gcc-8.3.0-original/PATCHED gcc-8.3.0/PATCHED
+--- gcc-8.3.0-original/PATCHED	1969-12-31 16:00:00.000000000 -0800
++++ gcc-8.3.0/PATCHED	2019-10-02 15:18:30.980444049 -0700
+@@ -0,0 +1,6 @@
++
++
++
++
++
++

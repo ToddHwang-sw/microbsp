@@ -1,0 +1,29 @@
+diff --git a/meson.build b/meson.build
+index e7fc3ee..3802bf5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2,7 +2,7 @@ project(
+ 	'wayland', 'c',
+ 	version: '1.20.90',
+ 	license: 'MIT',
+-	meson_version: '>= 0.56.0',
++	meson_version: '>= 0.50.0',
+ 	default_options: [
+ 		'warning_level=2',
+ 		'buildtype=debugoptimized',
+diff --git a/src/meson.build b/src/meson.build
+index ae8f387..36902c6 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -63,9 +63,9 @@ if get_option('scanner')
+ 			'datarootdir=' + join_paths('${prefix}', get_option('datadir')),
+ 			'pkgdatadir=' + join_paths('${datarootdir}', meson.project_name()),
+ 			'bindir=' + join_paths('${prefix}', get_option('bindir')),
+-			'wayland_scanner=${bindir}/wayland-scanner'
++			'wayland_scanner_host=${bindir}/wayland-scanner'
+ 		],
+-		filebase: 'wayland-scanner'
++		filebase: 'wayland-scanner-host'
+ 	)
+ endif
+ 

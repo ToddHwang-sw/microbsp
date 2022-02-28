@@ -1,0 +1,12 @@
+diff -uNr make-4.1-original/glob/glob.c make-4.1/glob/glob.c
+--- make-4.1-original/glob/glob.c	2014-10-05 09:24:51.000000000 -0700
++++ make-4.1/glob/glob.c	2019-10-19 10:11:46.945917059 -0700
+@@ -229,6 +229,8 @@
+ 
+ # define __alloca	alloca
+ 
++#else
++# define __alloca	malloc
+ #endif
+ 
+ #ifndef __GNU_LIBRARY__

@@ -1,0 +1,316 @@
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<script language="javascript" type="text/javascript" src="js/myscript.js"></script>
+<script language="javascript">
+
+function WriteDone( jsontext )
+{ /* nothing... */ }
+
+function ApplyPTP()
+{
+	/* PTP mode */
+	if ( document.getElementById("ptp_master").checked )
+		value = "master"
+	else if ( document.getElementById("ptp_slave").checked )
+		value = "slave"
+	else 
+		value = "none"
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/mode";
+	XHRPost(WriteDone,  cmd, value, true);
+
+	/* IP type */
+	if ( document.getElementById("ptp_ipv6").checked )
+		value = "6"
+	else 
+		value = "4"
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/iptype";
+	XHRPost(WriteDone,  cmd, value, true);
+
+	/* verbose */
+	if ( document.getElementById("ptp_noisy").checked )
+		value = "1"
+	else 
+		value = "0" /* quite */
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/verbose";
+	XHRPost(WriteDone,  cmd, value, true);
+
+
+	/* PI servo - proportional */
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/pro/const";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_proportional_const" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/pro/scale";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_proportional_scale" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/pro/exp";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_proportional_exp" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/pro/max";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_proportional_max" ).value, true);
+
+	/* PI servo - integral */
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/int/const";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_integral_const" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/int/scale";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_integral_scale" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/int/exp";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_integral_exp" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/pi/int/max";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "pi_integral_max" ).value, true);
+
+	/* Servo */
+	if ( document.getElementById("ptp_servo_null").checked )
+		value = "nullf"
+	else 
+		value = "pi" /* pi*/
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/servo/type";
+	XHRPost(WriteDone,  cmd, value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/servo/step";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_servo_step_threshold" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/servo/first";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_servo_first_step_threshold" ).value, true);
+
+	/* frequency */
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/maxfreq";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_maxfreq" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/freqlim";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_freqlimit" ).value, true);
+
+	/* private */
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/priv/moff_cutoff";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_moff_cutoff" ).value, true);
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ptp/priv/cutoff_times";
+	XHRPost(WriteDone,  cmd, 
+		document.getElementById( "ptp_cutoff_times" ).value, true);
+}
+
+function RetrievePTP( JsonText )
+{
+	var obj = JSON.parse( JsonText );
+
+	if (obj) {
+		if (obj.mode == "master")
+			document.getElementById("ptp_master").checked = true;
+		else if (obj.mode == "slave")
+			document.getElementById("ptp_slave").checked = true;
+		else 
+			document.getElementById("ptp_none").checked = true;
+
+		if (obj.iptype == "6")
+			document.getElementById("ptp_ipv6").checked = true;
+		else 
+			document.getElementById("ptp_ipv4").checked = true;
+
+		if (obj.verbose == "1")
+			document.getElementById("ptp_noisy").checked = true;
+		else 
+			document.getElementById("ptp_quite").checked = true;
+
+		var pi_pro = obj.pi.pro;
+		document.getElementById("pi_proportional_const").value = pi_pro.const;
+		document.getElementById("pi_proportional_scale").value = pi_pro.scale;
+		document.getElementById("pi_proportional_exp").value = pi_pro.exp;
+		document.getElementById("pi_proportional_max").value = pi_pro.max;
+
+		var pi_int = obj.pi.int;
+		document.getElementById("pi_integral_const").value = pi_int.const;
+		document.getElementById("pi_integral_scale").value = pi_int.scale;
+		document.getElementById("pi_integral_exp").value = pi_int.exp;
+		document.getElementById("pi_integral_max").value = pi_int.max;
+
+		if (obj.servo.type == "nullf")
+			document.getElementById("ptp_servo_null").checked = true;
+		else
+			document.getElementById("ptp_servo_pi").checked = true;
+
+		document.getElementById("ptp_servo_step_threshold").value = obj.servo.step;
+		document.getElementById("ptp_servo_first_step_threshold").value = obj.servo.first;
+		document.getElementById("ptp_maxfreq").value = obj.maxfreq;
+		document.getElementById("ptp_freqlimit").value = obj.freqlim;
+		document.getElementById("ptp_moff_cutoff").value = obj.priv.moff_cutoff;
+		document.getElementById("ptp_cutoff_times").value = obj.priv.cutoff_times;
+	}else{
+		/* No PTP */
+		document.getElementById("ptp_master").disabled = true;
+		document.getElementById("ptp_ipv4").disabled = true;
+		document.getElementById("ptp_noisy").disabled = true;
+		document.getElementById("pi_proportional_const").disabled = true;
+		document.getElementById("pi_proportional_scale").disabled = true;
+		document.getElementById("pi_proportional_exp").disabled = true;
+		document.getElementById("pi_proportional_max").disabled = true;
+		document.getElementById("pi_integral_const").disabled = true;
+		document.getElementById("pi_integral_scale").disabled = true;
+		document.getElementById("pi_integral_exp").disabled = true;
+		document.getElementById("pi_integral_max").disabled = true;
+		document.getElementById("ptp_servo_pi").disabled = true;
+		document.getElementById("ptp_servo_step_threshold").disabled = true;
+		document.getElementById("ptp_servo_first_step_threshold").disabled = true;
+		document.getElementById("ptp_maxfreq").disabled = true;
+		document.getElementById("ptp_freqlimit").disabled = true;
+		document.getElementById("ptp_moff_cutoff").disabled = true;
+		document.getElementById("ptp_cutoff_times").disabled = true;
+	}
+}
+
+function OnLoadPTP()
+{
+	XHRGet( RetrievePTP,   "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=lan/ptp", true );
+}
+
+</script>
+<link rel="stylesheet" type="text/css" href="css/design.css">
+<body onload="OnLoadPTP()">
+	<table class="table_title">
+    		<tr><td>IEEE1588 PTP Settings</tr></td>
+	</table>
+	<br/>
+	<br/>
+
+	<!-- LAN table  -->
+	<table class="table_content">
+	<form>
+    		<tr><td>L A N</tr></td>
+		<col width=200>
+		<col width=550>
+		<tr>
+			<td class="table_shaded">Mode</td>
+			<td class="table_white" colspan="3">
+				<input type="radio" name="ptp_mode" id="ptp_master" value="MASTER">MASTER&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="ptp_mode" id="ptp_slave" value="SLAVE">SLAVE&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="ptp_mode" id="ptp_none" value="NONE">DISABLE&nbsp;&nbsp;&nbsp;
+			</td>
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">IP Type</td>
+			<td class="table_white" colspan="3">
+				<input type="radio" name="ptp_iptype" id="ptp_ipv4" value="IPv4">IPv4&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="ptp_iptype" id="ptp_ipv6" value="IPv6">IPv6&nbsp;&nbsp;&nbsp;
+			</td>
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Verbose</td>
+			<td class="table_white" colspan="3">
+				<input type="radio" name="ptp_verbose" id="ptp_noisy" value="Noisy">ENABLE&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="ptp_verbose" id="ptp_quite" value="Quite">DISABLE&nbsp;&nbsp;&nbsp;
+			</td>
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Proportional Const</td>
+			<td class="table_white">
+				<input type="text" id="pi_proportional_const">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Proportional Scale</td>
+			<td class="table_white">
+				<input type="text" id="pi_proportional_scale">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Proportional Exponent</td>
+			<td class="table_white">
+				<input type="text" id="pi_proportional_exp">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Proportional Max</td>
+			<td class="table_white">
+				<input type="text" id="pi_proportional_max">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Integral Const</td>
+			<td class="table_white">
+				<input type="text" id="pi_integral_const">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Integral Scale</td>
+			<td class="table_white">
+				<input type="text" id="pi_integral_scale">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Integral Exponent</td>
+			<td class="table_white">
+				<input type="text" id="pi_integral_exp">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">PI Integral Max</td>
+			<td class="table_white">
+				<input type="text" id="pi_integral_max">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Servo Types</td>
+			<td class="table_white" colspan="3">
+				<input type="radio" name="ptp_servo" id="ptp_servo_pi" value="servo_pi">PI&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="ptp_servo" id="ptp_servo_null" value="servo_null">NULL&nbsp;&nbsp;&nbsp;
+			</td>
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Servo step threshold</td>
+			<td class="table_white">
+				<input type="text" id="ptp_servo_step_threshold">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Servo first step threshold</td>
+			<td class="table_white">
+				<input type="text" id="ptp_servo_first_step_threshold">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Max Frequency</td>
+			<td class="table_white">
+				<input type="text" id="ptp_maxfreq">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Frequency Limit</td>
+			<td class="table_white">
+				<input type="text" id="ptp_freqlimit">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Master off cutoff</td>
+			<td class="table_white">
+				<input type="text" id="ptp_moff_cutoff">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Cutoff max bound</td>
+			<td class="table_white">
+				<input type="text" id="ptp_cutoff_times">
+			</td>
+		</tr>
+		
+		<tr>	
+			<td class="table_white" colspan="2" align="right">
+				<input type="button" class="pbutton" id="PTPApply" value="Apply" onclick="ApplyPTP()">
+			</td>
+		</tr>
+	</form>
+	</table>
+	<br/>
+	<br/>
+</body>
+</html>

@@ -1,0 +1,84 @@
+
+body {
+        font-family: Arial,Helvetica,sans-serif;
+        color: #222222;
+        font-size:16px;
+}
+
+.table_title {
+        width: 600px;
+        height: 30px;
+        font-size:18px;
+        border-top: 2px dotted #D0D0D0;
+        border-bottom: 2px dotted #D0D0D0;
+        text-align: center;
+        font-weight: bold;
+}
+
+.table_content {
+        width: 600px;
+        table-layout:fixed;
+        border-collapse: collapse;
+        border-spacing: 0px;
+        margin: 0;
+        padding: 0;
+}
+
+.table_dark {
+	border: 2px solid #D0D0D0;
+	background-color: #D0D0D0;
+	line-height: 22px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.table_shaded {
+	border: 2px solid #D0D0D0;
+	background-color: #F0F0F0;
+	line-height: 22px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.table_white {
+	border: 2px solid #D0D0D0;
+	background-color: #FFFFFF;
+	line-height: 22px;
+	padding-left: 3px;
+	padding-right: 3px;
+	word-break:break-all;
+}
+
+.pbutton{
+	width: 90px;
+	height: 20px;
+	font-size:16px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #706E6E;
+	border: 0;
+	cursor:pointer; 
+}
+
+.pbutton:active{
+	width: 90px;
+	height: 20px;
+	font-size:16px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #DD3333;
+	border: 0;
+	cursor:pointer; 
+}
+
+.pbutton:disabled{
+	width: 90px;
+	height: 20px;
+	font-size:16px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #706E6E;
+	border: 0;
+	cursor:auto; 
+}
+

@@ -1,0 +1,155 @@
+diff -uNr m4-1.4.18-orig/lib/fflush.c m4-1.4.18/lib/fflush.c
+--- m4-1.4.18-orig/lib/fflush.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fflush.c	2021-11-02 21:33:40.405200410 -0700
+@@ -33,7 +33,7 @@
+ #undef fflush
+ 
+ 
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+ 
+ /* Clear the stream's ungetc buffer, preserving the value of ftello (fp).  */
+ static void
+@@ -72,7 +72,7 @@
+ 
+ #endif
+ 
+-#if ! (defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */)
++#if ! (defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */)
+ 
+ # if (defined __sferror || defined __DragonFly__ || defined __ANDROID__) && defined __SNPT
+ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Android */
+@@ -148,7 +148,7 @@
+   if (stream == NULL || ! freading (stream))
+     return fflush (stream);
+ 
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+ 
+   clear_ungetc_buffer_preserving_position (stream);
+ 
+diff -uNr m4-1.4.18-orig/lib/fpending.c m4-1.4.18/lib/fpending.c
+--- m4-1.4.18-orig/lib/fpending.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fpending.c	2021-11-02 21:33:40.405200410 -0700
+@@ -32,7 +32,7 @@
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+   return fp->_IO_write_ptr - fp->_IO_write_base;
+ #elif defined __sferror || defined __DragonFly__ || defined __ANDROID__
+   /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Android */
+diff -uNr m4-1.4.18-orig/lib/fpurge.c m4-1.4.18/lib/fpurge.c
+--- m4-1.4.18-orig/lib/fpurge.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fpurge.c	2021-11-02 21:33:40.405200410 -0700
+@@ -62,7 +62,7 @@
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-# if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++# if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+   fp->_IO_read_end = fp->_IO_read_ptr;
+   fp->_IO_write_ptr = fp->_IO_write_base;
+   /* Avoid memory leak when there is an active ungetc buffer.  */
+diff -uNr m4-1.4.18-orig/lib/freadahead.c m4-1.4.18/lib/freadahead.c
+--- m4-1.4.18-orig/lib/freadahead.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/freadahead.c	2021-11-02 21:33:40.405200410 -0700
+@@ -25,7 +25,7 @@
+ size_t
+ freadahead (FILE *fp)
+ {
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+   if (fp->_IO_write_ptr > fp->_IO_write_base)
+     return 0;
+   return (fp->_IO_read_end - fp->_IO_read_ptr)
+diff -uNr m4-1.4.18-orig/lib/freading.c m4-1.4.18/lib/freading.c
+--- m4-1.4.18-orig/lib/freading.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/freading.c	2021-11-02 21:33:40.409200450 -0700
+@@ -31,7 +31,7 @@
+   /* Most systems provide FILE as a struct and the necessary bitmask in
+      <stdio.h>, because they need it for implementing getc() and putc() as
+      fast macros.  */
+-# if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++# if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+   return ((fp->_flags & _IO_NO_WRITES) != 0
+           || ((fp->_flags & (_IO_NO_READS | _IO_CURRENTLY_PUTTING)) == 0
+               && fp->_IO_read_base != NULL));
+diff -uNr m4-1.4.18-orig/lib/fseeko.c m4-1.4.18/lib/fseeko.c
+--- m4-1.4.18-orig/lib/fseeko.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fseeko.c	2021-11-02 21:33:40.409200450 -0700
+@@ -47,7 +47,7 @@
+ #endif
+ 
+   /* These tests are based on fpurge.c.  */
+-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
++#if defined _IO_EOF_SEEN || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+   if (fp->_IO_read_end == fp->_IO_read_ptr
+       && fp->_IO_write_ptr == fp->_IO_write_base
+       && fp->_IO_save_base == NULL)
+diff -uNr m4-1.4.18-orig/lib/stdio-impl.h m4-1.4.18/lib/stdio-impl.h
+--- m4-1.4.18-orig/lib/stdio-impl.h	2016-12-31 05:54:42.000000000 -0800
++++ m4-1.4.18/lib/stdio-impl.h	2021-11-02 21:33:40.409200450 -0700
+@@ -28,6 +28,10 @@
+ 
+ #include <errno.h>                             /* For detecting Plan9.  */
+ 
++#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN
++	#define _IO_IN_BACKUP	0x100
++#endif
++
+ #if defined __sferror || defined __DragonFly__ || defined __ANDROID__
+   /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Android */
+ 
+diff -uNr m4-1.4.18-orig/Makefile.am m4-1.4.18/Makefile.am
+--- m4-1.4.18-orig/Makefile.am	2016-12-31 14:00:32.000000000 -0800
++++ m4-1.4.18/Makefile.am	2021-11-02 21:54:32.583559580 -0700
+@@ -20,15 +20,21 @@
+ ##
+ ## Written by Gary V. Vaughan <gary@gnu.org>
+ 
+-SUBDIRS = . examples lib src doc checks tests
++##SUBDIRS = . examples lib src doc checks tests
++SUBDIRS = . examples lib src 
+ 
+ EXTRA_DIST = bootstrap c-boxes.el cfg.mk maint.mk \
+ 	.prev-version .version m4/gnulib-cache.m4 ChangeLog-2014
+ DISTCLEANFILES = stamp-h
+ ## maintainer-clean should remove as much as possible that ./bootstrap can
+ ## recreate.  In the m4 directory, keep only gnulib-cache.m4.
++
++##
++##	config-h.in configure depcomp doc/fdl.texi gendocs.sh install-sh \
++##
++
+ MAINTAINERCLEANFILES = INSTALL Makefile.in aclocal.m4 \
+-	config-h.in configure depcomp doc/fdl.texi gendocs.sh install-sh \
++	config-h.in configure depcomp install-sh \
+ 	lib/[a-z]* m4/[a-fh-z]* m4/g[a-mo-z]* m4/gnulib-comp.m4 \
+ 	m4/gnulib-tool.m4 missing stamp-h.in
+ 
+diff -uNr m4-1.4.18-orig/Makefile.in m4-1.4.18/Makefile.in
+--- m4-1.4.18-orig/Makefile.in	2016-12-31 14:25:57.000000000 -0800
++++ m4-1.4.18/Makefile.in	2021-11-02 21:55:41.718161788 -0700
+@@ -1506,13 +1506,18 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = . examples lib src doc checks tests
++###SUBDIRS = . examples lib src doc checks tests
++SUBDIRS = . examples lib src 
+ EXTRA_DIST = bootstrap c-boxes.el cfg.mk maint.mk \
+ 	.prev-version .version m4/gnulib-cache.m4 ChangeLog-2014
+ 
++##
++##	config-h.in configure depcomp doc/fdl.texi gendocs.sh install-sh \
++##
++
+ DISTCLEANFILES = stamp-h
+ MAINTAINERCLEANFILES = INSTALL Makefile.in aclocal.m4 \
+-	config-h.in configure depcomp doc/fdl.texi gendocs.sh install-sh \
++	config-h.in configure depcomp install-sh \
+ 	lib/[a-z]* m4/[a-fh-z]* m4/g[a-mo-z]* m4/gnulib-comp.m4 \
+ 	m4/gnulib-tool.m4 missing stamp-h.in
+ 

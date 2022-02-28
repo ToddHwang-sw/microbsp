@@ -1,0 +1,19 @@
+diff --git a/meson.build b/meson.build
+index 9c76440..82de016 100644
+--- a/meson.build
++++ b/meson.build
+@@ -9,10 +9,10 @@ version_arr = gst_version.split('.')
+ gst_version_major = version_arr[0]
+ gst_version_minor = version_arr[1]
+ 
+-libavfilter_dep = dependency('libavfilter', version: '>= 6.47.100')
+-libavformat_dep = dependency('libavformat', version: '>= 57.41.100')
+-libavcodec_dep = dependency('libavcodec', version: '>= 57.48.101')
+-libavutil_dep = dependency('libavutil', version: '>= 55.28.100')
++libavfilter_dep = dependency('libavfilter', version: '>= 2.47.100')
++libavformat_dep = dependency('libavformat', version: '>= 27.41.100')
++libavcodec_dep = dependency('libavcodec', version: '>= 27.48.101')
++libavutil_dep = dependency('libavutil', version: '>= 25.28.100')
+ 
+ libav_deps = [libavfilter_dep, libavformat_dep, libavcodec_dep, libavutil_dep]
+ 

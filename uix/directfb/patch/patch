@@ -1,0 +1,13 @@
+diff --git a/lib/direct/Base.h b/lib/direct/Base.h
+index 1f08fb513..6b8205aad 100644
+--- a/lib/direct/Base.h
++++ b/lib/direct/Base.h
+@@ -56,7 +56,7 @@ extern "C" {
+ #include <memory>
+ #include <set>
+ #include <string>
+-
++#include <functional>
+ #include <stdexcept>
+ 
+ //#include <typeindex>

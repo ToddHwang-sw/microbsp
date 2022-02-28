@@ -1,0 +1,13 @@
+status
+load source/json/1.json
+tree 0 12
+find 0 address.XX.YY
+find 0 phoneNumbers
+delete 0 1
+delete 0 2
+purge 0  
+dbg
+add 0 1
+add 0 2
+tree 0 12
+status

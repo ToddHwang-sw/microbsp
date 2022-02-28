@@ -1,0 +1,3 @@
+
+[ -d libfuse ] || git clone https://github.com/libfuse/libfuse.git
+[ -d ./build ] || mkdir -p ./build

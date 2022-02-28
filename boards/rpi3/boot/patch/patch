@@ -1,0 +1,179 @@
+diff -uNr u-boot-v2020.07-rc3-original/arch/arm/dts/bcm2837-rpi-3-b.dts u-boot-v2020.07-rc3/arch/arm/dts/bcm2837-rpi-3-b.dts
+--- u-boot-v2020.07-rc3-original/arch/arm/dts/bcm2837-rpi-3-b.dts	2020-05-25 17:34:01.000000000 -0700
++++ u-boot-v2020.07-rc3/arch/arm/dts/bcm2837-rpi-3-b.dts	2020-06-24 23:40:25.178428381 -0700
+@@ -144,6 +144,8 @@
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_gpio14>;
++	/* Todd - enable_uart=1 enforces VCPU 250MHz */
++	clock = <250000000>;  
+ 	status = "okay";
+ };
+ 
+diff -uNr u-boot-v2020.07-rc3-original/board/raspberrypi/rpi/rpi.c u-boot-v2020.07-rc3/board/raspberrypi/rpi/rpi.c
+--- u-boot-v2020.07-rc3-original/board/raspberrypi/rpi/rpi.c	2020-05-25 17:34:01.000000000 -0700
++++ u-boot-v2020.07-rc3/board/raspberrypi/rpi/rpi.c	2020-06-24 23:40:26.078429055 -0700
+@@ -480,12 +480,14 @@
+ 
+ int ft_board_setup(void *blob, bd_t *bd)
+ {
++#ifdef CONFIG_LCD_DT_SIMPLEFB
+ 	/*
+ 	 * For now, we simply always add the simplefb DT node. Later, we
+ 	 * should be more intelligent, and e.g. only do this if no enabled DT
+ 	 * node exists for the "real" graphics driver.
+ 	 */
+ 	lcd_dt_simplefb_add_node(blob);
++#endif
+ 
+ #ifdef CONFIG_EFI_LOADER
+ 	/* Reserve the spin table */
+diff -uNr u-boot-v2020.07-rc3-original/drivers/serial/serial_bcm283x_mu.c u-boot-v2020.07-rc3/drivers/serial/serial_bcm283x_mu.c
+--- u-boot-v2020.07-rc3-original/drivers/serial/serial_bcm283x_mu.c	2020-05-25 17:34:01.000000000 -0700
++++ u-boot-v2020.07-rc3/drivers/serial/serial_bcm283x_mu.c	2020-06-24 23:40:25.754428812 -0700
+@@ -47,6 +47,25 @@
+ #define BCM283X_MU_LSR_TX_EMPTY		BIT(5)
+ #define BCM283X_MU_LSR_RX_READY		BIT(0)
+ 
++/*
++ * BCM2837 Mini UART depends on H/W board discrepancy. 
++ *
++ */
++/* #define SERIAL_FORCE_DEBUGGING */
++
++#ifdef SERIAL_FORCE_DEBUGGING
++#include <linux/delay.h>
++	/* Direct register access */
++	#define PBASE 0x3F000000
++
++	#define GPFSEL1      (PBASE+0x00200004)
++	#define GPSET0       (PBASE+0x0020001C)
++	#define GPCLR0       (PBASE+0x00200028)
++	#define GPPUD        (PBASE+0x00200094)
++	#define GPPUDCLK0    (PBASE+0x00200098)
++	#define AUXEN        (PBASE+0x00215004)
++#endif /* SERIAL_FORCE_DEBUGGING */
++
+ struct bcm283x_mu_priv {
+ 	struct bcm283x_mu_regs *regs;
+ };
+@@ -65,8 +84,19 @@
+ 
+ 	divider = plat->clock / (baudrate * 8);
+ 
++#ifdef SERIAL_FORCE_DEBUGGING
++	writel(1, AUXEN); /* enable */
++	mdelay(10);
++
++	writel(0, &regs->cntl); /* all disable */
++	writel(0, &regs->ier);
++	writel(0, &regs->mcr);
++#endif
+ 	writel(BCM283X_MU_LCR_DATA_SIZE_8, &regs->lcr);
+ 	writel(divider - 1, &regs->baud);
++#ifdef SERIAL_FORCE_DEBUGGING
++	writel(3, &regs->cntl); /* transmitter/receiver enable */
++#endif
+ 
+ out:
+ 	/* Flush the RX queue - all data in there is bogus */
+@@ -162,6 +192,29 @@
+ 	struct bcm283x_mu_priv *priv = dev_get_priv(dev);
+ 	fdt_addr_t addr;
+ 
++#ifdef SERIAL_FORCE_DEBUGGING
++	{
++		int val;
++
++		writel(0,AUXEN); /* disable */
++		mdelay(150);
++
++		val = readl(GPFSEL1);
++		val &= ~(7<<12);      // clean gpio14
++		val |= 2<<12;         // set alt5 for gpio14
++		val &= ~(7<<15);      // clean gpio15
++		val |= 2<<15;         // set alt5 for gpio15
++		writel(val,GPFSEL1);
++	
++		writel(0,GPPUD);
++		mdelay(150);
++		writel(((1<<14)|(1<<15)),GPPUDCLK0);
++		mdelay(150);
++		writel(0,GPPUDCLK0);
++
++	}
++#endif
++
+ 	/* Don't spawn the device if it's not muxed */
+ 	if (!bcm283x_is_serial_muxed())
+ 		return -ENODEV;
+@@ -182,7 +235,11 @@
+ 	 * TODO: Reinitialization doesn't always work for now, just skip
+ 	 *       init always - we know we're already initialized
+ 	 */
++#ifndef SERIAL_FORCE_DEBUGGING
+ 	plat->skip_init = true;
++#else
++	plat->skip_init = false; /* Initialization happens */
++#endif  /* SERIAL_FORCE_DEBUGGING */
+ 
+ 	priv->regs = (struct bcm283x_mu_regs *)plat->base;
+ 
+diff -uNr u-boot-v2020.07-rc3-original/include/configs/rpi.h u-boot-v2020.07-rc3/include/configs/rpi.h
+--- u-boot-v2020.07-rc3-original/include/configs/rpi.h	2020-05-25 17:34:01.000000000 -0700
++++ u-boot-v2020.07-rc3/include/configs/rpi.h	2020-06-24 23:40:26.298429221 -0700
+@@ -65,8 +65,11 @@
+ /* GPIO */
+ #define CONFIG_BCM2835_GPIO
+ /* LCD */
++#if 0
++/* Todd - LCD/VIDEO are not required */
+ #define CONFIG_LCD_DT_SIMPLEFB
+ #define CONFIG_VIDEO_BCM2835
++#endif
+ 
+ #ifdef CONFIG_CMD_USB
+ #define CONFIG_TFTP_TSIZE
+@@ -104,11 +107,19 @@
+ #define CONFIG_CMDLINE_TAG
+ #define CONFIG_INITRD_TAG
+ 
++#if 0
++/* Todd - Only serial debugging */
+ /* Environment */
+ #define ENV_DEVICE_SETTINGS \
+ 	"stdin=serial,usbkbd\0" \
+ 	"stdout=serial,vidconsole\0" \
+ 	"stderr=serial,vidconsole\0"
++#else
++#define ENV_DEVICE_SETTINGS \
++	"stdin=serial\0" \
++	"stdout=serial\0" \
++	"stderr=serial\0"
++#endif
+ 
+ #ifdef CONFIG_ARM64
+ #define FDT_HIGH "ffffffffffffffff"
+@@ -200,6 +211,8 @@
+ 	BOOT_TARGET_PXE(func) \
+ 	BOOT_TARGET_DHCP(func)
+ 
++#if 0
++/* Todd - Too big... */
+ #include <config_distro_bootcmd.h>
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+@@ -208,6 +221,13 @@
+ 	ENV_DFU_SETTINGS \
+ 	ENV_MEM_LAYOUT_SETTINGS \
+ 	BOOTENV
++#else
+ 
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	ENV_DEVICE_SETTINGS \
++	ENV_DFU_SETTINGS \
++	ENV_MEM_LAYOUT_SETTINGS
++
++#endif
+ 
+ #endif

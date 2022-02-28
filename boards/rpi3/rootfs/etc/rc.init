@@ -1,0 +1,109 @@
+#!/bin/sh
+
+## mount file systems 
+mount -t proc   proc   /proc
+mount -t tmpfs  ram    /var  -o size=512m
+mount -t sysfs  sys    /sys
+
+## basic..
+mkdir /var/config/ /var/db/ /var/tmp /var/log /var/run /var/lock /var/empty
+
+## extern..
+mkdir /var/tmp/tmp 
+mkdir /var/share
+mkdir /var/tmp/root
+mkdir /var/tmp/home
+mkdir /var/tmp/home/tmp
+
+## PTS...
+mkdir /dev/pts
+mount -t devpts devpts  /dev/pts
+
+##
+## Export Libraries...
+##
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib
+
+##
+## Export Path....
+##
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+## resolv.conf - name server
+touch /var/tmp/resolv.conf
+
+## mtab - mount tab
+touch /var/tmp/mtab
+
+## fstab - file system tab 
+touch /var/tmp/fstab
+
+## password file
+touch /var/tmp/passwd
+
+## group file
+touch /var/tmp/group
+
+## shadow file
+touch /var/tmp/shadow
+
+## issue file - telnetd
+touch /var/tmp/issue
+
+## lo interface
+ifconfig lo up
+
+## group file for root 
+echo "root:x:0:" > /etc/group
+
+## register root user
+echo "root:x:0:0:root:/root:/bin/sh" > /etc/passwd
+
+## shadow file for password 
+echo "root:*:16897:0:99999:7:::" > /etc/shadow
+
+## password 
+echo "root:" | chpasswd
+
+DATEVAL="2019.08.01-12:00:00"
+date $DATEVAL
+
+echo ""
+echo ""
+echo "ROOT PARTITION ..."
+echo ""
+echo ""
+mount /dev/mmcblk0p5 /root
+
+echo ""
+echo ""
+echo "INIT FILE STARTS ..."
+echo ""
+echo ""
+cnt=0
+while true 
+do
+	[ "$cnt" -ne "99" ] || break
+	prefix=`printf %02d $cnt`
+	[ ! -f /etc/rc.d/r$prefix.sys ] || /etc/rc.d/r$prefix.sys start 
+	cnt=`expr $cnt + 1`
+done
+
+echo ""
+echo ""
+echo "CONSOLE ..."
+echo ""
+echo ""
+##export COLUMNS=512
+
+sleep 1
+
+cat /etc/motd
+
+##
+## Never stop interactive shell....
+##
+while true; do \
+	/sbin/getty -l /bin/bash -n 0 ttyS0; \
+	echo "Running again...."
+done

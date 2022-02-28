@@ -1,0 +1,32 @@
+diff -uNr pkg-config-0.29.1-original/glib/configure pkg-config-0.29.1/glib/configure
+--- pkg-config-0.29.1-original/glib/configure	2016-03-01 11:43:22.000000000 -0800
++++ pkg-config-0.29.1/glib/configure	2019-10-28 21:20:27.598035432 -0700
+@@ -1390,6 +1390,9 @@
+   fi
+ fi
+ 
++##
++cross_compiling=maybe
++
+ ac_tool_prefix=
+ test -n "$host_alias" && ac_tool_prefix=$host_alias-
+ 
+diff -uNr pkg-config-0.29.1-original/glib/glib/gdate.c pkg-config-0.29.1/glib/glib/gdate.c
+--- pkg-config-0.29.1-original/glib/glib/gdate.c	2016-01-24 13:51:38.000000000 -0800
++++ pkg-config-0.29.1/glib/glib/gdate.c	2019-10-28 21:27:00.736913560 -0700
+@@ -2416,6 +2416,9 @@
+ 
+ #endif
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wformat-nonliteral"
++
+ /**
+  * g_date_strftime:
+  * @s: destination buffer
+@@ -2549,3 +2552,5 @@
+   return retval;
+ #endif
+ }
++
++#pragma GCC diagnostic pop

@@ -1,0 +1,14 @@
+diff -uNr automake-1.14-orig/Makefile.in automake-1.14/Makefile.in
+--- automake-1.14-orig/Makefile.in	2013-06-20 04:37:56.000000000 -0700
++++ automake-1.14/Makefile.in	2019-10-18 07:58:36.895577089 -0700
+@@ -691,7 +691,9 @@
+ info_TEXINFOS = doc/automake.texi doc/automake-history.texi
+ doc_automake_TEXINFOS = doc/fdl.texi
+ doc_automake_history_TEXINFOS = doc/fdl.texi
+-man1_MANS = \
++## No manual
++man1_MANS = 
++man1_MANS_ORIG = \
+   doc/aclocal.1 \
+   doc/automake.1 \
+   doc/aclocal-$(APIVERSION).1 \

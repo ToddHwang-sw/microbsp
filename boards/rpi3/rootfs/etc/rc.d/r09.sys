@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. /boot/conf.sys
+
+case $1 in
+	"start")
+		[ "$USEAP" = "1" ] || exit 0
+
+		echo [IPV6] START .....
+		/etc/scripts/dhcpc6.sh start wlan0
+		sleep 1
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		ifconfig -a
+		echo ""
+		echo ""
+		cat /etc/resolv.conf
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		/etc/scripts/radvd.sh start br0
+		;;
+	"stop")
+		echo [IPV6] STOPPING.... 
+		/etc/scripts/radvd.sh stop br0
+		/etc/scripts/dhcpc6.sh stop wlan0
+		;;
+	"*")
+		;;
+esac
+
+

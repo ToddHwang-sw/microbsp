@@ -1,0 +1,151 @@
+diff --git a/gst/gstregistrychunks.c b/gst/gstregistrychunks.c
+index b352c4578..d6c524e95 100644
+--- a/gst/gstregistrychunks.c
++++ b/gst/gstregistrychunks.c
+@@ -95,7 +95,7 @@ _strnlen (const gchar * str, gint maxlen)
+   gint _len = _strnlen (inptr, (endptr-inptr)); \
+   if (_len == -1) \
+     goto error_label; \
+-  outptr = g_memdup ((gconstpointer)inptr, _len + 1); \
++  outptr = g_memdup2 ((gconstpointer)inptr, _len + 1); \
+   inptr += _len + 1; \
+ }G_STMT_END
+ 
+diff --git a/libs/gst/base/gstbitwriter.c b/libs/gst/base/gstbitwriter.c
+index 20fec16c5..da3e2f979 100644
+--- a/libs/gst/base/gstbitwriter.c
++++ b/libs/gst/base/gstbitwriter.c
+@@ -200,7 +200,7 @@ gst_bit_writer_reset_and_get_data (GstBitWriter * bitwriter)
+ 
+   data = bitwriter->data;
+   if (bitwriter->owned)
+-    data = g_memdup (data, GST_ROUND_UP_8 (bitwriter->bit_size) >> 3);
++    data = g_memdup2 (data, GST_ROUND_UP_8 (bitwriter->bit_size) >> 3);
+   gst_bit_writer_reset (bitwriter);
+ 
+   return data;
+@@ -235,7 +235,7 @@ gst_bit_writer_reset_and_get_buffer (GstBitWriter * bitwriter)
+   /* we cannot rely on buffers allocated externally, thus let's dup
+    * the data */
+   if (data && !owned)
+-    data = g_memdup (data, size);
++    data = g_memdup2 (data, size);
+ 
+   buffer = gst_buffer_new ();
+   if (data != NULL) {
+diff --git a/libs/gst/base/gstbytereader.c b/libs/gst/base/gstbytereader.c
+index e9c2ec0dd..5decc091d 100644
+--- a/libs/gst/base/gstbytereader.c
++++ b/libs/gst/base/gstbytereader.c
+@@ -1222,7 +1222,7 @@ gst_byte_reader_dup_string_utf##bits (GstByteReader * reader, type ** str) \
+     *str = NULL; \
+     return FALSE; \
+   } \
+-  *str = g_memdup (reader->data + reader->byte, size); \
++  *str = g_memdup2 (reader->data + reader->byte, size); \
+   reader->byte += size; \
+   return TRUE; \
+ }
+diff --git a/libs/gst/base/gstbytereader.h b/libs/gst/base/gstbytereader.h
+index b988739a6..66db88485 100644
+--- a/libs/gst/base/gstbytereader.h
++++ b/libs/gst/base/gstbytereader.h
+@@ -362,7 +362,7 @@ static inline guint8 *
+ gst_byte_reader_dup_data_unchecked (GstByteReader * reader, guint size)
+ {
+   gconstpointer data = gst_byte_reader_get_data_unchecked (reader, size);
+-  return (guint8 *) g_memdup (data, size);
++  return (guint8 *) g_memdup2 (data, size);
+ }
+ 
+ /* Unchecked variants that should not be used */
+diff --git a/libs/gst/base/gstbytewriter.c b/libs/gst/base/gstbytewriter.c
+index 335f22f5b..e958badb2 100644
+--- a/libs/gst/base/gstbytewriter.c
++++ b/libs/gst/base/gstbytewriter.c
+@@ -236,7 +236,7 @@ gst_byte_writer_reset_and_get_data (GstByteWriter * writer)
+ 
+   data = (guint8 *) writer->parent.data;
+   if (!writer->owned)
+-    data = g_memdup (data, writer->parent.size);
++    data = g_memdup2 (data, writer->parent.size);
+   writer->parent.data = NULL;
+   gst_byte_writer_reset (writer);
+ 
+diff --git a/libs/gst/base/gstindex.c b/libs/gst/base/gstindex.c
+index d54e0feee..83fb584bb 100644
+--- a/libs/gst/base/gstindex.c
++++ b/libs/gst/base/gstindex.c
+@@ -798,7 +798,7 @@ gst_index_add_associationv (GstIndex * index, gint id,
+   entry->type = GST_INDEX_ENTRY_ASSOCIATION;
+   entry->id = id;
+   entry->data.assoc.flags = flags;
+-  entry->data.assoc.assocs = g_memdup (list, sizeof (GstIndexAssociation) * n);
++  entry->data.assoc.assocs = g_memdup2 (list, sizeof (GstIndexAssociation) * n);
+   entry->data.assoc.nassocs = n;
+ 
+   gst_index_add_entry (index, entry);
+diff --git a/meson.build b/meson.build
+index 2883828a4..8f7d359f5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -236,9 +236,10 @@ check_functions = [
+   'getline',
+   'mkstemp',
+   'alarm',
+-  'gettimeofday',
+ ]
+ 
++cdata.set('HAVE_GETTIMEOFDAY',1)
++
+ foreach f : check_functions
+   if cc.has_function(f)
+     define = 'HAVE_' + f.underscorify().to_upper()
+diff --git a/tests/check/libs/bitwriter.c b/tests/check/libs/bitwriter.c
+index a9feb23f9..2333a472e 100644
+--- a/tests/check/libs/bitwriter.c
++++ b/tests/check/libs/bitwriter.c
+@@ -76,7 +76,7 @@ GST_START_TEST (test_data)
+   fail_unless (gst_bit_writer_put_bits_uint64 (&writer, 0x45, 48));
+   fail_unless_equals_int (gst_bit_writer_get_remaining (&writer), 2048 - 71);
+   fail_unless (gst_bit_writer_align_bytes (&writer, 0));
+-  data = g_memdup (sdata, sizeof (sdata));
++  data = g_memdup2 (sdata, sizeof (sdata));
+   fail_unless (gst_bit_writer_put_bytes (&writer, data, sizeof (sdata)));
+ 
+   gst_bit_reader_init (&reader, gst_bit_writer_get_data (&writer), 256);
+diff --git a/tests/check/libs/bytereader.c b/tests/check/libs/bytereader.c
+index 24a29714d..0d20b304b 100644
+--- a/tests/check/libs/bytereader.c
++++ b/tests/check/libs/bytereader.c
+@@ -574,7 +574,7 @@ GST_START_TEST (test_scan)
+     gint found;
+ 
+     /* dup so valgrind can detect out of bounds access more easily */
+-    m = g_memdup (sync_data, sizeof (sync_data));
++    m = g_memdup2 (sync_data, sizeof (sync_data));
+     gst_byte_reader_init (&reader, m, sizeof (sync_data));
+ 
+     found = gst_byte_reader_masked_scan_uint32_peek (&reader, 0xffffff00,
+diff --git a/tests/check/libs/bytewriter.c b/tests/check/libs/bytewriter.c
+index 89999af79..988039e2d 100644
+--- a/tests/check/libs/bytewriter.c
++++ b/tests/check/libs/bytewriter.c
+@@ -42,7 +42,7 @@ GST_START_TEST (test_initialization)
+           (&writer)), 0);
+   gst_byte_writer_reset (&writer);
+ 
+-  data = g_memdup (sdata, sizeof (sdata));
++  data = g_memdup2 (sdata, sizeof (sdata));
+   gst_byte_writer_init_with_data (&writer, data, sizeof (sdata), FALSE);
+   fail_unless_equals_int (gst_byte_writer_get_pos (&writer), 0);
+   fail_unless_equals_int (gst_byte_writer_get_size (&writer), 0);
+@@ -56,7 +56,7 @@ GST_START_TEST (test_initialization)
+   g_free (data);
+   data = tmp = NULL;
+ 
+-  data = g_memdup (sdata, sizeof (sdata));
++  data = g_memdup2 (sdata, sizeof (sdata));
+   gst_byte_writer_init_with_data (&writer, data, sizeof (sdata), TRUE);
+   fail_unless_equals_int (gst_byte_writer_get_pos (&writer), 0);
+   fail_unless_equals_int (gst_byte_writer_get_size (&writer), sizeof (sdata));

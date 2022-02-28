@@ -1,0 +1,11 @@
+status
+load source/json/1.json
+load source/json/9.json
+##dbg
+delete 0 1 loose
+purge 0  
+print 0
+add 0 1
+print 0
+tree 0 12
+status

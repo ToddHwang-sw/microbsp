@@ -1,0 +1,12 @@
+diff --git a/meson.build b/meson.build
+index e8fac63..d82aa2a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -91,6 +91,6 @@ configinc = include_directories('.')
+ 
+ subdir('gi')
+ subdir('plugin')
+-subdir('testsuite')
++##subdir('testsuite')
+ 
+ run_command(python, '-c', 'import shutil; shutil.copy("hooks/pre-commit.hook", ".git/hooks/pre-commit")')

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+case $1 in 
+	"start")
+		echo "Syslog Daemon"
+		syslogd -s 10240 -b 0 -l 8 -O /var/log/messages
+		klogd
+
+		echo "TELNET daemon"
+		telnetd 
+
+		echo "BOOT Partition"
+		mount /dev/mmcblk0p1 /boot
+
+		## Python environment 
+		[ ! -f /bin/python_env.sh ] || ( \
+			/bin/python_env.sh / ; \
+			echo "Python !!" )
+
+		## GIT
+		[ ! -f /bin/git ] || git config --global http.sslVerify false
+		;;
+	"stop")
+		sync
+		sync
+		sync
+		umount /boot
+
+		killall syslog klogd telned
+		;;
+esac
+

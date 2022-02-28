@@ -1,0 +1,20 @@
+#!/bin/sh
+
+. /boot/conf.sys
+
+case $1 in
+	"start")
+		echo "[WLAN] RTK Loading modules..."
+		modprobe $RTKDRV
+
+		/etc/scripts/wlan_sta.sh start
+		;;
+	"stop")
+		echo "[WLAN] RTK Unloading modules..."
+		/etc/scripts/wlan_sta.sh stop
+
+		rmmod $RTKDRV
+		;;
+	"*")
+		;;
+esac

@@ -1,0 +1,43 @@
+diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
+--- linux-pam-original/configure.ac	2021-12-29 20:35:22.235798910 -0800
++++ linux-pam/configure.ac	2021-12-29 20:37:12.913925536 -0800
+@@ -38,22 +38,14 @@
+         then
+                 sbindir="/sbin"
+         fi
++
+ dnl If we use /usr as prefix, use /usr/share/man for manual pages
+-        if test ${mandir} = '${prefix}/man'
+-        then
+-                mandir='${prefix}/share/man'
+-        fi
++	mandir='${prefix}/share/man'
+ dnl Add security to include directory
+-	if test ${includedir} = '${prefix}/include'
+-	then
+-		includedir="${prefix}/include/security"
+-	fi
++	includedir="${prefix}/include/security"
+ 
+ dnl Add /var directory
+-        if test ${localstatedir} = '${prefix}/var'
+-        then
+-                localstatedir="/var"
+-        fi
++        ${localstatedir} = '${prefix}/var'
+ 
+ fi
+ 
+diff -uNr linux-pam-original/Makefile.am linux-pam/Makefile.am
+--- linux-pam-original/Makefile.am	2021-12-29 20:35:22.235798910 -0800
++++ linux-pam/Makefile.am	2021-12-29 20:36:29.866598713 -0800
+@@ -4,7 +4,8 @@
+ 
+ AUTOMAKE_OPTIONS = 1.9 gnu dist-xz no-dist-gzip check-news
+ 
+-SUBDIRS = libpam tests libpamc libpam_misc modules po conf examples xtests
++##SUBDIRS = libpam tests libpamc libpam_misc modules po conf examples xtests
++SUBDIRS = libpam libpamc libpam_misc modules po conf 
+ 
+ if HAVE_DOC
+ SUBDIRS += doc

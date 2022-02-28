@@ -1,0 +1,12 @@
+diff -uNr iproute2-5.4.0-source/misc/lnstat.h iproute2-5.4.0/misc/lnstat.h
+--- iproute2-5.4.0-source/misc/lnstat.h	2019-11-25 08:07:24.000000000 -0800
++++ iproute2-5.4.0/misc/lnstat.h	2020-07-17 17:46:58.928715366 -0700
+@@ -2,7 +2,7 @@
+ #ifndef _LNSTAT_H
+ #define _LNSTAT_H
+ 
+-#include <limits.h>
++#include <linux/limits.h>
+ #include <sys/select.h>
+ 
+ #define LNSTAT_VERSION "0.02 041002"

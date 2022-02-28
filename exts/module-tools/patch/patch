@@ -1,0 +1,48 @@
+diff -uNr module-init-tools-3.15-original/Makefile.am module-init-tools-3.15/Makefile.am
+--- module-init-tools-3.15-original/Makefile.am	2011-06-02 10:40:46.000000000 -0700
++++ module-init-tools-3.15/Makefile.am	2020-10-06 22:10:27.878304842 -0700
+@@ -40,13 +40,15 @@
+ 	modules.dep.5 modules.dep.bin.5
+ MAN8 = depmod.8 insmod.8 lsmod.8 rmmod.8 modprobe.8 modinfo.8
+ SGML = $(addprefix doc/,  $(MAN5:%.5=%.sgml) $(MAN8:%.8=%.sgml))
+-dist_man_MANS = $(MAN5) $(MAN8)
++## dist_man_MANS = $(MAN5) $(MAN8)
++dist_man_MANS = 
+ # If they haven't overridden mandir, fix it (never /man!)
+ mandir =$(shell if [ @mandir@ = $(prefix)/man ]; then if [ $(prefix) = / ]; then echo /usr/share/man; else echo $(prefix)/share/man; fi; else echo @mandir@; fi)
+ 
+ TESTSUITE := $(shell test -e @srcdir@/tests && find @srcdir@/tests -type f ! -name '*~')
+ 
+-EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care $(SGML) $(man_MANS) $(TESTSUITE)
++##EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care $(SGML) $(man_MANS) $(TESTSUITE)
++EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care
+ 
+ sbin_PROGRAMS = insmod modprobe rmmod depmod modinfo
+ if BUILD_STATIC_UTILS
+diff -uNr module-init-tools-3.15-original/Makefile.in module-init-tools-3.15/Makefile.in
+--- module-init-tools-3.15-original/Makefile.in	2011-06-02 10:43:15.000000000 -0700
++++ module-init-tools-3.15/Makefile.in	2020-10-06 22:12:09.406718413 -0700
+@@ -150,7 +150,8 @@
+ MANS = $(dist_man_MANS)
+ ETAGS = etags
+ CTAGS = ctags
+-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
++## DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
++DISTFILES = $(DIST_COMMON) $(EXTRA_DIST)
+ distdir = $(PACKAGE)-$(VERSION)
+ top_distdir = $(distdir)
+ am__remove_distdir = \
+@@ -300,9 +301,11 @@
+ 
+ MAN8 = depmod.8 insmod.8 lsmod.8 rmmod.8 modprobe.8 modinfo.8
+ SGML = $(addprefix doc/,  $(MAN5:%.5=%.sgml) $(MAN8:%.8=%.sgml))
+-dist_man_MANS = $(MAN5) $(MAN8)
++## dist_man_MANS = $(MAN5) $(MAN8)
++dist_man_MANS = 
+ TESTSUITE := $(shell test -e @srcdir@/tests && find @srcdir@/tests -type f ! -name '*~')
+-EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care $(SGML) $(man_MANS) $(TESTSUITE)
++## EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care $(SGML) $(man_MANS) $(TESTSUITE)
++EXTRA_DIST = generate-modprobe.conf FAQ CODING stress_modules.sh install-with-care
+ noinst_LIBRARIES = libmodtools.a
+ DIST_DIR := /data/work/releases/module-init-tools/
+ GIT_RELEASE_REMOTE := origin

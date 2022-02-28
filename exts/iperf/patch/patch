@@ -1,0 +1,36 @@
+diff -uNr iperf-2.0.5-origin/include/headers.h iperf-2.0.5/include/headers.h
+--- iperf-2.0.5-origin/include/headers.h	2008-03-12 13:28:21.000000000 -0700
++++ iperf-2.0.5/include/headers.h	2019-08-15 23:16:17.571846832 -0700
+@@ -82,7 +82,7 @@
+ #include <errno.h>
+ #include <string.h>
+ #include <time.h>
+-#include <math.h>
++/* #include <math.h> */
+ 
+ #ifdef WIN32
+ 
+diff -uNr iperf-2.0.5-origin/compat/signal.c iperf-2.0.5/compat/signal.c
+--- iperf-2.0.5-origin/compat/signal.c	2007-08-29 14:57:27.000000000 -0700
++++ iperf-2.0.5/compat/signal.c	2019-08-16 17:07:55.985489398 -0700
+@@ -171,7 +171,7 @@
+     static int num = 0;
+     if ( num++ == 0 ) {
+         fflush( 0 );
+-        exit( 0 );
++        _exit( 0 );
+     }
+ } /* end sig_exit */
+ 
+diff -uNr iperf-2.0.5-origin/src/main.cpp iperf-2.0.5/src/main.cpp
+--- iperf-2.0.5-origin/src/main.cpp	2019-07-17 08:32:37.000000000 -0700
++++ iperf-2.0.5/src/main.cpp	2019-08-16 17:07:19.765516217 -0700
+@@ -303,7 +303,7 @@
+     // We try to not allow a single interrupt handled by multiple threads
+     // to completely kill the app so we save off the first thread ID
+     // then that is the only thread that can supply the next interrupt
+-    if ( thread_equalid( sThread, thread_zeroid() ) ) {
++    if ( (inSigno == SIGINT) && thread_equalid( sThread, thread_zeroid() ) ) {
+         sThread = thread_getid();
+     } else if ( thread_equalid( sThread, thread_getid() ) ) {
+         sig_exit( inSigno );

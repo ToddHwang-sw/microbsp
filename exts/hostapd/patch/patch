@@ -1,0 +1,206 @@
+diff -uNr hostapd-2.9-original/src/ap/Makefile hostapd-2.9/src/ap/Makefile
+--- hostapd-2.9-original/src/ap/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/ap/Makefile	2020-07-07 11:11:58.824303934 -0700
+@@ -71,6 +71,8 @@
+ 	x_snoop.o
+ 
+ libap.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/common/Makefile hostapd-2.9/src/common/Makefile
+--- hostapd-2.9-original/src/common/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/common/Makefile	2020-07-07 11:17:51.719432334 -0700
+@@ -23,6 +23,8 @@
+ 	wpa_common.o
+ 
+ libcommon.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/crypto/Makefile hostapd-2.9/src/crypto/Makefile
+--- hostapd-2.9-original/src/crypto/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/crypto/Makefile	2020-07-07 12:02:19.201376134 -0700
+@@ -1,7 +1,7 @@
+-all: libcrypto.a
++all: libWcrypto.a
+ 
+ clean:
+-	rm -f *~ *.o *.d *.gcno *.gcda *.gcov libcrypto.a
++	rm -f *~ *.o *.d *.gcno *.gcda *.gcov libWcrypto.a
+ 
+ install:
+ 	@echo Nothing to be made.
+@@ -67,7 +67,9 @@
+ endif
+ 
+ 
+-libcrypto.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++libWcrypto.a: $(LIB_OBJS)
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/eap_common/Makefile hostapd-2.9/src/eap_common/Makefile
+--- hostapd-2.9-original/src/eap_common/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/eap_common/Makefile	2020-07-07 11:15:57.606432013 -0700
+@@ -26,6 +26,8 @@
+ 	ikev2_common.o
+ 
+ libeap_common.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/eapol_auth/Makefile hostapd-2.9/src/eapol_auth/Makefile
+--- hostapd-2.9-original/src/eapol_auth/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/eapol_auth/Makefile	2020-07-07 11:18:15.763642038 -0700
+@@ -11,6 +11,8 @@
+ LIB_OBJS = eapol_auth_sm.o eapol_auth_dump.o
+ 
+ libeapol_auth.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/eapol_supp/Makefile hostapd-2.9/src/eapol_supp/Makefile
+--- hostapd-2.9-original/src/eapol_supp/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/eapol_supp/Makefile	2020-07-07 11:18:05.951556500 -0700
+@@ -13,6 +13,8 @@
+ LIB_OBJS = eapol_supp_sm.o
+ 
+ libeapol_supp.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/eap_peer/Makefile hostapd-2.9/src/eap_peer/Makefile
+--- hostapd-2.9-original/src/eap_peer/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/eap_peer/Makefile	2020-07-07 11:18:25.863730027 -0700
+@@ -18,6 +18,8 @@
+ 	eap_methods.o
+ 
+ libeap_peer.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/eap_server/Makefile hostapd-2.9/src/eap_server/Makefile
+--- hostapd-2.9-original/src/eap_server/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/eap_server/Makefile	2020-07-07 11:16:34.738758502 -0700
+@@ -16,6 +16,8 @@
+ 	eap_server_methods.o
+ 
+ libeap_server.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/l2_packet/Makefile hostapd-2.9/src/l2_packet/Makefile
+--- hostapd-2.9-original/src/l2_packet/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/l2_packet/Makefile	2020-07-07 11:15:43.802310376 -0700
+@@ -11,6 +11,8 @@
+ LIB_OBJS = l2_packet_linux.o
+ 
+ libl2_packet.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/p2p/Makefile hostapd-2.9/src/p2p/Makefile
+--- hostapd-2.9-original/src/p2p/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/p2p/Makefile	2020-07-07 11:16:08.530528165 -0700
+@@ -24,6 +24,8 @@
+ 	p2p_utils.o
+ 
+ libp2p.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/radius/Makefile hostapd-2.9/src/radius/Makefile
+--- hostapd-2.9-original/src/radius/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/radius/Makefile	2020-07-07 11:11:48.308208840 -0700
+@@ -18,6 +18,7 @@
+ 	radius_server.o
+ 
+ libradius.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/rsn_supp/Makefile hostapd-2.9/src/rsn_supp/Makefile
+--- hostapd-2.9-original/src/rsn_supp/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/rsn_supp/Makefile	2020-07-07 11:16:56.522949576 -0700
+@@ -23,6 +23,8 @@
+ 	wpa_ie.o
+ 
+ librsn_supp.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/tls/Makefile hostapd-2.9/src/tls/Makefile
+--- hostapd-2.9-original/src/tls/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/tls/Makefile	2020-07-07 11:16:21.330640718 -0700
+@@ -35,6 +35,8 @@
+ 
+ 
+ libtls.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/utils/Makefile hostapd-2.9/src/utils/Makefile
+--- hostapd-2.9-original/src/utils/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/utils/Makefile	2020-07-07 11:17:39.751327825 -0700
+@@ -38,6 +38,8 @@
+ #LIB_OBJS += pcsc_funcs.o
+ 
+ libutils.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)
+diff -uNr hostapd-2.9-original/src/wps/Makefile hostapd-2.9/src/wps/Makefile
+--- hostapd-2.9-original/src/wps/Makefile	2019-08-07 06:25:25.000000000 -0700
++++ hostapd-2.9/src/wps/Makefile	2020-07-07 11:18:36.507822692 -0700
+@@ -36,6 +36,8 @@
+ 	wps_upnp_web.o
+ 
+ libwps.a: $(LIB_OBJS)
+-	$(AR) crT $@ $?
++	$(AR) cruv $@ $?
++	$(RANLIB) $@
++
+ 
+ -include $(OBJS:%.o=%.d)

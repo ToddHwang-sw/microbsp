@@ -1,0 +1,42 @@
+diff --git a/meson.build b/meson.build
+index e7fc3ee..3802bf5 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2,7 +2,7 @@ project(
+ 	'wayland', 'c',
+ 	version: '1.20.90',
+ 	license: 'MIT',
+-	meson_version: '>= 0.56.0',
++	meson_version: '>= 0.50.0',
+ 	default_options: [
+ 		'warning_level=2',
+ 		'buildtype=debugoptimized',
+diff --git a/src/meson.build b/src/meson.build
+index ae8f387..c4d3d6d 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -70,8 +70,9 @@ if get_option('scanner')
+ endif
+ 
+ if meson.is_cross_build() or not get_option('scanner')
+-	scanner_dep = dependency('wayland-scanner', native: true, version: meson.project_version())
+-	wayland_scanner_for_build = find_program(scanner_dep.get_pkgconfig_variable('wayland_scanner'))
++	##scanner_dep = dependency('wayland-scanner', native: true, version: meson.project_version())
++	scanner_dep = dependency('wayland-scanner-host', version: meson.project_version())
++	wayland_scanner_for_build = find_program(scanner_dep.get_pkgconfig_variable('wayland_scanner_host'))
+ else
+ 	wayland_scanner_for_build = wayland_scanner
+ endif
+diff --git a/wayland-scanner.m4 b/wayland-scanner.m4
+index 2b222e8..d9aaec0 100644
+--- a/wayland-scanner.m4
++++ b/wayland-scanner.m4
+@@ -1,7 +1,7 @@
+ AC_DEFUN([WAYLAND_SCANNER_RULES], [
+     PKG_PROG_PKG_CONFIG
+ 
+-    PKG_CHECK_MODULES([WAYLAND_SCANNER], [wayland-scanner >= 1.14.0])
++    ### PKG_CHECK_MODULES([WAYLAND_SCANNER], [wayland-scanner >= 1.14.0])
+ 
+     wayland_scanner=`$PKG_CONFIG --variable=wayland_scanner wayland-scanner`
+     AC_SUBST([wayland_scanner])

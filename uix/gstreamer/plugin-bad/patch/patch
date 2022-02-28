@@ -1,0 +1,665 @@
+diff --git a/ext/aom/gstav1enc.c b/ext/aom/gstav1enc.c
+index 049460bf8..2ca257935 100644
+--- a/ext/aom/gstav1enc.c
++++ b/ext/aom/gstav1enc.c
+@@ -752,7 +752,7 @@ gst_av1_enc_process (GstAV1Enc * encoder)
+       }
+ 
+       frame->output_buffer =
+-          gst_buffer_new_wrapped (g_memdup (pkt->data.frame.buf,
++          gst_buffer_new_wrapped (g_memdup2 (pkt->data.frame.buf,
+               pkt->data.frame.sz), pkt->data.frame.sz);
+ 
+       if ((pkt->data.frame.flags & AOM_FRAME_IS_DROPPABLE) != 0)
+diff --git a/ext/curl/gstcurlbasesink.c b/ext/curl/gstcurlbasesink.c
+index d69fb5a02..4f6b6d47e 100644
+--- a/ext/curl/gstcurlbasesink.c
++++ b/ext/curl/gstcurlbasesink.c
+@@ -1036,7 +1036,7 @@ gst_curl_base_sink_debug_cb (CURL * handle, curl_infotype type, char *data,
+     case CURLINFO_TEXT:
+     case CURLINFO_HEADER_IN:
+     case CURLINFO_HEADER_OUT:
+-      msg = g_memdup (data, size);
++      msg = g_memdup2 (data, size);
+       if (size > 0) {
+         msg[size - 1] = '\0';
+         g_strchomp (msg);
+diff --git a/ext/curl/gstcurlhttpsrc.c b/ext/curl/gstcurlhttpsrc.c
+index 32f447526..bdaa20483 100644
+--- a/ext/curl/gstcurlhttpsrc.c
++++ b/ext/curl/gstcurlhttpsrc.c
+@@ -2124,7 +2124,7 @@ gst_curl_http_src_get_debug (CURL * handle, curl_infotype type, char *data,
+   switch (type) {
+     case CURLINFO_TEXT:
+     case CURLINFO_HEADER_OUT:
+-      msg = g_memdup (data, size);
++      msg = g_memdup2 (data, size);
+       if (size > 0) {
+         msg[size - 1] = '\0';
+         g_strchomp (msg);
+diff --git a/ext/dash/gstdashdemux.c b/ext/dash/gstdashdemux.c
+index 52c7a2715..ed040a092 100644
+--- a/ext/dash/gstdashdemux.c
++++ b/ext/dash/gstdashdemux.c
+@@ -896,7 +896,7 @@ gst_dash_demux_send_content_protection_event (gpointer data, gpointer userdata)
+   schemeIdUri = g_ascii_strdown (cp->schemeIdUri, -1);
+   if (g_str_has_prefix (schemeIdUri, "urn:uuid:")) {
+     pssi_len = strlen (cp->value);
+-    pssi = gst_buffer_new_wrapped (g_memdup (cp->value, pssi_len), pssi_len);
++    pssi = gst_buffer_new_wrapped (g_memdup2 (cp->value, pssi_len), pssi_len);
+     /* RFC 4122 states that the hex part of a UUID is in lower case,
+      * but some streams seem to ignore this and use upper case for the
+      * protection system ID */
+diff --git a/ext/dtls/gstdtlsdec.c b/ext/dtls/gstdtlsdec.c
+index 7b370e26b..d65471907 100644
+--- a/ext/dtls/gstdtlsdec.c
++++ b/ext/dtls/gstdtlsdec.c
+@@ -430,7 +430,7 @@ on_key_received (GstDtlsConnection * connection, gpointer key, guint cipher,
+   self->srtp_cipher = cipher;
+   self->srtp_auth = auth;
+ 
+-  key_dup = g_memdup (key, GST_DTLS_SRTP_MASTER_KEY_LENGTH);
++  key_dup = g_memdup2 (key, GST_DTLS_SRTP_MASTER_KEY_LENGTH);
+ 
+   if (self->decoder_key) {
+     gst_buffer_unref (self->decoder_key);
+diff --git a/ext/dtls/gstdtlsenc.c b/ext/dtls/gstdtlsenc.c
+index e64ee4d6c..fd414e3b8 100644
+--- a/ext/dtls/gstdtlsenc.c
++++ b/ext/dtls/gstdtlsenc.c
+@@ -635,7 +635,7 @@ on_key_received (GstDtlsConnection * connection, gpointer key, guint cipher,
+   self->srtp_cipher = cipher;
+   self->srtp_auth = auth;
+ 
+-  key_dup = g_memdup (key, GST_DTLS_SRTP_MASTER_KEY_LENGTH);
++  key_dup = g_memdup2 (key, GST_DTLS_SRTP_MASTER_KEY_LENGTH);
+ 
+   if (self->encoder_key) {
+     gst_buffer_unref (self->encoder_key);
+@@ -663,7 +663,7 @@ on_send_data (GstDtlsConnection * connection, gconstpointer data, gsize length,
+       self->connection_id, length);
+ 
+   buffer =
+-      data ? gst_buffer_new_wrapped (g_memdup (data, length), length) : NULL;
++      data ? gst_buffer_new_wrapped (g_memdup2 (data, length), length) : NULL;
+ 
+   GST_TRACE_OBJECT (self, "send data: acquiring lock");
+   g_mutex_lock (&self->queue_lock);
+diff --git a/ext/faad/gstfaad.c b/ext/faad/gstfaad.c
+index e7b11334b..fc5cf96bd 100644
+--- a/ext/faad/gstfaad.c
++++ b/ext/faad/gstfaad.c
+@@ -450,7 +450,7 @@ gst_faad_update_caps (GstFaad * faad, faacDecFrameInfo * info)
+   faad->samplerate = info->samplerate;
+   faad->channels = info->channels;
+   g_free (faad->channel_positions);
+-  faad->channel_positions = g_memdup (info->channel_position, faad->channels);
++  faad->channel_positions = g_memdup2 (info->channel_position, faad->channels);
+ 
+   faad->bps = 16 / 8;
+ 
+diff --git a/ext/fdkaac/gstfdkaacenc.c b/ext/fdkaac/gstfdkaacenc.c
+index 368b3b87c..9f38a0920 100644
+--- a/ext/fdkaac/gstfdkaacenc.c
++++ b/ext/fdkaac/gstfdkaacenc.c
+@@ -396,7 +396,7 @@ gst_fdkaacenc_set_format (GstAudioEncoder * enc, GstAudioInfo * info)
+   /* raw */
+   if (transmux == 0) {
+     GstBuffer *codec_data =
+-        gst_buffer_new_wrapped (g_memdup (enc_info.confBuf, enc_info.confSize),
++        gst_buffer_new_wrapped (g_memdup2 (enc_info.confBuf, enc_info.confSize),
+         enc_info.confSize);
+     gst_caps_set_simple (src_caps, "codec_data", GST_TYPE_BUFFER, codec_data,
+         "stream-format", G_TYPE_STRING, "raw", NULL);
+diff --git a/ext/hls/gsthlsdemux.c b/ext/hls/gsthlsdemux.c
+index 90a587fb0..11773bfe1 100644
+--- a/ext/hls/gsthlsdemux.c
++++ b/ext/hls/gsthlsdemux.c
+@@ -1124,7 +1124,7 @@ gst_hls_demux_update_fragment_info (GstAdaptiveDemuxStream * stream)
+   g_free (hlsdemux_stream->current_key);
+   hlsdemux_stream->current_key = g_strdup (file->key);
+   g_free (hlsdemux_stream->current_iv);
+-  hlsdemux_stream->current_iv = g_memdup (file->iv, sizeof (file->iv));
++  hlsdemux_stream->current_iv = g_memdup2 (file->iv, sizeof (file->iv));
+ 
+   g_free (stream->fragment.uri);
+   stream->fragment.uri = g_strdup (file->uri);
+diff --git a/ext/sctp/gstsctpenc.c b/ext/sctp/gstsctpenc.c
+index 41590b9fc..91825df77 100644
+--- a/ext/sctp/gstsctpenc.c
++++ b/ext/sctp/gstsctpenc.c
+@@ -891,7 +891,7 @@ on_sctp_packet_out (GstSctpAssociation * _association, const guint8 * buf,
+   GST_DEBUG_OBJECT (self, "Received output packet of size %" G_GSIZE_FORMAT,
+       length);
+ 
+-  gstbuf = gst_buffer_new_wrapped (g_memdup (buf, length), length);
++  gstbuf = gst_buffer_new_wrapped (g_memdup2 (buf, length), length);
+ 
+   item = g_new0 (GstDataQueueItem, 1);
+   item->object = GST_MINI_OBJECT (gstbuf);
+diff --git a/ext/sndfile/gstsfdec.c b/ext/sndfile/gstsfdec.c
+index 24a0e2dd3..084c5131b 100644
+--- a/ext/sndfile/gstsfdec.c
++++ b/ext/sndfile/gstsfdec.c
+@@ -126,7 +126,7 @@ static sf_count_t
+ gst_sf_vio_write (const void *ptr, sf_count_t count, void *user_data)
+ {
+   GstSFDec *self = GST_SF_DEC (user_data);
+-  GstBuffer *buffer = gst_buffer_new_wrapped (g_memdup (ptr, count), count);
++  GstBuffer *buffer = gst_buffer_new_wrapped (g_memdup2 (ptr, count), count);
+ 
+   if (gst_pad_push (self->srcpad, buffer) == GST_FLOW_OK) {
+     return count;
+diff --git a/ext/teletextdec/gstteletextdec.c b/ext/teletextdec/gstteletextdec.c
+index c0b12d044..5b4abfd6a 100644
+--- a/ext/teletextdec/gstteletextdec.c
++++ b/ext/teletextdec/gstteletextdec.c
+@@ -540,7 +540,7 @@ gst_teletextdec_process_telx_buffer (GstTeletextDec * teletext, GstBuffer * buf)
+       n_lines = teletext->frame->current_slice - teletext->frame->sliced_begin;
+       GST_LOG_OBJECT (teletext, "Completed frame, decoding new %d lines",
+           n_lines);
+-      s = g_memdup (teletext->frame->sliced_begin,
++      s = g_memdup2 (teletext->frame->sliced_begin,
+           n_lines * sizeof (vbi_sliced));
+       vbi_decode (teletext->decoder, s, n_lines, teletext->last_ts);
+       /* From vbi_decode():
+diff --git a/ext/wayland/meson.build b/ext/wayland/meson.build
+index 75800b287..7374431ee 100644
+--- a/ext/wayland/meson.build
++++ b/ext/wayland/meson.build
+@@ -11,7 +11,7 @@ wl_sources = [
+ libdrm_dep = dependency('libdrm', version: '>= 2.4.55', required:get_option('wayland'))
+ 
+ if use_wayland
+-    protocols_datadir = wl_protocol_dep.get_pkgconfig_variable('pkgdatadir')
++    protocols_datadir = get_option('base-install') + wl_protocol_dep.get_pkgconfig_variable('pkgdatadir')
+ 
+     protocol_defs = [
+         ['/stable/viewporter/viewporter.xml', 'viewporter-protocol.c', 'viewporter-client-protocol.h'],
+diff --git a/gst-libs/gst/codecparsers/gsth264parser.c b/gst-libs/gst/codecparsers/gsth264parser.c
+index 68aa25068..1a610f662 100644
+--- a/gst-libs/gst/codecparsers/gsth264parser.c
++++ b/gst-libs/gst/codecparsers/gsth264parser.c
+@@ -271,7 +271,7 @@ gst_h264_pps_copy (GstH264PPS * dst_pps, const GstH264PPS * src_pps)
+   *dst_pps = *src_pps;
+ 
+   if (src_pps->slice_group_id)
+-    dst_pps->slice_group_id = g_memdup (src_pps->slice_group_id,
++    dst_pps->slice_group_id = g_memdup2 (src_pps->slice_group_id,
+         src_pps->pic_size_in_map_units_minus1 + 1);
+ 
+   return TRUE;
+diff --git a/gst-libs/gst/mpegts/gst-dvb-descriptor.c b/gst-libs/gst/mpegts/gst-dvb-descriptor.c
+index 09a42da6d..6cafcef14 100644
+--- a/gst-libs/gst/mpegts/gst-dvb-descriptor.c
++++ b/gst-libs/gst/mpegts/gst-dvb-descriptor.c
+@@ -204,7 +204,7 @@ gst_mpegts_descriptor_parse_dvb_stuffing (const GstMpegtsDescriptor *
+ 
+   data = (guint8 *) descriptor->data + 2;
+ 
+-  *stuffing_bytes = g_memdup (data, descriptor->length);
++  *stuffing_bytes = g_memdup2 (data, descriptor->length);
+ 
+   return TRUE;
+ }
+@@ -600,7 +600,7 @@ _gst_mpegts_dvb_linkage_descriptor_copy (GstMpegtsDVBLinkageDescriptor * source)
+       break;
+   }
+ 
+-  copy->private_data_bytes = g_memdup (source->private_data_bytes,
++  copy->private_data_bytes = g_memdup2 (source->private_data_bytes,
+       source->private_data_length);
+ 
+   return copy;
+@@ -825,7 +825,7 @@ gst_mpegts_descriptor_parse_dvb_linkage (const GstMpegtsDescriptor * descriptor,
+   }
+ 
+   res->private_data_length = end - data;
+-  res->private_data_bytes = g_memdup (data, res->private_data_length);
++  res->private_data_bytes = g_memdup2 (data, res->private_data_length);
+ 
+   *desc = res;
+ 
+@@ -2013,7 +2013,7 @@ gst_mpegts_descriptor_parse_dvb_private_data_specifier (const
+   if (length && private_data) {
+     *length = descriptor->length - 4;
+ 
+-    *private_data = g_memdup (data + 4, *length);
++    *private_data = g_memdup2 (data + 4, *length);
+   }
+   return TRUE;
+ }
+@@ -2091,7 +2091,7 @@ _gst_mpegts_dvb_data_broadcast_descriptor_copy (GstMpegtsDataBroadcastDescriptor
+ 
+   copy = g_slice_dup (GstMpegtsDataBroadcastDescriptor, source);
+ 
+-  copy->selector_bytes = g_memdup (source->selector_bytes, source->length);
++  copy->selector_bytes = g_memdup2 (source->selector_bytes, source->length);
+   copy->language_code = g_strdup (source->language_code);
+   copy->text = g_strdup (source->text);
+ 
+@@ -2145,7 +2145,7 @@ gst_mpegts_descriptor_parse_dvb_data_broadcast (const GstMpegtsDescriptor
+   res->length = *data;
+   data += 1;
+ 
+-  res->selector_bytes = g_memdup (data, res->length);
++  res->selector_bytes = g_memdup2 (data, res->length);
+   data += res->length;
+ 
+   res->language_code = convert_lang_code (data);
+@@ -2220,7 +2220,7 @@ gst_mpegts_descriptor_parse_dvb_data_broadcast_id (const GstMpegtsDescriptor
+ 
+   *len = descriptor->length - 2;
+ 
+-  *id_selector_bytes = g_memdup (data, *len);
++  *id_selector_bytes = g_memdup2 (data, *len);
+ 
+   return TRUE;
+ }
+diff --git a/gst-libs/gst/mpegts/gstmpegtsdescriptor.c b/gst-libs/gst/mpegts/gstmpegtsdescriptor.c
+index 34bee7919..b0ddbbd11 100644
+--- a/gst-libs/gst/mpegts/gstmpegtsdescriptor.c
++++ b/gst-libs/gst/mpegts/gstmpegtsdescriptor.c
+@@ -853,7 +853,7 @@ _copy_descriptor (GstMpegtsDescriptor * desc)
+   GstMpegtsDescriptor *copy;
+ 
+   copy = g_slice_dup (GstMpegtsDescriptor, desc);
+-  copy->data = g_memdup (desc->data, desc->length + 2);
++  copy->data = g_memdup2 (desc->data, desc->length + 2);
+ 
+   return copy;
+ }
+@@ -941,7 +941,7 @@ gst_mpegts_parse_descriptors (guint8 * buffer, gsize buf_len)
+     desc->tag = *data++;
+     desc->length = *data++;
+     /* Copy the data now that we known the size */
+-    desc->data = g_memdup (desc->data, desc->length + 2);
++    desc->data = g_memdup2 (desc->data, desc->length + 2);
+     GST_LOG ("descriptor 0x%02x length:%d", desc->tag, desc->length);
+     GST_MEMDUMP ("descriptor", desc->data + 2, desc->length);
+     /* extended descriptors */
+diff --git a/gst-libs/gst/mpegts/gstmpegtssection.c b/gst-libs/gst/mpegts/gstmpegtssection.c
+index f5077a952..7fd045293 100644
+--- a/gst-libs/gst/mpegts/gstmpegtssection.c
++++ b/gst-libs/gst/mpegts/gstmpegtssection.c
+@@ -253,7 +253,7 @@ _gst_mpegts_section_copy (GstMpegtsSection * section)
+   copy->last_section_number = section->last_section_number;
+   copy->crc = section->crc;
+ 
+-  copy->data = g_memdup (section->data, section->section_length);
++  copy->data = g_memdup2 (section->data, section->section_length);
+   copy->section_length = section->section_length;
+   /* Note: We do not copy the cached parsed item, it will be
+    * reconstructed on that copy */
+diff --git a/gst/audiovisualizers/gstspectrascope.c b/gst/audiovisualizers/gstspectrascope.c
+index 5ba73ba11..a99dba14f 100644
+--- a/gst/audiovisualizers/gstspectrascope.c
++++ b/gst/audiovisualizers/gstspectrascope.c
+@@ -184,7 +184,7 @@ gst_spectra_scope_render (GstAudioVisualizer * bscope, GstBuffer * audio,
+ 
+   channels = GST_AUDIO_INFO_CHANNELS (&bscope->ainfo);
+ 
+-  mono_adata = (gint16 *) g_memdup (amap.data, amap.size);
++  mono_adata = (gint16 *) g_memdup2 (amap.data, amap.size);
+ 
+   if (channels > 1) {
+     guint ch = channels;
+diff --git a/gst/mpegpsmux/mpegpsmux.c b/gst/mpegpsmux/mpegpsmux.c
+index c7e4cc22c..47ce9076d 100644
+--- a/gst/mpegpsmux/mpegpsmux.c
++++ b/gst/mpegpsmux/mpegpsmux.c
+@@ -671,7 +671,7 @@ new_packet_cb (guint8 * data, guint len, void *user_data)
+ 
+   GST_LOG_OBJECT (mux, "Outputting a packet of length %d", len);
+ 
+-  data = g_memdup (data, len);
++  data = g_memdup2 (data, len);
+   buf = gst_buffer_new_wrapped (data, len);
+ 
+   GST_BUFFER_TIMESTAMP (buf) = mux->last_ts;
+diff --git a/gst/mpegtsdemux/mpegtspacketizer.c b/gst/mpegtsdemux/mpegtspacketizer.c
+index 21d10e7d2..32ca7e39e 100644
+--- a/gst/mpegtsdemux/mpegtspacketizer.c
++++ b/gst/mpegtsdemux/mpegtspacketizer.c
+@@ -1123,7 +1123,7 @@ section_start:
+     /* Only do fast-path if we have enough byte */
+     if (data + section_length <= packet->data_end) {
+       if ((section =
+-              gst_mpegts_section_new (packet->pid, g_memdup (data,
++              gst_mpegts_section_new (packet->pid, g_memdup2 (data,
+                       section_length), section_length))) {
+         GST_DEBUG ("PID 0x%04x Short section complete !", packet->pid);
+         section->offset = packet->offset;
+diff --git a/gst/mpegtsdemux/tsdemux.c b/gst/mpegtsdemux/tsdemux.c
+index f95c325fa..7477be3e1 100644
+--- a/gst/mpegtsdemux/tsdemux.c
++++ b/gst/mpegtsdemux/tsdemux.c
+@@ -819,7 +819,7 @@ scan_keyframe_h264 (TSDemuxStream * stream, const guint8 * data,
+         " we will push later");
+ 
+     h264infos->framedata.data =
+-        g_memdup (frame_unit.data + frame_unit.sc_offset,
++        g_memdup2 (frame_unit.data + frame_unit.sc_offset,
+         stream->current_size - frame_unit.sc_offset);
+     h264infos->framedata.size = stream->current_size - frame_unit.sc_offset;
+   }
+diff --git a/gst/mxf/mxfaes-bwf.c b/gst/mxf/mxfaes-bwf.c
+index d128ab270..111c473de 100644
+--- a/gst/mxf/mxfaes-bwf.c
++++ b/gst/mxf/mxfaes-bwf.c
+@@ -211,7 +211,7 @@ mxf_metadata_wave_audio_essence_descriptor_handle_tag (MXFMetadataBase *
+           mxf_timestamp_to_string (&self->peak_envelope_timestamp, str));
+       break;
+     case 0x3d31:
+-      self->peak_envelope_data = g_memdup (tag_data, tag_size);
++      self->peak_envelope_data = g_memdup2 (tag_data, tag_size);
+       self->peak_envelope_data_length = tag_size;
+       GST_DEBUG ("  peak evelope data size = %u",
+           self->peak_envelope_data_length);
+@@ -507,7 +507,7 @@ mxf_metadata_wave_audio_essence_descriptor_write_tags (MXFMetadataBase * m,
+     t = g_slice_new0 (MXFLocalTag);
+     memcpy (&t->ul, &peak_envelope_data_ul, 16);
+     t->size = self->peak_envelope_data_length;
+-    t->data = g_memdup (self->peak_envelope_data, t->size);
++    t->data = g_memdup2 (self->peak_envelope_data, t->size);
+     mxf_primer_pack_add_mapping (primer, 0x3d31, &t->ul);
+     ret = g_list_prepend (ret, t);
+   }
+diff --git a/gst/mxf/mxfdms1.c b/gst/mxf/mxfdms1.c
+index bb5234e8f..6a611f8a3 100644
+--- a/gst/mxf/mxfdms1.c
++++ b/gst/mxf/mxfdms1.c
+@@ -1656,7 +1656,7 @@ mxf_dms1_identification_handle_tag (MXFMetadataBase * metadata,
+     memcpy (self->identifier_kind, tag_data, tag_size);
+     GST_DEBUG ("  identifier kind = %s", self->identifier_kind);
+   } else if (memcmp (tag_ul, &identifier_value_ul, 16) == 0) {
+-    self->identifier_value = g_memdup (tag_data, tag_size);
++    self->identifier_value = g_memdup2 (tag_data, tag_size);
+     self->identifier_value_length = tag_size;
+     GST_DEBUG ("  identifier value length = %u", tag_size);
+   } else if (memcmp (tag_ul, &identification_locator_ul, 16) == 0) {
+diff --git a/gst/mxf/mxfmetadata.c b/gst/mxf/mxfmetadata.c
+index c8d34060d..a2ec2cca9 100644
+--- a/gst/mxf/mxfmetadata.c
++++ b/gst/mxf/mxfmetadata.c
+@@ -252,7 +252,7 @@ mxf_metadata_base_to_buffer (MXFMetadataBase * self, MXFPrimerPack * primer)
+         mxf_primer_pack_add_mapping (primer, 0x0000, &t->ul);
+         memcpy (tmp->data, t->data, t->size);
+       } else {
+-        tmp->data = g_memdup (t->data, t->size);
++        tmp->data = g_memdup2 (t->data, t->size);
+       }
+       tags = g_list_prepend (tags, tmp);
+     }
+diff --git a/gst/mxf/mxfmpeg.c b/gst/mxf/mxfmpeg.c
+index 57dd75d07..616266a79 100644
+--- a/gst/mxf/mxfmpeg.c
++++ b/gst/mxf/mxfmpeg.c
+@@ -1322,7 +1322,7 @@ mxf_mpeg_video_get_descriptor (GstPadTemplate * tmpl, GstCaps * caps,
+         codec_data = gst_value_get_buffer (v);
+         gst_buffer_map ((GstBuffer *) codec_data, &map, GST_MAP_READ);
+         t->size = map.size;
+-        t->data = g_memdup (map.data, map.size);
++        t->data = g_memdup2 (map.data, map.size);
+         gst_buffer_unmap ((GstBuffer *) codec_data, &map);
+         memcpy (&t->ul, &sony_mpeg4_extradata, 16);
+         mxf_local_tag_insert (t, &MXF_METADATA_BASE (ret)->other_tags);
+diff --git a/gst/mxf/mxftypes.c b/gst/mxf/mxftypes.c
+index e7d9fb0ce..5e04ce328 100644
+--- a/gst/mxf/mxftypes.c
++++ b/gst/mxf/mxftypes.c
+@@ -1687,7 +1687,7 @@ mxf_local_tag_add_to_hash_table (const MXFPrimerPack * primer,
+     local_tag = g_slice_new0 (MXFLocalTag);
+     memcpy (&local_tag->ul, ul, sizeof (MXFUL));
+     local_tag->size = tag_size;
+-    local_tag->data = tag_size == 0 ? NULL : g_memdup (tag_data, tag_size);
++    local_tag->data = tag_size == 0 ? NULL : g_memdup2 (tag_data, tag_size);
+     local_tag->g_slice = FALSE;
+ 
+     g_hash_table_insert (*hash_table, &local_tag->ul, local_tag);
+diff --git a/gst/rtmp2/rtmp/amf.c b/gst/rtmp2/rtmp/amf.c
+index f103b91c5..84c5cd41d 100644
+--- a/gst/rtmp2/rtmp/amf.c
++++ b/gst/rtmp2/rtmp/amf.c
+@@ -329,7 +329,7 @@ gst_amf_node_get_string (const GstAmfNode * node, gsize * out_size)
+ 
+   if (out_size) {
+     *out_size = size;
+-    return g_memdup (data, size);
++    return g_memdup2 (data, size);
+   } else {
+     return g_strndup (data, size);
+   }
+@@ -444,9 +444,9 @@ gst_amf_node_set_string (GstAmfNode * node, const gchar * value, gssize size)
+ 
+   if (size < 0) {
+     size = strlen (value);
+-    copy = g_memdup (value, size + 1);
++    copy = g_memdup2 (value, size + 1);
+   } else {
+-    copy = g_memdup (value, size);
++    copy = g_memdup2 (value, size);
+   }
+ 
+   gst_amf_node_take_string (node, copy, size);
+diff --git a/gst/videoparsers/gstmpeg4videoparse.c b/gst/videoparsers/gstmpeg4videoparse.c
+index 50413d0e0..869204e8a 100644
+--- a/gst/videoparsers/gstmpeg4videoparse.c
++++ b/gst/videoparsers/gstmpeg4videoparse.c
+@@ -300,7 +300,7 @@ gst_mpeg4vparse_process_config (GstMpeg4VParse * mp4vparse,
+   if (mp4vparse->config != NULL)
+     gst_buffer_unref (mp4vparse->config);
+ 
+-  mp4vparse->config = gst_buffer_new_wrapped (g_memdup (data, size), size);
++  mp4vparse->config = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+ 
+   /* trigger src caps update */
+   mp4vparse->update_caps = TRUE;
+diff --git a/meson_options.txt b/meson_options.txt
+index bfd93ca97..dfdc89c26 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -200,3 +200,5 @@ option('package-origin', type : 'string', value : 'Unknown package origin', yiel
+        description : 'package origin URL to use in plugins')
+ option('doc', type : 'feature', value : 'auto', yield: true,
+        description: 'Enable documentation.')
++
++option('base-install', type : 'string', yield : true, description : 'Installation Location')
+diff --git a/sys/androidmedia/gstamcaudiodec.c b/sys/androidmedia/gstamcaudiodec.c
+index 2c4344130..b33d1d317 100644
+--- a/sys/androidmedia/gstamcaudiodec.c
++++ b/sys/androidmedia/gstamcaudiodec.c
+@@ -914,7 +914,7 @@ gst_amc_audio_dec_set_format (GstAudioDecoder * decoder, GstCaps * caps)
+     guint8 *data;
+ 
+     gst_buffer_map (codec_data, &minfo, GST_MAP_READ);
+-    data = g_memdup (minfo.data, minfo.size);
++    data = g_memdup2 (minfo.data, minfo.size);
+     self->codec_datas = g_list_prepend (self->codec_datas, data);
+     gst_amc_format_set_buffer (format, "csd-0", data, minfo.size, &err);
+     if (err)
+@@ -946,7 +946,7 @@ gst_amc_audio_dec_set_format (GstAudioDecoder * decoder, GstCaps * caps)
+ 
+       fname = g_strdup_printf ("csd-%d", j);
+       gst_buffer_map (buf, &minfo, GST_MAP_READ);
+-      data = g_memdup (minfo.data, minfo.size);
++      data = g_memdup2 (minfo.data, minfo.size);
+       self->codec_datas = g_list_prepend (self->codec_datas, data);
+       gst_amc_format_set_buffer (format, fname, data, minfo.size, &err);
+       if (err)
+diff --git a/sys/androidmedia/gstamcvideodec.c b/sys/androidmedia/gstamcvideodec.c
+index 79670bd6d..22cda5872 100644
+--- a/sys/androidmedia/gstamcvideodec.c
++++ b/sys/androidmedia/gstamcvideodec.c
+@@ -1811,7 +1811,7 @@ gst_amc_video_dec_set_format (GstVideoDecoder * decoder,
+     GstMapInfo cminfo;
+ 
+     gst_buffer_map (state->codec_data, &cminfo, GST_MAP_READ);
+-    codec_data = g_memdup (cminfo.data, cminfo.size);
++    codec_data = g_memdup2 (cminfo.data, cminfo.size);
+     codec_data_size = cminfo.size;
+ 
+     is_format_change |= (!self->codec_data
+diff --git a/sys/androidmedia/jni/gstamc-codeclist-jni.c b/sys/androidmedia/jni/gstamc-codeclist-jni.c
+index 8987b6132..6e88aeb05 100644
+--- a/sys/androidmedia/jni/gstamc-codeclist-jni.c
++++ b/sys/androidmedia/jni/gstamc-codeclist-jni.c
+@@ -438,7 +438,7 @@ gint *gst_amc_codec_capabilities_handle_get_color_formats
+     goto done;
+   }
+ 
+-  ret = g_memdup (elems, sizeof (jint) * len);
++  ret = g_memdup2 (elems, sizeof (jint) * len);
+   *length = len;
+ 
+ done:
+diff --git a/sys/androidmedia/jni/gstamc-format-jni.c b/sys/androidmedia/jni/gstamc-format-jni.c
+index 63bea1cec..784f93f0f 100644
+--- a/sys/androidmedia/jni/gstamc-format-jni.c
++++ b/sys/androidmedia/jni/gstamc-format-jni.c
+@@ -475,7 +475,7 @@ gst_amc_format_get_buffer (GstAmcFormat * format, const gchar * key,
+   gst_amc_buffer_get_position_and_limit (&buf, NULL, &position, &limit);
+   *size = limit;
+ 
+-  *data = g_memdup (*data + position, limit);
++  *data = g_memdup2 (*data + position, limit);
+ 
+   ret = TRUE;
+ 
+diff --git a/sys/androidmedia/magicleap/gstamc-format-ml.c b/sys/androidmedia/magicleap/gstamc-format-ml.c
+index cbc119502..e27c30532 100644
+--- a/sys/androidmedia/magicleap/gstamc-format-ml.c
++++ b/sys/androidmedia/magicleap/gstamc-format-ml.c
+@@ -251,7 +251,7 @@ gst_amc_format_get_buffer (GstAmcFormat * format, const gchar * key,
+   }
+ 
+   *size = buffer.length;
+-  *data = (guint8 *) g_memdup (buffer.ptr, buffer.length);
++  *data = (guint8 *) g_memdup2 (buffer.ptr, buffer.length);
+   MLMediaFormatKeyByteBufferRelease (format->handle, &buffer);
+ 
+   return TRUE;
+diff --git a/tests/check/elements/kate.c b/tests/check/elements/kate.c
+index 12e00f1bd..51dd348e5 100644
+--- a/tests/check/elements/kate.c
++++ b/tests/check/elements/kate.c
+@@ -271,7 +271,7 @@ GST_START_TEST (test_kate_typefind)
+   GstBuffer *buf;
+   GstCaps *caps = NULL;
+ 
+-  buf = gst_buffer_new_wrapped (g_memdup (kate_header_0x80,
++  buf = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x80,
+           sizeof (kate_header_0x80)), sizeof (kate_header_0x80));
+   GST_BUFFER_OFFSET (buf) = 0;
+ 
+@@ -344,7 +344,7 @@ GST_START_TEST (test_kate_identification_header)
+   gst_check_setup_events (mydecsrcpad, katedec, caps, GST_FORMAT_TIME);
+   gst_caps_unref (caps);
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x80,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x80,
+           sizeof (kate_header_0x80)), sizeof (kate_header_0x80));
+   ASSERT_BUFFER_REFCOUNT (inbuffer, "inbuffer", 1);
+   gst_buffer_ref (inbuffer);
+@@ -357,7 +357,7 @@ GST_START_TEST (test_kate_identification_header)
+   gst_buffer_unref (inbuffer);
+   fail_unless (g_list_length (buffers) == 0);
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x81,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x81,
+           sizeof (kate_header_0x81)), sizeof (kate_header_0x81));
+   ASSERT_BUFFER_REFCOUNT (inbuffer, "inbuffer", 1);
+   gst_buffer_ref (inbuffer);
+@@ -490,7 +490,7 @@ GST_START_TEST (test_kate_encode_simple)
+       "could not set to playing");
+   bus = gst_bus_new ();
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (test_string,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (test_string,
+           strlen (test_string) + 1), strlen (test_string) + 1);
+ 
+   GST_BUFFER_TIMESTAMP (inbuffer) = GST_BUFFER_OFFSET (inbuffer) =
+@@ -544,7 +544,7 @@ GST_START_TEST (test_kate_encode_spu)
+       "could not set to playing");
+   bus = gst_bus_new ();
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_spu, sizeof (kate_spu)),
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_spu, sizeof (kate_spu)),
+       sizeof (kate_spu));
+ 
+   GST_BUFFER_TIMESTAMP (inbuffer) = GST_BUFFER_OFFSET (inbuffer) =
+@@ -662,18 +662,18 @@ test_kate_send_headers (GstElement * element, GstPad * pad)
+   gst_caps_unref (caps);
+ 
+   /* push headers */
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x80,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x80,
+           sizeof (kate_header_0x80)), sizeof (kate_header_0x80));
+   GST_BUFFER_OFFSET (inbuffer) = GST_BUFFER_OFFSET_END (inbuffer) = 0;
+   fail_unless_equals_int (gst_pad_push (pad, inbuffer), GST_FLOW_OK);
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x81,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x81,
+           sizeof (kate_header_0x81)), sizeof (kate_header_0x81));
+   GST_BUFFER_OFFSET (inbuffer) = GST_BUFFER_OFFSET_END (inbuffer) = 0;
+   fail_unless_equals_int (gst_pad_push (pad, inbuffer), GST_FLOW_OK);
+ 
+   for (i = 2; i < 8; ++i) {
+-    inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x8x,
++    inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x8x,
+             sizeof (kate_header_0x8x)), sizeof (kate_header_0x8x));
+     fail_if (gst_buffer_map (inbuffer, &info, GST_MAP_WRITE) != TRUE);
+     info.data[0] = 0x80 | i;
+@@ -682,7 +682,7 @@ test_kate_send_headers (GstElement * element, GstPad * pad)
+     fail_unless_equals_int (gst_pad_push (pad, inbuffer), GST_FLOW_OK);
+   }
+ 
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x88,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x88,
+           sizeof (kate_header_0x88)), sizeof (kate_header_0x88));
+   GST_BUFFER_OFFSET (inbuffer) = GST_BUFFER_OFFSET_END (inbuffer) = 0;
+   fail_unless_equals_int (gst_pad_push (pad, inbuffer), GST_FLOW_OK);
+@@ -705,7 +705,7 @@ GST_START_TEST (test_kate_parse)
+   test_kate_send_headers (kateparse, myparsesrcpad);
+ 
+   /* push a text packet */
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x00,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x00,
+           sizeof (kate_header_0x00)), sizeof (kate_header_0x00));
+   GST_BUFFER_TIMESTAMP (inbuffer) = GST_BUFFER_OFFSET (inbuffer) =
+       1 * GST_SECOND;
+@@ -714,7 +714,7 @@ GST_START_TEST (test_kate_parse)
+   fail_unless_equals_int (gst_pad_push (myparsesrcpad, inbuffer), GST_FLOW_OK);
+ 
+   /* push a eos packet */
+-  inbuffer = gst_buffer_new_wrapped (g_memdup (kate_header_0x7f,
++  inbuffer = gst_buffer_new_wrapped (g_memdup2 (kate_header_0x7f,
+           sizeof (kate_header_0x7f)), sizeof (kate_header_0x7f));
+   GST_BUFFER_TIMESTAMP (inbuffer) = GST_BUFFER_OFFSET (inbuffer) =
+       6 * GST_SECOND;
+diff --git a/tests/check/elements/pcapparse.c b/tests/check/elements/pcapparse.c
+index 15d3555f5..143b0d1d5 100644
+--- a/tests/check/elements/pcapparse.c
++++ b/tests/check/elements/pcapparse.c
+@@ -97,7 +97,7 @@ GST_START_TEST (test_parse_zerosize_frames)
+ 
+   data_size = sizeof (zerosize_data);
+ 
+-  in_buf = gst_buffer_new_wrapped (g_memdup (zerosize_data, data_size),
++  in_buf = gst_buffer_new_wrapped (g_memdup2 (zerosize_data, data_size),
+       data_size);
+ 
+   gst_harness_push (h, in_buf);
+diff --git a/tests/check/libs/mpegts.c b/tests/check/libs/mpegts.c
+index 219876805..ace2e66bf 100644
+--- a/tests/check/libs/mpegts.c
++++ b/tests/check/libs/mpegts.c
+@@ -509,7 +509,7 @@ GST_START_TEST (test_mpegts_atsc_stt)
+   guint8 *data;
+   GstDateTime *dt;
+ 
+-  data = g_memdup (stt_data_check, 20);
++  data = g_memdup2 (stt_data_check, 20);
+ 
+   section = gst_mpegts_section_new (0x1ffb, data, 20);
+   stt = gst_mpegts_section_get_atsc_stt (section);

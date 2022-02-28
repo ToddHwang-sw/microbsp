@@ -1,0 +1,42 @@
+
+##
+## VIDEO
+disable_overscan=1
+hdmi_force_hotplug=1
+hdmi_drive=2
+
+##
+## UART 
+##
+enable_uart=1
+uart_2ndstage=1
+
+##
+## Device tree - 
+##
+## Raspberry PI model 3 B      : bcm2710-rpi-3-b.dts
+## Raspberry PI model 3 B Plus : bcm2710-rpi-3-b-plus.dts
+##
+## device_tree=broadcom/bcm2710-rpi-3-b.dtb
+##
+device_tree=broadcom/bcm2710-rpi-3-b-plus.dtb
+
+## ARM / GPU
+core_freq=250
+arm_freq=1200
+
+## ARMv8
+arm_64bit=1
+
+##
+## START FILES
+##
+## NOTICE !!! start_x.elf --> recognizes the size of DRAM to be 128Mbytes.
+##   To fully utilize the system DRAM (1Gbytes), we have to use "start.elf"
+##
+start_file=start.elf
+
+## KERNEL 
+##kernel=u-boot.bin
+kernel=vmlinuz
+

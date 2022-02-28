@@ -1,0 +1,107 @@
+diff -uNr llvm-project-release-12.x-original/libc/src/threads/linux/call_once.cpp llvm-project-release-12.x/libc/src/threads/linux/call_once.cpp
+--- llvm-project-release-12.x-original/libc/src/threads/linux/call_once.cpp	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/src/threads/linux/call_once.cpp	2021-12-21 22:05:58.525944028 -0800
+@@ -15,7 +15,12 @@
+ 
+ #include <limits.h>
+ #include <linux/futex.h>
++#ifdef __cplusplus
++#include <atomic>
++using namespace std;
++#else
+ #include <stdatomic.h>
++#endif
+ 
+ namespace __llvm_libc {
+ 
+diff -uNr llvm-project-release-12.x-original/libc/src/threads/linux/mtx_lock.cpp llvm-project-release-12.x/libc/src/threads/linux/mtx_lock.cpp
+--- llvm-project-release-12.x-original/libc/src/threads/linux/mtx_lock.cpp	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/src/threads/linux/mtx_lock.cpp	2021-12-21 22:06:48.660810128 -0800
+@@ -14,7 +14,12 @@
+ #include "src/threads/linux/thread_utils.h"
+ 
+ #include <linux/futex.h> // For futex operations.
++#ifdef __cplusplus
++#include <atomic>   // For atomic_compare_exchange_strong.
++using namespace std;
++#else
+ #include <stdatomic.h>   // For atomic_compare_exchange_strong.
++#endif
+ 
+ namespace __llvm_libc {
+ 
+diff -uNr llvm-project-release-12.x-original/libc/src/threads/linux/mtx_unlock.cpp llvm-project-release-12.x/libc/src/threads/linux/mtx_unlock.cpp
+--- llvm-project-release-12.x-original/libc/src/threads/linux/mtx_unlock.cpp	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/src/threads/linux/mtx_unlock.cpp	2021-12-21 22:04:39.415924088 -0800
+@@ -14,7 +14,12 @@
+ #include "src/threads/linux/thread_utils.h"
+ 
+ #include <linux/futex.h> // For futex operations.
++#ifdef __cplusplus
++#include <atomic>   // for atomic_compare_exchange_strong.
++using namespace std;
++#else
+ #include <stdatomic.h>   // for atomic_compare_exchange_strong.
++#endif
+ 
+ namespace __llvm_libc {
+ 
+diff -uNr llvm-project-release-12.x-original/libc/src/threads/linux/thrd_join.cpp llvm-project-release-12.x/libc/src/threads/linux/thrd_join.cpp
+--- llvm-project-release-12.x-original/libc/src/threads/linux/thrd_join.cpp	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/src/threads/linux/thrd_join.cpp	2021-12-22 06:49:39.256913765 -0800
+@@ -15,7 +15,12 @@
+ #include "src/threads/linux/thread_utils.h"
+ 
+ #include <linux/futex.h> // For futex operations.
++#ifdef __cplusplus
++#include <atomic>   // For atomic_load.
++using namespace std;
++#else
+ #include <stdatomic.h>   // For atomic_load.
++#endif 
+ 
+ namespace __llvm_libc {
+ 
+diff -uNr llvm-project-release-12.x-original/libc/src/threads/linux/thread_utils.h llvm-project-release-12.x/libc/src/threads/linux/thread_utils.h
+--- llvm-project-release-12.x-original/libc/src/threads/linux/thread_utils.h	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/src/threads/linux/thread_utils.h	2021-12-21 22:03:33.313782106 -0800
+@@ -11,7 +11,12 @@
+ 
+ #include "thread_start_args.h"
+ 
++#ifdef __cplusplus
++#include <atomic>
++using namespace std;
++#else
+ #include <stdatomic.h>
++#endif 
+ #include <stdint.h>
+ 
+ namespace __llvm_libc {
+diff -uNr llvm-project-release-12.x-original/libc/utils/CMakeLists.txt llvm-project-release-12.x/libc/utils/CMakeLists.txt
+--- llvm-project-release-12.x-original/libc/utils/CMakeLists.txt	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libc/utils/CMakeLists.txt	2021-12-22 08:17:16.333242556 -0800
+@@ -2,7 +2,7 @@
+ add_subdirectory(FPUtil)
+ add_subdirectory(LibcTableGenUtil)
+ add_subdirectory(HdrGen)
+-add_subdirectory(MPFRWrapper)
++##add_subdirectory(MPFRWrapper)
+ add_subdirectory(testutils)
+ add_subdirectory(tools)
+ add_subdirectory(UnitTest)
+diff -uNr llvm-project-release-12.x-original/libcxx/include/string llvm-project-release-12.x/libcxx/include/string
+--- llvm-project-release-12.x-original/libcxx/include/string	2021-06-28 09:23:38.000000000 -0700
++++ llvm-project-release-12.x/libcxx/include/string	2021-12-27 21:04:28.360353878 -0800
+@@ -1857,8 +1857,11 @@
+ void
+ basic_string<_CharT, _Traits, _Allocator>::__init(const value_type* __s, size_type __sz)
+ {
++#if 0 
++	/* -- PATCHED for uix/mesa compilation */
+     if (__sz > max_size())
+         this->__throw_length_error();
++#endif 
+     pointer __p;
+     if (__sz < __min_cap)
+     {

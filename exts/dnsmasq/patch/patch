@@ -1,0 +1,11 @@
+diff -uNr dnsmasq-2.80-original/src/dnsmasq.h dnsmasq-2.80/src/dnsmasq.h
+--- dnsmasq-2.80-original/src/dnsmasq.h	2018-10-18 11:21:55.000000000 -0700
++++ dnsmasq-2.80/src/dnsmasq.h	2020-07-24 15:17:29.296582030 -0700
+@@ -138,6 +138,7 @@
+ #endif
+ 
+ #if defined(HAVE_LINUX_NETWORK)
++#include <linux/sockios.h>
+ #include <linux/capability.h>
+ /* There doesn't seem to be a universally-available 
+    userspace header for these. */

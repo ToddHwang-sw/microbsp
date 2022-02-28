@@ -1,0 +1,8 @@
+#!/bin/sh
+
+## mount file systems
+umount -f /proc /var /sys
+
+## deleting device nodes
+\rm -rf /dev/*
+

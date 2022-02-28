@@ -1,0 +1,12 @@
+diff -uNr termcap-1.3.1-original/Makefile.in termcap-1.3.1/Makefile.in
+--- termcap-1.3.1-original/Makefile.in	1995-08-16 17:54:29.000000000 -0700
++++ termcap-1.3.1/Makefile.in	2019-10-27 14:20:34.877907319 -0700
+@@ -46,7 +46,7 @@
+ # so compilers besides gcc can find it by default.
+ # If it is empty or not defined, termcap.h will only be installed in
+ # includedir. 
+-oldincludedir = /usr/include
++oldincludedir = $(prefix)/include
+ 
+ # Directory in which to install the documentation info files.
+ infodir = $(prefix)/info

@@ -1,0 +1,75 @@
+diff -uNr glibc-2.30-original/PATCHED glibc-2.30/PATCHED
+--- glibc-2.30-original/PATCHED	1969-12-31 16:00:00.000000000 -0800
++++ glibc-2.30/PATCHED	2020-12-19 16:33:01.210835400 -0800
+@@ -0,0 +1,4 @@
++
++
++
++
+diff -uNr glibc-2.30-original/sysdeps/unix/sysv/linux/aarch64/gettimeofday.c glibc-2.30/sysdeps/unix/sysv/linux/aarch64/gettimeofday.c
+--- glibc-2.30-original/sysdeps/unix/sysv/linux/aarch64/gettimeofday.c	2019-07-31 21:29:31.000000000 -0700
++++ glibc-2.30/sysdeps/unix/sysv/linux/aarch64/gettimeofday.c	2020-12-19 16:32:53.620490100 -0800
+@@ -38,6 +38,7 @@
+   return INLINE_VSYSCALL (gettimeofday, 2, tv, tz);
+ }
+ 
++#if 0
+ /* PREPARE_VERSION_KNOWN will need an __LP64__ ifdef when ILP32 support
+    goes in.  See _libc_vdso_platform_setup in
+    sysdeps/unix/sysv/linux/aarch64/init-first.c.  */
+@@ -53,6 +54,12 @@
+ 
+ __hidden_ver1 (__gettimeofday_vsyscall, __GI___gettimeofday,
+ 	       __gettimeofday_vsyscall);
++#else
++weak_alias(__gettimeofday_vsyscall,__gettimeofday);
++__hidden_ver1 (__gettimeofday_vsyscall, __GI___gettimeofday,
++	       __gettimeofday_vsyscall);
++
++#endif
+ 
+ #else
+ 
+diff -uNr glibc-2.30-original/sysdeps/unix/sysv/linux/x86/gettimeofday.c glibc-2.30/sysdeps/unix/sysv/linux/x86/gettimeofday.c
+--- glibc-2.30-original/sysdeps/unix/sysv/linux/x86/gettimeofday.c	2019-07-31 21:29:31.000000000 -0700
++++ glibc-2.30/sysdeps/unix/sysv/linux/x86/gettimeofday.c	2020-12-19 16:32:58.316460600 -0800
+@@ -29,6 +29,7 @@
+   return INLINE_SYSCALL (gettimeofday, 2, tv, tz);
+ }
+ 
++#if 0
+ # ifndef __gettimeofday_type
+ /* The i386 gettimeofday.c includes this file with a defined
+    __gettimeofday_type macro.  For x86_64 we have to define it to __gettimeofday
+@@ -43,6 +44,9 @@
+ 		   (_dl_vdso_vsym ("__vdso_gettimeofday", &linux26)
+ 		    ?: &__gettimeofday_syscall))
+ libc_hidden_def (__gettimeofday)
++#endif
++weak_alias(__gettimeofday_syscall,__gettimeofday);
++libc_hidden_def(__gettimeofday)
+ 
+ #else
+ 
+diff -uNr glibc-2.30-original/sysdeps/unix/sysv/linux/x86/time.c glibc-2.30/sysdeps/unix/sysv/linux/x86/time.c
+--- glibc-2.30-original/sysdeps/unix/sysv/linux/x86/time.c	2019-07-31 21:29:31.000000000 -0700
++++ glibc-2.30/sysdeps/unix/sysv/linux/x86/time.c	2020-12-19 16:32:58.316460600 -0800
+@@ -30,6 +30,7 @@
+   return INTERNAL_SYSCALL (time, err, 1, t);
+ }
+ 
++#if 0
+ # ifndef time_type
+ /* The i386 time.c includes this file with a defined time_type macro.
+    For x86_64 we have to define it to time as the internal symbol is the
+@@ -44,6 +45,10 @@
+ 		   (_dl_vdso_vsym ("__vdso_time", &linux26)
+ 		    ?:  &__time_syscall))
+ libc_hidden_def (time)
++#endif
++
++weak_alias (__time_syscall, time)
++libc_hidden_weak (time)
+ 
+ #else
+ 

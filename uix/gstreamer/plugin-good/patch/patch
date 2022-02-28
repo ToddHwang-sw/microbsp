@@ -1,0 +1,479 @@
+diff --git a/ext/libpng/gstpngdec.c b/ext/libpng/gstpngdec.c
+index 4592fef06..e86bcf7c7 100644
+--- a/ext/libpng/gstpngdec.c
++++ b/ext/libpng/gstpngdec.c
+@@ -354,7 +354,7 @@ gst_pngdec_caps_create_and_set (GstPngDec * pngdec)
+         &icc_compression_type, &icc_profile, &icc_proflen);
+ 
+     if ((ret & PNG_INFO_iCCP)) {
+-      gpointer gst_icc_prof = g_memdup (icc_profile, icc_proflen);
++      gpointer gst_icc_prof = g_memdup2 (icc_profile, icc_proflen);
+       GstBuffer *tagbuffer = NULL;
+       GstSample *tagsample = NULL;
+       GstTagList *taglist = NULL;
+diff --git a/ext/vpx/gstvpxenc.c b/ext/vpx/gstvpxenc.c
+index 4b3b4f770..667c547b1 100644
+--- a/ext/vpx/gstvpxenc.c
++++ b/ext/vpx/gstvpxenc.c
+@@ -1850,7 +1850,7 @@ gst_vpx_enc_process (GstVPXEnc * encoder)
+ 
+     /* FIXME : It would be nice to avoid the memory copy ... */
+     buffer =
+-        gst_buffer_new_wrapped (g_memdup (pkt->data.frame.buf,
++        gst_buffer_new_wrapped (g_memdup2 (pkt->data.frame.buf,
+             pkt->data.frame.sz), pkt->data.frame.sz);
+ 
+     user_data = vpx_enc_class->process_frame_user_data (encoder, frame);
+diff --git a/ext/wavpack/gstwavpackenc.c b/ext/wavpack/gstwavpackenc.c
+index 7c38aaea8..12169c0df 100644
+--- a/ext/wavpack/gstwavpackenc.c
++++ b/ext/wavpack/gstwavpackenc.c
+@@ -612,7 +612,7 @@ gst_wavpack_enc_push_block (void *id, void *data, int32_t count)
+           GstMapInfo map;
+ 
+           gst_buffer_map (buffer, &map, GST_MAP_READ);
+-          enc->first_block = g_memdup (map.data, map.size);
++          enc->first_block = g_memdup2 (map.data, map.size);
+           enc->first_block_size = map.size;
+           gst_buffer_unmap (buffer, &map);
+         }
+diff --git a/gst/flv/gstindex.c b/gst/flv/gstindex.c
+index 79ceb0420..4b11bb219 100644
+--- a/gst/flv/gstindex.c
++++ b/gst/flv/gstindex.c
+@@ -813,7 +813,7 @@ gst_index_add_associationv (GstIndex * index, gint id,
+   entry->type = GST_INDEX_ENTRY_ASSOCIATION;
+   entry->id = id;
+   entry->data.assoc.flags = flags;
+-  entry->data.assoc.assocs = g_memdup (list, sizeof (GstIndexAssociation) * n);
++  entry->data.assoc.assocs = g_memdup2 (list, sizeof (GstIndexAssociation) * n);
+   entry->data.assoc.nassocs = n;
+ 
+   gst_index_add_entry (index, entry);
+diff --git a/gst/isomp4/qtdemux.c b/gst/isomp4/qtdemux.c
+index a0df29f0d..14f849367 100644
+--- a/gst/isomp4/qtdemux.c
++++ b/gst/isomp4/qtdemux.c
+@@ -3865,7 +3865,7 @@ qtdemux_parse_pssh (GstQTDemux * qtdemux, GNode * node)
+ 
+   gst_qtdemux_append_protection_system_id (qtdemux, sysid_string);
+ 
+-  pssh = gst_buffer_new_wrapped (g_memdup (node->data, pssh_size), pssh_size);
++  pssh = gst_buffer_new_wrapped (g_memdup2 (node->data, pssh_size), pssh_size);
+   GST_LOG_OBJECT (qtdemux, "cenc pssh size: %" G_GSIZE_FORMAT,
+       gst_buffer_get_size (pssh));
+ 
+@@ -5570,7 +5570,7 @@ extract_cc_from_data (QtDemuxStream * stream, const guint8 * data, gsize size,
+         goto invalid_cdat;
+       }
+       *cclen = atom_length - 8;
+-      res = g_memdup (data + 8, *cclen);
++      res = g_memdup2 (data + 8, *cclen);
+       break;
+     default:
+       /* Keep this here in case other closed caption formats are added */
+@@ -9032,7 +9032,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+     goto corrupt_file;
+ 
+   /* copy atom data into a new buffer for later use */
+-  stream->stts.data = g_memdup (stream->stts.data, stream->stts.size);
++  stream->stts.data = g_memdup2 (stream->stts.data, stream->stts.size);
+ 
+   /* skip version + flags */
+   if (!gst_byte_reader_skip (&stream->stts, 1 + 3) ||
+@@ -9055,7 +9055,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+           ! !qtdemux_tree_get_child_by_type_full (stbl, FOURCC_stss,
+               &stream->stss) ? TRUE : FALSE) == TRUE) {
+     /* copy atom data into a new buffer for later use */
+-    stream->stss.data = g_memdup (stream->stss.data, stream->stss.size);
++    stream->stss.data = g_memdup2 (stream->stss.data, stream->stss.size);
+ 
+     /* skip version + flags */
+     if (!gst_byte_reader_skip (&stream->stss, 1 + 3) ||
+@@ -9073,7 +9073,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+             ! !qtdemux_tree_get_child_by_type_full (stbl, FOURCC_stps,
+                 &stream->stps) ? TRUE : FALSE) == TRUE) {
+       /* copy atom data into a new buffer for later use */
+-      stream->stps.data = g_memdup (stream->stps.data, stream->stps.size);
++      stream->stps.data = g_memdup2 (stream->stps.data, stream->stps.size);
+ 
+       /* skip version + flags */
+       if (!gst_byte_reader_skip (&stream->stps, 1 + 3) ||
+@@ -9097,7 +9097,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+     goto no_samples;
+ 
+   /* copy atom data into a new buffer for later use */
+-  stream->stsz.data = g_memdup (stream->stsz.data, stream->stsz.size);
++  stream->stsz.data = g_memdup2 (stream->stsz.data, stream->stsz.size);
+ 
+   /* skip version + flags */
+   if (!gst_byte_reader_skip (&stream->stsz, 1 + 3) ||
+@@ -9115,7 +9115,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+     goto corrupt_file;
+ 
+   /* copy atom data into a new buffer for later use */
+-  stream->stsc.data = g_memdup (stream->stsc.data, stream->stsc.size);
++  stream->stsc.data = g_memdup2 (stream->stsc.data, stream->stsc.size);
+ 
+   /* skip version + flags */
+   if (!gst_byte_reader_skip (&stream->stsc, 1 + 3) ||
+@@ -9142,7 +9142,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+     goto corrupt_file;
+ 
+   /* copy atom data into a new buffer for later use */
+-  stream->stco.data = g_memdup (stream->stco.data, stream->stco.size);
++  stream->stco.data = g_memdup2 (stream->stco.data, stream->stco.size);
+ 
+   /* skip version + flags */
+   if (!gst_byte_reader_skip (&stream->stco, 1 + 3))
+@@ -9175,7 +9175,7 @@ qtdemux_stbl_init (GstQTDemux * qtdemux, QtDemuxStream * stream, GNode * stbl)
+     GstByteReader cslg = GST_BYTE_READER_INIT (NULL, 0);
+ 
+     /* copy atom data into a new buffer for later use */
+-    stream->ctts.data = g_memdup (stream->ctts.data, stream->ctts.size);
++    stream->ctts.data = g_memdup2 (stream->ctts.data, stream->ctts.size);
+ 
+     /* skip version + flags */
+     if (!gst_byte_reader_skip (&stream->ctts, 1 + 3)
+@@ -10760,24 +10760,24 @@ qtdemux_parse_trak (GstQTDemux * qtdemux, GNode * trak)
+           case 0:
+             break;
+           case 2:
+-            palette_data = g_memdup (ff_qt_default_palette_2, palette_size);
++            palette_data = g_memdup2 (ff_qt_default_palette_2, palette_size);
+             break;
+           case 4:
+-            palette_data = g_memdup (ff_qt_default_palette_4, palette_size);
++            palette_data = g_memdup2 (ff_qt_default_palette_4, palette_size);
+             break;
+           case 16:
+             if (gray)
+               palette_data =
+-                  g_memdup (ff_qt_grayscale_palette_16, palette_size);
++                  g_memdup2 (ff_qt_grayscale_palette_16, palette_size);
+             else
+-              palette_data = g_memdup (ff_qt_default_palette_16, palette_size);
++              palette_data = g_memdup2 (ff_qt_default_palette_16, palette_size);
+             break;
+           case 256:
+             if (gray)
+               palette_data =
+-                  g_memdup (ff_qt_grayscale_palette_256, palette_size);
++                  g_memdup2 (ff_qt_grayscale_palette_256, palette_size);
+             else
+-              palette_data = g_memdup (ff_qt_default_palette_256, palette_size);
++              palette_data = g_memdup2 (ff_qt_default_palette_256, palette_size);
+             break;
+           default:
+             GST_ELEMENT_WARNING (qtdemux, STREAM, DEMUX,
+@@ -13308,7 +13308,7 @@ qtdemux_parse_redirects (GstQTDemux * qtdemux)
+           if (ref.location != NULL) {
+             GST_INFO_OBJECT (qtdemux, "New location: %s", ref.location);
+             redirects =
+-                g_list_prepend (redirects, g_memdup (&ref, sizeof (ref)));
++                g_list_prepend (redirects, g_memdup2 (&ref, sizeof (ref)));
+           } else {
+             GST_WARNING_OBJECT (qtdemux,
+                 "Failed to extract redirect location from rdrf atom");
+@@ -13582,7 +13582,7 @@ parse_xiph_stream_headers (GstQTDemux * qtdemux, gpointer codec_data,
+     if (offset + length[i] > codec_data_size)
+       goto error;
+ 
+-    hdr = gst_buffer_new_wrapped (g_memdup (p + offset, length[i]), length[i]);
++    hdr = gst_buffer_new_wrapped (g_memdup2 (p + offset, length[i]), length[i]);
+     list = g_list_append (list, hdr);
+ 
+     offset += length[i];
+diff --git a/gst/matroska/ebml-read.c b/gst/matroska/ebml-read.c
+index 004fa3a03..796a1d60b 100644
+--- a/gst/matroska/ebml-read.c
++++ b/gst/matroska/ebml-read.c
+@@ -663,7 +663,7 @@ gst_ebml_read_binary (GstEbmlRead * ebml,
+     return ret;
+ 
+   *length = size;
+-  *binary = g_memdup (data, size);
++  *binary = g_memdup2 (data, size);
+ 
+   return GST_FLOW_OK;
+ }
+diff --git a/gst/matroska/matroska-demux.c b/gst/matroska/matroska-demux.c
+index fea2fd9c8..a18fd172a 100644
+--- a/gst/matroska/matroska-demux.c
++++ b/gst/matroska/matroska-demux.c
+@@ -3811,7 +3811,7 @@ gst_matroska_demux_add_mpeg_seq_header (GstElement * element,
+ 
+     GST_DEBUG_OBJECT (element, "Prepending MPEG sequence header");
+ 
+-    newbuf = gst_buffer_new_wrapped (g_memdup (seq_header, seq_header_len),
++    newbuf = gst_buffer_new_wrapped (g_memdup2 (seq_header, seq_header_len),
+         seq_header_len);
+ 
+     gst_buffer_copy_into (newbuf, *buf, GST_BUFFER_COPY_TIMESTAMPS |
+@@ -6203,7 +6203,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+         gsize offset = sizeof (gst_riff_strf_vids);
+ 
+         buf =
+-            gst_buffer_new_wrapped (g_memdup ((guint8 *) vids + offset,
++            gst_buffer_new_wrapped (g_memdup2 ((guint8 *) vids + offset,
+                 size - offset), size - offset);
+       }
+ 
+@@ -6286,7 +6286,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+     if (data) {
+       GstBuffer *priv;
+ 
+-      priv = gst_buffer_new_wrapped (g_memdup (data, size), size);
++      priv = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+       gst_buffer_unref (priv);
+ 
+@@ -6335,7 +6335,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+       gst_codec_utils_h264_caps_set_level_and_profile (caps, data + 1,
+           size - 1);
+ 
+-      priv = gst_buffer_new_wrapped (g_memdup (data, size), size);
++      priv = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+       gst_buffer_unref (priv);
+ 
+@@ -6355,7 +6355,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+       gst_codec_utils_h265_caps_set_level_tier_and_profile (caps, data + 1,
+           size - 1);
+ 
+-      priv = gst_buffer_new_wrapped (g_memdup (data, size), size);
++      priv = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+       gst_buffer_unref (priv);
+ 
+@@ -6395,7 +6395,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+       rformat = GST_READ_UINT32_BE (data + 0x1e);
+ 
+       priv =
+-          gst_buffer_new_wrapped (g_memdup (data + 0x1a, size - 0x1a),
++          gst_buffer_new_wrapped (g_memdup2 (data + 0x1a, size - 0x1a),
+           size - 0x1a);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, "format",
+           G_TYPE_INT, rformat, "subformat", G_TYPE_INT, subformat, NULL);
+@@ -6424,7 +6424,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+     if (data) {
+       GstBuffer *priv;
+ 
+-      priv = gst_buffer_new_wrapped (g_memdup (data, size), size);
++      priv = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+       gst_buffer_unref (priv);
+     } else {
+@@ -6437,7 +6437,7 @@ gst_matroska_demux_video_caps (GstMatroskaTrackVideoContext *
+     if (data) {
+       GstBuffer *priv;
+ 
+-      priv = gst_buffer_new_wrapped (g_memdup (data, size), size);
++      priv = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+       gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+       gst_buffer_unref (priv);
+     } else {
+@@ -6837,7 +6837,7 @@ gst_matroska_demux_audio_caps (GstMatroskaTrackAudioContext *
+       }
+ 
+       tmp =
+-          gst_buffer_new_wrapped (g_memdup (context->codec_priv,
++          gst_buffer_new_wrapped (g_memdup2 (context->codec_priv,
+               context->codec_priv_size), context->codec_priv_size);
+       caps = gst_codec_utils_opus_create_caps_from_header (tmp, NULL);
+       gst_buffer_unref (tmp);
+@@ -6928,7 +6928,7 @@ gst_matroska_demux_audio_caps (GstMatroskaTrackAudioContext *
+         if (freq_index == 15)
+           explicit_freq_bytes = 3;
+         GST_DEBUG ("obj_type = %u, freq_index = %u", obj_type, freq_index);
+-        priv = gst_buffer_new_wrapped (g_memdup (context->codec_priv,
++        priv = gst_buffer_new_wrapped (g_memdup2 (context->codec_priv,
+                 context->codec_priv_size), context->codec_priv_size);
+         /* assume SBR if samplerate <= 24kHz */
+         if (obj_type == 5 || (freq_index >= 6 && freq_index != 15) ||
+@@ -7059,7 +7059,7 @@ gst_matroska_demux_audio_caps (GstMatroskaTrackAudioContext *
+             G_TYPE_INT, leaf_size, "width", G_TYPE_INT, sample_width, NULL);
+ 
+         if ((size - 78) >= extra_data_size) {
+-          priv = gst_buffer_new_wrapped (g_memdup (data + 78, extra_data_size),
++          priv = gst_buffer_new_wrapped (g_memdup2 (data + 78, extra_data_size),
+               extra_data_size);
+           gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, priv, NULL);
+           gst_buffer_unref (priv);
+@@ -7162,7 +7162,7 @@ gst_matroska_demux_subtitle_caps (GstMatroskaTrackSubtitleContext *
+   if (data != NULL && size > 0) {
+     GstBuffer *buf;
+ 
+-    buf = gst_buffer_new_wrapped (g_memdup (data, size), size);
++    buf = gst_buffer_new_wrapped (g_memdup2 (data, size), size);
+     gst_caps_set_simple (caps, "codec_data", GST_TYPE_BUFFER, buf, NULL);
+     gst_buffer_unref (buf);
+   }
+diff --git a/gst/matroska/matroska-ids.c b/gst/matroska/matroska-ids.c
+index 3722822b1..d6d93a6f9 100644
+--- a/gst/matroska/matroska-ids.c
++++ b/gst/matroska/matroska-ids.c
+@@ -188,7 +188,7 @@ gst_matroska_parse_xiph_stream_headers (gpointer codec_data,
+     if (offset + length[i] > codec_data_size)
+       goto error;
+ 
+-    hdr = gst_buffer_new_wrapped (g_memdup (p + offset, length[i]), length[i]);
++    hdr = gst_buffer_new_wrapped (g_memdup2 (p + offset, length[i]), length[i]);
+     gst_buffer_list_add (list, hdr);
+ 
+     offset += length[i];
+@@ -227,11 +227,11 @@ gst_matroska_parse_speex_stream_headers (gpointer codec_data,
+ 
+   list = gst_buffer_list_new ();
+ 
+-  hdr = gst_buffer_new_wrapped (g_memdup (pdata, 80), 80);
++  hdr = gst_buffer_new_wrapped (g_memdup2 (pdata, 80), 80);
+   gst_buffer_list_add (list, hdr);
+ 
+   if (codec_data_size > 80) {
+-    hdr = gst_buffer_new_wrapped (g_memdup (pdata + 80, codec_data_size - 80),
++    hdr = gst_buffer_new_wrapped (g_memdup2 (pdata + 80, codec_data_size - 80),
+         codec_data_size - 80);
+     gst_buffer_list_add (list, hdr);
+   }
+@@ -262,7 +262,7 @@ gst_matroska_parse_opus_stream_headers (gpointer codec_data,
+   list = gst_buffer_list_new ();
+ 
+   hdr =
+-      gst_buffer_new_wrapped (g_memdup (pdata, codec_data_size),
++      gst_buffer_new_wrapped (g_memdup2 (pdata, codec_data_size),
+       codec_data_size);
+   gst_buffer_list_add (list, hdr);
+ 
+@@ -293,7 +293,7 @@ gst_matroska_parse_flac_stream_headers (gpointer codec_data,
+ 
+   list = gst_buffer_list_new ();
+ 
+-  hdr = gst_buffer_new_wrapped (g_memdup (pdata, 4), 4);
++  hdr = gst_buffer_new_wrapped (g_memdup2 (pdata, 4), 4);
+   gst_buffer_list_add (list, hdr);
+ 
+   /* skip fLaC marker */
+@@ -311,7 +311,7 @@ gst_matroska_parse_flac_stream_headers (gpointer codec_data,
+       return NULL;
+     }
+ 
+-    hdr = gst_buffer_new_wrapped (g_memdup (pdata + off, len + 4), len + 4);
++    hdr = gst_buffer_new_wrapped (g_memdup2 (pdata + off, len + 4), len + 4);
+     gst_buffer_list_add (list, hdr);
+ 
+     off += 4 + len;
+diff --git a/gst/matroska/matroska-read-common.c b/gst/matroska/matroska-read-common.c
+index 90d6e38e1..ab6b24b3b 100644
+--- a/gst/matroska/matroska-read-common.c
++++ b/gst/matroska/matroska-read-common.c
+@@ -843,7 +843,7 @@ gst_matroska_read_common_parse_attached_file (GstMatroskaReadCommon * common,
+ 
+     /* if this failed create an attachment buffer */
+     if (!tagbuffer) {
+-      tagbuffer = gst_buffer_new_wrapped (g_memdup (data, datalen), datalen);
++      tagbuffer = gst_buffer_new_wrapped (g_memdup2 (data, datalen), datalen);
+ 
+       caps = gst_type_find_helper_for_buffer (NULL, tagbuffer, NULL);
+       if (caps == NULL)
+diff --git a/meson.build b/meson.build
+index eb531d8f9..fe68d2d7c 100644
+--- a/meson.build
++++ b/meson.build
+@@ -115,9 +115,9 @@ foreach h : check_headers
+ endforeach
+ 
+ check_functions = [
+-  ['HAVE_ASINH', 'asinh', '#include<math.h>'],
++  ##  ['HAVE_ASINH', 'asinh', '#include<math.h>'],
+   ['HAVE_CLOCK_GETTIME', 'clock_gettime', '#include<time.h>'],
+-  ['HAVE_COSH', 'cosh', '#include<math.h>'],
++  ##  ['HAVE_COSH', 'cosh', '#include<math.h>'],
+ # check token HAVE_CPU_ALPHA
+ # check token HAVE_CPU_ARM
+ # check token HAVE_CPU_CRIS
+@@ -148,7 +148,7 @@ check_functions = [
+ # check token HAVE_OSX_AUDIO
+ # check token HAVE_OSX_VIDEO
+ # check token HAVE_RDTSC
+-  ['HAVE_SINH', 'sinh', '#include<math.h>'],
++## ['HAVE_SINH', 'sinh', '#include<math.h>'],
+ # check token HAVE_WAVEFORM
+   ['HAVE_GMTIME_R', 'gmtime_r', '#include<time.h>'],
+ ]
+@@ -161,6 +161,10 @@ foreach f : check_functions
+   endif
+ endforeach
+ 
++cdata.set('HAVE_ASINH',1)
++cdata.set('HAVE_SINH',1)
++cdata.set('HAVE_COSH',1)
++
+ cdata.set('HAVE_IOS', host_system == 'ios')
+ 
+ cdata.set('SIZEOF_CHAR', cc.sizeof('char'))
+diff --git a/tests/check/elements/rtp-payloading.c b/tests/check/elements/rtp-payloading.c
+index c7f497763..9d8f5234c 100644
+--- a/tests/check/elements/rtp-payloading.c
++++ b/tests/check/elements/rtp-payloading.c
+@@ -700,7 +700,7 @@ rtp_h264depay_run (const gchar * stream_format)
+   gst_harness_play (h);
+ 
+   size = sizeof (h264_16x16_black_bs);
+-  buf = gst_buffer_new_wrapped (g_memdup (h264_16x16_black_bs, size), size);
++  buf = gst_buffer_new_wrapped (g_memdup2 (h264_16x16_black_bs, size), size);
+   fail_unless_equals_int (gst_harness_push (h, buf), GST_FLOW_OK);
+   fail_unless (gst_harness_push_event (h, gst_event_new_eos ()));
+ 
+diff --git a/tests/check/elements/rtph264.c b/tests/check/elements/rtph264.c
+index 087a37173..ae0303d76 100644
+--- a/tests/check/elements/rtph264.c
++++ b/tests/check/elements/rtph264.c
+@@ -302,7 +302,7 @@ GST_START_TEST (test_rtph264depay_with_downstream_allocator)
+       fail_unless (len >= 2 + packet_len);
+ 
+       flow = gst_app_src_push_buffer (GST_APP_SRC (src),
+-          gst_buffer_new_wrapped (g_memdup (pdata + 2, packet_len),
++          gst_buffer_new_wrapped (g_memdup2 (pdata + 2, packet_len),
+               packet_len));
+ 
+       fail_unless_equals_int (flow, GST_FLOW_OK);
+diff --git a/tests/check/elements/rtph265.c b/tests/check/elements/rtph265.c
+index 23818084f..f27b6c4c5 100644
+--- a/tests/check/elements/rtph265.c
++++ b/tests/check/elements/rtph265.c
+@@ -258,7 +258,7 @@ GST_START_TEST (test_rtph265depay_with_downstream_allocator)
+       fail_unless (len >= 2 + packet_len);
+ 
+       flow = gst_app_src_push_buffer (GST_APP_SRC (src),
+-          gst_buffer_new_wrapped (g_memdup (pdata + 2, packet_len),
++          gst_buffer_new_wrapped (g_memdup2 (pdata + 2, packet_len),
+               packet_len));
+ 
+       fail_unless_equals_int (flow, GST_FLOW_OK);
+diff --git a/tests/check/elements/rtpopus.c b/tests/check/elements/rtpopus.c
+index 35a9af86c..77eea247e 100644
+--- a/tests/check/elements/rtpopus.c
++++ b/tests/check/elements/rtpopus.c
+@@ -22,7 +22,7 @@
+ #include <gst/check/gstharness.h>
+ #include <gst/rtp/gstrtpbuffer.h>
+ 
+-#define buffer_from_array(a) gst_buffer_new_wrapped (g_memdup (a, G_N_ELEMENTS (a)), G_N_ELEMENTS (a));
++#define buffer_from_array(a) gst_buffer_new_wrapped (g_memdup2 (a, G_N_ELEMENTS (a)), G_N_ELEMENTS (a));
+ 
+ static guint8 opus_data[] = {
+   0xf8, 0xb5, 0x0e, 0x7d, 0x91, 0xcc, 0x05, 0x82,
+diff --git a/tests/icles/gdkpixbufoverlay-test.c b/tests/icles/gdkpixbufoverlay-test.c
+index 45276ee98..c51ac811d 100644
+--- a/tests/icles/gdkpixbufoverlay-test.c
++++ b/tests/icles/gdkpixbufoverlay-test.c
+@@ -126,7 +126,7 @@ create_overlay_pixbuf (void)
+ 
+   g_assert (pixdata_size == 24 + height * stride);
+ 
+-  pixels_copy = g_memdup (pixdata + 24, height * stride);
++  pixels_copy = g_memdup2 (pixdata + 24, height * stride);
+ 
+   pixbuf =
+       gdk_pixbuf_new_from_data (pixels_copy, GDK_COLORSPACE_RGB, TRUE, 8,

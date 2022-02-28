@@ -1,0 +1,12 @@
+diff --git a/util/Makefile.am b/util/Makefile.am
+index f2dd1f9..e0ee310 100644
+--- a/util/Makefile.am
++++ b/util/Makefile.am
+@@ -4,6 +4,7 @@ CC = @CC_FOR_BUILD@
+ CPPFLAGS = @CPPFLAGS_FOR_BUILD@
+ CFLAGS = @CFLAGS_FOR_BUILD@
+ LDFLAGS = @LDFLAGS_FOR_BUILD@
++LIBS =
+ 
+ EXTRA_DIST = \
+ 	Shell.ht \

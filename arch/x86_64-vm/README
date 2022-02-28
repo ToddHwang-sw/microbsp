@@ -1,0 +1,4 @@
+
+Library file "i686-libc.tar.bz2" had been built by
+
+# sudo tar jcvf i686-libc.tar.bz2 lib/ld-linux* lib/x86* lib/i386 lib64/

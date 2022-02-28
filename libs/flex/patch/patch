@@ -1,0 +1,29 @@
+diff --git a/Makefile.am b/Makefile.am
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -46,10 +46,6 @@ dist_noinst_SCRIPTS = \
+ 
+ SUBDIRS = \
+ 	src \
+-	doc \
+-	examples \
+-	po \
+-	tests \
+ 	tools
+ 
+ # Convenience targets to build libfl only
+diff --git a/configure.ac b/configure.ac
+--- a/configure.ac
++++ b/configure.ac
+@@ -174,11 +174,6 @@ AC_CHECK_FUNCS([pow setlocale reallocarr reallocarray])
+ 
+ AC_CONFIG_FILES(
+ Makefile
+-doc/Makefile
+-examples/Makefile
+-examples/fastwc/Makefile
+-examples/manual/Makefile
+-po/Makefile.in
+ src/libfl.pc
+ src/Makefile
+ tools/Makefile

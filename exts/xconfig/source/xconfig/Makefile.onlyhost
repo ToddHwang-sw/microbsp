@@ -1,0 +1,166 @@
+
+##
+## scew library 
+##
+_S=scew
+OBJS = \
+	$(_S)/attribute.o \
+	$(_S)/base64.o \
+	$(_S)/element.o \
+	$(_S)/error.o \
+	$(_S)/list.o \
+	$(_S)/dmt.o \
+	$(_S)/config_xml.o \
+	$(_S)/parser.o \
+	$(_S)/str.o \
+	$(_S)/tree.o \
+	$(_S)/writer.o \
+	$(_S)/xerror.o \
+	$(_S)/xhandler.o \
+	$(_S)/xparser.o \
+	$(_S)/xprint.o
+
+##
+## expat library 
+##
+_E=expat
+OBJS += \
+	$(_E)/xmlparse.o \
+	$(_E)/xmlrole.o \
+	$(_E)/xmltok.o
+
+##
+## memory library 
+##
+_M=mem
+OBJS += \
+	$(_M)/malloc.o \
+	$(_M)/xmlmem.o
+
+##
+## json library 
+##
+_J=json
+OBJS += \
+	$(_J)/dump.o \
+	$(_J)/error.o \
+	$(_J)/hashtable.o \
+	$(_J)/hashtable_seed.o \
+	$(_J)/load.o \
+	$(_J)/memory.o \
+	$(_J)/pack_unpack.o \
+	$(_J)/strbuffer.o \
+	$(_J)/strconv.o \
+	$(_J)/utf.o \
+	$(_J)/value.o
+
+##
+## httpd library 
+##
+_H=minhttp
+OBJS += \
+	$(_H)/internal.o \
+	$(_H)/base64.o \
+	$(_H)/basicauth.o \
+	$(_H)/connection.o \
+	$(_H)/digestauth.o \
+	$(_H)/postprocessor.o \
+	$(_H)/response.o \
+	$(_H)/reason_phrase.o \
+	$(_H)/daemon.o \
+	$(_H)/tsearch.o \
+	$(_H)/md5.o \
+	$(_H)/memorypool.o \
+	$(_H)/mhd_compat.o \
+	$(_H)/mhd_itc.o \
+	$(_H)/mhd_mono_clock.o \
+	$(_H)/mhd_sockets.o \
+	$(_H)/mhd_str.o \
+	$(_H)/mhd_threads.o \
+	$(_H)/sysfdsetsize.o
+
+##
+##
+##
+_T=storage
+OBJS += \
+	$(_T)/storage.o
+
+##
+## service daemon
+##
+_D=daemon
+DOBJS = \
+	$(_D)/xcfgd.o \
+	$(_D)/timer.o \
+	$(_D)/xml.o \
+	$(_D)/kxml.o \
+	$(_D)/shellproc.o
+
+##
+## client 
+##
+_L=client
+LOBJS = \
+	$(_L)/client.o
+
+_X=crc
+COBJS = \
+	$(_X)/crc32.o
+
+##
+## common library 
+##
+_C=common
+
+DAEMON = daemon/xcfgd
+TEST   = daemon/kxml
+CRC = crc/crc32
+
+CXXFLAGS = \
+   -g \
+   -I$(_S) -I$(_E) -I$(_M) -I$(_J) -I$(_C) -I$(_H) -I$(_T)\
+   -DHAVE_EXPAT_CONFIG_H \
+   -DXCONFIG_PATCH \
+   -fPIC -Wall
+
+CXXFLAGS += -I$(_D)
+CXXFLAGS += -D_DEBUG_
+CXXFLAGS += -D__STANDALONE__
+##CXXFLAGS += -DXML_MEM_DEBUG
+
+LIBS	= -lpthread
+
+##
+## HTTPS 
+## 
+OBJS += $(_H)/connection_https.o
+CXXFLAGS += -D_USE_HTTPS_
+LIBS += -lgnutls -lgcrypt
+##
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+all: $(DAEMON) $(CRC) $(TEST)
+
+$(CRC): $(COBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(COBJS) $(LIBS)
+
+$(DAEMON): $(OBJS) $(DOBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(DOBJS) $(OBJS) $(LIBS)
+
+$(CLIENT): $(OBJS) $(LOBJS) 
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(LOBJS) $(OBJS) $(LIBS)
+
+$(TEST): daemon/kxml.cpp $(OBJS)
+	$(CXX) -DSTANDALONE $(CXXFLAGS) $(LDFLAGS) -o $@ daemon/kxml.cpp $(OBJS) $(LIBS)
+
+clean:
+	rm -rf $(DAEMON) $(CLIENT) $(TEST) $(CRC) $(OBJS) $(DOBJS) $(LOBJS) $(COBJS)
+
+cleanup:
+	\rm -rf aclocal.m4 autom4te.cache/ compile configure depcomp install-sh Makefile.in missing
+
+install:
+

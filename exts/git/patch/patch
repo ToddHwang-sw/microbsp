@@ -1,0 +1,46 @@
+diff -uNr git-2.24.2-original/configure git-2.24.2/configure
+--- git-2.24.2-original/configure	2020-04-13 19:03:53.000000000 -0700
++++ git-2.24.2/configure	2020-07-08 09:00:17.941032299 -0700
+@@ -572,7 +572,8 @@
+ ac_clean_files=
+ ac_config_libobj_dir=.
+ LIBOBJS=
+-cross_compiling=no
++##cross_compiling=no
++cross_compiling=yes
+ subdirs=
+ MFLAGS=
+ MAKEFLAGS=
+@@ -1177,13 +1178,13 @@
+ target=$target_alias
+ 
+ # FIXME: To remove some day.
+-if test "x$host_alias" != x; then
+-  if test "x$build_alias" = x; then
+-    cross_compiling=maybe
+-  elif test "x$build_alias" != "x$host_alias"; then
+-    cross_compiling=yes
+-  fi
+-fi
++##if test "x$host_alias" != x; then
++##  if test "x$build_alias" = x; then
++##    cross_compiling=maybe
++##  elif test "x$build_alias" != "x$host_alias"; then
++##    cross_compiling=yes
++##  fi
++##fi
+ 
+ ac_tool_prefix=
+ test -n "$host_alias" && ac_tool_prefix=$host_alias-
+diff -uNr git-2.24.2-original/Makefile git-2.24.2/Makefile
+--- git-2.24.2-original/Makefile	2020-04-13 19:03:53.000000000 -0700
++++ git-2.24.2/Makefile	2020-07-08 09:01:52.254745156 -0700
+@@ -1161,6 +1161,8 @@
+ GITLIBS = common-main.o $(LIB_FILE) $(XDIFF_LIB)
+ EXTLIBS =
+ 
++EXTLIBS += $(ENV_LIBS) 
++
+ GIT_USER_AGENT = git/$(GIT_VERSION)
+ 
+ ifeq ($(wildcard sha1collisiondetection/lib/sha1.h),sha1collisiondetection/lib/sha1.h)

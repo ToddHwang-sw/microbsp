@@ -1,0 +1,62 @@
+diff -uNr libgcrypt-1.9.3-origin/configure.ac libgcrypt-1.9.3/configure.ac
+--- libgcrypt-1.9.3-origin/configure.ac	2021-04-19 13:36:54.000000000 -0700
++++ libgcrypt-1.9.3/configure.ac	2021-12-11 14:41:30.239980138 -0800
+@@ -3237,13 +3237,11 @@
+ mpi/Makefile
+ cipher/Makefile
+ random/Makefile
+-doc/Makefile
+ src/Makefile
+ src/gcrypt.h
+ src/libgcrypt-config
+ src/libgcrypt.pc
+ src/versioninfo.rc
+-tests/Makefile
+ ])
+ AC_CONFIG_FILES([tests/hashtest-256g], [chmod +x tests/hashtest-256g])
+ AC_CONFIG_FILES([tests/basic-disable-all-hwf], [chmod +x tests/basic-disable-all-hwf])
+diff -uNr libgcrypt-1.9.3-origin/Makefile.am libgcrypt-1.9.3/Makefile.am
+--- libgcrypt-1.9.3-origin/Makefile.am	2021-04-19 09:09:39.000000000 -0700
++++ libgcrypt-1.9.3/Makefile.am	2021-12-11 14:41:54.384073439 -0800
+@@ -41,13 +41,13 @@
+ endif
+ 
+ 
+-DIST_SUBDIRS = m4 compat mpi cipher random src doc tests
+-SUBDIRS =         compat mpi cipher random src $(doc) tests
++DIST_SUBDIRS = m4 compat mpi cipher random src 
++SUBDIRS =         compat mpi cipher random src 
+ 
+ EXTRA_DIST = autogen.sh autogen.rc README.GIT LICENSES      	           \
+              ChangeLog-2011 build-aux/ChangeLog-2011 doc/ChangeLog-2011    \
+              m4/ChangeLog-2011 cipher/ChangeLog-2011 src/ChangeLog-2011    \
+-             random/ChangeLog-2011 tests/ChangeLog-2011 mpi/ChangeLog-2011 \
++             random/ChangeLog-2011 mpi/ChangeLog-2011 \
+              build-aux/git-log-footer build-aux/git-log-fix VERSION
+ 
+ DISTCLEANFILES =
+diff -uNr libgcrypt-1.9.3-origin/mpi/mpi-inline.h libgcrypt-1.9.3/mpi/mpi-inline.h
+--- libgcrypt-1.9.3-origin/mpi/mpi-inline.h	2013-03-15 12:25:38.000000000 -0700
++++ libgcrypt-1.9.3/mpi/mpi-inline.h	2021-12-11 14:42:50.864291693 -0800
+@@ -35,7 +35,8 @@
+ # ifdef __GNUC_STDC_INLINE__
+ #  define G10_MPI_INLINE_DECL  extern inline __attribute__ ((__gnu_inline__))
+ # else
+-#  define G10_MPI_INLINE_DECL  extern __inline__
++/* #  define G10_MPI_INLINE_DECL  extern __inline__ */
++#  define G10_MPI_INLINE_DECL  inline 
+ # endif
+ #endif
+ 
+diff -uNr libgcrypt-1.9.3-origin/mpi/mpi-internal.h libgcrypt-1.9.3/mpi/mpi-internal.h
+--- libgcrypt-1.9.3-origin/mpi/mpi-internal.h	2020-05-06 11:43:40.000000000 -0700
++++ libgcrypt-1.9.3/mpi/mpi-internal.h	2021-12-11 14:43:18.720399338 -0800
+@@ -294,7 +294,7 @@
+ #endif
+ 
+ #ifdef __GNUC__
+-#include "mpi-inline.h"
++/* #include "mpi-inline.h" */
+ #endif
+ 
+ #endif /*G10_MPI_INTERNAL_H*/
