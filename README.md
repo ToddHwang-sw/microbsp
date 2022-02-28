@@ -670,8 +670,17 @@ To prevent this, just simply clean up <strong>board/rpi3/kernel/build</strong> f
   # sudo \rm -rf ./boards/rpi3/kernel/build/*
 ```
 
+# [4] Creating UI image (Embedded QT - Cross-compilation)
 
-# [4] Formatting SD Card
+```#!/bin/sh
+
+  # make TBOARD=rpi3 ui uidisk 
+```
+
+- It takes fairly long time to build up all subfolders under /uix.
+- The final step is building Embedded QT. 
+
+# [5] Formatting SD Card
 
 - Currently,the following 6 partitions should be used. (<strong>/dev/sde4</strong> is actually the top-level container for partitions; /dev/sde[5,6,7].)
 
@@ -686,14 +695,14 @@ I/O size (minimum/optimal): 512 bytes / 512 bytes
 Disklabel type: dos
 Disk identifier: 0xb44ddee8
 
-Device     Boot    Start      End  Sectors Size Id Type
-/dev/sde1           2048  2099199  2097152   1G  c W95 FAT32 (LBA)
-/dev/sde2        2099200  4196351  2097152   1G 83 Linux
-/dev/sde3        4196352 20973567 16777216   8G 83 Linux
-/dev/sde4       20973568 31459327 10485760   5G  5 Extended
-/dev/sde5       20975616 23072767  2097152   1G 83 Linux
-/dev/sde6       23074816 25171967  2097152   1G 83 Linux
-/dev/sde7       25174016 27271167  2097152   1G 83 Linux
+Device     Boot    Start      End  Sectors  Size Id Type
+/dev/sde1           2048   264191   262144  128M  c W95 FAT32 (LBA)
+/dev/sde2         264192  2361343  2097152    1G 83 Linux
+/dev/sde3        2361344 10749951  8388608    4G 83 Linux
+/dev/sde4       10749952 27527167 16777216    8G  5 Extended
+/dev/sde5       10752000 19140607  8388608    4G 83 Linux
+/dev/sde6       19142656 21239807  2097152    1G 83 Linux
+/dev/sde7       21241856 23339007  2097152    1G 83 Linux
 
 
 ```
@@ -704,7 +713,7 @@ Device     Boot    Start      End  Sectors Size Id Type
 |  /dev/sde1 |  boot.tgz        |
 |  /dev/sde2 |  rootfs.squashfs |
 |  /dev/sde3 |  image.ext4      |
-|  /dev/sde5 |       X          |
+|  /dev/sde5 |  ui.ext4         |
 |  /dev/sde6 |       X          |
 |  /dev/sde7 |       X          |
 
