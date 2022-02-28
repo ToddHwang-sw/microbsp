@@ -11,9 +11,15 @@ MULTI=-j$(shell cat /proc/cpuinfo | grep processor | wc -l)
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+CROSS_USER_CFLAGS += \
+	-I$(UIXINSTDIR)/include/SDL2
+
 QT_EXTRA_LIBS = \
+	-ldl \
+	-lgbm -lxkbcommon \
 	-lpcre2-posix -lpcre2-8  -lpcre2-16 -lpcre2-32 \
-	-lglapi -lwayland-cursor -ldbus-1
+	-lglapi -ldbus-1 \
+	-lwayland-cursor -lwayland-server -lwayland-egl -lwayland-client 
 
 CROSS_LFLAG_EXTRA = \
 	$(LIBS_BASIC) \
@@ -77,6 +83,7 @@ prepare: python_req
 		echo "QMAKE_OBJCOPY = $(OBJCOPY)"                              >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "QMAKE_NM      = $(CROSS_COMP_PREFIX)nm -P"               >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "QMAKE_STRIP   = $(STRIP)"                                >>  $(QTPLATFORM)/qmake.conf ; \
+		echo "QMAKE_WAYLAND_SCANNER = $(WAYLAND_BINARIES)/wayland-scanner "  >>  $(QTPLATFORM)/qmake.conf ; \
 		echo ""                                                        >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "EXTRA_LIBDIR        = $(EXTRA_LIBDIRS)"                  >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "EXTRA_INCLUDEPATH   = $(EXTRA_INCDIRS)"                  >>  $(QTPLATFORM)/qmake.conf ; \
