@@ -16,7 +16,7 @@ CROSS_USER_CFLAGS += \
 
 QT_EXTRA_LIBS = \
 	-ldl \
-	-lgbm -lxkbcommon \
+	-lgbm -lxkbcommon -lfontconfig \
 	-lpcre2-posix -lpcre2-8  -lpcre2-16 -lpcre2-32 \
 	-lglapi -ldbus-1 \
 	-lwayland-cursor -lwayland-server -lwayland-egl -lwayland-client 
