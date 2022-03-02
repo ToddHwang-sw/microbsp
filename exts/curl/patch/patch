@@ -1,0 +1,13 @@
+diff --git a/src/Makefile.in b/src/Makefile.in
+index c35b2a3..aa855e9 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -982,7 +982,7 @@ libcurltool.la: $(libcurltool_la_OBJECTS) $(libcurltool_la_DEPENDENCIES) $(EXTRA
+ 
+ curl$(EXEEXT): $(curl_OBJECTS) $(curl_DEPENDENCIES) $(EXTRA_curl_DEPENDENCIES) 
+ 	@rm -f curl$(EXEEXT)
+-	$(AM_V_CCLD)$(LINK) $(curl_OBJECTS) $(curl_LDADD) $(LIBS)
++	$(AM_V_CCLD)$(LINK) $(curl_OBJECTS) $(curl_LDADD) $(LIBS) $(LIBCURL_LIBS)
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)

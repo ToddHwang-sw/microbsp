@@ -141,7 +141,6 @@ EXTDIR=\
 	gettext \
 	glib \
 	pkg-config \
-	git \
 	module-tools \
 	procps \
 	strace \
@@ -155,6 +154,7 @@ EXTDIR=\
 	gnutls \
 	libidn \
 	curl \
+	git \
 	xconfig \
 	http/fastcgi \
 	http/lighttpd \
