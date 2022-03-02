@@ -14,7 +14,7 @@ MICB_CONFIGURE_OPTS += \
 	--with-expat=$(INSTALLDIR) 	\
 	--with-openssl=$(INSTALLDIR) 	\
 	--with-libpcre2=$(INSTALLDIR) 	\
-	--with-curl=$(INSTALLDIR)	\
+	--with-curl=$(EXTINSTDIR)	\
 	--with-iconv=$(EXTINSTDIR)
 
 MICB_CONFIGURE_RUNENV += \
