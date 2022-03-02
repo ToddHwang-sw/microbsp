@@ -73,7 +73,16 @@ echo ""
 echo "ROOT PARTITION ..."
 echo ""
 echo ""
-mount /dev/mmcblk0p5 /root
+mount /dev/mmcblk0p6 /root
+
+echo ""
+echo ""
+echo " QT Runtime environment"
+echo ""
+echo ""
+QT=Qt-5.12.12
+export QT_PLUGIN_PATH=/usr/local/$QT/plugins
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/local/lib:/usr/local/$QT/lib
 
 echo ""
 echo ""

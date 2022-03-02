@@ -17,8 +17,8 @@ MICB_CONFIGURE_OPTS += \
 	--enable-mesa \
 	--enable-gstreamer \
 	--enable-ffmpeg \
-	--enable-egl \
-	--enable-idirectfbgl-egl
+	--disable-egl \
+	--disable-idirectfbgl-egl
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 

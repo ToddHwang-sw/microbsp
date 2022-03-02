@@ -4,6 +4,21 @@ LOC=https://curl.se/download
 include $(TOPDIR)/scripts/env.mk
 
 MICB_CONFIGURE_OPTS += \
+	--enable-debug \
+	--enable-http \
+	--enable-ftp \
+	--enable-rtsp \
+	--enable-proxy \
+	--enable-tftp \
+	--enable-telnet \
+	--enable-pop3 \
+	--enable-imap \
+	--enable-smb \
+	--enable-smtp \
+	--enable-gopher \
+	--enable-mqtt \
+	--enable-http-auth \
+	--with-gnutls=$(destination) \
 	--with-ssl=$(destination) \
 	--disable-openssl-auto-load-config 
 

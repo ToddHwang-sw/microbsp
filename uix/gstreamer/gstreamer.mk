@@ -5,13 +5,16 @@ CROSS_LFLAG_EXTRA = \
 	$(LIBS_BASIC)    \
 	$(LIBS_GLIB)     \
 	$(LIBS_FFMPEG)   \
+	$(LIBS_X11)      \
+	$(LIBS_UIBASIC)  \
+	-lglapi -ldbus-1 \
+	-lpcre2-posix -lpcre2-8  -lpcre2-16 -lpcre2-32 \
 	-lsndfile        \
 	-lswresample     \
 	-lva             \
 	-lswscale        \
 	-lpostproc       \
-	-lasound         \
-	-lsndfile
+	-lasound
 
 CROSS_USER_CFLAGS += \
 	-I$(UIXINSTDIR)/include/alsa \

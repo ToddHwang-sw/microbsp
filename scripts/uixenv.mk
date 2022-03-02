@@ -42,7 +42,7 @@ LIBS_UIBASIC=\
 	-ljpeg -lpng -lpng16 -lfreetype
 
 LIBS_FFMPEG=\
-	-lavcodec -lavformat -lavutil -lavfilter -lavdevice
+	-lavcodec -lavformat -lavutil -lavresample -lavfilter -lavdevice
 
 LIBS_GLIB=\
 	-lglib-2.0 -lgio-2.0 -lgobject-2.0 -lgthread-2.0 -lgmodule-2.0 

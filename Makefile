@@ -104,7 +104,6 @@ LIBDIR=\
 	openssl \
 	libssh2 \
 	nettle \
-	curl \
 	flex \
 	lsjson \
 	pcre2 \
@@ -155,6 +154,7 @@ EXTDIR=\
 	gobject-introspection \
 	gnutls \
 	libidn \
+	curl \
 	xconfig \
 	http/fastcgi \
 	http/lighttpd \

@@ -75,8 +75,8 @@ export SQUASHROOTFS=y
 ##
 ##     /dev/mmcblk0p3 - /mnt  : Main lower layer (system part - should be used)
 ##     /dev/mmcblk0p5 - /ui   : Partition collecting all binaries from /uix 
-##     /dev/mmcblk0p6 - /low2 : Second lower layer   (2nd priority partition)
-##     /dev/mmcblk0p7 - /low3 : Third lower layer    (Updatable partition)
+##     /dev/mmcblk0p6 - /root : Will be mounted in /etc/rc.init
+##     /dev/mmcblk0p7 - /low2 : Third lower layer    (Updatable partition) - undefined 
 ##
 export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/proc ] || mkdir -p $(XBASEDIR)/proc  && \
@@ -86,7 +86,6 @@ export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/mnt  ] || mkdir -p $(XBASEDIR)/mnt   && \
 	[ -d $(XBASEDIR)/ui   ] || mkdir -p $(XBASEDIR)/ui    && \
 	[ -d $(XBASEDIR)/low2 ] || mkdir -p $(XBASEDIR)/low2  && \
-	[ -d $(XBASEDIR)/low3 ] || mkdir -p $(XBASEDIR)/low3  && \
 	[ -d $(XBASEDIR)/ovr  ] || mkdir -p $(XBASEDIR)/ovr   && \
 	[ -s $(XBASEDIR)/tmp  ] || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
 	[ -s $(XBASEDIR)/root ] || ln -s /var/root $(XBASEDIR)/root  && \
@@ -110,8 +109,7 @@ export BUILDUP_ROOTFS=\
 	echo "export LD_LIBRARY_PATH=/lib:/lib64 "      >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount /dev/mmcblk0p3 /mnt"                >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount /dev/mmcblk0p5 /ui"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount /dev/mmcblk0p6 /low2"               >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount /dev/mmcblk0p7 /low3"               >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "mount /dev/mmcblk0p7 /low2"               >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/usr  ] || ( echo \"External disk is not mounted !!\" ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
@@ -121,7 +119,7 @@ export BUILDUP_ROOTFS=\
 	echo "[ -d /low3     ] || ( echo \"Third lowerdisk is not mounted !!\"  ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t overlay -o lowerdir=/disk:/ui:/low2:/low3,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
+	echo "mount -t overlay -o lowerdir=/disk:/ui:/low2,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Device file system\" "             >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount -t devtmpfs devfs /ovr/dev "        >> $(XBASEDIR)/etc/init.d/rcS      && \
