@@ -793,7 +793,39 @@ RTKDRV=8192eu
 - <strong>APNET></strong> and <strong>APMASK</strong> is IP address ranges distributed to attached stations.
 
 
+# [6] Available Packages 
 
+- The following command prints the list of available packages from Microbsp. 
+- <strong>MIBC_DEPENDS</strong> section inside of Makefile can choose any of those required . 
+
+
+  ```sh
+
+todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/bash.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/liblzma.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/libpcre2-posix.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/libnl-route-3.0.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/pam_misc.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/zlib.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/libnl-idiag-3.0.pc
+/media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/openssl.pc
+...
+
+/media/todd/work/github/microbsp/boards/rpi3/_stagedir/usr/lib/pkgconfig/libip4tc.pc
+/media/todd/work/github/microbsp/boards/rpi3/_stagedir/usr/lib/pkgconfig/libgpiod.pc
+/media/todd/work/github/microbsp/boards/rpi3/_stagedir/usr/lib/pkgconfig/gnutls.pc
+  ...
+
+  ```
+
+- When your compilation needs botn openssl and libz libraries, 
+
+  ```sh
+
+  MICB_DEPENDS = openssl zlib 
+
+  ```
 <span style="color:blue; font-size:2em">Ubuntu QEMU</span>
 ===============
 

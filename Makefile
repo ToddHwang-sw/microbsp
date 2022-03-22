@@ -178,7 +178,7 @@ SUBDIR+=$(extra_SUBDIR)
 ## UI-related Materials - excluded from SUBDIR set. 
 ##
 ##
-UIDIR_done=\
+UIDIR=\
 	libjpeg                \
 	libpng	               \
 	freetype2              \
@@ -234,8 +234,6 @@ UIDIR_done=\
 	pulseaudio             \
 	microwindows	       \
 	pixman                 \
-
-UIDIR=\
 	vncserver              \
 	qt
 SUBDIR+=$(UIDIR)
