@@ -799,9 +799,11 @@ RTKDRV=8192eu
 - <strong>MIBC_DEPENDS</strong> section inside of Makefile can choose any of those required . 
 
 
-  ```sh
+```#!/bin/sh
+
 
 todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
+
 /media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/bash.pc
 /media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/liblzma.pc
 /media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/libpcre2-posix.pc
@@ -817,15 +819,17 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 /media/todd/work/github/microbsp/boards/rpi3/_stagedir/usr/lib/pkgconfig/gnutls.pc
   ...
 
-  ```
+```
 
-- When your compilation needs botn openssl and libz libraries, 
+- When your new pacakage needs both openssl and libz libraries, the following line needs to be added into Makefile. 
+  Path should be omitted at <strong>MICB_DEPENDS</strong> line. 
 
-  ```sh
+```#!/bin/sh
 
   MICB_DEPENDS = openssl zlib 
 
-  ```
+```
+
 <span style="color:blue; font-size:2em">Ubuntu QEMU</span>
 ===============
 
