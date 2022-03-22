@@ -4,12 +4,12 @@ LOC=https://pkg-config.freedesktop.org/releases/
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	LIBS="-liconv -lpcre -lintl"  \
 	glib_cv_stack_grows=yes \
 	glib_cv_uscore=no \
 	ac_cv_func_posix_getpwuid_r=no \
 	ac_cv_func_posix_getgrgid_r=no 
+
+MICB_DEPENDS = intl iconv glib-2.0 libffi
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

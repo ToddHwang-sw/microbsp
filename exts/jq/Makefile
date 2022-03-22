@@ -7,9 +7,7 @@ MICB_CONFIGURE_AUTOCONF_CMD = \
 	git submodule update --init ; autoreconf --install -v 
 
 MICB_CONFIGURE_OPTS += \
-	--without-oniguruma --disable-maintainer-mode
-
-##	--with-oniguruma=builtin --disable-maintainer-mode
+	--without-oniguruma 
 
 MICB_CONFIGURE_MAKEOPTS += \
 	V=1

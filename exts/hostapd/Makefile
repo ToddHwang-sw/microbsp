@@ -3,9 +3,10 @@ LOC=https://w1.fi/releases
 
 include $(TOPDIR)/scripts/extenv.mk
 
-CROSS_USER_CFLAGS += -I$(INSTALLDIR)/include/libnl3
+MICB_CONFIGURE_MAKEOPTS += \
+        $(COMP_CMDS) V=1 LIBS="$(DEPLOYED_LIBFLAGS)"
 
-MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) V=1
+MICB_DEPENDS = openssl libnl-cli-3.0 ncurses
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

@@ -7,8 +7,6 @@ FLUXCOMPAPP=$(TOPDIR)/uix/directfb/$(BUILDDIR)/$(FLUXDIR)/src/fluxcomp
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-UILIBS += -lpng
-
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_path_FLUXCOMP=$(FLUXCOMPAPP)
 
@@ -19,8 +17,6 @@ MICB_CONFIGURE_OPTS += \
 	--enable-ffmpeg \
 	--disable-egl \
 	--disable-idirectfbgl-egl
-
-MICB_CONFIGURE_MAKEOPTS += V=1 
 
 fluxcomp:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)

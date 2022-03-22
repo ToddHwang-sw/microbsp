@@ -4,12 +4,9 @@ LOC=http://www.netfilter.org/projects/nftables/files
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	ac_cv_lib_readline_readline=yes \
-	LIBS+="-lmnl -lnftnl -ltinfo"
+	ac_cv_lib_readline_readline=yes
 
-
-MICB_CONFIGURE_MAKEOPTS += V=1 
+MICB_DEPENDS = openssl libnftnl ncurses
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

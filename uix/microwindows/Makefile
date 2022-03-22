@@ -9,6 +9,8 @@ IMAGEVIEW=src/demos/nanox/nxview
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_DEPENDS = freetype2 libpng libpng16 libjpeg zlib
+
 MICB_CONFIGURE_MAKEOPTS += \
 	VERBOSE=Y \
 	COMPILER="$(CROSS_COMP_PREFIX)gcc $(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS) $(CROSS_USER_LFLAGS)" \

@@ -1,4 +1,5 @@
 diff --git a/Makefile.am b/Makefile.am
+index 409ab7d..69ace2e 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -46,10 +46,6 @@ dist_noinst_SCRIPTS = \
@@ -13,6 +14,7 @@ diff --git a/Makefile.am b/Makefile.am
  
  # Convenience targets to build libfl only
 diff --git a/configure.ac b/configure.ac
+index 9b5afd2..b7b1994 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -174,11 +174,6 @@ AC_CHECK_FUNCS([pow setlocale reallocarr reallocarray])
@@ -27,3 +29,17 @@ diff --git a/configure.ac b/configure.ac
  src/libfl.pc
  src/Makefile
  tools/Makefile
+diff --git a/src/libmain.c b/src/libmain.c
+index bb2fe35..37cfe31 100644
+--- a/src/libmain.c
++++ b/src/libmain.c
+@@ -23,7 +23,8 @@
+ 
+ #include <stdlib.h>
+ 
+-extern int yylex (void);
++//extern int yylex (void);
++__attribute__((weak)) int yylex (void) { return 0; }
+ 
+ int     main (int argc, char *argv[])
+ {

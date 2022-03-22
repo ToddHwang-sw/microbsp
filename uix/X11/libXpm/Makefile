@@ -3,8 +3,7 @@ LOC=https://www.x.org/releases/individual/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
-MICB_CONFIGURE_RUNENV += \
-	LIBS="$(LIBS_BASIC) -lXau -lSM -lICE -lxcb"
+MICB_DEPENDS = sm ice xcb xau uuid intl 
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

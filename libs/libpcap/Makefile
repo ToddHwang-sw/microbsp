@@ -3,11 +3,7 @@ LOC=https://www.tcpdump.org/release
 
 include $(TOPDIR)/scripts/env.mk
 
-CROSS_USER_CFLAGS += \
-	-I$(INSTALLDIR)/include/libnl3
-
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
+MICB_DEPENDS=libnl-3.0 
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -15,7 +11,7 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
-all install clean:
+all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 

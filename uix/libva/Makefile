@@ -5,6 +5,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS += -D enable_docs=false
 
+MICB_DEPENDS = libdrm
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

@@ -20,7 +20,7 @@ all:
 			make $(MICB_CONFIGURE_MAKEOPTS) libbz2.a bzip2 bzip2recover ; \
 			make $(MICB_CONFIGURE_MAKEOPTS) -f Makefile-libbz2_so )
 
-install clean:
+install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); \
 			make $(MICB_CONFIGURE_MAKEOPTS) $@ ; \

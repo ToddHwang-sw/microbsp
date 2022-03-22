@@ -32,7 +32,7 @@ export IMAGENAME=output.iso
 INSTSUBFN=disk
 XBASEDIR=$(BDDIR)/_install
 FINDIR=$(BDDIR)/__tempd
-INSTALLDIR=$(XBASEDIR)/$(INSTSUBFN)
+INSTALLDIR:=$(XBASEDIR)/$(INSTSUBFN)
 ISODIR=$(BDDIR)/iso
 export XBASEDIR
 export INSTALLDIR
@@ -48,24 +48,32 @@ export KERNDIR=$(BDDIR)/kernel/build/$(_ARCH_)
 
 ## final stage dir 
 ##
-STAGEDIR=$(BDDIR)/_stagedir
-EXTINSTDIR=$(STAGEDIR)/usr
+STAGEDIR:=$(BDDIR)/_stagedir
+EXTINSTDIR:=$(STAGEDIR)/usr
 export STAGEDIR
 export EXTINSTDIR
 TEMPFN=/var/tmp/____temporary_Merge_File______
 
 ##
 ## /uix compiled folders...
-UIXINSTDIR=$(BDDIR)/_uidir
+UIXINSTDIR:=$(BDDIR)/_uidir
 export UIXINSTDIR
 
-CHECKLIBS=\
-	  $(INSTALLDIR)/lib $(INSTALLDIR)/lib64 $(INSTALLDIR)/usr/lib $(INSTALLDIR)/usr/local/lib \
-	  $(EXTINSTDIR)/lib $(EXTINSTDIR)/lib64 $(EXTINSTDIR)/usr/lib $(EXTINSTDIR)/usr/local/lib \
-	  $(UIXINSTDIR)/lib $(UIXINSTDIR)/lib64 $(UIXINSTDIR)/usr/lib $(UIXINSTDIR)/usr/local/lib
+##
+## for processing Library
+export LIBPATHFILE=libs.info
 
-CLEAN_LIBLA=for libdir in $(CHECKLIBS); \
-	  	do [ ! -d $$libdir ] || find $$libdir -name "*.la" -exec \rm -rf {} \; ; \
+export LIBSSUBDIR=\
+	/lib /lib64 \
+	/usr/lib  /usr/lib64 \
+	/usr/local/lib  /usr/local/lib64 
+
+CLEAN_LIBLA=\
+	for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 				\
+		for subdir in $(LIBSSUBDIR) ; do 						\
+    			[ ! -d $$libdir$$subdir ] || 						\
+				find $$libdir$$subdir -name "*.la" -exec \rm -rf {} \; ; 	\
+		done ;										\
 	done
 
 ##
@@ -151,8 +159,8 @@ EXTDIR=\
 	python \
 	drm    \
 	gobject-introspection \
-	gnutls \
 	libidn \
+	gnutls \
 	curl \
 	git \
 	xconfig \
@@ -170,7 +178,7 @@ SUBDIR+=$(extra_SUBDIR)
 ## UI-related Materials - excluded from SUBDIR set. 
 ##
 ##
-UIDIR=\
+UIDIR_done=\
 	libjpeg                \
 	libpng	               \
 	freetype2              \
@@ -204,10 +212,10 @@ UIDIR=\
 	X11/xorg-libxtst       \
 	X11/xshmfence          \
 	X11/libXxf86vm         \
-	xkbcommon              \
 	wayland-host           \
 	wayland                \
 	wayland-protocols      \
+	xkbcommon              \
 	libva                  \
 	fontconfig             \
 	mesa                   \
@@ -226,6 +234,8 @@ UIDIR=\
 	pulseaudio             \
 	microwindows	       \
 	pixman                 \
+
+UIDIR=\
 	vncserver              \
 	qt
 SUBDIR+=$(UIDIR)
@@ -342,6 +352,14 @@ checkfirst:
 		mkdir -p $(UIXINSTDIR)/usr/local/share; \
 		mkdir -p $(UIXINSTDIR)/usr/local/share/aclocal; \
 	)
+	@[ ! -f $(BDDIR)/$(LIBPATHFILE) ] || \rm -rf $(BDDIR)/$(LIBPATHFILE)  
+	@touch $(BDDIR)/$(LIBPATHFILE) 
+	@for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do	\
+		for subdir in $(LIBSSUBDIR) ; do 			\
+			echo $$libdir$$subdir >> $(BDDIR)/$(LIBPATHFILE) ; \
+			mkdir -p $$libdir$$subdir ;	 		\
+		done ;							\
+	done
 
 ##
 ## libs
@@ -396,7 +414,7 @@ app_%: checkfirst
 ##
 ext: checkfirst
 	@cd exts; \
-		for dir in $(SUBDIR); do         \
+		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
 				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
@@ -768,3 +786,12 @@ vm%:
 		echo "Only two commands; vmrun top " ;        \
 	fi
 
+pkglist:
+	@for dir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 	\
+		for subdir in $(LIBSSUBDIR) ; do 			\
+	    		[ ! -d $$dir$$subdir/pkgconfig ] || 		\
+				find $$dir$$subdir -name "*.pc" ; 	\
+			done ;						\
+		done
+
+	

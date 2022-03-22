@@ -3,8 +3,6 @@ LOC=https://github.com/libsdl-org
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-UILIBS += -lpng
-
 MICB_CONFIGURE_OPTS += \
 	--enable-arm-neon \
 	--disable-loadso \
@@ -12,8 +10,9 @@ MICB_CONFIGURE_OPTS += \
 	--disable-haptic
 
 MICB_CONFIGURE_MAKEOPTS += \
-	V=1 \
 	WAYLAND_SCANNER=$(WAYLAND_BINARIES)/wayland-scanner	
+
+MICB_DEPENDS = libdrm 
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

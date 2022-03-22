@@ -6,13 +6,11 @@ include $(TOPDIR)/scripts/extenv.mk
 CROSS_USER_CFLAGS += \
 	-D_POSIX_HOST_NAME_MAX=255
 
-## hypothetically... 
-CROSS_LFLAG_EXTRA += \
-	-lpcre -lintl -liconv -lffi -lmount -lblkid -lgettextlib -lz
-
 MICB_MESON_OPTS+=\
 	-D gtk_doc=false \
 	-D glib_debug=disabled
+
+MICB_DEPENDS = intl iconv libpcre libffi zlib mount blkid
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

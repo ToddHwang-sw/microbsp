@@ -3,7 +3,8 @@ LOC=https://github.com/westes
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
+MICB_CONFIGURE_OPTS += \
+	--disable-bootstrap 
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -12,7 +13,7 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
-all install clean:
+all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 

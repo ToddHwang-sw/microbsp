@@ -6,6 +6,8 @@ include $(TOPDIR)/scripts/x11uixenv.mk
 export MICB_CONFIGURE_OPTS += \
 		--without-python
 
+MICB_DEPENDS = libxml-2.0
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

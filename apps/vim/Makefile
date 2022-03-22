@@ -2,6 +2,8 @@ DIR=vim
 LOC=https://github.com/vim
 FILENM=vim.git
 
+##
+## No way with scripts/env.mk -- 
 include $(TOPDIR)/arch/$(_ARCH_)/env.mk
 
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16 

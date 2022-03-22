@@ -3,11 +3,6 @@ LOC=https://github.com/freedesktop
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-UILIBS += -lpng -lfreetype
-
-CROSS_USER_CFLAGS += \
-	-I$(EXTINSTDIR)/include/json-c
-
 MICB_CONFIGURE_RUNENV += \
 	CC_FOR_BUILD=gcc 
 
@@ -15,7 +10,7 @@ MICB_CONFIGURE_OPTS += \
 	--enable-largefile \
 	--disable-docs 
 
-MICB_CONFIGURE_MAKEOPTS += V=1 
+MICB_DEPENDS = freetype2 json-c libpng zlib expat
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

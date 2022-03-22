@@ -12,12 +12,7 @@ MICB_MESON_OPTS+=\
 	 -D bluez5=false  \
 	 -D gstreamer=enabled 
 
-CROSS_LFLAG_EXTRA += \
-	$(LIBS_BASIC) \
-	$(LIBS_X11) \
-	$(LIBS_GLIB) \
-	-ldbus-1 \
-	-lsndfile 
+MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

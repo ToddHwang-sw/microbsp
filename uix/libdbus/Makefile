@@ -10,6 +10,9 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
+MICB_DEPENDS = intl iconv gio-unix-2.0 
+
+
 prepare:
 	[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

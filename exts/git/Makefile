@@ -3,8 +3,6 @@ LOC=https://mirrors.edge.kernel.org/pub/software/scm/git/
 
 include $(TOPDIR)/scripts/extenv.mk
 
-GIT_EXTRA_LIBS="-lnettle -lidn2 -lssh2 -lgnutls -lssl -lcrypto -lz -lcurl"
-
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_fread_reads_directories=yes \
 	ac_cv_snprintf_returns_bogus=yes
@@ -17,15 +15,11 @@ MICB_CONFIGURE_OPTS += \
 	--with-curl=$(EXTINSTDIR)	\
 	--with-iconv=$(EXTINSTDIR)
 
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	LIBS=$(GIT_EXTRA_LIBS)
-
 MICB_CONFIGURE_PRG = ./configure 
 
 MICB_CONFIGURE_MAKEOPTS += 	\
 	"V=1" 			\
-	ENV_LIBS=$(GIT_EXTRA_LIBS)
+	ENV_LIBS="$(DEPLOYED_LIBFLAGS)"
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)

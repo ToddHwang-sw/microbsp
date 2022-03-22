@@ -6,6 +6,9 @@ ifeq ($(_CORE_),aarch64)
 	MICB_CONFIGURE_PLATFORM=arm-linux
 endif
 
+MICB_CONFIGURE_OPTS += \
+	--disable-static-utils 
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
