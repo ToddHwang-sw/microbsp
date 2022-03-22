@@ -208,6 +208,17 @@ index bb3cb3c4e..b4591b743 100644
         description: 'Enable documentation.')
 +
 +option('base-install', type : 'string', yield : true, description : 'Installation Location')
+diff --git a/pkgconfig/gstreamer-plugins-base.pc.in b/pkgconfig/gstreamer-plugins-base.pc.in
+index 89292ae7b..293620305 100644
+--- a/pkgconfig/gstreamer-plugins-base.pc.in
++++ b/pkgconfig/gstreamer-plugins-base.pc.in
+@@ -11,4 +11,5 @@ Version: @VERSION@
+ Libs: -L${libdir}
+ Cflags: -I${includedir}
+ 
+-libraries=allocators app audio fft pbutils riff rtp rtsp sdp tag video @gl_lib_name@
++Requires.private: gstreamer-allocators-@GST_API_VERSION@ gstreamer-app-@GST_API_VERSION@ gstreamer-audio-@GST_API_VERSION@ gstreamer-fft-@GST_API_VERSION@ gstreamer-pbutils-@GST_API_VERSION@ gstreamer-riff-@GST_API_VERSION@ gstreamer-rtp-@GST_API_VERSION@ gstreamer-rtsp-@GST_API_VERSION@ gstreamer-sdp-@GST_API_VERSION@ gstreamer-tag-@GST_API_VERSION@ gstreamer-video-@GST_API_VERSION@ gstreamer-gl-@GST_API_VERSION@
++	
 diff --git a/tests/check/libs/rtp.c b/tests/check/libs/rtp.c
 index f5a13cdf6..fc6a9d981 100644
 --- a/tests/check/libs/rtp.c

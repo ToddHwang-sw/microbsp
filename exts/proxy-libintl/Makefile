@@ -3,6 +3,9 @@ LOC=https://github.com/centricular
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_MESON_OPTS += \
+	-D default_library=shared
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

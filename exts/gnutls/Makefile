@@ -1,13 +1,7 @@
 DIR=gnutls
-LOC=https://github.com/gnutls
+LOC=-b gnutls_3_5_x https://github.com/gnutls
 
 include $(TOPDIR)/scripts/extenv.mk
-
-MICB_CONFIGURE_AUTOCONF_CMD = \
-	./bootstrap 
-
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
 
 MICB_CONFIGURE_OPTS += \
 	--disable-doc \
@@ -17,10 +11,11 @@ MICB_CONFIGURE_OPTS += \
 	--with-included-unistring \
 	--without-p11-kit \
 	--without-tpm \
+	--enable-guile \
+	--enable-local-libopts \
 	--disable-silent-rules
 
-MICB_CONFIGURE_MAKEOPTS += \
-	LIBS="-lnettle -lhogweed -lgmp"
+MICB_DEPENDS = libidn2
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

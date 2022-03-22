@@ -3,9 +3,6 @@ LOC=-b release/2.8 https://git.ffmpeg.org
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
-
 MICB_CONFIGURE_OPTS = \
 	--prefix= \
 	--enable-cross-compile \
@@ -33,8 +30,6 @@ MICB_CONFIGURE_OPTS = \
 	--pkg-config=/usr/bin/pkg-config \
 	--enable-gpl \
 	--enable-nonfree
-
-MICB_CONFIGURE_MAKEOPTS += V=1 
 
 prepare:
 	[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

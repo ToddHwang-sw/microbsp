@@ -3,14 +3,10 @@ LOC=-b 1.18 https://gitlab.freedesktop.org/gstreamer
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-CROSS_USER_CFLAGS += \
-	-I$(EXTINSTDIR)/include/python3.8  \
-	-I$(UIXINSTDIR)/usr/local/include/pygobject-3.0/
+GSTREMAER_OPTS += \
+	-D doc=disabled
 
-GSTREMAER_OPTS+=\
-	-D doc=disabled \
-	-D libpython-dir=$(EXTINSTDIR)/lib \
-	-D pygi-overrides-dir=$(UIXINSTDIR)/usr/local/lib/python3.8/site-packages
+MICB_DEPENDS = gstreamer-1.0 glib-2.0 python-3.8-embed pygobject-3.0
 
 include $(shell pwd)/../gstreamer.mk
 

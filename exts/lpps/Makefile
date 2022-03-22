@@ -2,9 +2,6 @@ DIR=lpps
 
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_CONFIGURE_RUNENV += \
-		LIBS=-liconv
-
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@$(MICB_CONFIGURE_AUTOCONF)

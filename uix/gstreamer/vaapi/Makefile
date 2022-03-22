@@ -8,4 +8,6 @@ GSTREAMER_OPTS += \
 	-D examples=disabled \
 	-D tests=disabled
 
+MICB_DEPENDS = gstreamer-1.0 glib-2.0 libva
+
 include $(shell pwd)/../gstreamer.mk

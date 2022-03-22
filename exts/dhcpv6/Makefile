@@ -9,7 +9,9 @@ MICB_CONFIGURE_RUNENV += \
 MICB_CONFIGURE_PRG = ./configure 
 
 MICB_CONFIGURE_MAKEOPTS = \
-	LIBS="-L$(destination)/lib -lfl"  prefix=$(destination) 
+	prefix=$(destination) 
+
+MICB_DEPENDS = libfl
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

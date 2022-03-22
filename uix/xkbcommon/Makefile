@@ -5,10 +5,11 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS +=\
 	-D enable-docs=false \
-	-D enable-wayland=false
+	-D base-install=$(UIXINSTDIR)
 
-CROSS_USER_CFLAGS += -DLONG_BIT=sizeof(long)
-CROSS_LFLAG_EXTRA += $(LIBS_BASIC)
+CROSS_USER_CFLAGS += -DLONG_BIT=32
+
+MICB_DEPENDS = libxml-2.0 libffi
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

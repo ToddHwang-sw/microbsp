@@ -1,0 +1,12 @@
+diff --git a/meson.build b/meson.build
+index 4833043..eef75d6 100644
+--- a/meson.build
++++ b/meson.build
+@@ -25,3 +25,7 @@ endif
+ 
+ intl_dep = declare_dependency(link_with : intl_lib,
+   include_directories : include_directories('.'))
++
++pkg = import('pkgconfig')
++pkg.generate(intl_lib)
++

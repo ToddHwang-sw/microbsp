@@ -1,34 +1,37 @@
 diff --git a/lib/Makefile.am b/lib/Makefile.am
-index eebc999..586cd99 100644
+index 66ee584..782c2fc 100644
 --- a/lib/Makefile.am
 +++ b/lib/Makefile.am
-@@ -54,7 +54,7 @@ libidn2_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
- 	-no-undefined
- libidn2_la_LDFLAGS += $(CODE_COVERAGE_LDFLAGS)
- 
--IDNA_TABLE = idna-tables-properties.csv
-+IDNA_TABLE = $(srcdir)/idna-tables-properties.csv
- IANA_URL = https://www.iana.org/assignments/idna-tables-11.0.0/idna-tables-properties.csv
- IDNA_TABLE_SHA1 = 1ed1ecc53e4c1458b58ba4dbec49c553f4779a7a
- 
-@@ -73,16 +73,16 @@ MAINTAINERCLEANFILES = $(IDNA_TABLE) $(TR46MAP) $(NFCQC)
+@@ -66,16 +66,16 @@ MAINTAINERCLEANFILES = $(IDNA_TABLE) $(TR46MAP) $(NFCQC)
  EXTRA_DIST = $(IDNA_TABLE) $(TR46MAP) $(NFCQC) data.c gendata.c tr46map_data.c gentr46map.c
  
  gendata$(EXEEXT): gendata.c
--	$(CC) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
-+	$(BUILD_CC) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
+-	$(CC) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
++	$(BUILD_CC) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
  data.c: $(srcdir)/gendata.c $(IDNA_TABLE)
 -	$(MAKE) gendata$(EXEEXT)
-+	$(MAKE) BUILD_CC=gcc gendata$(EXEEXT)
++	$(MAKE) BUILD_CC="gcc -I." gendata$(EXEEXT)
  	$(builddir)/gendata$(EXEEXT) < $(IDNA_TABLE) > $@.new
  	mv $@.new $@
  
  gentr46map$(EXEEXT): gentr46map.c
--	$(CC) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
-+	$(BUILD_CC) $(AM_CPPFLAGS) -I. $(CFLAGS) $< -o $@
+-	$(CC) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
++	$(BUILD_CC) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CFLAGS) $< -o $@
  tr46map_data.c: $(srcdir)/gentr46map.c $(TR46MAP) $(NFCQC)
 -	$(MAKE) gentr46map$(EXEEXT)
-+	$(MAKE) BUILD_CC=gcc gentr46map$(EXEEXT)
++	$(MAKE) BUILD_CC="gcc -I." gentr46map$(EXEEXT)
  	$(builddir)/gentr46map$(EXEEXT) > $@.new
  	mv $@.new $@
  
+diff --git a/lib/puny_decode.c b/lib/puny_decode.c
+index 16189fe..29515db 100644
+--- a/lib/puny_decode.c
++++ b/lib/puny_decode.c
+@@ -249,5 +249,6 @@ punycode_decode (size_t input_length,
+ __typeof__ (_idn2_punycode_decode_internal) _idn2_punycode_decode
+   __attribute__((visibility ("default"),
+ 		 alias ("_idn2_punycode_decode_internal")));
+-__asm__ (".symver _idn2_punycode_decode, _idn2_punycode_decode@IDN2_0.0.0");
++/*__asm__ (".symver _idn2_punycode_decode, _idn2_punycode_decode@IDN2_0.0.0"); */
+ #endif
++

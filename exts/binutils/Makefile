@@ -6,9 +6,9 @@ BINUTILS_TARGET_FILE=$(BINUTILS)-$(PLATFORM).tar.gz
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_OPTS += --disable-multilib \
-	--with-mpc=$(EXTINSTDIR)  \
-	--with-mpfr=$(EXTINSTDIR)  \
-	--with-gmp=$(EXTINSTDIR)  \
+	--with-mpc=$(INSTALLDIR)   \
+	--with-mpfr=$(INSTALLDIR)  \
+	--with-gmp=$(INSTALLDIR)   \
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

@@ -3,13 +3,7 @@ LOC=https://github.com/isc-projects
 
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
-
 MICB_CONFIGURE_PRG = ./configure 
-
-MICB_CONFIGURE_RUNENV += \
-	LIBS="-lpthread -lssl -lcrypto -lxml2 -lz -llzma"
 
 MICB_CONFIGURE_OPTS += \
 	--with-libbind=$(EXTINSTDIR) \
@@ -19,6 +13,8 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_MAKEOPTS += \
 	BUILD_CC=gcc \
+
+MICB_DEPENDS = openssl libxml-2.0
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

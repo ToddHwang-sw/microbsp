@@ -3,9 +3,6 @@ LOC=http://gitlab.com/procps-ng
 	
 include $(TOPDIR)/scripts/extenv.mk
 
-CROSS_USER_CFLAGS += \
-	-I$(INSTALLDIR)/include/ncurses
-
 MICB_CONFIGURE_AUTOCONF_CMD = \
 	aclocal ; autoreconf --install -v ; automake --add-missing --foreign
 
@@ -16,6 +13,8 @@ MICB_CONFIGURE_RUNENV += \
 	ac_cv_func_realloc_0_nonnull=yes
 
 MICB_CONFIGURE_PRG = ./configure
+
+MICB_DEPENDS = ncurses
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

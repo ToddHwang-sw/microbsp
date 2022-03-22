@@ -11,5 +11,7 @@ GSTREAMER_OPTS += \
 	-D tests=disabled \
 	-D benchmarks=disabled
 
+MICB_DEPENDS = intl iconv gio-unix-2.0
+
 include $(shell pwd)/../gstreamer.mk
 

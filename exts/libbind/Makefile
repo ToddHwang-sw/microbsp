@@ -8,9 +8,7 @@ ifeq ($(_CORE_),aarch64)
 endif
 
 MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	BUILD_CC=gcc \
-	LIBS="-lz -llzma" 
+	BUILD_CC=gcc
 
 MICB_CONFIGURE_OPTS += \
 	--without-python  \
@@ -18,6 +16,8 @@ MICB_CONFIGURE_OPTS += \
 	--with-ecdsa=no  \
 	--with-gost=no   \
 	--with-eddsa=no
+
+MICB_DEPENDS=openssl libxml-2.0 ncurses
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

@@ -3,12 +3,10 @@ LOC=https://www.tcpdump.org/release
 
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_CONFIGURE_RUNENV += \
-	LIBS="-lnl-3 -lnl-genl-3" \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
-
 MICB_CONFIGURE_OPTS += \
 	--without-smi 
+
+MICB_DEPENDS = libpcap 
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

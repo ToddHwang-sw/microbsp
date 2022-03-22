@@ -6,20 +6,21 @@ include $(TOPDIR)/scripts/extenv.mk
 ## gettext does not allow external XML library 
 CROSS_USER_CFLAGS := $(filter-out -I$(INSTALLDIR)/include/libxml2,$(CROSS_USER_CFLAGS))
 
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	LIBS="-lintl -lz -llzma"
-
 MICB_CONFIGURE_OPTS += \
 	--enable-largefile \
 	--enable-threads=posix \
 	--enable-curses \
-	--with-bzip2 
+	--with-bzip2  \
+	--with-libxml2-prefix=$(INSTALLDIR) \
+	--with-libncurses-prefix=$(INSTALLDIR) \
+	--with-libiconv-prefix=$(EXTINSTDIR) \
+	--without-libtextstyle 
 
 ##
 ## DESTDIR will screw all up. 
-MICB_CONFIGURE_MAKEOPTS = \
-	prefix=$(destination) 
+MICB_CONFIGURE_MAKEOPTS = V=1 prefix=$(destination) 
+
+MICB_DEPENDS = intl zlib liblzma
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
