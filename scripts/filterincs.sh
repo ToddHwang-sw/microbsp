@@ -1,33 +1,41 @@
 #!/bin/sh
 
 single_trace() {
-	local libopt=`grep -H $1 $2 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}'` ;
+	## Cflags --
+	local incopt=`grep -H Cflags: $1 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}'`
 
-	## libdir
-	local libpath=`grep -w "libdir=" $2 | sed -e "s/libdir=//g"`
-	if [ "${libpath:1:1}" != "{" ]; then 
-		local pref=`grep -w "prefix=" $2 | sed -e "s/prefix=//g"`
+	## includedir
+	local incpath=`grep -w "includedir=" $1 | sed -e "s/includedir=//g"`
+	if [ "${incpath:1:1}" != "{" ]; then 
+		local pref=`grep -w "prefix=" $1 | sed -e "s/prefix=//g"`
 		if [[ "$pref" == "" ]]; then 
-			libpath="\${prefix}"$libpath
+			incpath="\${prefix}"$incpath
 		else
 			S=${#pref}
-			libpath=${libpath:$S}
-			libpath="\${prefix}"$libpath
+			incpath=${incpath:$S}
+			incpath="\${prefix}"$incpath
 		fi
+	fi
+	incpath=`echo \\\\$incpath | sed -e "s/\\[$]/\\\\\[$]/g" `
+	incpath=`echo $incpath | sed -e "s/\//\\\\\\\\\//g"`
+
+	## libdir
+	local libpath=`grep -w "libdir=" $1 | sed -e "s/libdir=//g"`
+	if [ "${libpath:1:1}" != "{" ]; then 
+		libpath="\${prefix}"$libpath
 	fi
 	libpath=`echo \\\\$libpath | sed -e "s/\\[$]/\\\\\[$]/g" `
 	libpath=`echo $libpath | sed -e "s/\//\\\\\\\\\//g"`
 
 	## applying prefix .... 
-	local adjpath=`echo $3 | sed -e "s/\//\\\\\\\\\//g"`
-	echo $libopt | \
+	adjpath=`echo $2 | sed -e "s/\//\\\\\\\\\//g"`
+	echo $incopt | sed -e "s/\(\${includedir}\)/$incpath/g" | \
 			sed -e "s/\(\${libdir}\)/$libpath/g" | \
-			sed -e "s/\(\${sharedlibdir}\)/$libpath/g" | \
 			sed -e "s/\(\${prefix}\)/$adjpath/g" | \
-			sed -e "s/\(\${exec_prefix}\)/$adjpath/g" | \
-			sed -e "s/\#.*//g" | sed -e "s/\@.*//g"  
-	
-	libopt=""
+			sed -e "s/\(\${exec_prefix}\)/$adjpath/g"
+
+	incopt=""
+	incpath=""
 	libpath=""
 	adjpath=""
 }
@@ -47,8 +55,7 @@ package_trace() {
 		done ;
 	done 
 
-	single_trace "Libs:" $1 ${2%/*} 
-	single_trace "Libs.private:" $1 ${2%/*} 
+	single_trace $1 ${2%/*} 
 }
 
 [ -f $1/libs.info ] || ( \

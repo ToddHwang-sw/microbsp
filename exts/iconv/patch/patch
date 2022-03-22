@@ -1,0 +1,77 @@
+diff --git a/Makefile.in b/Makefile.in
+index 5d501ce..db67980 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -29,6 +29,9 @@ mkinstalldirs = $(SHELL) @top_srcdir@/build-aux/mkinstalldirs
+ 
+ SHELL = @SHELL@
+ 
++iconv.pc: $(srcdir)/iconv.pc.in
++	./config.status
++
+ all : lib/localcharset.h force
+ 	cd lib && $(MAKE) all
+ 	cd srclib && $(MAKE) all
+@@ -47,13 +50,14 @@ install-lib : all force
+ 	if [ ! -d $(includedir) ] ; then $(mkinstalldirs) $(includedir) ; fi
+ 	$(INSTALL_DATA) include/iconv.h.inst $(includedir)/iconv.h
+ 
+-install : lib/localcharset.h force
++install : lib/localcharset.h iconv.pc force
+ 	cd libcharset && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' libdir='$(libdir)'
+ 	cd lib && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' libdir='$(libdir)'
+ 	cd srclib && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' libdir='$(libdir)'
+ 	cd src && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' libdir='$(libdir)'
+ 	if [ ! -d $(DESTDIR)$(includedir) ] ; then $(mkinstalldirs) $(DESTDIR)$(includedir) ; fi
+ 	$(INSTALL_DATA) include/iconv.h.inst $(DESTDIR)$(includedir)/iconv.h
++	$(INSTALL) -m 0644 iconv.pc $(DESTDIR)$(libdir)/pkgconfig
+ 	cd po && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' datarootdir='$(datarootdir)' datadir='$(datadir)'
+ 	cd man && $(MAKE) install prefix='$(prefix)' exec_prefix='$(exec_prefix)' datarootdir='$(datarootdir)' datadir='$(datadir)' mandir='$(mandir)'
+ 
+@@ -128,6 +132,7 @@ distclean : force
+ 	$(RM) config.status config.log config.cache Makefile libtool
+ 	$(RM) config.h stamp-h1 lib/stamp-h2
+ 	$(RM) include/iconv.h include/iconv.h.inst
++	$(RM) $(libdir)/pkgconfig/iconv.pc
+ 	rm -rf bin
+ 
+ maintainer-clean : force
+diff --git a/configure b/configure
+index 3488d1d..583b388 100755
+--- a/configure
++++ b/configure
+@@ -24702,6 +24702,8 @@ subdirs="$subdirs libcharset"
+ 
+ ac_config_files="$ac_config_files Makefile"
+ 
++ac_config_files="$ac_config_files iconv.pc"
++
+ ac_config_files="$ac_config_files lib/Makefile"
+ 
+ ac_config_files="$ac_config_files srclib/Makefile"
+@@ -25900,6 +25902,7 @@ do
+     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+     "include/iconv.h") CONFIG_FILES="$CONFIG_FILES include/iconv.h:include/iconv.h.build.in" ;;
+     "include/iconv.h.inst") CONFIG_FILES="$CONFIG_FILES include/iconv.h.inst:include/iconv.h.in" ;;
++    "iconv.pc") CONFIG_FILES="$CONFIG_FILES iconv.pc" ;;
+ 
+   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
+   esac
+diff --git a/iconv.pc.in b/iconv.pc.in
+new file mode 100644
+index 0000000..e9227dd
+--- /dev/null
++++ b/iconv.pc.in
+@@ -0,0 +1,12 @@
++# Package Information for pkg-config
++
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: iconv 
++Description: GNU iconv library
++Version: @RELEASE@
++Libs: -L${libdir} -liconv
++Cflags: -I${includedir}

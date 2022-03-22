@@ -1,0 +1,23 @@
+diff --git a/pygobject-3.0.pc.in b/pygobject-3.0.pc.in
+index ca494231..07cfd659 100644
+--- a/pygobject-3.0.pc.in
++++ b/pygobject-3.0.pc.in
+@@ -4,17 +4,12 @@ includedir=@includedir@
+ datarootdir=@datarootdir@
+ datadir=@datadir@
+ 
+-# you can use the --variable=pygobjectincludedir argument to
+-# pkg-config to get this value. You might want to use this to
+-# install additional headers.
+-pygobjectincludedir=${includedir}/pygobject-3.0
+-
+ Name: PyGObject
+ Description: Python bindings for GObject
+ Requires: gobject-2.0
+ Requires.private: libffi
+ Version: @VERSION@
+-Cflags: -I${pygobjectincludedir}
++Cflags: -I${includedir}/pygobject-3.0
+ 
+ # overridesdir has now moved to the gi module
+ # third parties can access it in a python script:

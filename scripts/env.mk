@@ -2,33 +2,48 @@ include $(TOPDIR)/arch/$(_ARCH_)/env.mk
 
 export CROSS_COMP_FLAGS += -include linux/limits.h 
 
-export CROSS_USER_CFLAGS += \
-	-I$(INSTALLDIR)/include  		\
-	-I$(INSTALLDIR)/include/libxml2  	\
-	-I$(INSTALLDIR)/include/libmount	\
-	-I$(INSTALLDIR)/usr/include
+export CROSS_USER_CFLAGS =
+export CROSS_USER_LFLAGS =
+export CROSS_LFLAG_EXTRA = 
 
-export CROSS_USER_LFLAGS_BASIC = \
-	-L$(INSTALLDIR)/lib 			\
-	-L$(INSTALLDIR)/lib64 
+## defined in each of Makefile...
+MICB_DEPENDS =
+
+COLLECT_LIBS=\
+	for dep in $(MICB_DEPENDS) ; do \
+		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+			for dir in $(LIBSSUBDIR) ; do  \
+				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+					$(TOPDIR)/scripts/filterlibs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+				fi ; \
+			done ; \
+		done ; \
+	done
+BASIC_SYSLIBS=-ldl -lpthread 
+
+export DEPLOYED_LIBFLAGS=\
+	$(sort $(shell $(COLLECT_LIBS)) $(BASIC_SYSLIBS))
 
 ##
-## Library collections 
+## LFLAG
+export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS)
+
+COLLECT_INCS = \
+	for dep in $(MICB_DEPENDS) ; do \
+		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+			for dir in $(LIBSSUBDIR) ; do  \
+				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+					$(TOPDIR)/scripts/filterincs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+				fi ; \
+			done ; \
+		done ;	\
+	done
+export DEPLOYED_INCFLAGS=\
+	$(sort $(shell $(COLLECT_INCS)))
+
 ##
-define build_libs
-	$(filter-out -l$(1)/%,$(addprefix -l,\
-	   	$(subst .so,,$(subst $(1)/lib,,$(shell find $(1) -name "lib*.so"))) \
-	))
-endef
-
-export LIBS_BASIC := \
-		$(call build_libs,$(INSTALLDIR)/lib)   \
-	      	$(call build_libs,$(INSTALLDIR)/lib64)
-
-export LIBS_BASIC := $(filter-out -lsos,$(LIBS_BASIC))
-export LIBS_BASIC := $(filter-out -lfl,$(LIBS_BASIC))
-
-export CROSS_USER_LFLAGS += $(CROSS_USER_LFLAGS_BASIC)
+## CFLAGS 
+export CROSS_USER_CFLAGS += $(DEPLOYED_INCFLAGS)
 
 ## Basic patch file just for configuration
 export MICB_PATCH_FN=patch/patch
@@ -62,16 +77,20 @@ export MICB_CONFIGURE_PLATFORM=$(PLATFORM)
 ##  C O N F I G U R E 
 ##
 ##
-export MICB_CONFIGURE_AUTOCONF_CMD=autoreconf --install -v
+export MICB_CONFIGURE_AUTOCONF_CMD=\
+		autoreconf --install -v -I$(INSTALLDIR)
 export MICB_CONFIGURE_AUTOCONF=[ ! -d $(MICBSRC)/$(DIR) ] || ( cd $(MICBSRC)/$(DIR); $(MICB_CONFIGURE_AUTOCONF_CMD) )
 export MICB_CONFIGURE_BUILDDIR_AUTOCONF=[ ! -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR)/$(DIR); $(MICB_CONFIGURE_AUTOCONF_CMD) )
-export MICB_CONFIGURE_RUNENV=
+export MICB_CONFIGURE_RUNENV=\
+		PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
+		LIBS="$(DEPLOYED_LIBFLAGS)"
 export MICB_CONFIGURE_LIBOPTS=--enable-shared --disable-static
 export MICB_CONFIGURE_OPTS=$(MICB_CONFIGURE_LIBOPTS)
 export MICB_CONFIGURE_PRG=../../../$(MICBSRC)/$(DIR)/configure
 export MICB_CONFIGURE_CMD=$(MICB_CONFIGURE_RUNENV) $(MICB_CONFIGURE_PRG) --prefix= --program-prefix= --program-transform-name= \
-				--target=$(MICB_CONFIGURE_PLATFORM) --build=i686-linux --host=$(MICB_CONFIGURE_PLATFORM) 
-export MICB_CONFIGURE_MAKEOPTS=DESTDIR=$(destination)
+		--target=$(MICB_CONFIGURE_PLATFORM) --build=i686-linux --host=$(MICB_CONFIGURE_PLATFORM) 
+export MICB_CONFIGURE_MAKEOPTS=\
+		V=1 DESTDIR=$(destination)
 
 ##
 ##
@@ -138,4 +157,4 @@ export MICB_CMAKE_COMMON_OPTS=\
 	-D CMAKE_SYSROOT="$(MICB_CMAKE_SYSROOT)"                             \
 	-D CMAKE_C_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS) $(CROSS_LFLAG_EXTRA)"          \
 	-D CMAKE_EXE_LINKER_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)" 
-		
+	

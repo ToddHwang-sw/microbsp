@@ -1,0 +1,41 @@
+diff --git a/Makefile.in b/Makefile.in
+index cb8cd42..5d9c178 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -45,6 +45,7 @@ NCURSES_PATCH	= @NCURSES_PATCH@
+ prefix		= @prefix@
+ exec_prefix	= @exec_prefix@
+ 
++srcdir		= @srcdir@
+ bindir		= @bindir@
+ ticdir		= @TERMINFO@
+ includedir	= @includedir@
+@@ -92,6 +93,10 @@ mostlyclean \
+ realclean \
+ depend \
+ sources \
+-tags \
++tags ::
++
+ uninstall \
+ install ::
++	@[ "$@" = "install"   ] || ( \
++		[ ! -f $(destination)/lib/pkgconfig/ncurses.pc ] || \rm -rf $(destination)/lib/pkgconfig/ncurses.pc )
++	@[ "$@" = "uninstall" ] || cp -rf $(srcdir)/ncurses.pc $(destination)/lib/pkgconfig
+diff --git a/ncurses.pc b/ncurses.pc
+new file mode 100644
+index 0000000..e485cbf
+--- /dev/null
++++ b/ncurses.pc
+@@ -0,0 +1,11 @@
++prefix=
++exec_prefix=${prefix}
++libdir=${prefix}/lib
++includedir=${prefix}/include
++
++Name: ncurses
++URL: http://gnu/ncurses
++Description: Ncursrs library
++Version: @PACKAGE_VERSION@
++Libs: -L${libdir} -lncurses -ltinfo
++Cflags: -I${includedir}/ncurses
