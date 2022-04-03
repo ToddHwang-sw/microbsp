@@ -15,7 +15,7 @@ MICB_CONFIGURE_OPTS += \
 	--enable-local-libopts \
 	--disable-silent-rules
 
-MICB_DEPENDS = libidn2
+MICB_DEPENDS = libidn2 gmp
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

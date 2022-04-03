@@ -1,3 +1,16 @@
+diff --git a/Makefile.am b/Makefile.am
+index a14003c0f..40ad02d79 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -27,7 +27,7 @@ if ENABLE_DANE
+ SUBDIRS += libdane
+ endif
+ 
+-SUBDIRS += po
++##SUBDIRS += po
+ if ENABLE_TOOLS
+ SUBDIRS += src/gl src
+ else
 diff --git a/lib/str-idna.c b/lib/str-idna.c
 index 3bf2db877..e0239750f 100644
 --- a/lib/str-idna.c

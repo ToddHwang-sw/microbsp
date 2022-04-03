@@ -35,3 +35,13 @@ index 16189fe..29515db 100644
 +/*__asm__ (".symver _idn2_punycode_decode, _idn2_punycode_decode@IDN2_0.0.0"); */
  #endif
 +
+diff --git a/libidn2.pc.in b/libidn2.pc.in
+index 0dade23..5070225 100644
+--- a/libidn2.pc.in
++++ b/libidn2.pc.in
+@@ -8,4 +8,4 @@ Description: Library implementing IDNA2008 and TR46
+ Version: @PACKAGE_VERSION@
+ Cflags: -I${includedir}
+ Libs: -L${libdir} -lidn2
+-Libs.private: @LTLIBICONV@ @LTLIBUNISTRING@
++Libs.private: @LTLIBICONV@ 

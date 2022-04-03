@@ -28,6 +28,8 @@ MICB_CONFIGURE_RUNENV += \
 
 MICB_CONFIGURE_MAKEOPTS += V=1
 
+MICB_DEPENDS = gnutls openssl zlib
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )

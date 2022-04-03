@@ -17,13 +17,13 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_CONFIGURE_MAKEOPTS += 	\
-	"V=1" 			\
-	ENV_LIBS="$(DEPLOYED_LIBFLAGS)"
+MICB_CONFIGURE_MAKEOPTS += "V=1"
+
+MICB_DEPENDS = libcurl
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ ! -d $(BUILDDIR) ] || ( \
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
 		wget -P $(MICBSRC) $(LOC)/$(DIR).tar.gz; \
 		tar zxvf $(MICBSRC)/$(DIR).tar.gz -C $(BUILDDIR) > /dev/null ; \
 		cd $(BUILDDIR)/$(DIR); \
