@@ -9,7 +9,7 @@ MICB_MESON_OPTS +=\
 
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-MICB_DEPENDS = libxml-2.0
+MICB_DEPENDS = iconv intl glib-2.0 libffi expat libxml-2.0
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

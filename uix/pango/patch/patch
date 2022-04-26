@@ -1,0 +1,73 @@
+diff --git a/meson.build b/meson.build
+index d7a1168b..07f38ed6 100644
+--- a/meson.build
++++ b/meson.build
+@@ -8,7 +8,7 @@ project('pango', 'c', 'cpp',
+           # https://github.com/mesonbuild/meson/issues/2289
+           'c_std=gnu99',
+         ],
+-        meson_version : '>= 0.55.3')
++        meson_version : '>= 0.45.3')
+ 
+ add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
+ 
+@@ -583,10 +583,6 @@ libsysprof_capture_dep = dependency('sysprof-capture-4',
+ pango_conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
+ pango_deps += libsysprof_capture_dep
+ 
+-gidocgen_dep = dependency('gi-docgen', version: '>= 2021.1',
+-                          fallback: ['gi-docgen', 'dummy_dep'],
+-                          required: get_option('gtk_doc'))
+-
+ gnome = import('gnome')
+ pkgconfig = import('pkgconfig')
+ 
+diff --git a/pango/meson.build b/pango/meson.build
+index f344bc8b..7810389d 100644
+--- a/pango/meson.build
++++ b/pango/meson.build
+@@ -168,7 +168,7 @@ libpango_dep = declare_dependency(
+   dependencies: pango_deps,
+   sources: pango_dep_sources,
+ )
+-meson.override_dependency('pango', libpango_dep)
++# meson.override_dependency('pango', libpango_dep)
+ 
+ pango_pkg_requires = ['gobject-2.0']
+ if harfbuzz_dep.type_name() == 'pkgconfig'
+@@ -310,7 +310,7 @@ if build_pangoft2
+     dependencies: pango_deps + [ libpango_dep ],
+     sources: pangoft2_dep_sources,
+   )
+-  meson.override_dependency('pangoft2', libpangoft2_dep)
++  #  meson.override_dependency('pangoft2', libpangoft2_dep)
+ 
+   pkgconfig.generate(libpangoft2,
+     name: 'Pango FT2 and Pango Fc',
+@@ -400,7 +400,7 @@ if xft_dep.found() and fontconfig_dep.found()
+     dependencies: pango_deps + [ libpango_dep, libpangoft2_dep ],
+     sources: pangoxft_dep_sources,
+   )
+-  meson.override_dependency('pangoxft', libpangoxft_dep)
++  #  meson.override_dependency('pangoxft', libpangoxft_dep)
+ 
+   pkgconfig.generate(libpangoxft,
+     name: 'Pango Xft',
+@@ -460,7 +460,7 @@ if host_system == 'windows'
+     include_directories: root_inc,
+     dependencies: pango_deps + [ libpango_dep ],
+   )
+-  meson.override_dependency('pangowin32', libpangowin32_dep)
++  #  meson.override_dependency('pangowin32', libpangowin32_dep)
+ 
+   pkgconfig.generate(libpangowin32,
+     name: 'Pango Win32',
+@@ -567,7 +567,7 @@ if cairo_dep.found()
+     dependencies: pango_deps + [ libpango_dep ],
+     sources: pangocairo_dep_sources,
+   )
+-  meson.override_dependency('pangocairo', libpangocairo_dep)
++  #  meson.override_dependency('pangocairo', libpangocairo_dep)
+ 
+   # Create pangocairo.pc according to whether we found Cairo
+   # manually

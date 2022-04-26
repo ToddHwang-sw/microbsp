@@ -1,0 +1,39 @@
+diff --git a/meson.build b/meson.build
+index 86a0dc4..fa9205a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1,7 +1,7 @@
+ project('graphene', 'c',
+         version: '1.11.1',
+         license: 'MIT',
+-        meson_version: '>= 0.55.3',
++        meson_version: '>= 0.35.3',
+         default_options: [
+           'buildtype=debugoptimized',
+           'c_std=c99',
+@@ -167,9 +167,12 @@ elif cc.has_function('aligned_alloc', prefix: '#include <stdlib.h>') and not (ho
+ elif cc.has_function('posix_memalign', prefix: '#include <stdlib.h>') and not (host_system == 'windows')
+   conf.set10('HAVE_POSIX_MEMALIGN', 1, description: 'Define if posix_memalign() is available')
+ else
+-  error('No aligned malloc function could be found.')
++  ## error('No aligned malloc function could be found.')
+ endif
+ 
++## Todd
++conf.set10('HAVE_MEMALIGN', 1)
++
+ math_exts = [
+   'sincosf',
+   'isinff',
+@@ -273,8 +276,9 @@ int main() {
+ }
+ '''
+ if meson.is_cross_build()
+-  ieee754_float_div = meson.get_external_property('ieee754_float_div', cc.get_id() in ['gcc', 'clang'])
+-  message('Cross-building, assuming IEEE 754 division:', ieee754_float_div)
++  ##  ieee754_float_div = meson.get_external_property('ieee754_float_div', cc.get_id() in ['gcc', 'clang'])
++  ieee754_float_div = 1
++  message('Cross-building, assuming IEEE 754 division:')
+ else
+   ieee754_float_div = cc.run(float_division_prog, name: 'IEEE 754 floating-point division').returncode() == 0
+ endif

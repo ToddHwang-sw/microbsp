@@ -1,7 +1,9 @@
 DIR=pixman
-LOC=-b 0.34 https://github.com/freedesktop
+LOC=https://github.com/freedesktop
 
 include $(TOPDIR)/scripts/uixenv.mk
+
+MICB_DEPENDS = libpng libpng16
 
 MICB_CONFIGURE_MAKEOPTS += V=1
 

@@ -1,0 +1,81 @@
+diff --git a/gdk/wayland/meson.build b/gdk/wayland/meson.build
+index 833945f666..9ee07c3521 100644
+--- a/gdk/wayland/meson.build
++++ b/gdk/wayland/meson.build
+@@ -38,7 +38,8 @@ gdk_wayland_deps = [
+   wlegldep,
+ ]
+ 
+-wayland_scanner = find_program('wayland-scanner')
++wayland_scanner_dep = dependency('wayland-scanner-host')
++wayland_scanner = find_program(wayland_scanner_dep.get_variable(pkgconfig: 'wayland_scanner_host'))
+ 
+ # Format:
+ #  - protocol name
+diff --git a/meson.build b/meson.build
+index a35ba7b172..c2838037ca 100644
+--- a/meson.build
++++ b/meson.build
+@@ -7,7 +7,7 @@ project('gtk', 'c',
+           # https://github.com/mesonbuild/meson/issues/2289
+           'c_std=gnu99',
+         ],
+-        meson_version : '>= 0.54',
++        meson_version : '>= 0.50',
+         license: 'LGPLv2.1+')
+ 
+ glib_req           = '>= 2.66.0'
+@@ -394,11 +394,11 @@ graphene_dep   = dependency('graphene-gobject-1.0', version: graphene_req,
+                             fallback: ['graphene', 'graphene_dep'])
+ iso_codes_dep  = dependency('iso-codes', required: false)
+ 
+-gtk_doc_dep    = dependency('gtk-doc', version: '>=1.33',
+-                            fallback: ['gtk-doc', 'dummy_dep'],
+-                            default_options: ['tests=false', 'yelp_manual=false'],
+-                            required: get_option('gtk_doc'))
+-
++##gtk_doc_dep    = dependency('gtk-doc', version: '>=1.33',
++ ##                           fallback: ['gtk-doc', 'dummy_dep'],
++ ##                           default_options: ['tests=false', 'yelp_manual=false'],
++ ##                           required: get_option('gtk_doc'))
++ ##
+ fontconfig_dep = [] # only used in x11 backend
+ 
+ if os_win32
+@@ -466,7 +466,8 @@ if wayland_enabled
+   if not wlprotocolsdep.found()
+     wlproto_dir = subproject('wayland-protocols').get_variable('wayland_protocols_srcdir')
+   else
+-    wlproto_dir = wlprotocolsdep.get_pkgconfig_variable('pkgdatadir')
++    ## wlproto_dir = wlprotocolsdep.get_pkgconfig_variable('pkgdatadir')
++    wlproto_dir = get_option('base-install') + wlprotocolsdep.get_pkgconfig_variable('pkgdatadir')
+   endif
+ 
+   wayland_pkgs = [
+@@ -789,8 +790,8 @@ endif
+ subdir('po')
+ subdir('po-properties')
+ 
+-subdir('docs/tools')
+-subdir('docs/reference')
++##subdir('docs/tools')
++##subdir('docs/reference')
+ 
+ # Keep this in sync with post-install.sh expected arguments
+ if not meson.is_cross_build()
+diff --git a/meson_options.txt b/meson_options.txt
+index 71b01ec5c8..a15b6f7639 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -125,3 +125,11 @@ option('install-tests',
+        type: 'boolean',
+        value: 'false',
+        description : 'Install tests')
++
++# Todd
++
++option('base-install',
++        type : 'string',
++        value : '',
++        description : 'Location of system installation')
++

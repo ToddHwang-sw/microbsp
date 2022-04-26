@@ -5,7 +5,8 @@ LOC=https://github.com/ghaerr
 ## Sample image file & Image viewer 
 ##
 SAMPLEIMAGE=patch/karma.jpg
-IMAGEVIEW=src/demos/nanox/nxview
+##IMAGEVIEW=src/demos/nanox/nxview
+IMAGEVIEW=src/bin/nxview
 
 include $(TOPDIR)/scripts/uixenv.mk
 

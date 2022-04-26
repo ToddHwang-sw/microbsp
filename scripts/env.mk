@@ -10,15 +10,20 @@ export CROSS_LFLAG_EXTRA =
 MICB_DEPENDS =
 
 COLLECT_LIBS=\
-	for dep in $(MICB_DEPENDS) ; do \
-		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
-			for dir in $(LIBSSUBDIR) ; do  \
-				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
-					$(TOPDIR)/scripts/filterlibs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
-				fi ; \
+	if [ ! -f $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME) ]; then \
+		for dep in $(MICB_DEPENDS) ; do \
+			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+				for dir in $(LIBSSUBDIR) ; do  \
+					if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+						$(TOPDIR)/scripts/filterlibs.sh \
+							$(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+					fi ; \
+				done ; \
 			done ; \
-		done ; \
-	done
+		done > $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME); \
+	fi ; \
+	cat $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME)
+
 BASIC_SYSLIBS=-ldl -lpthread 
 
 export DEPLOYED_LIBFLAGS=\
@@ -29,15 +34,20 @@ export DEPLOYED_LIBFLAGS=\
 export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS)
 
 COLLECT_INCS = \
-	for dep in $(MICB_DEPENDS) ; do \
-		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
-			for dir in $(LIBSSUBDIR) ; do  \
-				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
-					$(TOPDIR)/scripts/filterincs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
-				fi ; \
+	if [ ! -f $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME) ]; then \
+		for dep in $(MICB_DEPENDS) ; do \
+			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+				for dir in $(LIBSSUBDIR) ; do  \
+					if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+						$(TOPDIR)/scripts/filterincs.sh \
+							$(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+					fi ; \
+				done ; \
 			done ; \
-		done ;	\
-	done
+		done > $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME); \
+	fi ; \
+	cat $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME)
+
 export DEPLOYED_INCFLAGS=\
 	$(sort $(shell $(COLLECT_INCS)))
 

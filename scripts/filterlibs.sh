@@ -1,5 +1,7 @@
 #!/bin/sh
 
+TMPFILE=/tmp/microbsp.libs.collect
+
 single_trace() {
 	local libopt=`grep -H $1 $2 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}'` ;
 
@@ -33,22 +35,37 @@ single_trace() {
 }
 
 package_trace() {
+	local pkg=$1
+	local folder=$2
 	local libreqs
 	local rlib
 	local path
 
-	libreqs=`grep -H "Requires:" $1 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
-	libpreqs=`grep -H "Requires.private:" $1 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
+	libreqs=`grep -H "Requires:" $pkg | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
+	libpreqs=`grep -H "Requires.private:" $pkg | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
+
+	if [ "$libreqs" == "" -a "$libpreqs" == "" ]; then 
+		single_trace "Libs:" $pkg ${folder%/*} 
+		single_trace "Libs.private:" $pkg ${folder%/*} 
+		return 
+	fi 
 
 	for rlib in $libreqs $libpreqs ; do 
-		for path in $libspath; do 
-			[ ! -f $path/pkgconfig/$rlib.pc ] || \
-				package_trace $path/pkgconfig/$rlib.pc $path ;
-		done ;
+		if [ `cat $TMPFILE | grep $rlib | wc -l` == 0 ]; then
+			echo $rlib >> $TMPFILE 
+			##echo "Adding $rlib " >> /tmp/hello
+			##echo "----------------" >> /tmp/hello
+			##cat $TMPFILE >> /tmp/hello 
+			##echo "----------------" >> /tmp/hello
+			for path in $libspath; do 
+				[ ! -f $path/pkgconfig/$rlib.pc ] || \
+					package_trace $path/pkgconfig/$rlib.pc $path ;
+			done
+		fi 
 	done 
 
-	single_trace "Libs:" $1 ${2%/*} 
-	single_trace "Libs.private:" $1 ${2%/*} 
+	single_trace "Libs:" $pkg ${folder%/*} 
+	single_trace "Libs.private:" $pkg ${folder%/*} 
 }
 
 [ -f $1/libs.info ] || ( \
@@ -56,4 +73,8 @@ package_trace() {
 
 libspath=`cat $1/libs.info`
 
+[ ! -f $TMPFILE ] || \rm -rf $TMPFILE
+touch $TMPFILE
 package_trace $2 $3
+rm $TMPFILE
+

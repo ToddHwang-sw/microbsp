@@ -77,6 +77,12 @@ CLEAN_LIBLA=\
 	done
 
 ##
+## CFLAGS / LFLAGS - for compilation 
+##
+export INCFLAGS_NAME=build/flags.incs
+export LIBFLAGS_NAME=build/flags.libs
+
+##
 ## GNU toolchains  - component information
 ##
 export BINUTILS=binutils-2.32
@@ -167,7 +173,10 @@ EXTDIR=\
 	http/fastcgi \
 	http/lighttpd \
 	json \
-	jq
+	jq \
+	texinfo \
+	help2man  \
+	mtdev 
 SUBDIR+=$(EXTDIR)
 
 ## required library application folders
@@ -212,10 +221,23 @@ UIDIR=\
 	X11/xorg-libxtst       \
 	X11/xshmfence          \
 	X11/libXxf86vm         \
+	xkbcommon              \
+	systemd                \
+	libevdev               \
 	wayland-host           \
 	wayland                \
 	wayland-protocols      \
-	xkbcommon              \
+	pixman                 \
+	cairo                  \
+	fridi                  \
+	harfbuzz               \
+	gdk-pixbuf             \
+	pango                  \
+	epoxy                  \
+	graphene               \
+	gtk                    \
+	libinput               \
+	weston                 \
 	libva                  \
 	fontconfig             \
 	mesa                   \
@@ -233,9 +255,9 @@ UIDIR=\
 	gstreamer/vaapi        \
 	pulseaudio             \
 	microwindows	       \
-	pixman                 \
 	vncserver              \
 	qt
+
 SUBDIR+=$(UIDIR)
 
 # Component folders - apps, libs, exts, uix
@@ -281,12 +303,13 @@ installcomps:
 		help2man valgrind \
 		gperf   \
 		libglib2.0-dev-bin \
-		ragel gengetopt
+		ragel gengetopt \
+		sassc
 	@sudo apt --no-install-recommends install \
 		xsltproc \
 		xmlto \
 		fop 
-	@sudo pip install mako Jinja2
+	@sudo pip install pkgconfig mako Jinja2
 
 checkfirst:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
@@ -312,6 +335,7 @@ checkfirst:
 		mkdir -p $(INSTALLDIR)/dev;                                 \
 		mkdir -p $(INSTALLDIR)/proc;                                \
 		mkdir -p $(INSTALLDIR)/home;                                \
+		mkdir -p $(INSTALLDIR)/home/root;                           \
 		mkdir -p $(INSTALLDIR)/root;                                \
 		mkdir -p $(INSTALLDIR)/var;                                 \
 		mkdir -p $(INSTALLDIR)/sys;                                 \
@@ -505,6 +529,8 @@ distclean:
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR); \
+			[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
+			[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
 		done ;                                 \
 		cd .. ;                                \
 	done

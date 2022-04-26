@@ -25,3 +25,8 @@ prepare:
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+	@[ "$@" != "install" ] || ( \
+		[ -s $(destination)/include/security ] || ( \
+			cd $(destination)/include ; \
+			ln -s . security ) \
+	)
