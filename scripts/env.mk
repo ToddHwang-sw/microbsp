@@ -10,7 +10,8 @@ export CROSS_LFLAG_EXTRA =
 MICB_DEPENDS =
 
 COLLECT_LIBS=\
-	if [ ! -f $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME) ]; then \
+	$(eval _CDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))) \
+	if [ ! -f $(_CDIR)/$(LIBFLAGS_NAME) ]; then \
 		for dep in $(MICB_DEPENDS) ; do \
 			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
 				for dir in $(LIBSSUBDIR) ; do  \
@@ -20,9 +21,9 @@ COLLECT_LIBS=\
 					fi ; \
 				done ; \
 			done ; \
-		done > $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME); \
+		done > $(_CDIR)/$(LIBFLAGS_NAME); \
 	fi ; \
-	cat $(PWD)/$(SUBDIR)/$(LIBFLAGS_NAME)
+	cat $(_CDIR)/$(LIBFLAGS_NAME)
 
 BASIC_SYSLIBS=-ldl -lpthread 
 
@@ -34,7 +35,8 @@ export DEPLOYED_LIBFLAGS=\
 export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS)
 
 COLLECT_INCS = \
-	if [ ! -f $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME) ]; then \
+	$(eval _CDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))) \
+	if [ ! -f $(_CDIR)/$(INCFLAGS_NAME) ]; then \
 		for dep in $(MICB_DEPENDS) ; do \
 			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
 				for dir in $(LIBSSUBDIR) ; do  \
@@ -44,9 +46,9 @@ COLLECT_INCS = \
 					fi ; \
 				done ; \
 			done ; \
-		done > $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME); \
+		done > $(_CDIR)/$(INCFLAGS_NAME); \
 	fi ; \
-	cat $(PWD)/$(SUBDIR)/$(INCFLAGS_NAME)
+	cat $(_CDIR)/$(INCFLAGS_NAME)
 
 export DEPLOYED_INCFLAGS=\
 	$(sort $(shell $(COLLECT_INCS)))

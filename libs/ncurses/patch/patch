@@ -38,4 +38,4 @@ index 0000000..e485cbf
 +Description: Ncursrs library
 +Version: @PACKAGE_VERSION@
 +Libs: -L${libdir} -lncurses -ltinfo
-+Cflags: -I${includedir}/ncurses
++Cflags: -I${includedir} -I${includedir}/ncurses

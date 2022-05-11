@@ -6,6 +6,8 @@ include $(TOPDIR)/scripts/x11uixenv.mk
 MICB_CONFIGURE_OPTS += \
 	--with-keysymdefdir=$(X11INSTDIR)/include/X11
 
+MICB_DEPENDS = xcb
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

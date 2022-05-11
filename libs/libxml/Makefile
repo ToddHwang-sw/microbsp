@@ -9,7 +9,7 @@ MICB_CONFIGURE_AUTOCONF_CMD=\
 MICB_CONFIGURE_OPTS += \
 	--without-python
 
-DEPLOYED_LIBFLAGS=
+MICB_DEPENDS = zlib liblzma
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

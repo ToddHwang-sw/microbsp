@@ -7,6 +7,7 @@ MICB_CONFIGURE_OPTS += \
 	--disable-nls \
 	--disable-rpath \
 	--enable-job-control \
+	--disable-help-builtin \
 	--without-afs \
 	--with-bash-malloc \
 	--with-curses \
@@ -14,6 +15,8 @@ MICB_CONFIGURE_OPTS += \
 	--without-libiconv-prefix \
 	--with-included-gettext \
 	--without-libintl-prefix 
+
+MICB_DEPENDS = ncurses readline
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

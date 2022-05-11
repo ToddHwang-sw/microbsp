@@ -27,6 +27,8 @@ MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 MICB_CONFIGURE_RUNENV +=\
 		ac_cv_func_unshare=yes ac_cv_func_setns=yes
 
+MICB_DEPENDS = ncurses
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).git ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

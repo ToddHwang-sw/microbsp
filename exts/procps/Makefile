@@ -14,6 +14,10 @@ MICB_CONFIGURE_RUNENV += \
 
 MICB_CONFIGURE_PRG = ./configure
 
+MICB_CONFIGURE_OPTS += \
+	--enable-largefile \
+	--with-ncurses 
+
 MICB_DEPENDS = ncurses
 
 prepare:

@@ -7,6 +7,8 @@ MICB_CONFIGURE_MAKEOPTS += \
 	XCBPROTO_XCBINCLUDEDIR=$(X11INSTDIR)/share/xcb \
 	XCBPROTO_XCBPYTHONDIR=$(X11INSTDIR)/lib/python3.8/site-packages
 
+MICB_DEPENDS = xproto xau
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )

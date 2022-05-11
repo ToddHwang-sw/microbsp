@@ -20,6 +20,8 @@ MICB_CONFIGURE_OPTS += \
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_func_mallinfo=no 
 
+MICB_DEPENDS = uuid blkid
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )

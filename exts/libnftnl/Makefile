@@ -1,17 +1,19 @@
 DIR=libnftnl
-LOC=git://git.netfilter.org
+LOC=-b libnftnl-1.2.1 git://git.netfilter.org
 	
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
-MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
+MICB_CONFIGURE_PRG=./configure 
+
+MICB_DEPENDS = libmnl
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	@$(MICB_CONFIGURE_AUTOCONF)
+	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		cd $(BUILDDIR) ; git clone --single-branch $(LOC)/$(DIR).git )
+	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

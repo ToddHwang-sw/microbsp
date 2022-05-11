@@ -3,6 +3,8 @@ LOC=https://ftp.gnu.org/pub/gnu/mpc
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_DEPENDS = gmp
+
 MICB_CONFIGURE_OPTS += \
 	--disable-maintainer-mode \
 	--disable-libtool

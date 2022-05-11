@@ -7,6 +7,8 @@ CROSS_USER_CFLAGS += -DMB_LEN_MAX=16
 
 MICB_CONFIGURE_OPTS += --disable-strip
 
+MICB_DEPENDS = zlib
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

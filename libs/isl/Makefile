@@ -3,6 +3,8 @@ LOC=https://github.com/Meinersbur
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_DEPENDS = gmp
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

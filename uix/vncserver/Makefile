@@ -24,6 +24,16 @@ MICB_CMAKE_COMMON_OPTS += \
 	-D OPENSSL_ROOT_DIR=$(INSTALLDIR) \
 	-D OPENSSL_LIBRARY=$(INSTALLDIR)/lib \
 	-D OPENSSL_INCLUDE_DIR=$(INSTALLDIR)/include \
+	-D SYSTEMD_LIBRARIES=$(UIXINSTDIR)/usr/lib \
+	-D SYSTEMD_INCLUDE_DIRS=$(UIXINSTDIR)/usr/include \
+
+
+MICB_DEPENDS = libjpeg libpng libpng16 sdl2 gnutls openssl x11 libdrm_freedreno libdrm_nouveau  \
+	       expat libffi intl libudev uuid blkid waylandd-server egl gl glesv2 \
+	       xcb-xfixes wayland-server xcb-dri3 xshmfence ncurses xcb-present xcb-sync xcb-randr \
+	       libsystemd zlib libcap liblzo liblzma liblz4
+
+CROSS_USER_LFLAGS += -lglapi
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

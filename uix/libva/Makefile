@@ -5,7 +5,7 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS += -D enable_docs=false
 
-MICB_DEPENDS = libdrm
+MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib x11
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

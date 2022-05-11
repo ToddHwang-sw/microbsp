@@ -3,6 +3,8 @@ LOC=https://github.com/freedesktop
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_DEPENDS = uuid ice
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

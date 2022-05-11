@@ -18,6 +18,11 @@ MICB_CONFIGURE_OPTS += \
 	--disable-egl \
 	--disable-idirectfbgl-egl
 
+MICB_DEPENDS = expat intl iconv gio-unix-2.0 gstreamer-1.0 x11 xext libdrm libxml-2.0 libpng libpng16 freetype2 \
+	       wayland-client wayland-server gl egl xcb xshmfence xcb-present xcb-dri3 
+
+CROSS_USER_CFLAGS += -lglapi
+
 fluxcomp:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(FLUXDIR) ] || ( cd $(BUILDDIR); $(UNCOMPRESS) $(FLUXLOC) )

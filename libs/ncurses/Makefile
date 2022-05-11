@@ -9,14 +9,20 @@ ifeq ($(_CORE_),aarch64)
 endif
 
 MICB_CONFIGURE_OPTS +=\
+	--enable-largefile \
+	--without-develop \
 	--without-sysmouse \
 	--without-cxx-binding \
 	--without-ada \
 	--without-termcap \
+	--without-debug \
 	--with-termlib \
 	--with-terminfo \
 	--with-shared=yes \
 	--with-normal=no
+
+## tinfo error ...
+CROSS_USER_LFLAGS += -L$(INSTALLDIR)/lib
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

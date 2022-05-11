@@ -5,6 +5,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
+MICB_DEPENDS = zlib
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )

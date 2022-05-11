@@ -6,6 +6,8 @@ include $(TOPDIR)/scripts/x11uixenv.mk
 export MICB_CONFIGURE_OPTS += \
 		--without-python
 
+MICB_CONFIGURE_AUTOCONF_CMD=NOCONFIGURE=0 ./autogen.sh
+
 MICB_DEPENDS = libxml-2.0
 
 prepare:

@@ -1,6 +1,7 @@
-diff -uNr nftables-0.9.5-original/src/scanner.l nftables-0.9.5/src/scanner.l
---- nftables-0.9.5-original/src/scanner.l	2020-06-06 03:00:22.635435547 -0700
-+++ nftables-0.9.5/src/scanner.l	2020-07-12 23:13:08.241973426 -0700
+diff --git a/src/scanner.l b/src/scanner.l
+index 45699c8..cd7cfaa 100644
+--- a/src/scanner.l
++++ b/src/scanner.l
 @@ -10,7 +10,7 @@
  
  %{

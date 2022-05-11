@@ -6,8 +6,9 @@ include $(TOPDIR)/scripts/env.mk
 MICB_CONFIGURE_OPTS += \
 	--enable-pic \
 	--enable-openssl \
-	--disable-documentation \
-	--disable-mini-gmp 
+	--enable-public-key \
+	--enable-mini-gmp \
+	--disable-documentation
 
 ifeq ($(_CORE_),aarch64)
 	MICB_CONFIGURE_OPTS += \

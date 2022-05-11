@@ -9,7 +9,7 @@ MICB_MESON_OPTS +=\
 
 CROSS_USER_CFLAGS += -DLONG_BIT=32
 
-MICB_DEPENDS = libxml-2.0 libffi
+MICB_DEPENDS = libxml-2.0 libffi xcb-xkb xcb-x11
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

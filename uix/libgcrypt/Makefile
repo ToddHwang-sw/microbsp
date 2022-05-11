@@ -12,6 +12,8 @@ MICB_CONFIGURE_AUTOCONF_CMD = ./autogen.sh
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
+MICB_DEPENDS = gpg-error
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )

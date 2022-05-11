@@ -126,7 +126,8 @@ LIBDIR=\
 	libpam \
 	libpcap \
 	libev \
-	libtool 
+	libtool \
+	libelf
 SUBDIR+=$(LIBDIR)
 
 ## Applications 
@@ -187,10 +188,11 @@ SUBDIR+=$(extra_SUBDIR)
 ## UI-related Materials - excluded from SUBDIR set. 
 ##
 ##
-UIDIR=\
+UIDIR_done=\
 	libjpeg                \
 	libpng	               \
 	freetype2              \
+	fontconfig             \
 	libgpg-error           \
 	libgcrypt              \
 	libdbus	               \
@@ -221,13 +223,14 @@ UIDIR=\
 	X11/xorg-libxtst       \
 	X11/xshmfence          \
 	X11/libXxf86vm         \
-	xkbcommon              \
 	systemd                \
 	libevdev               \
 	wayland-host           \
 	wayland                \
 	wayland-protocols      \
+	xkbcommon              \
 	pixman                 \
+	mesa                   \
 	cairo                  \
 	fridi                  \
 	harfbuzz               \
@@ -237,10 +240,8 @@ UIDIR=\
 	graphene               \
 	gtk                    \
 	libinput               \
-	weston                 \
 	libva                  \
-	fontconfig             \
-	mesa                   \
+	weston                 \
 	libalsa                \
 	libSDL                 \
 	ffmpeg                 \
@@ -256,6 +257,8 @@ UIDIR=\
 	pulseaudio             \
 	microwindows	       \
 	vncserver              \
+
+UIDIR=\
 	qt
 
 SUBDIR+=$(UIDIR)
@@ -287,7 +290,7 @@ installcomps:
 		autogen \
 		flex bison gettext net-tools texinfo \
 		libssl-dev libncurses-dev \
-		libmpc-dev \
+		libmpc-dev libreadline-dev \
 		uuid-dev zlib1g-dev liblzo2-dev \
 		libtool-bin pkg-config chrpath diffstat \
 		gcc-multilib g++-multilib \
@@ -496,11 +499,11 @@ proj_%:
 ##
 llvm_okay:
 	@[ -f $(TOOLCHAIN_ROOT)/bin/$(PLATFORM)-gcc ] || ( \
-			echo ""; \
-			echo "Base cross-compiler should be installed " ; \
-			echo ""; \
-			exit 1 \
-			)	
+		echo ""; \
+		echo "Base cross-compiler should be installed " ; \
+		echo ""; \
+		exit 1 \
+		)	
 
 llvm: llvm_okay
 	@make -C gnu/llvm prepare all install
@@ -529,6 +532,7 @@ distclean:
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR); \
+			[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT);  \
 			[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
 			[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
 		done ;                                 \

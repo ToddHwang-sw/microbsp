@@ -21,6 +21,9 @@ MICB_DEPENDS=\
 		gstreamer-gl-wayland-1.0  gstreamer-gl-egl-1.0		\
 		libavdevice 						\
 		wayland-egl wayland-client wayland-cursor wayland-server\
+		libsystemd ncurses liblz4 libcap gl egl                 \
+		libevdev mtdev libudev \
+
 
 ## save time ??? 
 QT_CFLAGS:=$(CROSS_USER_CFLAGS)
@@ -42,14 +45,18 @@ python_req:
 		echo "Python executor '/usr/bin/python' is required !! " ; exit 1 )
 
 prepare: python_req
-	[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	[ -d $(MICBSRC)/$(DIR) ] || ( \
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		mkdir -p $(BUILDDIR)/$(DIR) ; \
+		[ ! -d $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) ] || \
+			\rm -rf $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) \
+		)
+	@[ -d $(MICBSRC)/$(DIR) ] || ( \
 		$(UNCOMPRESS) $(LOC)/$(DIR).git; 			\
 		pushd $(MICBSRC)/$(DIR); 				\
 		perl init-repository; 					\
 		popd ; 							\
 		$(MICB_PATCH) )
-	[ -f $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM)/qmake.conf ] || (	\
+	@[ -f $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM)/qmake.conf ] || (	\
 		[ -d $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) ] || 		\
 			mkdir -p $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) ;	\
 		touch $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM)/qmake.conf ; 	\
@@ -89,7 +96,7 @@ prepare: python_req
 		echo "#include \"../linux-g++/qplatformdefs.h\""               >>  $(QTPLATFORM)/qplatformdefs.h ; \
 		echo ""                                                        >>  $(QTPLATFORM)/qplatformdefs.h ; \
 	) 
-	[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR) ; 			\
 		../../../$(MICBSRC)/$(DIR)/configure		\
 			-v					\

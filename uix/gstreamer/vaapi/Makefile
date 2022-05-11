@@ -6,8 +6,9 @@ include $(TOPDIR)/scripts/uixenv.mk
 GSTREAMER_OPTS += \
 	-D doc=disabled \
 	-D examples=disabled \
-	-D tests=disabled
+	-D tests=disabled \
+        -D base-install=$(UIXINSTDIR)
 
-MICB_DEPENDS = gstreamer-1.0 glib-2.0 libva
+MICB_DEPENDS = gstreamer-1.0 glib-2.0 libva libdrm libudev
 
 include $(shell pwd)/../gstreamer.mk

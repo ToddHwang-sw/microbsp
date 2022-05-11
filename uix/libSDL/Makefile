@@ -12,7 +12,12 @@ MICB_CONFIGURE_OPTS += \
 MICB_CONFIGURE_MAKEOPTS += \
 	WAYLAND_SCANNER=$(WAYLAND_BINARIES)/wayland-scanner	
 
-MICB_DEPENDS = libdrm 
+MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-client \
+	       wayland-server \
+	       glesv2 egl libudev expat xcb-xfixes xshmfence intl uuid blkid  \
+	       xcb-dri3 xcb-present xcb-sync ncuerses 
+
+CROSS_USER_LFLAGS += -lglapi
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

@@ -1,6 +1,5 @@
-DIR=fdisk-1.1
-LOC=ftp://ftp.gnu.org/gnu/fdisk
-FILENM=$(DIR).tar.gz
+DIR=fdisk-1.3.0a
+LOC=https://ftp.gnu.org/gnu/fdisk
 
 include $(TOPDIR)/scripts/extenv.mk
 
@@ -9,11 +8,13 @@ ifeq ($(_CORE_),aarch64)
 endif
 
 MICB_CONFIGURE_RUNENV += \
-	ac_cv_lib_readline_readline=yes \
-	ac_cv_lib_parted_ped_device_read=yes \
+	ac_cv_lib_readline_readline=yes
 
 MICB_CONFIGURE_OPTS += \
-	--enable-largefile
+	--enable-largefile \
+	--disable-cfdisk 
+
+MICB_DEPENDS = libparted uuid blkid ncurses
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

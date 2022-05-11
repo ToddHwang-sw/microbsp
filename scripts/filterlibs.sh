@@ -51,9 +51,10 @@ package_trace() {
 	fi 
 
 	for rlib in $libreqs $libpreqs ; do 
-		if [ `cat $TMPFILE | grep $rlib | wc -l` == 0 ]; then
+		if [ `cat $TMPFILE | grep $rlib | wc -l` == 0 -a \
+				`echo $rlib | grep "[0_9]." | wc -l` == 0 ]; then
 			echo $rlib >> $TMPFILE 
-			##echo "Adding $rlib " >> /tmp/hello
+			##echo "Adding [$rlib] " >> /tmp/hello
 			##echo "----------------" >> /tmp/hello
 			##cat $TMPFILE >> /tmp/hello 
 			##echo "----------------" >> /tmp/hello

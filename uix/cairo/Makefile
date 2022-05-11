@@ -6,7 +6,7 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_CONFIGURE_AUTOCONF_CMD=NOCONFIGURE=0 ./autogen.sh
 
 MICB_DEPENDS = expat gio-2.0 iconv intl json-c lzo2 gl glesv2 libdrm libpng libpng16 \
-	       x11-xcb xcb-dri3 xcb-present xshmfence pixman-1 freetype fontconfig libudev \
+	       x11-xcb xcb-dri3 xcb-present xshmfence pixman-1 freetype2 fontconfig libudev \
 	       wayland-client wayland-server 
 
 MICB_CONFIGURE_OPTS += \
@@ -17,9 +17,8 @@ MICB_CONFIGURE_OPTS += \
 	--enable-xml \
 	--enable-xlib-xcb
 
-CROSS_USER_CFLAGS += \
-	-lglapi \
-	-DCAIRO_NO_MUTEX=1
+CROSS_USER_CFLAGS += -DCAIRO_NO_MUTEX=1
+CROSS_USER_LFLAGS += -lglapi -lpthread
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

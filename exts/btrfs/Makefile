@@ -17,6 +17,8 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
+MICB_DEPENDS = lzo2 uuid blkid
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

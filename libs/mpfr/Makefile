@@ -3,6 +3,8 @@ LOC=https://ftp.gnu.org/pub/gnu/mpfr
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_DEPENDS = gmp
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
