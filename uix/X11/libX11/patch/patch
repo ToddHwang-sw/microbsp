@@ -1,0 +1,108 @@
+diff --git a/include/X11/extensions/XKBgeom.h b/include/X11/extensions/XKBgeom.h
+index 3e1db7b9..6fd509eb 100644
+--- a/include/X11/extensions/XKBgeom.h
++++ b/include/X11/extensions/XKBgeom.h
+@@ -279,21 +279,21 @@ _XFUNCPROTOBEGIN
+ extern	XkbPropertyPtr
+ XkbAddGeomProperty(
+     XkbGeometryPtr	/* geom */,
+-    _Xconst char *	/* name */,
+-    _Xconst char *	/* value */
++    /*_Xconst*/ char *	/* name */,
++    /*_Xconst*/ char *	/* value */
+ );
+ 
+ extern	XkbKeyAliasPtr
+ XkbAddGeomKeyAlias(
+     XkbGeometryPtr	/* geom */,
+-    _Xconst char *	/* alias */,
+-    _Xconst char *	/* real */
++    /*_Xconst*/ char *	/* alias */,
++    /*_Xconst*/ char *	/* real */
+ );
+ 
+ extern	XkbColorPtr
+ XkbAddGeomColor(
+     XkbGeometryPtr	/* geom */,
+-    _Xconst char *	/* spec */,
++    /*_Xconst*/ char *	/* spec */,
+     unsigned int	/* pixel */
+ );
+ 
+@@ -348,8 +348,8 @@ extern XkbOverlayKeyPtr
+ XkbAddGeomOverlayKey(
+     XkbOverlayPtr	/* overlay */,
+     XkbOverlayRowPtr	/* row */,
+-    _Xconst char *	/* over */,
+-    _Xconst char *	/* under */
++    /*_Xconst*/ char *	/* over */,
++    /*_Xconst*/ char *	/* under */
+ );
+ 
+ extern XkbDoodadPtr
+@@ -597,7 +597,7 @@ extern	char *
+ XkbFindOverlayForKey(
+ 	XkbGeometryPtr		/* geom */,
+ 	XkbSectionPtr		/* wanted */,
+-	_Xconst char *		/* under */
++	/*_Xconst*/ char *	/* under */
+ );
+ 
+ extern	Status
+diff --git a/src/xkb/XKBGAlloc.c b/src/xkb/XKBGAlloc.c
+index 5b02f34c..5d32fc38 100644
+--- a/src/xkb/XKBGAlloc.c
++++ b/src/xkb/XKBGAlloc.c
+@@ -650,7 +650,7 @@ XkbAllocGeometry(XkbDescPtr xkb, XkbGeometrySizesPtr sizes)
+ /***====================================================================***/
+ 
+ XkbPropertyPtr
+-XkbAddGeomProperty(XkbGeometryPtr geom, _Xconst char *name, _Xconst char *value)
++XkbAddGeomProperty(XkbGeometryPtr geom, /*_Xconst*/ char *name, /*_Xconst*/ char *value)
+ {
+     register int i;
+     register XkbPropertyPtr prop;
+@@ -683,8 +683,8 @@ XkbAddGeomProperty(XkbGeometryPtr geom, _Xconst char *name, _Xconst char *value)
+ }
+ 
+ XkbKeyAliasPtr
+-XkbAddGeomKeyAlias(XkbGeometryPtr geom, _Xconst char *aliasStr,
+-                   _Xconst char *realStr)
++XkbAddGeomKeyAlias(XkbGeometryPtr geom, /*_Xconst*/ char *aliasStr,
++                   /*_Xconst*/ char *realStr)
+ {
+     register int i;
+     register XkbKeyAliasPtr alias;
+@@ -712,7 +712,7 @@ XkbAddGeomKeyAlias(XkbGeometryPtr geom, _Xconst char *aliasStr,
+ }
+ 
+ XkbColorPtr
+-XkbAddGeomColor(XkbGeometryPtr geom, _Xconst char *spec, unsigned int pixel)
++XkbAddGeomColor(XkbGeometryPtr geom, /*_Xconst*/ char *spec, unsigned int pixel)
+ {
+     register int i;
+     register XkbColorPtr color;
+@@ -899,8 +899,8 @@ XkbAddGeomDoodad(XkbGeometryPtr geom, XkbSectionPtr section, Atom name)
+ XkbOverlayKeyPtr
+ XkbAddGeomOverlayKey(XkbOverlayPtr overlay,
+                      XkbOverlayRowPtr row,
+-                     _Xconst char *over,
+-                     _Xconst char *under)
++                     /*_Xconst*/ char *over,
++                     /*_Xconst*/ char *under)
+ {
+     register int i;
+     XkbOverlayKeyPtr key;
+diff --git a/src/xkb/XKBGeom.c b/src/xkb/XKBGeom.c
+index ab3bbc7c..024da7af 100644
+--- a/src/xkb/XKBGeom.c
++++ b/src/xkb/XKBGeom.c
+@@ -209,7 +209,7 @@ XkbComputeSectionBounds(XkbGeometryPtr geom, XkbSectionPtr section)
+ 
+ char *
+ XkbFindOverlayForKey(XkbGeometryPtr geom, XkbSectionPtr wanted,
+-                     _Xconst char *under)
++                     /* _Xconst */ char *under)
+ {
+     int s;
+     XkbSectionPtr section;

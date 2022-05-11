@@ -1,0 +1,44 @@
+diff --git a/meson.build b/meson.build
+index 44efeaee..15a2d042 100644
+--- a/meson.build
++++ b/meson.build
+@@ -165,7 +165,7 @@ subdir('desktop-shell')
+ subdir('fullscreen-shell')
+ subdir('ivi-shell')
+ subdir('kiosk-shell')
+-subdir('remoting')
++## subdir('remoting')
+ subdir('pipewire')
+ subdir('clients')
+ subdir('wcap')
+diff --git a/meson_options.txt b/meson_options.txt
+index da4ccaab..2b0142a5 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -235,3 +235,10 @@ option(
+ 	value: false,
+ 	description: 'Generate documentation'
+ )
++
++##Todd
++option('base-install',
++    type : 'string',
++    value : '',
++    description : 'Location of system installation')
++
+diff --git a/protocol/meson.build b/protocol/meson.build
+index 25cea5a8..e06ef314 100644
+--- a/protocol/meson.build
++++ b/protocol/meson.build
+@@ -1,8 +1,8 @@
+-dep_scanner = dependency('wayland-scanner', native: true)
+-prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
++dep_scanner = dependency('wayland-scanner-host')
++prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner_host'))
+ 
+ dep_wp = dependency('wayland-protocols', version: '>= 1.18')
+-dir_wp_base = dep_wp.get_pkgconfig_variable('pkgdatadir')
++dir_wp_base = get_option('base-install') + dep_wp.get_pkgconfig_variable('pkgdatadir')
+ 
+ install_data(
+ 	[

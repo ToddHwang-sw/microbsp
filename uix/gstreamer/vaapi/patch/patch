@@ -1,0 +1,27 @@
+diff --git a/gst-libs/gst/vaapi/meson.build b/gst-libs/gst/vaapi/meson.build
+index aadd4fd4..0e49cc5a 100644
+--- a/gst-libs/gst/vaapi/meson.build
++++ b/gst-libs/gst/vaapi/meson.build
+@@ -166,7 +166,7 @@ endif
+ 
+ if USE_WAYLAND
+   # The XDG shell interface needs to be generated first
+-  wayland_protocols_basedir = wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
++  wayland_protocols_basedir = get_option('base-install') + wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
+   xdg_shell_xml_spec = join_paths(wayland_protocols_basedir, 'stable', 'xdg-shell', 'xdg-shell.xml')
+   xdg_shell_header = custom_target('vaapi-xdg-shell-client-header',
+       command: [ wayland_scanner_bin, 'client-header', '@INPUT@', '@OUTPUT@' ],
+diff --git a/meson_options.txt b/meson_options.txt
+index 9c2b5e16..6131f90e 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -13,3 +13,9 @@ option('doc', type : 'feature', value : 'auto', yield: true,
+ option('package-origin', type : 'string',
+        value : 'https://gitlab.freedesktop.org/gstreamer/gstreamer-vaapi/issues',
+        yield : true, description : 'package origin URL to use in plugins')
++
++##Todd
++option('base-install',
++      type : 'string',
++      value : '',
++      description : 'Location of system installation')
