@@ -22,7 +22,7 @@ MICB_DEPENDS=\
 		libavdevice 						\
 		wayland-egl wayland-client wayland-cursor wayland-server\
 		libsystemd ncurses liblz4 libcap gl egl                 \
-		libevdev mtdev libudev \
+		libevdev mtdev libudev harfbuzz \
 
 
 ## save time ??? 

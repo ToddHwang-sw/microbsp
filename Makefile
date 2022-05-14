@@ -126,8 +126,7 @@ LIBDIR=\
 	libpam \
 	libpcap \
 	libev \
-	libtool \
-	libelf
+	libtool
 SUBDIR+=$(LIBDIR)
 
 ## Applications 
