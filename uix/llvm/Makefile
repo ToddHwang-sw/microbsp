@@ -66,12 +66,12 @@ notice:
 	@echo "-----------------------------------------------------------------------------------------------------------------------------"
 
 prepare: 
-	[ -f $(TOPDIR)/gnu/sources/$(DIR).zip ] || exit 1
-	[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	[ -d $(BUILDDIR)/target/install ] || mkdir -p $(BUILDDIR)/target/install
-	[ -d $(BUILDDIR)/target/build   ] || mkdir -p $(BUILDDIR)/target/build
-	[ -d $(BUILDDIR)/target/$(LLVMDN) ] || $(UNCOMPRESS) $(TOPDIR)/gnu/sources/$(DIR).zip $(BUILDDIR)/target
-	[ ! -d $(BUILDDIR)/target/build ] || (  \
+	@[ -f $(TOPDIR)/gnu/sources/$(DIR).zip ] || exit 1
+	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
+	@[ -d $(BUILDDIR)/target/install ] || mkdir -p $(BUILDDIR)/target/install
+	@[ -d $(BUILDDIR)/target/build   ] || mkdir -p $(BUILDDIR)/target/build
+	@[ -d $(BUILDDIR)/target/$(LLVMDN) ] || $(UNCOMPRESS) $(TOPDIR)/gnu/sources/$(DIR).zip $(BUILDDIR)/target
+	@[ ! -d $(BUILDDIR)/target/build ] || (  \
 			cd $(BUILDDIR)/target/build ;               \
 			cmake -G "Unix Makefiles"                   \
 				-D CMAKE_BUILD_TYPE="Release"           \

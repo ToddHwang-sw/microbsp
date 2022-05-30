@@ -16,7 +16,7 @@ SASS_PATHENV=\
 MICB_CONFIGURE_MAKEOPTS = DESTDIR=$(destination) -C ../../../$(MICBSRC)/$(DIR)
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( \
 			$(UNCOMPRESS) $(LOC)/$(DIR).git;  \
 			pushd $(SRCPATH)/$(DIR);                  \

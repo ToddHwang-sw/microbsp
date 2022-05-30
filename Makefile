@@ -23,14 +23,19 @@ export BUILDDIR=build/$(_ARCH_)
 
 ##
 ## Build output file 
-export BUILDOUT=build/output.$(_ARCH_)
+export BUILDOUT=$(BUILDDIR)/build.log
+
+define SETUP_BUILDOUT
+	[ -d $(1)/$(BUILDDIR) ] || mkdir -p $(1)/$(BUILDDIR)  && \
+	[ -f $(1)/$(BUILDOUT) ] || touch $(1)/$(BUILDOUT) 
+endef
 
 ## ISO image name...
 export IMAGENAME=output.iso
 
 ## install dir
 INSTSUBFN=disk
-XBASEDIR=$(BDDIR)/_install
+XBASEDIR=$(BDDIR)/_base
 FINDIR=$(BDDIR)/__tempd
 INSTALLDIR:=$(XBASEDIR)/$(INSTSUBFN)
 ISODIR=$(BDDIR)/iso
@@ -76,11 +81,12 @@ CLEAN_LIBLA=\
 		done ;										\
 	done
 
+	
 ##
 ## CFLAGS / LFLAGS - for compilation 
 ##
-export INCFLAGS_NAME=build/flags.incs
-export LIBFLAGS_NAME=build/flags.libs
+export INCFLAGS_NAME=$(BUILDDIR)/flags.incs
+export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 
 ##
 ## GNU toolchains  - component information
@@ -163,6 +169,7 @@ EXTDIR=\
 	gdb \
 	perl \
 	python \
+	pciaccess \
 	drm    \
 	gobject-introspection \
 	libidn \
@@ -289,6 +296,7 @@ installcomps:
 		libssl-dev libncurses-dev \
 		libmpc-dev libreadline-dev \
 		uuid-dev zlib1g-dev liblzo2-dev \
+		libelf-dev \
 		libtool-bin pkg-config chrpath diffstat \
 		gcc-multilib g++-multilib \
 		gawk \
@@ -390,7 +398,7 @@ lib: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -401,7 +409,7 @@ lib_%: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) $(subst lib_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst lib_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -414,7 +422,7 @@ app: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -425,7 +433,7 @@ app_%: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) $(subst app_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst app_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -438,7 +446,7 @@ ext: checkfirst
 	@cd exts; \
 		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -449,7 +457,7 @@ ext_%: checkfirst
 	@cd exts; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(EXTINSTDIR) $(subst ext_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst ext_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -460,9 +468,9 @@ ext_%: checkfirst
 ##
 ui: checkfirst llvm_okay
 	@cd uix; \
-		for dir in $(SUBDIR); do         \
+		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(UIXINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(UIXINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(UIXINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -473,7 +481,7 @@ ui_%: checkfirst llvm_okay
 	@cd uix; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(UIXINSTDIR) $(subst ui_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -715,9 +723,10 @@ ramdisk:
 	@echo ""
 	@make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install
 
-reformat:
+cleanup:
 	@[ ! -d $(XBASEDIR)   ] || \rm -rf $(XBASEDIR)
 	@[ ! -d $(STAGEDIR)   ] || \rm -rf $(STAGEDIR)
+	@[ ! -d $(UIXINSTDIR) ] || \rm -rf $(UIXINSTDIR)
 	@[ ! -d $(FINDIR)     ] || \rm -rf $(FINDIR)
 	@[ ! -d $(ISODIR)     ] || \rm -rf $(ISODIR)
 	@make -C $(BDDIR)        uninstall

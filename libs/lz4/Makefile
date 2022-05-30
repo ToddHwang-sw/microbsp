@@ -5,9 +5,9 @@ include $(TOPDIR)/scripts/env.mk
 
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR); git clone $(LOC)/$(DIR).git )
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(DIR).git )
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

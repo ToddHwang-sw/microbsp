@@ -1,5 +1,5 @@
 diff --git a/meson.build b/meson.build
-index 0019671a2..d3cc59b65 100644
+index 87d59ad81..8996be42b 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -445,7 +445,7 @@ if cc.get_id() == 'gcc' or cc.get_id() == 'clang'

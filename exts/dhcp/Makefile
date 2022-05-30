@@ -17,8 +17,8 @@ MICB_CONFIGURE_MAKEOPTS += \
 MICB_DEPENDS = openssl libxml-2.0
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \

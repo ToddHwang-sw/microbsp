@@ -10,9 +10,8 @@ MICB_CONFIGURE_PRG=./configure
 MICB_DEPENDS = libmnl
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR) ; git clone --single-branch $(LOC)/$(DIR).git )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
+	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR) ; git clone --single-branch $(LOC)/$(DIR).git )
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

@@ -32,9 +32,9 @@ MICB_CONFIGURE_OPTS = \
 	--enable-nonfree
 
 prepare:
-	[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	cd $(BUILDDIR)/$(DIR); \
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_RUNENV) $(MICB_CONFIGURE_PRG) $(MICB_CONFIGURE_OPTS)
 
 all install uninstall clean:

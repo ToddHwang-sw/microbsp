@@ -8,13 +8,17 @@ CROSS_USER_CFLAGS += \
 
 MICB_MESON_OPTS+=\
 	-D gtk_doc=false \
-	-D glib_debug=disabled
+	-D glib_debug=disabled \
+	-D libelf=disabled \
+	-D tests=false \
+	-D man=false \
+	-D installed_tests=false 
 
-MICB_DEPENDS = intl iconv libpcre libffi zlib mount blkid
+MICB_DEPENDS = intl iconv libpcre libffi zlib mount blkid ncurses
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)

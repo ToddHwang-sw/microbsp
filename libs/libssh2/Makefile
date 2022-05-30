@@ -8,8 +8,8 @@ MICB_CONFIGURE_OPTS +=\
 
 MICB_DEPENDS = openssl 
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \

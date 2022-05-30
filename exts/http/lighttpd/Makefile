@@ -7,11 +7,11 @@ MICB_CONFIGURE_OPTS += \
 	--without-lua \
 	--without-libunwind
 
-MICB_DEPENDS = iconv intl glib-2.0
+MICB_DEPENDS = iconv intl glib-2.0 openssl
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( \
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( \
 		$(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH); \
 		mkdir -p $(MICBSRC)/$(DIR)/m4 )
 	@$(MICB_CONFIGURE_AUTOCONF)

@@ -14,7 +14,7 @@ READELF=$(CROSS_COMP_PREFIX)readelf
 ## User Flags...
 ##
 export CROSS_USER_CFLAGS=-I$(INSTALLDIR)/include
-export CROSS_USER_LFLAGS=-L$(INSTALLDIR)/lib -L$(INSTALLDIR)/lib64
+export CROSS_USER_LFLAGS=-L$(INSTALLDIR)/lib
 
 ##
 ## Compilation rule...

@@ -1,5 +1,5 @@
 DIR=btrfs-progs
-LOC=-b v5.16.x https://github.com/kdave
+LOC=-b devel https://github.com/kdave
 
 include $(TOPDIR)/scripts/extenv.mk
 
@@ -20,8 +20,8 @@ MICB_CONFIGURE_MAKEOPTS += V=1
 MICB_DEPENDS = lzo2 uuid blkid
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \

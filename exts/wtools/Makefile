@@ -7,12 +7,13 @@ MICB_CONFIGURE_MAKEOPTS = \
 	$(COMP_CMDS) PREFIX=$(destination)
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -f source/$(DIR).tar.gz ] || wget -P source $(LOC)/$(DIR).tar.gz
-	@[ -d $(BUILDDIR)/$(DIR) ] || tar zxvf source/$(DIR).tar.gz -C $(BUILDDIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( \
+		wget -P $(MICBSRC) $(LOC)/$(DIR).tar.gz ; \
+		tar zxvf $(MICBSRC)/$(DIR).tar.gz -C $(BUILDDIR) )
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); \
-		cat ../../../patch/patch | patch -p 1 )
+		cat ../../../$(MICB_PATCH_FN) | patch -p 1 )
 
 all uninstall uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

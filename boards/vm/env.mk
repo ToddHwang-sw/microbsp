@@ -9,7 +9,7 @@ export _ARCH_=$(_CORE_)-vm
 export PLATFORM=$(_CORE_)-any-linux-gnu
 
 ## kernel version 
-export KERNELVER=linux-4.19.32
+export KERNELVER=linux-5.17.7
 
 ## Linux Kernel compile
 export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 

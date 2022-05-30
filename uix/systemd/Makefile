@@ -9,10 +9,6 @@ MICB_MESON_OPTS +=\
 
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-##MICB_DEPENDS = iconv intl iconv libpcre glib-2.0 libffi zlib mount blkid pam liblzma liblz4 libip4tc libcap \
-##	       xkbcommon gnutls libssh2
-##
-
 MICB_DEPENDS = iconv intl iconv libpcre glib-2.0 libffi zlib mount blkid pam liblzma liblz4 libip4tc libcap \
 	       gnutls libssh2
 
@@ -23,8 +19,8 @@ CROSS_USER_CFLAGS += \
 	-I$(INSTALLDIR)/usr/include
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)

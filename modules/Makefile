@@ -1,7 +1,7 @@
 MODMAKE=$(KERNELMAKE) -C $(KERNDIR)/$(KERNELVER) CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 
-MODDIRS=\
-	sfs
+##MODDIRS= sfs
+MODDIRS=
 
 all:
 	@for dir in $(MODDIRS); do $(MODMAKE) M=`pwd`/$$dir modules ; done

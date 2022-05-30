@@ -1,4 +1,4 @@
-LOC=https://www.kernel.org/pub/linux/kernel/v4.x/
+LOC=https://www.kernel.org/pub/linux/kernel/v5.x/
 FILENM=$(KERNELVER).tar.gz
 
 LINUXMAKE=$(KERNELMAKE) -j 4 -C .
@@ -53,7 +53,7 @@ extmod:
 		make KERNSRC=$(KERNDIR)/$(KERNELVER) -C modules/$$dir prepare all install; \
 	done
 
-clean:
+clean uninstall:
 	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \
 		cd $(BUILDDIR)/$(KERNELVER); \
 		$(LINUXMAKE) clean )

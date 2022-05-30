@@ -37,7 +37,7 @@ install:
 		-boot-info-table -J -r \
 		$(isodir)/
 
-clean:
+clean uninstall:
 	@\rm -rf $(isoname)
 	@\rm -rf $(isodir)
 

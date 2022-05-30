@@ -9,8 +9,8 @@ PYTHON_CMDS=$(CROSS_COMP_CMDS) READELF="$(CROSS_COMP_PREFIX)readelf"
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -f source/$(FILENM) ] || wget -P source $(LOC)/$(FILENM)
-	@tar xvf source/$(FILENM) -C $(BUILDDIR); \
+	@[ -f $(MICBSRC)/$(FILENM) ] || wget -P $(MICBSRC) $(LOC)/$(FILENM)
+	@tar xvf $(MICBSRC)/$(FILENM) -C $(BUILDDIR); \
 		cd $(BUILDDIR)/$(DIR); \
 		ac_cv_have_chflags=no \
 		ac_cv_buggy_getaddrinfo=no \
