@@ -29,13 +29,16 @@ SHORTAGES
 NOTICE
 ==========
 
-
 * MicroBSP is 100% Makefile based raspberry pi software build tree.
 * Software building begins with <strong>GNU toolchain construction</strong>.
 * Everything has been tested and proved in <strong>Ubuntu 20.04</strong>.
 * MicroBSP kicks at the starting line in cross compiler build to QT graphic system.
 * Raspberry PI 3+ has been used for coding for MicroBSP. (boards/rpi3)
 * X86_64 platform has been tested through QEMU emulator in ubuntu.
+
+July/17/2022
+* Development branch (dev1) has been modifed for <strong>Ubuntu LTS22.04 </strong>.
+* "QT" is not supported. - How to build ?? 
 
 Required Softwares
 ===============================
