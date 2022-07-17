@@ -1,0 +1,86 @@
+diff --git a/meson.build b/meson.build
+index aab4017c..4765552c 100644
+--- a/meson.build
++++ b/meson.build
+@@ -6,7 +6,7 @@ project('gdk-pixbuf', 'c',
+     'warning_level=1',
+     'c_std=gnu99',
+   ],
+-  meson_version: '>= 0.55.3',
++  meson_version: '>= 0.45.3',
+ )
+ 
+ add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_DEFAULT_SOURCE', '-D_XOPEN_SOURCE=700' ], language: 'c')
+@@ -83,16 +83,18 @@ foreach h: check_headers
+ endforeach
+ 
+ # Look for the math library first, since we use it to test for round() and lrint()
+-mathlib_dep = cc.find_library('m', required: false)
++##mathlib_dep = cc.find_library('m', required: false)
+ 
+ # XXX: Remove the checks for round() and lrint() once GDK-Pixbuf is declared C99
+-if cc.has_function('round', dependencies: mathlib_dep)
+-  gdk_pixbuf_conf.set('HAVE_ROUND', 1)
+-endif
++##if cc.has_function('round', dependencies: mathlib_dep)
++ ## gdk_pixbuf_conf.set('HAVE_ROUND', 1)
++##endif
++gdk_pixbuf_conf.set('HAVE_ROUND', 1)
+ 
+-if cc.has_function('lrint', dependencies: mathlib_dep)
+-  gdk_pixbuf_conf.set('HAVE_LRINT', 1)
+-endif
++##if cc.has_function('lrint', dependencies: mathlib_dep)
++##  gdk_pixbuf_conf.set('HAVE_LRINT', 1)
++##endif
++gdk_pixbuf_conf.set('HAVE_LRINT', 1)
+ 
+ intl_dep = cc.find_library('intl', required: false)
+ if cc.has_function('bind_textdomain_codeset', prefix: '#include <libintl.h>', dependencies: intl_dep)
+@@ -104,15 +106,16 @@ if cc.has_function('setrlimit', prefix: '#include <sys/time.h>\n#include <sys/re
+ endif
+ 
+ # We use links() because sigsetjmp() is often a macro hidden behind other macros
+-gdk_pixbuf_conf.set('HAVE_SIGSETJMP',
+-  cc.links('''#define _POSIX_SOURCE
+-              #include <setjmp.h>
+-              int main (void) {
+-                sigjmp_buf env;
+-                sigsetjmp (env, 0);
+-                return 0;
+-              }''', name: 'sigsetjmp'),
+-)
++##gdk_pixbuf_conf.set('HAVE_SIGSETJMP',
++ ## cc.links('''#define _POSIX_SOURCE
++  ##            #include <setjmp.h>
++   ##           int main (void) {
++    ##            sigjmp_buf env;
++     ##           sigsetjmp (env, 0);
++      ##          return 0;
++       ##       }''', name: 'sigsetjmp'),
++##)
++gdk_pixbuf_conf.set('HAVE_SIGSETJMP',1)
+ 
+ # Common compiler and linker flags
+ common_cflags = []
+@@ -219,7 +222,7 @@ if medialib_dep.found()
+ endif
+ 
+ gdk_pixbuf_deps = [
+-  mathlib_dep,
++  ##  mathlib_dep,
+   glib_dep,
+   gobject_dep,
+   gmodule_dep,
+diff --git a/subprojects/gi-docgen.wrap b/subprojects/gi-docgen.wrap
+deleted file mode 100644
+index 98cd9211..00000000
+--- a/subprojects/gi-docgen.wrap
++++ /dev/null
+@@ -1,6 +0,0 @@
+-[wrap-git]
+-directory=gi-docgen
+-url=https://gitlab.gnome.org/GNOME/gi-docgen.git
+-push-url=ssh://git@gitlab.gnome.org:GNOME/gi-docgen.git
+-revision=main
+-depth=1

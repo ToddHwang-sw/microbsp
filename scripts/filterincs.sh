@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+TMPFILE=/tmp/microbsp.incs.collect
 
 single_trace() {
 	## Cflags --
@@ -48,11 +50,24 @@ package_trace() {
 	libreqs=`grep -H "Requires:" $1 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
 	libpreqs=`grep -H "Requires.private:" $1 | awk '{for(i=2;i<=NF;i++) printf $i" "; print ""}' | sed -e "s/[,<>=]//g"` 
 
+	if [ "$libreqs" == "" -a "$libpreqs" == "" ]; then 
+		single_trace $1 ${2%/*} 
+		return 
+	fi 
+
 	for rlib in $libreqs $libpreqs ; do 
-		for path in $libspath; do 
-			[ ! -f $path/pkgconfig/$rlib.pc ] || \
-				package_trace $path/pkgconfig/$rlib.pc $path ;
-		done ;
+		if [ `cat $TMPFILE | grep $rlib | wc -l` == 0 -a \
+				`echo $rlib | grep "[0_9]." | wc -l` == 0 ]; then
+			echo $rlib >> $TMPFILE 
+			##echo "Adding +$rlib+ " >> /tmp/hello
+			##echo "----------------" >> /tmp/hello
+			##cat $TMPFILE >> /tmp/hello 
+			##echo "----------------" >> /tmp/hello
+			for path in $libspath; do 
+				[ ! -f $path/pkgconfig/$rlib.pc ] || \
+					package_trace $path/pkgconfig/$rlib.pc $path ;
+			done
+		fi 
 	done 
 
 	single_trace $1 ${2%/*} 
@@ -63,4 +78,7 @@ package_trace() {
 
 libspath=`cat $1/libs.info`
 
+[ ! -f $TMPFILE ] || \rm -rf $TMPFILE
+touch $TMPFILE
 package_trace $2 $3
+###rm $TMPFILE

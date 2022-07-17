@@ -13,7 +13,7 @@ MICB_CONFIGURE_MAKEOPTS += \
 		AR=$(CROSS_COMP_PREFIX)ar
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR)-src.tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR)-src.tar.gz; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	@cd $(BUILDDIR)/$(DIR); \

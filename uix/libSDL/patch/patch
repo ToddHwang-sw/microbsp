@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index 0391c67b4..35d5d65ce 100644
+index ed3405d37..93ad19b02 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -127,7 +127,8 @@ esac
+@@ -132,7 +132,8 @@ esac
  # Uncomment the following line if you want to force SDL and applications
  # built with it to be compiled for a particular architecture.
  #AX_GCC_ARCHFLAG([no], [BASE_CFLAGS="$BASE_CFLAGS $ax_cv_gcc_archflag]")

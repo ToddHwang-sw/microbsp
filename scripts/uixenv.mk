@@ -13,7 +13,7 @@ export WAYLAND_LOCATION = $(TOPDIR)/uix/wayland-host/build/host
 export WAYLAND_BINARIES = $(WAYLAND_LOCATION)/bin
 
 ## Wayland host tool included 
-export MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(UIXINSTDIR)/lib/pkgconfig:$(UIXINSTDIR)/share/pkgconfig:$(UIXINSTDIR)/usr/local/lib/pkgconfig:$(UIXINSTDIR)/usr/local/share/pkgconfig:$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
+export MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(UIXINSTDIR)/lib/pkgconfig:$(UIXINSTDIR)/share/pkgconfig:$(UIXINSTDIR)/usr/lib/pkgconfig:$(UIXINSTDIR)/usr/local/lib/pkgconfig:$(UIXINSTDIR)/usr/local/share/pkgconfig:$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
 ##
 ## Probing autogen.sh first...

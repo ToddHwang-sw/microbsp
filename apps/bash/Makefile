@@ -7,6 +7,7 @@ MICB_CONFIGURE_OPTS += \
 	--disable-nls \
 	--disable-rpath \
 	--enable-job-control \
+	--disable-help-builtin \
 	--without-afs \
 	--with-bash-malloc \
 	--with-curses \
@@ -15,8 +16,10 @@ MICB_CONFIGURE_OPTS += \
 	--with-included-gettext \
 	--without-libintl-prefix 
 
+MICB_DEPENDS = ncurses readline
+
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

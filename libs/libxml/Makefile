@@ -9,10 +9,10 @@ MICB_CONFIGURE_AUTOCONF_CMD=\
 MICB_CONFIGURE_OPTS += \
 	--without-python
 
-DEPLOYED_LIBFLAGS=
+MICB_DEPENDS = zlib liblzma
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \

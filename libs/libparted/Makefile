@@ -1,4 +1,4 @@
-DIR=parted-1.8.0
+DIR=parted-3.5
 LOC=https://ftp.gnu.org/gnu/parted
 
 include $(TOPDIR)/scripts/env.mk
@@ -10,11 +10,19 @@ endif
 
 MICB_CONFIGURE_OPTS += \
 	--without-readline \
-	--disable-device-mapper 
+	--disable-device-mapper \
+	--enable-fs \
+	--enable-largefile \
+	--enable-read-only
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+MICB_DEPENDS = uuid blkid
+
+CROSS_USER_CFLAGS += \
+	-D MB_LEN_MAX=16 
+
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

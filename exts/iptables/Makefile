@@ -9,8 +9,10 @@ MICB_CONFIGURE_RUNENV += \
 MICB_CONFIGURE_PRG = ./configure 
 MICB_CONFIGURE_MAKEOPTS += V=1
 
+MICB_DEPENDS = libnftnl
+
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	cd $(BUILDDIR)/$(DIR); \

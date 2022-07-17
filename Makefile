@@ -22,15 +22,24 @@ include $(BDDIR)/env.mk
 export BUILDDIR=build/$(_ARCH_)
 
 ##
+## Toolchain Build output file 
+export TOOLCHAIN_BUILDOUT=$(TOPDIR)/gnu/toolchain/build_toolchain_log.$(_ARCH_)
+
+##
 ## Build output file 
-export BUILDOUT=build/output.$(_ARCH_)
+export BUILDOUT=$(BUILDDIR)/build.log
+
+define SETUP_BUILDOUT
+	[ -d $(1)/$(BUILDDIR) ] || mkdir -p $(1)/$(BUILDDIR)  && \
+	[ -f $(1)/$(BUILDOUT) ] || touch $(1)/$(BUILDOUT) 
+endef
 
 ## ISO image name...
 export IMAGENAME=output.iso
 
 ## install dir
 INSTSUBFN=disk
-XBASEDIR=$(BDDIR)/_install
+XBASEDIR=$(BDDIR)/_base
 FINDIR=$(BDDIR)/__tempd
 INSTALLDIR:=$(XBASEDIR)/$(INSTSUBFN)
 ISODIR=$(BDDIR)/iso
@@ -76,6 +85,13 @@ CLEAN_LIBLA=\
 		done ;										\
 	done
 
+	
+##
+## CFLAGS / LFLAGS - for compilation 
+##
+export INCFLAGS_NAME=$(BUILDDIR)/flags.incs
+export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
+
 ##
 ## GNU toolchains  - component information
 ##
@@ -97,6 +113,7 @@ LIBDIR=\
 	liblzma \
 	bzip2 \
 	lz4 \
+	zstd \
 	gmp \
 	mpfr \
 	mpc  \
@@ -120,7 +137,7 @@ LIBDIR=\
 	libpam \
 	libpcap \
 	libev \
-	libtool 
+	libtool
 SUBDIR+=$(LIBDIR)
 
 ## Applications 
@@ -157,6 +174,7 @@ EXTDIR=\
 	gdb \
 	perl \
 	python \
+	pciaccess \
 	drm    \
 	gobject-introspection \
 	libidn \
@@ -167,7 +185,10 @@ EXTDIR=\
 	http/fastcgi \
 	http/lighttpd \
 	json \
-	jq
+	jq \
+	texinfo \
+	help2man  \
+	mtdev 
 SUBDIR+=$(EXTDIR)
 
 ## required library application folders
@@ -182,6 +203,7 @@ UIDIR=\
 	libjpeg                \
 	libpng	               \
 	freetype2              \
+	fontconfig             \
 	libgpg-error           \
 	libgcrypt              \
 	libdbus	               \
@@ -212,13 +234,25 @@ UIDIR=\
 	X11/xorg-libxtst       \
 	X11/xshmfence          \
 	X11/libXxf86vm         \
+	systemd                \
+	libevdev               \
 	wayland-host           \
 	wayland                \
 	wayland-protocols      \
 	xkbcommon              \
-	libva                  \
-	fontconfig             \
+	pixman                 \
 	mesa                   \
+	cairo                  \
+	fribidi                \
+	harfbuzz               \
+	gdk-pixbuf             \
+	pango                  \
+	epoxy                  \
+	graphene               \
+	gtk                    \
+	libinput               \
+	libva                  \
+	weston                 \
 	libalsa                \
 	libSDL                 \
 	ffmpeg                 \
@@ -233,9 +267,15 @@ UIDIR=\
 	gstreamer/vaapi        \
 	pulseaudio             \
 	microwindows	       \
-	pixman                 \
 	vncserver              \
+
+##
+## QT5 was taken out of build candidates. 
+## Under ubuntu 22LTS, very painful jobs to make unified compilation file for QT5. 
+##
+UIDIR_TODO=\
 	qt
+
 SUBDIR+=$(UIDIR)
 
 # Component folders - apps, libs, exts, uix
@@ -256,37 +296,35 @@ installcomps:
 	@echo ""
 	@echo "Installing required SW sets..."
 	@echo ""
+	@echo ""
+	@echo "These menu was tested and validated in Ubuntu LTS 20.04,"
+	@echo "but not yet perfectly probed for LTS 22.04"
+	@echo "User may get errors in ..."
+	@echo "  uix/systemd, "
+	@echo "  uix/mesa,    " 
+	@echo ""
+	@echo ""
 	@sudo apt --fix-broken install 
 	@sudo apt update 
 	@sudo apt install \
-		build-essential \
-		cmake automake autoconf m4 autopoint \
-		unzip p7zip-full autoconf-archive \
-		autogen \
-		flex bison gettext net-tools texinfo \
-		libssl-dev libncurses-dev \
-		libmpc-dev \
-		uuid-dev zlib1g-dev liblzo2-dev \
-		libtool-bin pkg-config chrpath diffstat \
-		gcc-multilib g++-multilib \
-		gawk \
-		python3 \
-		python3-pip \
-		python3-setuptools \
-		python3-wheel \
-		ninja-build \
-		meson \
-		qemu-system-x86 \
-		libxml2-dev libffi-dev \
-		help2man valgrind \
-		gperf   \
-		libglib2.0-dev-bin \
-		ragel gengetopt
+		build-essential     cmake                 automake        autoconf          \
+		m4                  autopoint             unzip           p7zip-full        \
+		autoconf-archive    autogen               texlive         flex              \
+		bison               gettext               net-tools       texinfo           \
+		libssl-dev          libncurses-dev        libmpc-dev      libreadline-dev   \
+		uuid-dev            zlib1g-dev            liblzo2-dev     libelf-dev 	    \
+		libtool-bin         pkg-config            chrpath         diffstat          \
+		gcc-multilib        g++-multilib          gawk            python3           \
+		python3-pip         python3-setuptools    python3-wheel   ninja-build       \
+	  	meson               qemu-system-x86       libxml2-dev     libffi-dev        \
+	  	help2man            valgrind              gperf           libglib2.0-dev-bin\
+	  	ragel               gengetopt             python3-venv    python3-jinja2    \
+		gtk-doc-tools
 	@sudo apt --no-install-recommends install \
-		xsltproc \
-		xmlto \
-		fop 
-	@sudo pip install mako Jinja2
+		xsltproc 			xmlto 			      fop 
+	@sudo pip install pkgconfig mako Jinja2
+	@[ ! -f /usr/local/pip3.8 ] || /usr/local/bin/pip3.8 install mako
+	@pip3 install package_name setuptools --user
 
 checkfirst:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
@@ -312,6 +350,7 @@ checkfirst:
 		mkdir -p $(INSTALLDIR)/dev;                                 \
 		mkdir -p $(INSTALLDIR)/proc;                                \
 		mkdir -p $(INSTALLDIR)/home;                                \
+		mkdir -p $(INSTALLDIR)/home/root;                           \
 		mkdir -p $(INSTALLDIR)/root;                                \
 		mkdir -p $(INSTALLDIR)/var;                                 \
 		mkdir -p $(INSTALLDIR)/sys;                                 \
@@ -366,7 +405,7 @@ lib: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -377,7 +416,7 @@ lib_%: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) $(subst lib_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst lib_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -390,7 +429,7 @@ app: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -401,7 +440,7 @@ app_%: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(INSTALLDIR) $(subst app_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst app_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -414,7 +453,7 @@ ext: checkfirst
 	@cd exts; \
 		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -425,7 +464,7 @@ ext_%: checkfirst
 	@cd exts; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(EXTINSTDIR) $(subst ext_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst ext_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -436,9 +475,9 @@ ext_%: checkfirst
 ##
 ui: checkfirst llvm_okay
 	@cd uix; \
-		for dir in $(SUBDIR); do         \
+		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(UIXINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(UIXINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(UIXINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
@@ -449,7 +488,7 @@ ui_%: checkfirst llvm_okay
 	@cd uix; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
-				[ -f $$dir/$(BUILDOUT) ] || touch $$dir/$(BUILDOUT) && \
+				$(call SETUP_BUILDOUT,$$dir)                                                   && \
 				make -C $$dir destination=$(UIXINSTDIR) $(subst ui_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
 				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -472,11 +511,11 @@ proj_%:
 ##
 llvm_okay:
 	@[ -f $(TOOLCHAIN_ROOT)/bin/$(PLATFORM)-gcc ] || ( \
-			echo ""; \
-			echo "Base cross-compiler should be installed " ; \
-			echo ""; \
-			exit 1 \
-			)	
+		echo ""; \
+		echo "Base cross-compiler should be installed " ; \
+		echo ""; \
+		exit 1 \
+		)	
 
 llvm: llvm_okay
 	@make -C gnu/llvm prepare all install
@@ -505,6 +544,9 @@ distclean:
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR); \
+			[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT);  \
+			[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
+			[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
 		done ;                                 \
 		cd .. ;                                \
 	done
@@ -688,9 +730,10 @@ ramdisk:
 	@echo ""
 	@make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install
 
-reformat:
+cleanup:
 	@[ ! -d $(XBASEDIR)   ] || \rm -rf $(XBASEDIR)
 	@[ ! -d $(STAGEDIR)   ] || \rm -rf $(STAGEDIR)
+	@[ ! -d $(UIXINSTDIR) ] || \rm -rf $(UIXINSTDIR)
 	@[ ! -d $(FINDIR)     ] || \rm -rf $(FINDIR)
 	@[ ! -d $(ISODIR)     ] || \rm -rf $(ISODIR)
 	@make -C $(BDDIR)        uninstall
@@ -699,70 +742,71 @@ reformat:
 		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
 
 toolchain:
-	@echo ""
-	@echo ""
-	@echo "Preparing sources.... "
-	@echo ""
-	@echo ""
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "Preparing sources.... "                2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@make -C gnu/sources -f ../Makefile download
-	@echo ""
-	@echo ""
-	@echo "BINUTILS....."
-	@echo ""
-	@echo ""
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "BINUTILS....."                         2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/binutils/build/$(_ARCH_) ] || mkdir -p gnu/binutils/build/$(_ARCH_)
 	@cd gnu/binutils/build/$(_ARCH_); \
-		make -f ../../../Makefile config_binutils setup_binutils
-	@echo ""
-	@echo ""
-	@echo "Kernel Headers....."
-	@echo ""
-	@echo ""
+		make -f ../../../Makefile config_binutils setup_binutils  2>&1 | tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "Kernel Headers....."                   2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || \
-		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) prepare
+		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) prepare 2>&1 | tee $(TOOLCHAIN_BUILDOUT)
 	@cd gnu; \
-		make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 
+		make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 2>&1 | tee $(TOOLCHAIN_BUILDOUT)
 	@[ ! -f $(TOOLCHAIN_ROOT)/$(PLATFORM)/include/asm/.install ] || ( \
 		echo ""  ;                     \
 		echo "Cleaning up kernel folder" ; \
 		echo ""  ;                     \
 		\rm -rf $(KERNDIR)/$(KERNELVER) ; )
-	@echo ""
-	@echo "GCC Bootstrap ....."
-	@echo ""
-	@echo ""
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Bootstrap ....."                   2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/gcc/build/$(_ARCH_) ] || mkdir -p gnu/gcc/build/$(_ARCH_)
 	@cd gnu/gcc/build/$(_ARCH_); \
-		make -f ../../../Makefile config_gcc setup_gcc
-	@echo ""
-	@echo ""
-	@echo "glibc Bootstrap ....."
-	@echo ""
-	@echo ""
+		make -f ../../../Makefile config_gcc setup_gcc          2>&1 | tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Bootstrap ....."                 2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/glibc/build/$(_ARCH_) ] || mkdir -p gnu/glibc/build/$(_ARCH_)
 	@cd gnu/glibc/build/$(_ARCH_); \
-		make -f ../../../Makefile config_glibc setup_glibc
-	@echo ""
-	@echo ""
-	@echo "GCC Host Compiler....."
-	@echo ""
-	@echo ""
+		make -f ../../../Makefile config_glibc setup_glibc      2>&1 | tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Host Compiler....."                2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
-		make -f ../../../Makefile setup_gcc_2
-	@echo ""
-	@echo ""
-	@echo "glibc Host Library....."
-	@echo ""
-	@echo ""
+		make -f ../../../Makefile setup_gcc_2 2>&1 | tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Host Library....."               2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/glibc/build/$(_ARCH_); \
-		make -f ../../../Makefile setup_glibc_2
-	@echo ""
-	@echo ""
-	@echo "GCC Extra Libraries....."
-	@echo ""
-	@echo ""
+		make -f ../../../Makefile setup_glibc_2   2>&1 | tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Extra Libraries....."              2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
+	@echo ""       2>&1 tee $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
-		make -f ../../../Makefile setup_gcc_3
+		make -f ../../../Makefile setup_gcc_3     2>&1 | tee $(TOOLCHAIN_BUILDOUT)
 
 #########################################################################################################################
 #

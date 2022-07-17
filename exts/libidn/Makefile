@@ -13,8 +13,8 @@ MICB_CONFIGURE_OPTS += \
 	--disable-silent-rules
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ -f $(BUILDDIR)/$(DIR)/$(BSDONE_FILE) ] || ( \
 		$(MICB_CONFIGURE_AUTOCONF) ; \
 		touch $(BUILDDIR)/$(DIR)/$(BSDONE_FILE) )

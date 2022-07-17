@@ -8,7 +8,7 @@ export MICB_CONFIGURE_OPTS += \
 	--without-xmlto \
 	--without-fop \
 	--without-xsltproc  \
-        --enable-malloc0returnsnull=yes \
+	--enable-malloc0returnsnull=yes \
 	--enable-shared \
 	--enable-static
 
@@ -25,3 +25,6 @@ export MICB_CONFIGURE_PRG=../../../$(MICBSRC)/$(DIR)/configure
 export MICB_CONFIGURE_MAKEOPTS=\
 		V=1 DESTDIR=$(X11INSTDIR)
 
+
+## Just simply 
+export CROSS_USER_CFLAGS += -I$(X11INSTDIR)/include 

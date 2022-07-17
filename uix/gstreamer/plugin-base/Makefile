@@ -9,6 +9,7 @@ GSTREAMER_OPTS += \
 	-D tests=disabled \
 	-D base-install=$(UIXINSTDIR) 
 
-MICB_DEPENDS = intl iconv gio-unix-2.0 gstreamer-1.0 x11 alsa
+MICB_DEPENDS = intl iconv gio-unix-2.0 gstreamer-1.0 x11 alsa \
+	       graphene-1.0 pangocairo
 
 include $(shell pwd)/../gstreamer.mk

@@ -1,6 +1,78 @@
+diff -uNr gcc-8.3.0-orig/gcc/config/i386/emmintrin.h gcc-8.3.0/gcc/config/i386/emmintrin.h
+--- gcc-8.3.0-orig/gcc/config/i386/emmintrin.h	2018-12-13 06:42:43.000000000 -0800
++++ gcc-8.3.0/gcc/config/i386/emmintrin.h	2022-05-29 20:42:44.496058467 -0700
+@@ -121,14 +121,14 @@
+ extern __inline __m128d __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_load_pd (double const *__P)
+ {
+-  return *(__m128d *)__P;
++  return *(__m128d const *)__P;
+ }
+ 
+ /* Load two DPFP values from P.  The address need not be 16-byte aligned.  */
+ extern __inline __m128d __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_loadu_pd (double const *__P)
+ {
+-  return *(__m128d_u *)__P;
++  return *(__m128d_u const *)__P;
+ }
+ 
+ /* Create a vector with all two elements equal to *P.  */
+@@ -706,7 +706,7 @@
+ extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_loadl_epi64 (__m128i_u const *__P)
+ {
+-  return _mm_set_epi64 ((__m64)0LL, *(__m64_u *)__P);
++  return _mm_set_epi64 ((__m64)0LL, *(__m64_u const *)__P);
+ }
+ 
+ extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+diff -uNr gcc-8.3.0-orig/gcc/config/i386/xmmintrin.h gcc-8.3.0/gcc/config/i386/xmmintrin.h
+--- gcc-8.3.0-orig/gcc/config/i386/xmmintrin.h	2018-01-03 02:03:58.000000000 -0800
++++ gcc-8.3.0/gcc/config/i386/xmmintrin.h	2022-05-29 20:43:27.288450530 -0700
+@@ -924,21 +924,21 @@
+ extern __inline __m128 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_load_ps (float const *__P)
+ {
+-  return *(__m128 *)__P;
++  return *(__m128 const *)__P;
+ }
+ 
+ /* Load four SPFP values from P.  The address need not be 16-byte aligned.  */
+ extern __inline __m128 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_loadu_ps (float const *__P)
+ {
+-  return *(__m128_u *)__P;
++  return *(__m128_u const *)__P;
+ }
+ 
+ /* Load four SPFP values in reverse order.  The address must be aligned.  */
+ extern __inline __m128 __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+ _mm_loadr_ps (float const *__P)
+ {
+-  __v4sf __tmp = *(__v4sf *)__P;
++  __v4sf __tmp = *(__v4sf const *)__P;
+   return (__m128) __builtin_ia32_shufps (__tmp, __tmp, _MM_SHUFFLE (0,1,2,3));
+ }
+ 
+diff -uNr gcc-8.3.0-orig/libmpx/mpxrt/mpxrt-utils.c gcc-8.3.0/libmpx/mpxrt/mpxrt-utils.c
+--- gcc-8.3.0-orig/libmpx/mpxrt/mpxrt-utils.c	2016-12-26 07:14:06.000000000 -0800
++++ gcc-8.3.0/libmpx/mpxrt/mpxrt-utils.c	2022-05-29 19:43:34.771141640 -0700
+@@ -69,6 +69,11 @@
+ #define MPX_RT_BNDPRESERVE_DEFAULT 0
+ #define MPX_RT_PRINT_SUMMARY "CHKP_RT_PRINT_SUMMARY"
+ 
++#ifndef PATH_MAX
++	/* linux/limits.h */
++	#define PATH_MAX 4096
++#endif
++
+ #define MAX_FILE_NAME PATH_MAX
+ 
+ typedef struct env_var_s {
 diff -uNr gcc-8.3.0-orig/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc gcc-8.3.0/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc
 --- gcc-8.3.0-orig/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc	2018-05-31 02:58:32.000000000 -0700
-+++ gcc-8.3.0/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc	2021-11-11 14:07:23.409110808 -0800
++++ gcc-8.3.0/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc	2022-05-29 19:42:39.503723784 -0700
 @@ -1149,7 +1149,8 @@
  CHECK_SIZE_AND_OFFSET(ipc_perm, cgid);
  #if !defined(__aarch64__) || !SANITIZER_LINUX || __GLIBC_PREREQ (2, 21)

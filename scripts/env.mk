@@ -10,15 +10,22 @@ export CROSS_LFLAG_EXTRA =
 MICB_DEPENDS =
 
 COLLECT_LIBS=\
-	for dep in $(MICB_DEPENDS) ; do \
-		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
-			for dir in $(LIBSSUBDIR) ; do  \
-				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
-					$(TOPDIR)/scripts/filterlibs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
-				fi ; \
+	$(eval _CDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))) \
+	[ -d $(_CDIR)/$(BUILDDIR) ] || mkdir -p $(_CDIR)/$(BUILDDIR) ; \
+	if [ ! -f $(_CDIR)/$(LIBFLAGS_NAME) ]; then \
+		for dep in $(MICB_DEPENDS) ; do \
+			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+				for dir in $(LIBSSUBDIR) ; do  \
+					if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+						$(TOPDIR)/scripts/filterlibs.sh \
+							$(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+					fi ; \
+				done ; \
 			done ; \
-		done ; \
-	done
+		done > $(_CDIR)/$(LIBFLAGS_NAME); \
+	fi ; \
+	cat $(_CDIR)/$(LIBFLAGS_NAME)
+
 BASIC_SYSLIBS=-ldl -lpthread 
 
 export DEPLOYED_LIBFLAGS=\
@@ -29,15 +36,22 @@ export DEPLOYED_LIBFLAGS=\
 export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS)
 
 COLLECT_INCS = \
-	for dep in $(MICB_DEPENDS) ; do \
-		for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
-			for dir in $(LIBSSUBDIR) ; do  \
-				if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
-					$(TOPDIR)/scripts/filterincs.sh $(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
-				fi ; \
+	$(eval _CDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))) \
+	[ -d $(_CDIR)/$(BUILDDIR) ] || mkdir -p $(_CDIR)/$(BUILDDIR) ; \
+	if [ ! -f $(_CDIR)/$(INCFLAGS_NAME) ]; then \
+		for dep in $(MICB_DEPENDS) ; do \
+			for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+				for dir in $(LIBSSUBDIR) ; do  \
+					if [ -f $$grp$$dir/pkgconfig/$$dep.pc ] ; then \
+						$(TOPDIR)/scripts/filterincs.sh \
+							$(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+					fi ; \
+				done ; \
 			done ; \
-		done ;	\
-	done
+		done > $(_CDIR)/$(INCFLAGS_NAME); \
+	fi ; \
+	cat $(_CDIR)/$(INCFLAGS_NAME)
+
 export DEPLOYED_INCFLAGS=\
 	$(sort $(shell $(COLLECT_INCS)))
 
@@ -121,6 +135,9 @@ export MICB_MESON_CROSSBUILD_FILE=\
 	echo "strip = '$(CROSS_COMP_PREFIX)strip'"                     >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "pkgconfig = '/usr/bin/pkg-config'"                       >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo ""                                                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
+	echo "[properties]"                                            >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
+	echo "needs_exe_wrapper = 'true'"                              >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
+	echo ""                                                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "Cross build done!!" > /dev/null
 
 export MICB_MESON_COMMON_OPTS=\
@@ -128,7 +145,7 @@ export MICB_MESON_COMMON_OPTS=\
 	-D cpp_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)"        				\
 	-D c_link_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)"     	\
 	-D cpp_link_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)"   	\
-	-D pkg_config_path="$(MICB_PKGCONFIG_PATH)"   
+	-D pkg_config_path="$(MICB_PKGCONFIG_PATH)" 
 
 export MICB_MESON_RUNENV=
 
@@ -157,4 +174,11 @@ export MICB_CMAKE_COMMON_OPTS=\
 	-D CMAKE_SYSROOT="$(MICB_CMAKE_SYSROOT)"                             \
 	-D CMAKE_C_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS) $(CROSS_LFLAG_EXTRA)"          \
 	-D CMAKE_EXE_LINKER_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)" 
-	
+
+
+##
+## build up process ~  - used inside of each individual Makefile ...
+##
+prepare_prepare:
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+

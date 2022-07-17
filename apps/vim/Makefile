@@ -9,9 +9,8 @@ include $(TOPDIR)/arch/$(_ARCH_)/env.mk
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16 
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR); git clone $(LOC)/$(FILENM) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
+	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(FILENM) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS)  \
 		LIBS="-lncurses -ltinfo" \

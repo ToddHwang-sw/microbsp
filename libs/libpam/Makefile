@@ -11,12 +11,13 @@ MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_CONFIGURE_OPTS += \
 	--disable-nls \
+	--disable-nis \
 	--without-xauth \
 	--enable-db=no \
 	--disable-doc
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
@@ -25,3 +26,8 @@ prepare:
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+	@[ "$@" != "install" ] || ( \
+		[ -s $(destination)/include/security ] || ( \
+			cd $(destination)/include ; \
+			ln -s . security ) \
+	)

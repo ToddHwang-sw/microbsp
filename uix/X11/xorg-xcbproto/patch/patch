@@ -1,0 +1,12 @@
+diff --git a/xcb-proto.pc.in b/xcb-proto.pc.in
+index a35f0bd..b6b1afb 100644
+--- a/xcb-proto.pc.in
++++ b/xcb-proto.pc.in
+@@ -4,7 +4,6 @@ datarootdir=@datarootdir@
+ datadir=@datadir@
+ libdir=@libdir@
+ xcbincludedir=${pc_sysrootdir}@xcbincludedir@
+-pythondir=${pc_sysrootdir}@pythondir@
+ 
+ Name: XCB Proto
+ Description: X protocol descriptions for XCB

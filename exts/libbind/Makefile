@@ -15,12 +15,13 @@ MICB_CONFIGURE_OPTS += \
 	--with-randomdev=no \
 	--with-ecdsa=no  \
 	--with-gost=no   \
-	--with-eddsa=no
+	--with-eddsa=no \
+	--disable-linux-caps 
 
 MICB_DEPENDS=openssl libxml-2.0 ncurses
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

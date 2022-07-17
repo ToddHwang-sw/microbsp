@@ -40,7 +40,6 @@ diff --git a/qtbase/src/gui/configure.json b/qtbase/src/gui/configure.json
          "dwrite": {
              "label": "DirectWrite",
              "test": {
-Submodule qtmultimedia contains modified content
 diff --git a/qtmultimedia/src/multimedia/configure.json b/qtmultimedia/src/multimedia/configure.json
 --- a/qtmultimedia/src/multimedia/configure.json
 +++ b/qtmultimedia/src/multimedia/configure.json

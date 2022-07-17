@@ -5,7 +5,6 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 GSTREAMER_OPTS += \
 	-D doc=disabled \
-	-D examples=disabled \
 	-D tests=disabled
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-audio-1.0 

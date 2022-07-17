@@ -3,8 +3,8 @@ LOC=https://github.com/libexpat/libexpat/releases/download/R_2_2_9
 
 include $(TOPDIR)/scripts/env.mk
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
 	@[ -d $(MICBSRC)/$(DIR) ] || mv $(MICBSRC)/$(REALDIR) $(MICBSRC)/$(DIR)
 	@cd $(BUILDDIR)/$(DIR); \

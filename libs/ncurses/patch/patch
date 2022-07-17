@@ -22,6 +22,19 @@ index cb8cd42..5d9c178 100644
 +	@[ "$@" = "install"   ] || ( \
 +		[ ! -f $(destination)/lib/pkgconfig/ncurses.pc ] || \rm -rf $(destination)/lib/pkgconfig/ncurses.pc )
 +	@[ "$@" = "uninstall" ] || cp -rf $(srcdir)/ncurses.pc $(destination)/lib/pkgconfig
+diff --git a/ncurses/curses.priv.h b/ncurses/curses.priv.h
+index cfb3e62..f01e9df 100644
+--- a/ncurses/curses.priv.h
++++ b/ncurses/curses.priv.h
+@@ -1080,7 +1080,7 @@ extern NCURSES_EXPORT(void) _nc_expanded (void);
+ #if USE_WIDEC_SUPPORT
+ extern NCURSES_EXPORT(bool) _nc_is_charable(wchar_t);
+ extern NCURSES_EXPORT(int) _nc_to_char(wint_t);
+-extern NCURSES_EXPORT(wint_t) _nc_to_widechar(int);
++/* extern NCURSES_EXPORT(wint_t) _nc_to_widechar(int); */
+ #endif
+ 
+ /* doupdate.c */
 diff --git a/ncurses.pc b/ncurses.pc
 new file mode 100644
 index 0000000..e485cbf
@@ -38,4 +51,4 @@ index 0000000..e485cbf
 +Description: Ncursrs library
 +Version: @PACKAGE_VERSION@
 +Libs: -L${libdir} -lncurses -ltinfo
-+Cflags: -I${includedir}/ncurses
++Cflags: -I${includedir}/ncurses -I${includedir}

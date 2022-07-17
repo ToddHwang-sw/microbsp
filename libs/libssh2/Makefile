@@ -3,8 +3,13 @@ LOC=https://github.com/$(DIR)
 
 include $(TOPDIR)/scripts/env.mk
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+MICB_CONFIGURE_OPTS +=\
+	--with-crypto=openssl
+
+MICB_DEPENDS = openssl 
+
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \

@@ -6,8 +6,9 @@ include $(TOPDIR)/scripts/env.mk
 MICB_CONFIGURE_OPTS += \
 	--enable-pic \
 	--enable-openssl \
-	--disable-documentation \
-	--disable-mini-gmp 
+	--enable-public-key \
+	--enable-mini-gmp \
+	--disable-documentation
 
 ifeq ($(_CORE_),aarch64)
 	MICB_CONFIGURE_OPTS += \
@@ -24,8 +25,8 @@ ifeq ($(_CORE_),x86_64)
 		--enable-x86-sha-ni 
 endif
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \

@@ -1,52 +1,34 @@
-diff -uNr fdisk-1.1-original/configure fdisk-1.1/configure
---- fdisk-1.1-original/configure	2008-12-12 04:52:41.000000000 -0800
-+++ fdisk-1.1/configure	2021-11-28 17:56:23.210411260 -0800
-@@ -1284,6 +1284,9 @@
-   fi
- fi
- 
-+$as_echo "$as_me: Cross-compiling enabled!!"
-+cross_compiling=yes
-+
- ac_tool_prefix=
- test -n "$host_alias" && ac_tool_prefix=$host_alias-
- 
-@@ -8310,9 +8313,6 @@
- 
- 	{ $as_echo "$as_me:$LINENO: result: failed" >&5
- $as_echo "failed" >&6; }
--                 { { $as_echo "$as_me:$LINENO: error: *** libparted < 1.2.8 or == 1.3.0 can't execute test ***" >&5
--$as_echo "$as_me: error: *** libparted < 1.2.8 or == 1.3.0 can't execute test ***" >&2;}
--   { (exit 1); exit 1; }; }
- fi
- 
- rm -rf conftest.dSYM
-@@ -8400,9 +8400,7 @@
- 
- ( exit $ac_status )
- { $as_echo "$as_me:$LINENO: result: no" >&5
--$as_echo "no" >&6; } ; { { $as_echo "$as_me:$LINENO: error: *** libparted >= 1.7.0 not installed - please install first ***" >&5
--$as_echo "$as_me: error: *** libparted >= 1.7.0 not installed - please install first ***" >&2;}
--   { (exit 1); exit 1; }; }
-+$as_echo "no" >&6; } 
- fi
- rm -rf conftest.dSYM
- rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-@@ -8874,7 +8872,7 @@
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 8faface..fdd33cf 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -575,6 +575,8 @@ uninstall-am: uninstall-sbinPROGRAMS
  
  
- XLIBS="$LIBS"
--LIBS="$XLIBS -ltermcap"
-+LIBS="$XLIBS"
- fdisk_have_libreadline=0
+ install-exec-local:
++	[ ! -f $(DESTDIR)/$(sbindir)/lfdisk ] || \rm -rf $(DESTDIR)/$(sbindir)/lfdisk
++	[ ! -f $(DESTDIR)/$(sbindir)/gfdisk ] || \rm -rf $(DESTDIR)/$(sbindir)/gfdisk
+ 	@SYMLINK@ @SYMLINKFROM@ $(DESTDIR)/$(sbindir)/lfdisk
+ 	@SYMLINK@ @SYMLINKFROM@ $(DESTDIR)/$(sbindir)/gfdisk
  
- { $as_echo "$as_me:$LINENO: checking for readline in -lreadline" >&5
-@@ -8943,7 +8941,7 @@
- { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_readline_readline" >&5
- $as_echo "$ac_cv_lib_readline_readline" >&6; }
- if test "x$ac_cv_lib_readline_readline" = x""yes; then
--  fdisk_have_libreadline=1; LIBS="$LIBS -lreadline";
-+  fdisk_have_libreadline=1; LIBS="$LIBS -lreadline -lncurses -ltinfo";
- else
-   fdisk_have_libreadline=0; LIBS="$XLIBS"
- fi
+diff --git a/src/common.c b/src/common.c
+index c3af0f4..6ad042e 100644
+--- a/src/common.c
++++ b/src/common.c
+@@ -2533,6 +2533,8 @@ verify_partition_table (PedDisk *disk)
+ 		                    disk->dev->length - used_sectors);
+ }
+ 
++#if 0
++	-- Todd 
+ char*
+ partition_print_flags (PedPartition* part)
+ {
+@@ -2569,6 +2571,7 @@ partition_print_flags (PedPartition* part)
+ 
+         return res;
+ }
++#endif 
+ 
+ 
+ /* This is the function that sets UICalls */

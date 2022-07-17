@@ -25,11 +25,14 @@ MICB_CONFIGURE_OPTS +=\
 MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_CONFIGURE_RUNENV +=\
-		ac_cv_func_unshare=yes ac_cv_func_setns=yes
+		ac_cv_func_unshare=yes ac_cv_func_setns=yes \
+		LIBS="-lrt" 
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).git ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+MICB_DEPENDS = ncurses
+
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

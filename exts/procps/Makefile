@@ -4,7 +4,7 @@ LOC=http://gitlab.com/procps-ng
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_AUTOCONF_CMD = \
-	aclocal ; autoreconf --install -v ; automake --add-missing --foreign
+	autoreconf --install -v -I$(INSTALLDIR) -I$(EXTINSTDIR) 
 
 MICB_CONFIGURE_RUNENV += \
 	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
@@ -14,10 +14,14 @@ MICB_CONFIGURE_RUNENV += \
 
 MICB_CONFIGURE_PRG = ./configure
 
+MICB_CONFIGURE_OPTS += \
+	--enable-largefile \
+	--with-ncurses 
+
 MICB_DEPENDS = ncurses
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)

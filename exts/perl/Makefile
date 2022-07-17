@@ -6,12 +6,12 @@ CROSS_PATCH=perl-cross-1.1.3.tar.gz
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -f source/$(FILENM) ] || wget -P source $(LOC)/$(FILENM)
-	@[ -f source/$(CROSS_PATCH) ] || wget -P source $(CROSS_PATCH_LOC)/$(CROSS_PATCH)
+	@[ -f $(MICBSRC)/$(FILENM) ] || wget -P $(MICBSRC) $(LOC)/$(FILENM)
+	@[ -f $(MICBSRC)/$(CROSS_PATCH) ] || wget -P $(MICBSRC) $(CROSS_PATCH_LOC)/$(CROSS_PATCH)
 	@[ -f $(BUILDDIR)/$(DIR)/Makefile ] || \
-	( tar zxvf source/$(FILENM) -C $(BUILDDIR) ; \
+	( tar zxvf $(MICBSRC)/$(FILENM) -C $(BUILDDIR) ; \
 		cd $(BUILDDIR)/$(DIR); \
-		tar --strip-components=1 -zxf ../../../source/$(CROSS_PATCH); \
+		tar --strip-components=1 -zxf ../../../$(MICBSRC)/$(CROSS_PATCH); \
 		./configure \
 			-Accflags="$(CROSS_COMP_FLAGS)" \
 			-Dusethreads \

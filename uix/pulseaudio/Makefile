@@ -4,7 +4,6 @@ LOC=-b stable-14.x https://gitlab.freedesktop.org/pulseaudio
 include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS+=\
-	 -D doxygen=false \
 	 -D man=false \
 	 -D gcov=false \
 	 -D tests=false \
@@ -12,11 +11,15 @@ MICB_MESON_OPTS+=\
 	 -D bluez5=false  \
 	 -D gstreamer=enabled 
 
-MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau
+MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau \
+	       libsystemd  gtk4-wayland ncurses libjpeg cairo-script-interpreter libcap \
+	       liblzma liblz4 libzstd
+
+CROSS_USER_LFLAGS += -lglapi
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ]   || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)

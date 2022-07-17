@@ -9,8 +9,8 @@ MICB_CONFIGURE_MAKEOPTS += \
 	PREFIX=$(destination) \
 	$(COMP_CMDS) \
 
-prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+prepare: 
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 

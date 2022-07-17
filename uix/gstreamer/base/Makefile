@@ -6,7 +6,6 @@ include $(TOPDIR)/scripts/uixenv.mk
 GSTREAMER_OPTS += \
 	-D gtk_doc=disabled \
 	-D doc=disabled\
-	-D orc=disabled\
 	-D examples=disabled\
 	-D tests=disabled \
 	-D benchmarks=disabled

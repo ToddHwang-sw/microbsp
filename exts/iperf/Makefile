@@ -13,7 +13,7 @@ MICB_CONFIGURE_RUNENV += \
 MICB_CONFIGURE_OPTS += --enable-ipv6
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR)-source.tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR)-source.tar.gz; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

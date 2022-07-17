@@ -70,10 +70,24 @@ date $DATEVAL
 
 echo ""
 echo ""
-echo "ROOT PARTITION ..."
+echo "WORK PARTITION ..."
 echo ""
 echo ""
-mount /dev/mmcblk0p6 /root
+mount /dev/mmcblk0p6 /home/root
+
+echo ""
+echo ""
+echo "GIT ... "
+echo ""
+echo ""
+git config --global core.pager 'more'
+
+echo ""
+echo ""
+echo "PYTHON ... "
+echo ""
+echo ""
+source /bin/python_env.sh /
 
 echo ""
 echo ""
@@ -82,7 +96,7 @@ echo ""
 echo ""
 QT=Qt-5.12.12
 export QT_PLUGIN_PATH=/usr/local/$QT/plugins
-export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/local/lib:/usr/local/$QT/lib
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/local/lib:/usr/local/$QT/lib:/usr/local/lib/pulseaudio/
 
 echo ""
 echo ""
@@ -103,7 +117,7 @@ echo ""
 echo "CONSOLE ..."
 echo ""
 echo ""
-##export COLUMNS=512
+export COLUMNS=512
 
 sleep 1
 

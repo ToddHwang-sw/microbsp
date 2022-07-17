@@ -1,0 +1,34 @@
+diff --git a/libblkid/blkid.pc.in b/libblkid/blkid.pc.in
+index 3316c6be8..db714cf4c 100644
+--- a/libblkid/blkid.pc.in
++++ b/libblkid/blkid.pc.in
+@@ -6,5 +6,5 @@ includedir=@includedir@
+ Name: blkid
+ Description: Block device id library
+ Version: @LIBBLKID_VERSION@
+-Cflags: -I${includedir}/blkid
++Cflags: -I${includedir} -I${includedir}/blkid
+ Libs: -L${libdir} -lblkid
+diff --git a/libmount/mount.pc.in b/libmount/mount.pc.in
+index 37ff59bf2..713099007 100644
+--- a/libmount/mount.pc.in
++++ b/libmount/mount.pc.in
+@@ -18,6 +18,6 @@ Name: mount
+ Description: mount library
+ Version: @LIBMOUNT_VERSION@
+ Requires.private: blkid @LIBSELINUX@ @LIBCRYPTSETUP@
+-Cflags: -I${includedir}/libmount
++Cflags: -I${includedir} -I${includedir}/libmount
+ Libs: -L${libdir} -lmount
+ Libs.private: @LIBDL@
+diff --git a/libuuid/uuid.pc.in b/libuuid/uuid.pc.in
+index 875de19bc..85e63af96 100644
+--- a/libuuid/uuid.pc.in
++++ b/libuuid/uuid.pc.in
+@@ -7,5 +7,5 @@ Name: uuid
+ Description: Universally unique id library
+ Version: @LIBUUID_VERSION@
+ Requires:
+-Cflags: -I${includedir}/uuid
++Cflags: -I${includedir} -I${includedir}/uuid
+ Libs: -L${libdir} -luuid

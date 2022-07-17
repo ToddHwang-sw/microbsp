@@ -6,7 +6,7 @@ include $(TOPDIR)/scripts/extenv.mk
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=
 
 prepare:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 
