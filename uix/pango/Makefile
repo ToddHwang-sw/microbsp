@@ -5,8 +5,7 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS +=\
         -D gtk_doc=false \
-        -D install-tests=false \
-        -D tests=false
+        -D install-tests=false 
 
 MICB_DEPENDS = harfbuzz-gobject libmount blkid fribidi freetype2 libdrm cairo-ft
 

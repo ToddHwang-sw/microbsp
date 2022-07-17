@@ -1,0 +1,58 @@
+diff --git a/giscanner/meson.build b/giscanner/meson.build
+index a3b06f37..4f403487 100644
+--- a/giscanner/meson.build
++++ b/giscanner/meson.build
+@@ -49,15 +49,16 @@ install_subdir('doctemplates', install_dir: giscannerdir)
+ 
+ # XXX: this doesn't track the input, but there is nothing to copy many files
+ # in meson.
+-doc_templates = custom_target('copy-templates',
+-  input : 'doctemplates',
+-  output : 'doctemplates',
+-  command : [
+-    python, '-c',
+-      'import sys, shutil;' +
+-      'shutil.rmtree(sys.argv[2], ignore_errors=True);' +
+-      'shutil.copytree(sys.argv[1], sys.argv[2])',
+-    '@INPUT@', '@OUTPUT@'])
++# doc_templates = custom_target('copy-templates',
++#  input : 'doctemplates',
++#  output : 'doctemplates',
++#  command : [
++#    python, '-c',
++#      'import sys, shutil;' +
++#      'shutil.rmtree(sys.argv[2], ignore_errors=True);' +
++#      'shutil.copytree(sys.argv[1], sys.argv[2])',
++#    '@INPUT@', '@OUTPUT@'])
++doc_templates = []
+ 
+ flex = find_program('flex', 'win_flex')
+ bison = find_program('bison', 'win_bison')
+diff --git a/meson.build b/meson.build
+index 9a1589ba..f3903a1f 100644
+--- a/meson.build
++++ b/meson.build
+@@ -283,13 +283,13 @@ pkg.generate(
+ # FIXME: meson.override_dependency() and declare_dependency()'s variable arguments
+ # are new in Meson 0.54.0, older versions of Meson won't be able to use g-i as
+ # subproject anyway
+-if meson.version().version_compare('>=0.54.0')
+-  girepo_dep = declare_dependency(
+-    sources: typelibs,
+-    dependencies: girepo_dep,
+-    variables: {
+-      'girdir': meson.current_build_dir() / 'gir',
+-    },
+-  )
+-  meson.override_dependency('gobject-introspection-1.0', girepo_dep)
+-endif
++##if meson.version().version_compare('>=0.54.0')
++##  girepo_dep = declare_dependency(
++##    sources: typelibs,
++##    dependencies: girepo_dep,
++##    variables: {
++##      'girdir': meson.current_build_dir() / 'gir',
++##    },
++##  )
++##  meson.override_dependency('gobject-introspection-1.0', girepo_dep)
++##endif

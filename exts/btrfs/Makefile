@@ -12,12 +12,12 @@ MICB_CONFIGURE_AUTOCONF_CMD = ./autogen.sh
 MICB_CONFIGURE_PRG = ./configure
 
 MICB_CONFIGURE_OPTS += \
-	--disable-documentation --enable-programs --enable-largefile --disable-backtrace --disable-zstd \
+	--disable-documentation --enable-programs --enable-largefile --disable-backtrace \
 		--disable-python --disable-libudev --with-convert=ext2 
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
-MICB_DEPENDS = lzo2 uuid blkid
+MICB_DEPENDS = lzo2 uuid blkid libzstd
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

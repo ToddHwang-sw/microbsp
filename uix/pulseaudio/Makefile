@@ -4,7 +4,6 @@ LOC=-b stable-14.x https://gitlab.freedesktop.org/pulseaudio
 include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS+=\
-	 -D doxygen=false \
 	 -D man=false \
 	 -D gcov=false \
 	 -D tests=false \
@@ -14,7 +13,7 @@ MICB_MESON_OPTS+=\
 
 MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau \
 	       libsystemd  gtk4-wayland ncurses libjpeg cairo-script-interpreter libcap \
-	       liblzma liblz4
+	       liblzma liblz4 libzstd
 
 CROSS_USER_LFLAGS += -lglapi
 

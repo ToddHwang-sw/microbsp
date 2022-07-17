@@ -38,4 +38,4 @@ export BOOTSTRAP_LIBS=\
 		libc.so*     libc-2.30.so \
 		libm.so*     libm-2.30.so \
 		libcrypt.so* libcrypt-2.30.so
-export SUPPORTED_LANGUAGES=c,c++,go
+export SUPPORTED_LANGUAGES=c,c++

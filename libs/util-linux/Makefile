@@ -25,7 +25,8 @@ MICB_CONFIGURE_OPTS +=\
 MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_CONFIGURE_RUNENV +=\
-		ac_cv_func_unshare=yes ac_cv_func_setns=yes
+		ac_cv_func_unshare=yes ac_cv_func_setns=yes \
+		LIBS="-lrt" 
 
 MICB_DEPENDS = ncurses
 

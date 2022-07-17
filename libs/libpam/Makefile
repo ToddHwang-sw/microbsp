@@ -11,6 +11,7 @@ MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_CONFIGURE_OPTS += \
 	--disable-nls \
+	--disable-nis \
 	--without-xauth \
 	--enable-db=no \
 	--disable-doc

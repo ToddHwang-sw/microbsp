@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index a5263215c..1bbf3a75f 100644
+--- a/meson.build
++++ b/meson.build
+@@ -699,7 +699,7 @@ check_dep = dependency('check', version : '>= 0.9.10', required : get_option('te
+ 
+ # Subdirs
+ 
+-subdir('doxygen')
++##subdir('doxygen')
+ subdir('po')
+ if get_option('man')
+   subdir('man')

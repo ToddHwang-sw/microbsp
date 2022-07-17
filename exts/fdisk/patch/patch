@@ -1,3 +1,16 @@
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 8faface..fdd33cf 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -575,6 +575,8 @@ uninstall-am: uninstall-sbinPROGRAMS
+ 
+ 
+ install-exec-local:
++	[ ! -f $(DESTDIR)/$(sbindir)/lfdisk ] || \rm -rf $(DESTDIR)/$(sbindir)/lfdisk
++	[ ! -f $(DESTDIR)/$(sbindir)/gfdisk ] || \rm -rf $(DESTDIR)/$(sbindir)/gfdisk
+ 	@SYMLINK@ @SYMLINKFROM@ $(DESTDIR)/$(sbindir)/lfdisk
+ 	@SYMLINK@ @SYMLINKFROM@ $(DESTDIR)/$(sbindir)/gfdisk
+ 
 diff --git a/src/common.c b/src/common.c
 index c3af0f4..6ad042e 100644
 --- a/src/common.c

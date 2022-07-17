@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 TMPFILE=/tmp/microbsp.incs.collect
 

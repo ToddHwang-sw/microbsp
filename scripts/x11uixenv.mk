@@ -8,7 +8,7 @@ export MICB_CONFIGURE_OPTS += \
 	--without-xmlto \
 	--without-fop \
 	--without-xsltproc  \
-        --enable-malloc0returnsnull=yes \
+	--enable-malloc0returnsnull=yes \
 	--enable-shared \
 	--enable-static
 

@@ -8,7 +8,6 @@ MICB_MESON_OPTS +=\
 	-D wrap_mode=nodownload  \
 	-D platforms=x11,wayland \
 	-D build-tests=false     \
-	-D build-aco-tests=false \
 	-D llvm=false \
 	-D dri=false \
 	-D valgrind=false \
@@ -18,7 +17,7 @@ MICB_MESON_OPTS +=\
 
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-server
+MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-server libzstd
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

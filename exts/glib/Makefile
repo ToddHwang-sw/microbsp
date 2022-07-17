@@ -6,6 +6,9 @@ include $(TOPDIR)/scripts/extenv.mk
 CROSS_USER_CFLAGS += \
 	-D_POSIX_HOST_NAME_MAX=255
 
+## Ubuntu 21.xx LTS
+CROSS_USER_LFLAGS += -lresolv
+
 MICB_MESON_OPTS+=\
 	-D gtk_doc=false \
 	-D glib_debug=disabled \

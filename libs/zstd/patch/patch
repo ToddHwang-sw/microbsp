@@ -1,0 +1,13 @@
+diff --git a/lib/Makefile b/lib/Makefile
+index 00fc535b..d38eff4a 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -160,7 +160,7 @@ $(ZSTD_DYNLIB): $(ZSTD_DYNLIB_OBJ)
+ 	$(if $(filter -DZSTD_MULTITHREAD,$(CPPFLAGS)),\
+     @echo compiling multi-threaded dynamic library $(LIBVER),\
+     @echo compiling single-threaded dynamic library $(LIBVER))
+-	$(CC) $(FLAGS) $^ $(LDFLAGS) $(SONAME_FLAGS) -o $@
++	$(CC) $(FLAGS) $^ $(LDFLAGS) $(SONAME_FLAGS) -shared -o $@
+ 	@echo creating versioned links
+ 	ln -sf $@ libzstd.$(SHARED_EXT_MAJOR)
+ 	ln -sf $@ libzstd.$(SHARED_EXT)

@@ -9,7 +9,9 @@ MICB_MESON_OPTS += \
 	-D doctool=disabled	\
 	-D build_introspection_data=false
 
-MICB_DEPENDS=gio-2.0 gio-unix-2.0 python-3.8-embed iconv intl
+MICB_DEPENDS=gio-2.0 gio-unix-2.0 python-3.8-embed iconv intl ncurses
+
+CROSS_USER_LFLAGS += -lresolv
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
