@@ -13,6 +13,12 @@ export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}
 # Patch file name 
 export DEV_PATCH_FILE=patch.develop
 
+#
+# "vm" mode needs external USB disk keeping "image.ext4" of /board/vm/.
+# USB device node should be passed to boards/vm/Makefile . 
+#
+export EXT4DISK_MNTDIR=/dev/sde1
+
 # board specific environment 
 include $(BDDIR)/env.mk
 
@@ -647,8 +653,8 @@ uidisk_clean:
 run_bootstrap: checkfirst
 	@make -C apps/busybox destination=$(XBASEDIR) -f Makefile.bootstrap prepare all install
 	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
-	@chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
-	@chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
+	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
+	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
 
 boot_%:
 	@echo ""
