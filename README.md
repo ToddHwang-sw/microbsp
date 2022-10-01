@@ -1388,6 +1388,13 @@ PING 192.167.0.111 (192.167.0.111): 56 data bytes
 ```#!/bin/sh
 
   # make TBOARD=vm vmrun
+
+
+  If you want to explicitly specify USB stick device, use the following option. 
+
+
+  # make TBOARD=vm EXT4DISK_MNTDIR=/dev/sde1 vmrun 
+
 ```
 
 - We can stop running QEMU emulator.
