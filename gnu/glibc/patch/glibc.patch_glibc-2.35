@@ -1,0 +1,40 @@
+diff -uNr glibc-2.35-original/locale/localeinfo.h glibc-2.35/locale/localeinfo.h
+--- glibc-2.35-original/locale/localeinfo.h	2022-02-02 21:27:54.000000000 -0800
++++ glibc-2.35/locale/localeinfo.h	2022-10-02 22:18:45.401742102 -0700
+@@ -232,7 +232,7 @@
+    we can use __thread variables.  So only in that case do we attempt this.  */
+ #ifndef SHARED
+ # include <tls.h>
+-# define NL_CURRENT_INDIRECT	1
++/* # define NL_CURRENT_INDIRECT	1 */
+ #endif
+ 
+ #ifdef NL_CURRENT_INDIRECT
+diff -uNr glibc-2.35-original/locale/setlocale.c glibc-2.35/locale/setlocale.c
+--- glibc-2.35-original/locale/setlocale.c	2022-02-02 21:27:54.000000000 -0800
++++ glibc-2.35/locale/setlocale.c	2022-10-02 22:18:09.137507213 -0700
+@@ -468,7 +468,7 @@
+ }
+ libc_hidden_def (setlocale)
+ 
+-static void __libc_freeres_fn_section
++static void __libc_freeres_fn_section 
+ free_category (int category,
+ 	       struct __locale_data *here, struct __locale_data *c_data)
+ {
+@@ -498,7 +498,7 @@
+ 
+ /* This is called from iconv/gconv_db.c's free_mem, as locales must
+    be freed before freeing gconv steps arrays.  */
+-void __libc_freeres_fn_section
++void  __libc_freeres_fn_section 
+ _nl_locale_subfreeres (void)
+ {
+ #ifdef NL_CURRENT_INDIRECT
+diff -uNr glibc-2.35-original/PATCHED glibc-2.35/PATCHED
+--- glibc-2.35-original/PATCHED	1969-12-31 16:00:00.000000000 -0800
++++ glibc-2.35/PATCHED	2022-10-01 21:04:43.511319651 -0700
+@@ -0,0 +1,3 @@
++
++
++
