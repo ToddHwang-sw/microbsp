@@ -23,7 +23,7 @@ prepare:
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( \
 		tar zxvf $(GCCDIR)/$(DIR).tar.gz -C $(MICBSRC); \
 		cd $(MICBSRC)/$(DIR) ; \
-		cat ../../$(MICB_PATCH_FN) | patch -p 1 )
+		cat ../../patch/patch_$(GCC) | patch -p 1 )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS) 
 	
