@@ -101,7 +101,7 @@ export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 ##
 ## GNU toolchains  - component information
 ##
-## 09/30/2022 - Updated gcc/glibc are supported. 
+## 09/30/2022 - binutils/gcc/glibc are updated. 
 ##
 ## BINUTILS : 2.32   -->  2.38
 ##      GCC : 8.3.0  -->  11.2.0
@@ -110,6 +110,7 @@ export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 ## export BINUTILS=binutils-2.32
 ## export GCC=gcc-8.3.0
 ## export GLIBC=glibc-2.30
+##
 export BINUTILS=binutils-2.38
 export GCC=gcc-11.2.0
 export GLIBC=glibc-2.35
@@ -758,25 +759,25 @@ cleanup:
 
 toolchain:
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Preparing sources.... "                2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "Preparing sources.... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@make -C gnu/sources -f ../Makefile download
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "BINUTILS....."                         2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "BINUTILS....."                         2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/binutils/build/$(_ARCH_) ] || mkdir -p gnu/binutils/build/$(_ARCH_)
 	@cd gnu/binutils/build/$(_ARCH_); \
 		make -f ../../../Makefile config_binutils setup_binutils  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Kernel Headers....."                   2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "Kernel Headers....."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) prepare 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu; \
@@ -786,41 +787,41 @@ toolchain:
 		echo "Cleaning up kernel folder" ; \
 		echo ""  ;                     \
 		\rm -rf $(KERNDIR)/$(KERNELVER) ; )
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Bootstrap ....."                   2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Bootstrap ....."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/gcc/build/$(_ARCH_) ] || mkdir -p gnu/gcc/build/$(_ARCH_)
 	@cd gnu/gcc/build/$(_ARCH_); \
 		make -f ../../../Makefile config_gcc setup_gcc          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Bootstrap ....."                 2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Bootstrap ....."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/glibc/build/$(_ARCH_) ] || mkdir -p gnu/glibc/build/$(_ARCH_)
 	@cd gnu/glibc/build/$(_ARCH_); \
 		make -f ../../../Makefile config_glibc setup_glibc      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Host Compiler....."                2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Host Compiler....."                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
-		make -f ../../../Makefile setup_gcc_2 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Host Library....."               2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+		make -f ../../../Makefile setup_gcc_2     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Host Library....."               2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/glibc/build/$(_ARCH_); \
 		make -f ../../../Makefile setup_glibc_2   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Extra Libraries....."              2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""       2>&1 tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Extra Libraries....."              2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
 		make -f ../../../Makefile setup_gcc_3     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 

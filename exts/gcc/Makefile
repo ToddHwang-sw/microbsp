@@ -5,8 +5,8 @@ GCC_TARGET_FILE=$(DIR)-$(PLATFORM).tar.gz
 
 include $(TOPDIR)/scripts/env.mk
 
-CROSS_USER_CFLAGS=
-CROSS_USER_LFLAGS=
+##CROSS_USER_CFLAGS=
+##CROSS_USER_LFLAGS=
 
 MICB_CONFIGURE_OPTS += \
 	--disable-compressed-debug-sections \
@@ -15,8 +15,10 @@ MICB_CONFIGURE_OPTS += \
 	--disable-nls \
 	--enable-languages=$(SUPPORTED_LANGUAGES) \
 	--with-gmp=$(INSTALLDIR) \
-       	--with-mpfr=$(INSTALLDIR) \
-       	--with-mpc=$(INSTALLDIR) 
+	--with-mpfr=$(INSTALLDIR) \
+	--with-mpc=$(INSTALLDIR) 
+
+MICB_DEPENDS = mpc mpfr gmp
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

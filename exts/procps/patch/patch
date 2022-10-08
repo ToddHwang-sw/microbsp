@@ -1,28 +1,8 @@
-diff --git a/Makefile.am b/Makefile.am
-index c555ac0..a2e055e 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -20,8 +20,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
- ACLOCAL_AMFLAGS = -I m4
- SUBDIRS = \
- 	include \
--	man-po \
--	po \
- 	testsuite
- 
- AM_CFLAGS = -Iproc
-@@ -410,5 +408,3 @@ dist-hook:
- 
- get-trans:
- 	echo "Getting the latest translations from translationproject.org..."
--	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng/  po
--	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng-man/  man-po
-diff --git a/configure.ac b/configure.ac
-index 28deb53..e4124a9 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -228,8 +228,8 @@ if test "x$with_ncurses" = xno; then
-   AM_CONDITIONAL(WITH_NCURSES, false)
+diff -uNr procps-original/configure.ac procps/configure.ac
+--- procps-original/configure.ac	2022-10-03 15:03:04.067843493 -0700
++++ procps/configure.ac	2022-10-03 15:06:12.688442312 -0700
+@@ -228,8 +228,8 @@
+     [AC_MSG_ERROR([Cannot have both --enable-watch8bit and --without-ncurses])])
  else
    AM_CONDITIONAL(WITH_NCURSES, true)
 -  PKG_CHECK_MODULES([NCURSES], [ncursesw],
@@ -32,29 +12,22 @@ index 28deb53..e4124a9 100644
      [
        AS_IF([test "x$enable_watch8bit" = "xyes"],
          [AC_MSG_ERROR([Cannot find ncurses wide library ncursesw with --enable-watch8bit])])
-diff --git a/slabtop.c b/slabtop.c
-index e415218..23323e0 100644
---- a/slabtop.c
-+++ b/slabtop.c
-@@ -25,7 +25,7 @@
- #include <errno.h>
- #include <getopt.h>
- #include <locale.h>
--#include <ncurses.h>
-+#include <ncurses/ncurses.h>
- #include <signal.h>
- #include <stdio.h>
- #include <stdlib.h>
-diff --git a/watch.c b/watch.c
-index a69a402..c5ec1cc 100644
---- a/watch.c
-+++ b/watch.c
-@@ -54,7 +54,7 @@
- # include <wctype.h>
- # include <ncursesw/ncurses.h>
- #else
--# include <ncurses.h>
-+# include <ncurses/ncurses.h>
- #endif	/* WITH_WATCH8BIT */
+Binary files procps-original/.git/index and procps/.git/index differ
+diff -uNr procps-original/Makefile.am procps/Makefile.am
+--- procps-original/Makefile.am	2022-10-03 15:03:04.067843493 -0700
++++ procps/Makefile.am	2022-10-03 15:04:46.616158144 -0700
+@@ -20,8 +20,6 @@
+ ACLOCAL_AMFLAGS = -I m4
+ SUBDIRS = \
+ 	local \
+-	po-man \
+-	po \
+ 	testsuite
  
- #ifdef FORCE_8BIT
+ AM_CFLAGS = -Ilibrary/include
+@@ -409,5 +407,3 @@
+ 
+ get-trans:
+ 	echo "Getting the latest translations from translationproject.org..."
+-	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng/  po
+-	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng-man/  po-man

@@ -1,7 +1,7 @@
 LOC=https://www.kernel.org/pub/linux/kernel/v5.x/
 FILENM=$(KERNELVER).tar.gz
 
-LINUXMAKE=$(KERNELMAKE) -j 4 -C .
+LINUXMAKE=$(KERNELMAKE) -j 8 -C .
 
 ## Squash FS image ..
 ROOTFSIMAGEVOL=rootfs

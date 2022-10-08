@@ -12,7 +12,7 @@ export PLATFORM=$(_CORE_)-any-linux-gnu
 export KERNELVER=linux-5.17.7
 
 ## Linux Kernel compile
-export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 
+export KERNELMAKE=make V=1 ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 
 
 ##
 ## folders to be included

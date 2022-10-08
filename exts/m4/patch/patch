@@ -1,6 +1,28 @@
-diff -uNr m4-1.4.18-orig/lib/fflush.c m4-1.4.18/lib/fflush.c
---- m4-1.4.18-orig/lib/fflush.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/fflush.c	2021-11-02 21:33:40.405200410 -0700
+diff -uNr m4-1.4.18-original/lib/c-stack.c m4-1.4.18/lib/c-stack.c
+--- m4-1.4.18-original/lib/c-stack.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/c-stack.c	2022-10-03 15:20:14.795754157 -0700
+@@ -50,6 +50,10 @@
+ #if ! HAVE_STACK_T && ! defined stack_t
+ typedef struct sigaltstack stack_t;
+ #endif
++#ifdef  SIGSTKSZ
++# undef  SIGSTKSZ
++# define SIGSTKSZ 16384
++#else
+ #ifndef SIGSTKSZ
+ # define SIGSTKSZ 16384
+ #elif HAVE_LIBSIGSEGV && SIGSTKSZ < 16384
+@@ -59,6 +63,7 @@
+ # undef SIGSTKSZ
+ # define SIGSTKSZ 16384
+ #endif
++#endif
+ 
+ #include <stdlib.h>
+ #include <string.h>
+diff -uNr m4-1.4.18-original/lib/fflush.c m4-1.4.18/lib/fflush.c
+--- m4-1.4.18-original/lib/fflush.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fflush.c	2022-10-03 15:19:27.839555206 -0700
 @@ -33,7 +33,7 @@
  #undef fflush
  
@@ -28,9 +50,9 @@ diff -uNr m4-1.4.18-orig/lib/fflush.c m4-1.4.18/lib/fflush.c
  
    clear_ungetc_buffer_preserving_position (stream);
  
-diff -uNr m4-1.4.18-orig/lib/fpending.c m4-1.4.18/lib/fpending.c
---- m4-1.4.18-orig/lib/fpending.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/fpending.c	2021-11-02 21:33:40.405200410 -0700
+diff -uNr m4-1.4.18-original/lib/fpending.c m4-1.4.18/lib/fpending.c
+--- m4-1.4.18-original/lib/fpending.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fpending.c	2022-10-03 15:19:27.839555206 -0700
 @@ -32,7 +32,7 @@
    /* Most systems provide FILE as a struct and the necessary bitmask in
       <stdio.h>, because they need it for implementing getc() and putc() as
@@ -40,9 +62,9 @@ diff -uNr m4-1.4.18-orig/lib/fpending.c m4-1.4.18/lib/fpending.c
    return fp->_IO_write_ptr - fp->_IO_write_base;
  #elif defined __sferror || defined __DragonFly__ || defined __ANDROID__
    /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Android */
-diff -uNr m4-1.4.18-orig/lib/fpurge.c m4-1.4.18/lib/fpurge.c
---- m4-1.4.18-orig/lib/fpurge.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/fpurge.c	2021-11-02 21:33:40.405200410 -0700
+diff -uNr m4-1.4.18-original/lib/fpurge.c m4-1.4.18/lib/fpurge.c
+--- m4-1.4.18-original/lib/fpurge.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fpurge.c	2022-10-03 15:19:27.839555206 -0700
 @@ -62,7 +62,7 @@
    /* Most systems provide FILE as a struct and the necessary bitmask in
       <stdio.h>, because they need it for implementing getc() and putc() as
@@ -52,9 +74,9 @@ diff -uNr m4-1.4.18-orig/lib/fpurge.c m4-1.4.18/lib/fpurge.c
    fp->_IO_read_end = fp->_IO_read_ptr;
    fp->_IO_write_ptr = fp->_IO_write_base;
    /* Avoid memory leak when there is an active ungetc buffer.  */
-diff -uNr m4-1.4.18-orig/lib/freadahead.c m4-1.4.18/lib/freadahead.c
---- m4-1.4.18-orig/lib/freadahead.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/freadahead.c	2021-11-02 21:33:40.405200410 -0700
+diff -uNr m4-1.4.18-original/lib/freadahead.c m4-1.4.18/lib/freadahead.c
+--- m4-1.4.18-original/lib/freadahead.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/freadahead.c	2022-10-03 15:19:27.839555206 -0700
 @@ -25,7 +25,7 @@
  size_t
  freadahead (FILE *fp)
@@ -64,9 +86,9 @@ diff -uNr m4-1.4.18-orig/lib/freadahead.c m4-1.4.18/lib/freadahead.c
    if (fp->_IO_write_ptr > fp->_IO_write_base)
      return 0;
    return (fp->_IO_read_end - fp->_IO_read_ptr)
-diff -uNr m4-1.4.18-orig/lib/freading.c m4-1.4.18/lib/freading.c
---- m4-1.4.18-orig/lib/freading.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/freading.c	2021-11-02 21:33:40.409200450 -0700
+diff -uNr m4-1.4.18-original/lib/freading.c m4-1.4.18/lib/freading.c
+--- m4-1.4.18-original/lib/freading.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/freading.c	2022-10-03 15:19:27.843555222 -0700
 @@ -31,7 +31,7 @@
    /* Most systems provide FILE as a struct and the necessary bitmask in
       <stdio.h>, because they need it for implementing getc() and putc() as
@@ -76,9 +98,9 @@ diff -uNr m4-1.4.18-orig/lib/freading.c m4-1.4.18/lib/freading.c
    return ((fp->_flags & _IO_NO_WRITES) != 0
            || ((fp->_flags & (_IO_NO_READS | _IO_CURRENTLY_PUTTING)) == 0
                && fp->_IO_read_base != NULL));
-diff -uNr m4-1.4.18-orig/lib/fseeko.c m4-1.4.18/lib/fseeko.c
---- m4-1.4.18-orig/lib/fseeko.c	2016-12-31 05:54:41.000000000 -0800
-+++ m4-1.4.18/lib/fseeko.c	2021-11-02 21:33:40.409200450 -0700
+diff -uNr m4-1.4.18-original/lib/fseeko.c m4-1.4.18/lib/fseeko.c
+--- m4-1.4.18-original/lib/fseeko.c	2016-12-31 05:54:41.000000000 -0800
++++ m4-1.4.18/lib/fseeko.c	2022-10-03 15:19:27.843555222 -0700
 @@ -47,7 +47,7 @@
  #endif
  
@@ -88,9 +110,9 @@ diff -uNr m4-1.4.18-orig/lib/fseeko.c m4-1.4.18/lib/fseeko.c
    if (fp->_IO_read_end == fp->_IO_read_ptr
        && fp->_IO_write_ptr == fp->_IO_write_base
        && fp->_IO_save_base == NULL)
-diff -uNr m4-1.4.18-orig/lib/stdio-impl.h m4-1.4.18/lib/stdio-impl.h
---- m4-1.4.18-orig/lib/stdio-impl.h	2016-12-31 05:54:42.000000000 -0800
-+++ m4-1.4.18/lib/stdio-impl.h	2021-11-02 21:33:40.409200450 -0700
+diff -uNr m4-1.4.18-original/lib/stdio-impl.h m4-1.4.18/lib/stdio-impl.h
+--- m4-1.4.18-original/lib/stdio-impl.h	2016-12-31 05:54:42.000000000 -0800
++++ m4-1.4.18/lib/stdio-impl.h	2022-10-03 15:19:27.843555222 -0700
 @@ -28,6 +28,10 @@
  
  #include <errno.h>                             /* For detecting Plan9.  */
@@ -102,9 +124,9 @@ diff -uNr m4-1.4.18-orig/lib/stdio-impl.h m4-1.4.18/lib/stdio-impl.h
  #if defined __sferror || defined __DragonFly__ || defined __ANDROID__
    /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin, Android */
  
-diff -uNr m4-1.4.18-orig/Makefile.am m4-1.4.18/Makefile.am
---- m4-1.4.18-orig/Makefile.am	2016-12-31 14:00:32.000000000 -0800
-+++ m4-1.4.18/Makefile.am	2021-11-02 21:54:32.583559580 -0700
+diff -uNr m4-1.4.18-original/Makefile.am m4-1.4.18/Makefile.am
+--- m4-1.4.18-original/Makefile.am	2016-12-31 14:00:32.000000000 -0800
++++ m4-1.4.18/Makefile.am	2022-10-03 15:19:27.843555222 -0700
 @@ -20,15 +20,21 @@
  ##
  ## Written by Gary V. Vaughan <gary@gnu.org>
@@ -129,9 +151,9 @@ diff -uNr m4-1.4.18-orig/Makefile.am m4-1.4.18/Makefile.am
  	lib/[a-z]* m4/[a-fh-z]* m4/g[a-mo-z]* m4/gnulib-comp.m4 \
  	m4/gnulib-tool.m4 missing stamp-h.in
  
-diff -uNr m4-1.4.18-orig/Makefile.in m4-1.4.18/Makefile.in
---- m4-1.4.18-orig/Makefile.in	2016-12-31 14:25:57.000000000 -0800
-+++ m4-1.4.18/Makefile.in	2021-11-02 21:55:41.718161788 -0700
+diff -uNr m4-1.4.18-original/Makefile.in m4-1.4.18/Makefile.in
+--- m4-1.4.18-original/Makefile.in	2016-12-31 14:25:57.000000000 -0800
++++ m4-1.4.18/Makefile.in	2022-10-03 15:19:27.843555222 -0700
 @@ -1506,13 +1506,18 @@
  top_build_prefix = @top_build_prefix@
  top_builddir = @top_builddir@

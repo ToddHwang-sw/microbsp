@@ -1,0 +1,161 @@
+diff -uNr npd6-original/includes.h npd6/includes.h
+--- npd6-original/includes.h	2022-10-07 20:39:50.190156465 -0700
++++ npd6/includes.h	2022-10-07 20:40:32.006425505 -0700
+@@ -53,7 +53,7 @@
+ #include <netinet/ip6.h>
+ #include <netinet/icmp6.h>
+ #include <arpa/inet.h>
+-#include <sys/sysctl.h>
++/* #include <sys/sysctl.h> */
+ #include <net/if.h>
+ #include <getopt.h>
+ #include <ifaddrs.h>
+diff -uNr npd6-original/Makefile npd6/Makefile
+--- npd6-original/Makefile	2022-10-07 20:39:50.190156465 -0700
++++ npd6/Makefile	2022-10-07 20:41:19.006717502 -0700
+@@ -26,7 +26,7 @@
+ CC=gcc
+ CFLAGS= -Wall -g -O3 
+ LDFLAGS=
+-SOURCES=main.c icmp6.c util.c ip6.c config.c expintf.c exparser.c
++SOURCES=main.c icmp6.c util.c ip6.c config.c expintf.c exparser.c vars.c
+ OBJECTS=$(SOURCES:.c=.o)
+ HEADERS=includes.h npd6.h
+ EXECUTABLE=npd6
+diff -uNr npd6-original/npd6.h npd6/npd6.h
+--- npd6-original/npd6.h	2022-10-07 20:39:50.190156465 -0700
++++ npd6/npd6.h	2022-10-07 20:40:49.398534789 -0700
+@@ -65,16 +65,16 @@
+ //*****************************************************************************
+ // Globals
+ //
+-char            *pname;
+-char            *paramName;
+-int             sockpkt;
+-int             debug;
+-int             daemonize;
+-FILE            *logFileFD;
+-int             logging;
+-char            configfile[FILENAME_MAX];
+-FILE            *configFileFD;
+-int             initialIFFlags;
++extern char            *pname;
++extern char            *paramName;
++extern int             sockpkt;
++extern int             debug;
++extern int             daemonize;
++extern FILE            *logFileFD;
++extern int             logging;
++extern char            configfile[FILENAME_MAX];
++extern FILE            *configFileFD;
++extern int             initialIFFlags;
+ 
+ // Record of interfaces, prefix, indices, etc.
+ struct npd6Interface {
+@@ -88,36 +88,36 @@
+     int             pktSock;
+     int             icmpSock;
+ };
+-unsigned int    interfaceCount;         // Total number of interface/prefix combos
++extern unsigned int    interfaceCount;         // Total number of interface/prefix combos
+ // We dynaimcally size this at run-time
+-struct  npd6Interface *interfaces;
++extern struct  npd6Interface *interfaces;
+ 
+ // Key behaviour
+-int             naLinkOptFlag;      // From config file NPD6OPTFLAG
+-int             nsIgnoreLocal;      // From config file NPD6LOCALIG
+-int             naRouter;           // From config file NPD6ROUTERNA
+-int             maxHops;            // From config file NPD6MAXHOPS
+-int             collectTargets;     // From config file NPD6TARGETS
++extern int             naLinkOptFlag;      // From config file NPD6OPTFLAG
++extern int             nsIgnoreLocal;      // From config file NPD6LOCALIG
++extern int             naRouter;           // From config file NPD6ROUTERNA
++extern int             maxHops;            // From config file NPD6MAXHOPS
++extern int             collectTargets;     // From config file NPD6TARGETS
+ 
+ // Target tree data structures etc
+-void            *tRoot;
+-int             tCompare(const void *, const void *);
+-void            tDump(const void *, const VISIT , const int);
+-int             tEntries;
++extern void            *tRoot;
++extern int             tCompare(const void *, const void *);
++extern void            tDump(const void *, const VISIT , const int);
++extern int             tEntries;
+ 
+ // Black/whitelisting data
+-void            *lRoot;
+-int             listType;
++extern void            *lRoot;
++extern int             listType;
+ #define         NOLIST      0
+ #define         BLACKLIST   1
+ #define         WHITELIST   2
+-int             listLog;            // From config file NPD6LISTLOG
++extern int             listLog;            // From config file NPD6LISTLOG
+ 
+ // Logging - various
+-int             ralog;              // From config file NPD6RALOG
++extern int             ralog;              // From config file NPD6RALOG
+ 
+ // Error handling
+-int		        pollErrorLimit;     // From config file
++extern int		        pollErrorLimit;     // From config file
+ 
+ //*****************************************************************************
+ // Prototypes
+diff -uNr npd6-original/vars.c npd6/vars.c
+--- npd6-original/vars.c	1969-12-31 16:00:00.000000000 -0800
++++ npd6/vars.c	2022-10-07 20:41:00.758605379 -0700
+@@ -0,0 +1,50 @@
++/*
++ * Todd 
++ *
++ */
++#ifndef NPD6_VARS
++#define NPD6_VARS
++
++#include "includes.h"
++
++char            *pname;
++char            *paramName;
++int             sockpkt;
++int             debug;
++int             daemonize;
++FILE            *logFileFD;
++int             logging;
++char            configfile[FILENAME_MAX];
++FILE            *configFileFD;
++int             initialIFFlags;
++
++unsigned int    interfaceCount;         // Total number of interface/prefix combos
++// We dynaimcally size this at run-time
++struct  npd6Interface *interfaces;
++
++// Key behaviour
++int             naLinkOptFlag;      // From config file NPD6OPTFLAG
++int             nsIgnoreLocal;      // From config file NPD6LOCALIG
++int             naRouter;           // From config file NPD6ROUTERNA
++int             maxHops;            // From config file NPD6MAXHOPS
++int             collectTargets;     // From config file NPD6TARGETS
++
++// Target tree data structures etc
++void            *tRoot;
++int             tCompare(const void *, const void *);
++void            tDump(const void *, const VISIT , const int);
++int             tEntries;
++
++// Black/whitelisting data
++void            *lRoot;
++int             listType;
++int             listLog;            // From config file NPD6LISTLOG
++
++// Logging - various
++int             ralog;              // From config file NPD6RALOG
++
++// Error handling
++int		        pollErrorLimit;     // From config file
++
++#endif /* NPD6_VARS */
++
