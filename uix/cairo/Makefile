@@ -1,5 +1,5 @@
 DIR=cairo
-LOC=https://github.com/freedesktop
+LOC=-b 1.16 https://github.com/freedesktop
 
 include $(TOPDIR)/scripts/uixenv.mk
 

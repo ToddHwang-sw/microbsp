@@ -12,7 +12,7 @@ MICB_MESON_OPTS +=\
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
 MICB_DEPENDS = iconv intl glib-2.0 libffi libjpeg cairo-script-interpreter \
-	       		liblzma libxml-2.0 libudev libevdev
+	       		liblzma libxml-2.0 libudev libevdev gl
 
 CROSS_USER_LFLAGS += -lglapi -lrt
 

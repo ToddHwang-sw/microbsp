@@ -7,7 +7,9 @@ MICB_MESON_OPTS +=\
 	-D icu=disabled \
         -D docs=disabled \
         -D tests=disabled \
-        -D introspection=disabled 
+        -D introspection=disabled \
+        -D icu=disabled \
+        -D icu_builtin=false
 
 MICB_DEPENDS = glib-2.0 freetype2 cairo-ft
 

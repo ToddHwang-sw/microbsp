@@ -1,5 +1,5 @@
 DIR=SDL
-LOC=https://github.com/libsdl-org
+LOC=-b 2.0.22 https://github.com/libsdl-org
 
 include $(TOPDIR)/scripts/uixenv.mk
 
