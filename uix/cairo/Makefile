@@ -15,7 +15,8 @@ MICB_CONFIGURE_OPTS += \
 	--disable-full-testing \
 	--enable-glesv2 \
 	--enable-xml \
-	--enable-xlib-xcb
+	--enable-xlib-xcb \
+	--enable-interpreter
 
 CROSS_USER_CFLAGS += -DCAIRO_NO_MUTEX=1
 CROSS_USER_LFLAGS += -lglapi -lpthread

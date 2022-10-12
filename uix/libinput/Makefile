@@ -25,5 +25,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); DESTDIR=$(destination) ninja -v $@ )
+		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )
 

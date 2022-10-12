@@ -12,7 +12,7 @@ export PLATFORM=$(_CORE_)-any-linux-gnu
 export KERNELVER=linux-5.17.7
 
 ## Linux Kernel compile
-export KERNELMAKE=make V=1 ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 
+export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 
 
 ##
 ## folders to be included
@@ -65,26 +65,25 @@ export TTY0_BASH=/sbin/getty -l /bin/bash -n 0 tty0
 ##
 ##
 export BUILDUP_ROOTFS=\
-	[ -d $(XBASEDIR)/proc ] || mkdir -p $(XBASEDIR)/proc  && \
-	[ -d $(XBASEDIR)/var  ] || mkdir -p $(XBASEDIR)/var   && \
-	[ -d $(XBASEDIR)/dev  ] || mkdir -p $(XBASEDIR)/dev   && \
-	[ -d $(XBASEDIR)/sys  ] || mkdir -p $(XBASEDIR)/sys   && \
-	[ -d $(XBASEDIR)/mnt  ] || mkdir -p $(XBASEDIR)/mnt   && \
-	[ -d $(XBASEDIR)/low2 ] || mkdir -p $(XBASEDIR)/low2  && \
-	[ -d $(XBASEDIR)/ovr  ] || mkdir -p $(XBASEDIR)/ovr   && \
-	[ -d $(XBASEDIR)/ovr/dev  ] || mkdir -p $(XBASEDIR)/ovr/dev    && \
-	[ -d $(XBASEDIR)/ovr/proc ] || mkdir -p $(XBASEDIR)/ovr/proc   && \
-	[ -s $(XBASEDIR)/tmp  ] || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
-	[ -s $(XBASEDIR)/root ] || ln -s /var/root $(XBASEDIR)/root  && \
-	[ ! -d $(XBASEDIR)/lib    ] || \rm -rf $(XBASEDIR)/lib       && \
-	[ ! -s $(XBASEDIR)/lib64  ] || \rm -rf $(XBASEDIR)/lib64     && \
-	[ ! -d $(XBASEDIR)/etc    ] || \rm -rf $(XBASEDIR)/etc       && \
-	[ -d $(XBASEDIR)/lib    ] || mkdir -p $(XBASEDIR)/lib        && \
-	[ -d $(XBASEDIR)/etc    ] || mkdir -p $(XBASEDIR)/etc        && \
-	[ -d $(XBASEDIR)/root   ] || mkdir -p $(XBASEDIR)/root       && \
+	[ -d $(XBASEDIR)/proc ]       || mkdir -p $(XBASEDIR)/proc  && \
+	[ -d $(XBASEDIR)/var  ]       || mkdir -p $(XBASEDIR)/var   && \
+	[ -d $(XBASEDIR)/dev  ]       || mkdir -p $(XBASEDIR)/dev   && \
+	[ -d $(XBASEDIR)/sys  ]       || mkdir -p $(XBASEDIR)/sys   && \
+	[ -d $(XBASEDIR)/mnt  ]       || mkdir -p $(XBASEDIR)/mnt   && \
+	[ -d $(XBASEDIR)/low2 ]       || mkdir -p $(XBASEDIR)/low2  && \
+	[ -d $(XBASEDIR)/ovr  ]       || mkdir -p $(XBASEDIR)/ovr   && \
+	[ -d $(XBASEDIR)/ovr/dev  ]   || mkdir -p $(XBASEDIR)/ovr/dev      && \
+	[ -d $(XBASEDIR)/ovr/proc ]   || mkdir -p $(XBASEDIR)/ovr/proc     && \
+	[ -s $(XBASEDIR)/tmp  ]       || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
+	[ -s $(XBASEDIR)/root ]       || ln -s /var/root $(XBASEDIR)/root  && \
+	[ ! -d $(XBASEDIR)/lib    ]   || \rm -rf $(XBASEDIR)/lib       && \
+	[ ! -d $(XBASEDIR)/lib64  ]   || \rm -rf $(XBASEDIR)/lib64     && \
+	[ ! -d $(XBASEDIR)/etc    ]   || \rm -rf $(XBASEDIR)/etc       && \
+	[ -d $(XBASEDIR)/lib    ]     || mkdir -p $(XBASEDIR)/lib        && \
+	[ -d $(XBASEDIR)/etc    ]     || mkdir -p $(XBASEDIR)/etc        && \
+	[ -d $(XBASEDIR)/root   ]     || mkdir -p $(XBASEDIR)/root       && \
 	[ -d $(XBASEDIR)/etc/init.d ] || mkdir -p $(XBASEDIR)/etc/init.d                   && \
-	[ -s $(XBASEDIR)/lib64      ] || ( \
-			cd $(XBASEDIR) ; ln -s lib lib64 )                                         && \
+	[ -d $(XBASEDIR)/lib64      ] || mkdir -p $(XBASEDIR)/lib64                        && \
 	echo "ttyS0::respawn:/bin/bash -l"              >  $(XBASEDIR)/etc/inittab         && \
 	echo "::sysinit:/etc/init.d/rcS"                >> $(XBASEDIR)/etc/inittab         && \
 	echo "::shutdown:/etc/init.d/rc.shutdown"       >> $(XBASEDIR)/etc/inittab         && \

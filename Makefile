@@ -17,7 +17,7 @@ export DEV_PATCH_FILE=patch.develop
 # "vm" mode needs external USB disk keeping "image.ext4" of /board/vm/.
 # USB device node should be passed to boards/vm/Makefile . 
 #
-export EXT4DISK_MNTDIR=/dev/sde1
+export EXT4DISK_MNTDIR=/dev/sdd
 
 # board specific environment 
 include $(BDDIR)/env.mk
@@ -105,7 +105,7 @@ export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 ##
 ## BINUTILS : 2.32   -->  2.38
 ##      GCC : 8.3.0  -->  11.2.0
-##    GLIBC : 2.30   -->  2.35
+##    GLIBC : 2.30   -->  2.36
 ##
 ## export BINUTILS=binutils-2.32
 ## export GCC=gcc-8.3.0
@@ -113,7 +113,32 @@ export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 ##
 export BINUTILS=binutils-2.38
 export GCC=gcc-11.2.0
-export GLIBC=glibc-2.35
+export GLIBC_VER=2.36
+export GLIBC=glibc-$(GLIBC_VER)
+
+##
+## Essential applications 
+##
+export BASH=bash-5.1.8
+export BUSYBOX=busybox-1.35.0
+
+##
+## Bash needed libraries...
+export BASH_PRG=$(TOPDIR)/apps/bash/$(BUILDDIR)/$(BASH)/bash
+export BASH_NEEDS_LIBS1=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
+##export BASH_NEEDS_LIBS2=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' -e 's/so\.[0-9]/so/g' ) ; fi)
+export BASH_NEEDS_LIBS2=
+export BASH_NEEDS_INTER=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep interpreter | awk '{print $$4}' | sed -e 's/]//g' ) ; fi)
+
+##
+## Busybox utilities 
+export BUSY_PRG=$(TOPDIR)/apps/busybox/$(BUILDDIR)/$(BUSYBOX)/busybox
+export BUSY_NEEDS_LIBS1=$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
+##export BUSY_NEEDS_LIBS2=$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' -e 's/so\.[0-9]/so/g' ) ; fi)
+export BUSY_NEEDS_LIBS2=
+
+export BOOTSTRAP_LIBS=$(sort $(BASH_NEEDS_LIBS1) $(BASH_NEEDS_LIBS2) $(BUSY_NEEDS_LIBS1) $(BUSY_NEEDS_LIBS2))
+export BOOTSTRAP_LDRS=$(BASH_NEEDS_INTER)
 
 # architecture environment 
 include arch/$(_ARCH_)/env.mk
@@ -722,19 +747,17 @@ board: run_bootstrap
 		sudo find . -print -depth | sudo cpio -pdm $(FINDIR) ; \
 		cd $(TOPDIR) ; \
 		make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc
+	@echo ""
+	@echo "Copying bootstrap files $(BOOTSTAP_LIBS) $(BOOTSTRAP_LDRS) .. "
+	@echo ""
 	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
-		for fn in $(BOOTSTRAP_LIBS); do [ -s $$fn ] || ln -s ../lib/$$fn $$fn ; \
-		done
-	@echo ""
-	@echo "Library copying --> for bootstrap use "
-	@echo ""
-	@( \
-		cd $(FINDIR)/$(INSTSUBFN)/lib; \
-			tar jcvf $(TEMPFN).tar.bz2 $(BOOTSTRAP_LIBS) > /dev/null ; \
-			tar jxvf $(TEMPFN).tar.bz2 -C $(FINDIR)/lib  > /dev/null ; \
-			\rm -rf  $(TEMPFN).tar.bz2 ;  \
-		echo "Done"  \
-	)
+		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done
+	@cd $(FINDIR); \
+		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
+	@cd $(FINDIR)/$(INSTSUBFN); \
+		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
+	@cd $(FINDIR)/$(INSTSUBFN); \
+		for fn in $(BOOTSTRAP_LDRS); do [ ! -f $$fn ] || cp -f $$fn ../$(dir $(BOOTSTRAP_LDRS))  ; done
 
 ramdisk:
 	@echo ""

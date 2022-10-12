@@ -21,10 +21,11 @@ MICB_MESON_OPTS += \
 	-D media-gstreamer=disabled \
 	-D base-install=$(UIXINSTDIR) 
 
-MICB_DEPENDS = libmount bkid iconv intl glib-2.0 libffi libdrm expat libxml-2.0 libjpeg \
+MICB_DEPENDS = ncurses libmount bkid iconv intl glib-2.0 libffi libdrm expat libxml-2.0 libjpeg \
 	pangocairo gio-unix-2.0 gdk-pixbuf-2.0 graphene-gobject-1.0 pixman-1 \
-	cairo-script-interpreter 
+	cairo-script 
 
+##CROSS_USER_LFLAGS += -lcairo-script-interpreter
 CROSS_USER_LFLAGS += -lglapi -lrt
 
 prepare: 
@@ -36,5 +37,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); DESTDIR=$(destination) ninja -v $@ )
+		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )
 

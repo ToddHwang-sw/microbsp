@@ -154,7 +154,8 @@ export MICB_MESON_OPTS=$(MICB_MESON_COMMON_OPTS)
 ## should be run in $(BUILDDIR)/$(DIR)
 export MICB_MESON_CMD=$(MICB_MESON_RUNENV) meson . ../../../$(MICBSRC)/$(DIR) --cross-file ../$(MICB_MESON_CROSSBUILD_FN)
 
-
+## Ninja command
+export NINJA_MAKE=DESTDIR=$(destination) ninja -v 
 
 ##
 ##

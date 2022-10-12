@@ -18,6 +18,6 @@ prepare:
 all install uninstall clean:
 	@[ "$(_CORE_)" != "x86_64" ] || ( \
 		[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); DESTDIR=$(destination) ninja -v $@ ) \
+		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ ) \
 	) 
 

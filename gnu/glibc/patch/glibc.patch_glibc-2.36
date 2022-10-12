@@ -1,0 +1,12 @@
+diff -uNr glibc-2.36-original/locale/localeinfo.h glibc-2.36/locale/localeinfo.h
+--- glibc-2.36-original/locale/localeinfo.h	2022-07-29 15:03:09.000000000 -0700
++++ glibc-2.36/locale/localeinfo.h	2022-10-11 10:31:30.407475110 -0700
+@@ -248,7 +248,7 @@
+    we can use __thread variables.  So only in that case do we attempt this.  */
+ #ifndef SHARED
+ # include <tls.h>
+-# define NL_CURRENT_INDIRECT	1
++/* # define NL_CURRENT_INDIRECT	1 */
+ #endif
+ 
+ #ifdef NL_CURRENT_INDIRECT
