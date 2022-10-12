@@ -40,6 +40,11 @@ July/17/2022
 * Development branch (dev1) has been modifed for <strong>Ubuntu LTS22.04 </strong>.
 * "QT" is not supported. - How to build ?? 
 
+Oct/11/2022
+* GLIBC version is now 2.36
+* GCC   version is now 11.2.0
+* BINUTILS version is now 2.38
+
 Required Softwares
 ===============================
 
