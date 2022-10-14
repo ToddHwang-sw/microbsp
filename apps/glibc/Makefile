@@ -49,11 +49,4 @@ install:
 install_glibc:
 	@[ ! -f $(BUILDDIR)/$(GLIBC_TARGET_FILE) ] || \
 			tar zxvf $(BUILDDIR)/$(GLIBC_TARGET_FILE) -C $(destination) > /dev/null
-	@[ "$(_CORE_)" != "x86_64" ] || (                                                                       \
-		[ -d $(destination)/$(dir $(BOOTSRAP_LDRS)) ] ||                                                    \
-			mkdir -p $(destination)/$(dir $(BOOTSTRAP_LDRS)) ;                                              \
-		[ -f $(destination)/$(BOOTSTRAP_LDRS) ] || (                                                        \
-			cd $(destination)/$(dir $(BOOTSTRAP_LDRS));                                                     \
-			ln -s ../lib/$(notdir $(BOOTSTRAP_LDRS))  $(notdir $(BOOTSTRAP_LDRS))                           \
-		))
 

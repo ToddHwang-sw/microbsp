@@ -1,5 +1,4 @@
-##DIR=busybox-1.28.0
-DIR=busybox-1.35.0
+DIR=$(BUSYBOX)
 LOC=https://busybox.net/downloads
 
 ##

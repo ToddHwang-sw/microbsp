@@ -10,3 +10,11 @@ diff -uNr glibc-2.36-original/locale/localeinfo.h glibc-2.36/locale/localeinfo.h
  #endif
  
  #ifdef NL_CURRENT_INDIRECT
+diff -uNr glibc-2.36-original/PATCHED glibc-2.36/PATCHED
+--- glibc-2.36-original/PATCHED	1969-12-31 16:00:00.000000000 -0800
++++ glibc-2.36/PATCHED	2020-12-19 16:33:01.210835400 -0800
+@@ -0,0 +1,4 @@
++
++
++
++

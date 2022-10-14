@@ -125,20 +125,23 @@ export BUSYBOX=busybox-1.35.0
 ##
 ## Bash needed libraries...
 export BASH_PRG=$(TOPDIR)/apps/bash/$(BUILDDIR)/$(BASH)/bash
-export BASH_NEEDS_LIBS1=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
-##export BASH_NEEDS_LIBS2=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' -e 's/so\.[0-9]/so/g' ) ; fi)
-export BASH_NEEDS_LIBS2=
-export BASH_NEEDS_INTER=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep interpreter | awk '{print $$4}' | sed -e 's/]//g' ) ; fi)
+export BASH_NEEDS_LIBS=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
 
 ##
 ## Busybox utilities 
 export BUSY_PRG=$(TOPDIR)/apps/busybox/$(BUILDDIR)/$(BUSYBOX)/busybox
-export BUSY_NEEDS_LIBS1=$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
-##export BUSY_NEEDS_LIBS2=$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' -e 's/so\.[0-9]/so/g' ) ; fi)
-export BUSY_NEEDS_LIBS2=
+export BUSY_NEEDS_LIBS =$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
 
-export BOOTSTRAP_LIBS=$(sort $(BASH_NEEDS_LIBS1) $(BASH_NEEDS_LIBS2) $(BUSY_NEEDS_LIBS1) $(BUSY_NEEDS_LIBS2))
-export BOOTSTRAP_LDRS=$(BASH_NEEDS_INTER)
+## 
+## Loader 
+export BUSY_NEEDS_INTER=$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep interpreter | awk '{print $$4}' | sed -e 's/]//g' ) ; fi)
+
+export BOOTSTRAP_LIBS=$(sort $(BUSY_NEEDS_LIBS) $(BASH_NEEDS_LIBS))
+export BOOTSTRAP_LDRS=$(BUSY_NEEDS_INTER)
+
+##
+## Loader installed by ...
+export INSTALLED_LDRS=$(FINDIR)/$(INSTSUBFN)/lib/$(notdir $(BOOTSTRAP_LDRS))
 
 # architecture environment 
 include arch/$(_ARCH_)/env.mk
@@ -687,6 +690,7 @@ uidisk_clean:
 ##
 run_bootstrap: checkfirst
 	@make -C apps/busybox destination=$(XBASEDIR) -f Makefile.bootstrap prepare all install
+	@make -C apps/bash    destination=$(XBASEDIR) install
 	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
@@ -744,11 +748,11 @@ board: run_bootstrap
 	@[ ! -d $(FINDIR) ] || sudo \rm -rf $(FINDIR)
 	@mkdir -p $(FINDIR)
 	@cd $(XBASEDIR) ; \
-		sudo find . -print -depth | sudo cpio -pdm $(FINDIR) ; \
+		sudo find . -depth -print | sudo cpio -pdm $(FINDIR) ; \
 		cd $(TOPDIR) ; \
 		make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc
 	@echo ""
-	@echo "Copying bootstrap files $(BOOTSTAP_LIBS) $(BOOTSTRAP_LDRS) .. "
+	@echo "Setting for copying $(BOOTSTAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
 	@echo ""
 	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
 		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done
@@ -756,14 +760,24 @@ board: run_bootstrap
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
 	@cd $(FINDIR)/$(INSTSUBFN); \
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
-	@cd $(FINDIR)/$(INSTSUBFN); \
-		for fn in $(BOOTSTRAP_LDRS); do [ ! -f $$fn ] || cp -f $$fn ../$(dir $(BOOTSTRAP_LDRS))  ; done
+	@echo ""
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/$(INSTSUBFN)/lib64"
+	@echo ""
+	@[ -f $(FINDIR)/$(INSTSUBFN)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ] || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/$(INSTSUBFN)/lib64
+	@echo ""
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib64"
+	@echo ""
+	@[ -f $(FINDIR)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ]              || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib64
+	@echo ""
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib"
+	@echo ""
+	@[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib
 
 ramdisk:
 	@echo ""
 	@echo "Compiling kernel and combining squash image... "
 	@echo ""
-	@make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) all install
+	@make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) install
 	@echo ""
 	@echo "Build up image..."
 	@echo ""
@@ -876,4 +890,3 @@ pkglist:
 			done ;						\
 		done
 
-	

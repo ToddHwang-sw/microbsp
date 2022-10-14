@@ -29,5 +29,5 @@ prepare:
 
 all install clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+		cd $(BUILDDIR)/$(DIR); make DESTDIR=$(destination) $@ )
 

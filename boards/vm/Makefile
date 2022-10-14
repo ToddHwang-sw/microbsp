@@ -4,7 +4,7 @@ BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
 QEMU=qemu-system-$(_CORE_)
 
-QEMU_RUN=sudo $(QEMU) -m 1024 -nographic -smp 4 \
+QEMU_RUN=sudo $(QEMU) -m 4096 -nographic -smp 4 \
 		-netdev user,id=net0 -device e1000,netdev=net0 \
 		-cdrom $(isoname) \
 		-drive file=$(EXT4DISK_MNTDIR)

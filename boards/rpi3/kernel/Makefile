@@ -116,9 +116,10 @@ dnfw:
 				echo "Cloning Linux-Firmware from $(RTLFWLOC)" ; \
 				echo "" ;                                   \
 				mkdir -p $(RTLFWTMPDIR);                    \
-				pushd $(RTLFWTMPDIR);                       \
+				$(eval __CURDIR:=${PWD})					\
+				cd $(RTLFWTMPDIR);                          \
 				git clone --single-branch $(RTLFWLOC) $(RTLFWTMPDIR);  \
-				popd ;                                      \
+				cd $(__CURDIR);                             \
 				git checkout $(RTLFWTAG) > /dev/null        \
 			) ;                                             \
 			cp -rf $(RTLFWTMPDIR)/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
@@ -151,9 +152,10 @@ dnfw:
 				echo "Copyiing Linux-Firmware from $(CRDAFWLOC)" ; \
 				echo "" ;                                \
 				mkdir -p $(CRDAFWTMPDIR);                \
-				pushd $(CRDAFWTMPDIR);                   \
+				$(eval __CURDIR:=${PWD})		         \
+				cd $(CRDAFWTMPDIR);                      \
 				git clone --single-branch $(CRDAFWLOC) ; \
-				popd ;                                   \
+				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
 			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/crda/$$f \
@@ -167,9 +169,10 @@ dnfw:
 				echo "Copyiing Linux-Firmware from $(CRDAFWLOC)" ; \
 				echo "" ;                                \
 				mkdir -p $(CRDAFWTMPDIR);                \
-				pushd $(CRDAFWTMPDIR);                   \
+				$(eval __CURDIR:=${PWD})		         \
+				cd $(CRDAFWTMPDIR);                      \
 				git clone --single-branch $(CRDAFWLOC);  \
-				popd ;                                   \
+				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
 			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/firmware/$$f \
