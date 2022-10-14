@@ -108,6 +108,6 @@ export BUILDUP_ROOTFS=\
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Device file system\" "             >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Change root !!\" "                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "chroot /ovr"                              >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "chroot /ovr /etc/rc.init"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "Done" > /dev/null 
 
