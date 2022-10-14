@@ -30,5 +30,9 @@ COMP_CMDS=CC="$(CC) $(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 		STRIP="$(STRIP)"
 export COMP_CMDS
 
-export SUPPORTED_LANGUAGES=c,c++,go
+##
+## Todd - 10/14/2022 : Temporarily "go" is disabled...
+##
+## export SUPPORTED_LANGUAGES=c,c++,go
+export SUPPORTED_LANGUAGES=c,c++
 

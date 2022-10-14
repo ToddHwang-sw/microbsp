@@ -5,12 +5,10 @@ GCC_TARGET_FILE=$(DIR)-$(PLATFORM).tar.gz
 
 include $(TOPDIR)/scripts/env.mk
 
-##CROSS_USER_CFLAGS=
-##CROSS_USER_LFLAGS=
-
 MICB_CONFIGURE_OPTS += \
 	--disable-compressed-debug-sections \
 	--enable-libstdcxx \
+	--disable-libsanitizer \
 	--disable-multilib \
 	--disable-nls \
 	--enable-languages=$(SUPPORTED_LANGUAGES) \
