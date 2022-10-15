@@ -363,7 +363,7 @@ installcomps:
 	  	meson               qemu-system-x86       libxml2-dev     libffi-dev        \
 	  	help2man            valgrind              gperf           libglib2.0-dev-bin\
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
-		gtk-doc-tools
+		gtk-doc-tools       uml-utilities         bridge-utils 
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
 	@sudo pip install pkgconfig mako Jinja2

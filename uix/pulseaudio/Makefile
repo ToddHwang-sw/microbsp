@@ -12,9 +12,10 @@ MICB_MESON_OPTS+=\
 	 -D gstreamer=enabled 
 
 MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau \
-	       libsystemd  gtk4-wayland ncurses libjpeg cairo-script-interpreter libcap \
+	       libsystemd  gtk4-wayland ncurses libjpeg cairo-script libcap \
 	       liblzma liblz4 libzstd
 
+CROSS_USER_LFLAGS += -lcairo-script-interpreter
 CROSS_USER_LFLAGS += -lglapi
 
 prepare:

@@ -64,7 +64,7 @@ export SQUASHROOTFS=y
 ## This system is booted by QEMU at ttyS0 line serial basis. 
 ## Terminal should be reopened tty0 graphic interface ... 
 ##
-export TTY0_BASH=/sbin/getty -l /bin/bash -n 0 tty0
+export TTY0_BASH=/bin/bash -l
 
 ##
 ##  ATTENTION !! 
@@ -90,7 +90,7 @@ export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/root   ]     || mkdir -p $(XBASEDIR)/root       && \
 	[ -d $(XBASEDIR)/etc/init.d ] || mkdir -p $(XBASEDIR)/etc/init.d                   && \
 	[ -d $(XBASEDIR)/lib64      ] || mkdir -p $(XBASEDIR)/lib64                        && \
-	echo "ttyS0::respawn:/bin/bash -l"              >  $(XBASEDIR)/etc/inittab         && \
+	echo "ttyS0::respawn:$(TTY0_BASH)"              >  $(XBASEDIR)/etc/inittab         && \
 	echo "::sysinit:/etc/init.d/rcS"                >> $(XBASEDIR)/etc/inittab         && \
 	echo "::shutdown:/etc/init.d/rc.shutdown"       >> $(XBASEDIR)/etc/inittab         && \
 	echo "\#!/bin/bash "                            >  $(XBASEDIR)/etc/init.d/rcS      && \
@@ -112,8 +112,5 @@ export BUILDUP_ROOTFS=\
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount -t overlay -o lowerdir=/disk,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "echo \"Device file system\" "             >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "echo \"Change root !!\" "                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "chroot /ovr /etc/rc.init"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "Done" > /dev/null 
 

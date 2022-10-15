@@ -4,8 +4,17 @@ BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
 QEMU=qemu-system-$(_CORE_)
 
-QEMU_RUN=sudo $(QEMU) -m 4096 -nographic -smp 4 \
-		-netdev user,id=net0 -device e1000,netdev=net0 \
+VMIP=192.167.0
+DNS=8.8.8.8
+VMMAC=00:0a:0b:0c:0d:0e
+
+##
+## QEMU configuration 
+##
+QEMU_RUN=\
+		$(QEMU) -m 4096 -nographic -smp 4 \
+		-device e1000,netdev=net0,mac=$(VMMAC) \
+		-netdev tap,id=net0,script=$(BDDIR)/qemu.ifup \
 		-cdrom $(isoname) \
 		-drive file=$(EXT4DISK_MNTDIR)
 
@@ -49,7 +58,7 @@ clean uninstall:
 #########################################################################################################################
 
 run:
-	@$(QEMU_RUN)
+	@sudo $(QEMU_RUN)
 
 stop:
 	@sudo killall $(QEMU)
