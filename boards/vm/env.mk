@@ -65,6 +65,7 @@ export SQUASHROOTFS=y
 ## Terminal should be reopened tty0 graphic interface ... 
 ##
 export TTY0_BASH=/bin/bash -l
+## export TTY0_BASH=/sbin/getty -l /bin/bash -n 0 tty0
 
 ##
 ##  ATTENTION !! 

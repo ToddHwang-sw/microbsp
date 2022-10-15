@@ -62,13 +62,14 @@ echo "Network - VMware should use Host-only interface for this OS"
 echo ""
 modprobe e1000
 udhcpc -i eth0 
-###ifconfig eth0 192.168.47.100 netmask 255.255.255.0 up
 
 ## group file for root 
-echo "root:x:0:" > /etc/group
+echo "root:x:0:"          > /etc/group
+echo "sshd:x:1001:root"   >> /etc/group
 
 ## register root user
-echo "root:x:0:0:root:/root:/bin/sh" > /etc/passwd
+echo "root:x:0:0:root:/root:/bin/sh"                       > /etc/passwd
+echo "sshd:x:1001:1001:SSH,,,:/var/tmp/sshd:/sbin/nologin" >> /etc/passwd
 
 ## shadow file for password 
 echo "root:*:16897:0:99999:7:::" > /etc/shadow
@@ -79,9 +80,27 @@ echo "root:" | chpasswd
 DATEVAL="2021.11.25-12:00:00"
 date $DATEVAL
 
+echo ""
+echo "Logging daemon"
+echo ""
 syslogd -s 10240 -b 0 -l 8 -O /var/log/messages
 klogd
 
-echo "TELNET daemon"
-telnetd 
+SSHDIR=/root/.ssh
+
+echo ""
+echo "SSH key setup in $SSHDIR "
+echo ""
+[ -d $SSHDIR ] || mkdir -p $SSHDIR
+[ -f $SSHDIR/id_rsa ] || ( \
+    ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+
+echo ""
+echo "SSH daemon"
+echo ""
+/sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+
+echo ""
+echo "Shell"
+/bin/bash 
 
