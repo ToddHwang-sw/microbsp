@@ -7,6 +7,6 @@ prepare:
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); \
-		make $(COMP_CMDS) $(MICB_CONFIGURE_MAKEOPTS) $@ )
+		make $(COMP_CMDS) DESTDIR=$(destination) $@ )
 
 wipeout:
