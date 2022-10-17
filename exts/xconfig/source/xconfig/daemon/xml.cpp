@@ -401,7 +401,7 @@ int config_xml_merge(char* oxml, char* nxml)
 		DBG("VERSION (%s vs %s) \n",over, nver);
 
 		if (strcasecmp(nver,over) <= 0) {
-			ERR("CURRENTLY LATEST VERSION\n");
+			DBG("CURRENTLY LATEST VERSION\n");
 			ret = -1;
 			goto out;
 		}
