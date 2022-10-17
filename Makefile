@@ -17,7 +17,8 @@ export DEV_PATCH_FILE=patch.develop
 # "vm" mode needs external USB disk keeping "image.ext4" of /board/vm/.
 # USB device node should be passed to boards/vm/Makefile . 
 #
-export EXT4DISK_MNTDIR=/dev/sdd
+export EXT4HDD=/dev/sdd1
+export EXT4CFG=/dev/sdd2
 
 # board specific environment 
 include $(BDDIR)/env.mk
@@ -406,6 +407,7 @@ checkfirst:
 		mkdir -p $(INSTALLDIR)/include;                             \
 		mkdir -p $(INSTALLDIR)/lib;                                 \
 		mkdir -p $(INSTALLDIR)/boot;                                \
+		mkdir -p $(INSTALLDIR)/config;                              \
 		ln -s /var/tmp/tmp  $(INSTALLDIR)/tmp;                      \
 		ln -s /var/tmp/fstab $(INSTALLDIR)/etc/fstab;               \
 		ln -s /var/tmp/mtab  $(INSTALLDIR)/etc/mtab;                \

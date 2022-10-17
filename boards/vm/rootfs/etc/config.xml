@@ -1,10 +1,10 @@
 <?xml version="1.0.0.0" encoding="utf-8"?>
 <config>
 	<product>QEMUVM</product>
-	<date>202210161925</date>
-	<model>QemuVM for Developer</model>
+	<date>202210161955</date>
+	<model>QEMUVM</model>
 	<operation>
-		<mode>normal</mode>		<!-- operation mode -->
+		<mode>normal</mode>			<!-- operation mode -->
 		<passwd>0</passwd>		<!-- password -->
 		<webui>0</webui>		<!-- webui -->
 		<syslog>
@@ -48,12 +48,12 @@
 	</user>
 	<lan0>
 		<mode>dhcp</mode>          <!-- static, dhcp, none -->
-		<ip>192.167.0.200</ip>
+		<ip>192.167.0.120</ip>
 		<netmask>255.255.255.0</netmask>
 		<gateway>192.167.0.1</gateway>
 		<dns>8.8.8.8</dns>
 		<ipv6>
-			<mode>static</mode>     <!-- IPv6 DHCP -->
+			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
 			<global>2001:b0d8:2233:1000::</global>
 			<local>4400::</local>
 			<plen>64</plen>
@@ -68,10 +68,10 @@
 		<verbose>0</verbose>	   <!-- Verbosity -->
 		<mainidle>5</mainidle>     <!-- Sleep interval of idle loop -->
 		<syncexpire>1000</syncexpire> <!-- Persistent syncing job expire -->
-		<shellproc>/var/tmp/xconfig_shell_proc.sh</shellproc>     <!-- Shell processor -->
+        <shellproc>/var/tmp/xconfig/xconfig_shell_proc.sh</shellproc>     <!-- Shell processor -->
 		<tls>
-			<keyfile>/var/tmp/key.pem</keyfile>
-			<cafile>/var/tmp/cert.pem</cafile>
+            <keyfile>/var/tmp/xconfig/key.pem</keyfile>
+            <cafile>/var/tmp/xconfig/cert.pem</cafile>
 		</tls>
 	</xcfgd>
 </config>

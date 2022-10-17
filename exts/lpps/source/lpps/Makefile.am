@@ -84,6 +84,6 @@ lppsnm_SOURCES = \
 	$(TRANSPORT_SOURCES)
 
 install-exec-hook:
-	[   -d $(DESTDIR)/etc           ] || mkdir -p $(DESTDIR)/etc
-	[ ! -f $(DESTDIR)/etc/lpps.conf ] || \rm -rf $(DESTDIR)/etc/lpps.conf 
-	$(INSTALL_DATA) $(TOP)/lpps.conf $(DESTDIR)/etc/lpps.conf
+	@[   -d $(DESTDIR)/etc           ] || mkdir -p $(DESTDIR)/etc
+	@[ ! -f $(DESTDIR)/etc/lpps.conf ] || \rm -rf $(DESTDIR)/etc/lpps.conf 
+	@$(INSTALL_DATA) $(TOP)/lpps.conf $(DESTDIR)/etc/lpps.conf

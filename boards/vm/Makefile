@@ -4,8 +4,6 @@ BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
 QEMU=qemu-system-$(_CORE_)
 
-VMIP=192.167.0
-DNS=8.8.8.8
 VMMAC=00:0a:0b:0c:0d:0e
 
 ##
@@ -16,7 +14,8 @@ QEMU_RUN=\
 		-device e1000,netdev=net0,mac=$(VMMAC) \
 		-netdev tap,id=net0,script=$(BDDIR)/qemu.ifup \
 		-cdrom $(isoname) \
-		-drive file=$(EXT4DISK_MNTDIR)
+		-drive file=$(EXT4HDD) \
+		-drive file=$(EXT4CFG)
 
 prepare:
 	@[ -d $(isodir) ]          || mkdir -p $(isodir)

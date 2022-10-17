@@ -1,5 +1,16 @@
 #!/bin/sh
 
+busywait() {
+    cnt=$1
+    while [ "$cnt" != "0" ]
+    do
+        sleep 1
+        echo "$cnt"
+        cnt=`expr $cnt - 1`
+    done
+    echo ""
+}
+
 cat /etc/motd
 
 ## mount file systems 
@@ -53,16 +64,6 @@ touch /var/tmp/shadow
 ## issue file - telnetd
 touch /var/tmp/issue
 
-## lo interface
-ifconfig lo up
-
-## eth0 interface
-echo ""
-echo "Network - VMware should use Host-only interface for this OS"
-echo ""
-modprobe e1000
-udhcpc -i eth0 
-
 ## group file for root 
 echo "root:x:0:"          > /etc/group
 echo "sshd:x:1001:root"   >> /etc/group
@@ -77,28 +78,115 @@ echo "root:*:16897:0:99999:7:::" > /etc/shadow
 ## password 
 echo "root:" | chpasswd
 
-DATEVAL="2021.11.25-12:00:00"
+## lo interface - Needed for xcfgd.cfg 
+ifconfig lo up
+
+echo ""
+echo "XCFGD Configurator - wait 5"
+echo ""
+XCFGDIR=/config
+[ -d $XCFGDIR ] || mkdir -p $XCFGDIR
+mount /dev/sdb $XCFGDIR
+/sbin/run_xcfgd.sh \
+    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s & 
+
+echo "Waiting it for getting ready to work.."
+busywait 3
+
+##
+## Macros needed to access configuration 
+##
+ASK='xcfgcli.sh get'
+
+echo ""
+echo "DATE "
+echo ""
+DATEVAL="2022.10.15-12:00:00"
 date $DATEVAL
 
 echo ""
 echo "Logging daemon"
 echo ""
-syslogd -s 10240 -b 0 -l 8 -O /var/log/messages
-klogd
+SYSLOG=`$ASK operation/syslog/en`
+if [ "$SYSLOG" = "1" ]; then 
+    NETLOT=""
+    NETSYSL=`$ASK operation/syslog/mode`
+    if [ "$NETSYSL" = "remote" ]; then
+        LOGSVRIP=`$ASK operation/syslog/ip`
+        LOGSVRPORT=`$ASK operation/syslog/port`
+        NETLOPT="-R $LOGSVRIP:$LOGSVRPORT"
+    fi
+    syslogd $NETLOPT -s 10240 -b 0 -l 8 -O /var/log/messages
+    klogd
+fi
+
+
+echo ""
+echo "USER "
+echo ""
+cnt=0
+done=0
+while [ "$done" = "0" ]
+do
+    valid=`$ASK user/u$cnt/valid`
+    if [ "$valid" = "error" ]; then
+        done=1;
+    fi
+    if [ "$valid" = "1" ]; then
+        un=`$ASK user/u$cnt/name`
+        pw=`$ASK user/u$cnt/passwd`
+        if [ ! -d /home/$un ]; then
+            mkdir /home/$un
+            adduser -h /home/$un -G root -s /bin/sh -D $un
+            echo "$un:$pw" | chpasswd
+            echo "User [ $un/$pw ] created"
+        fi
+    fi
+    cnt=`expr $cnt + 1`
+done
+
+
+echo ""
+echo "GIT "
+echo ""
+[ ! -f /bin/git ] || git config --global http.sslVerify false
+
+echo ""
+echo "PYTHON  "
+echo ""
+[ ! -f /bin/python_env.sh ] || ( /bin/python_env.sh / ; echo "Python !!" )
+
+## eth0 interface
+echo ""
+echo "Network - VMware should use Host-only interface for this OS"
+echo ""
+modprobe e1000
+
+NETMODE=`$ASK lan0/mode`
+if [ "$NETMODE" = "dhcp" ]; then 
+    udhcpc -i eth0 
+else
+    IP=`$ASK lan0/ip`
+    NETMASK=`$ASK lan0/netmask`
+    ifconfig eth0 $IP netmask $NETMASK up
+fi
 
 SSHDIR=/root/.ssh
 
-echo ""
-echo "SSH key setup in $SSHDIR "
-echo ""
-[ -d $SSHDIR ] || mkdir -p $SSHDIR
-[ -f $SSHDIR/id_rsa ] || ( \
-    ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+SSHEN=`$ASK ssh/enable`
+if [ "$SSHEN" = "1" ]; then 
+    echo ""
+    echo "SSH key setup in $SSHDIR "
+    echo ""
+    [ -d $SSHDIR ] || mkdir -p $SSHDIR
+    [ -f $SSHDIR/id_rsa ] || ( \
+        ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
 
-echo ""
-echo "SSH daemon"
-echo ""
-/sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+    echo ""
+    echo "SSH daemon"
+    echo ""
+    /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+fi
 
 echo ""
 echo "Shell"
