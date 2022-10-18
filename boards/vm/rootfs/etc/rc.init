@@ -36,7 +36,7 @@ mount -t devpts devpts  /dev/pts
 ##
 ## Export Libraries...
 ##
-export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
 
 ##
 ## Export Path....

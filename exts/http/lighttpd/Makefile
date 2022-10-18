@@ -1,13 +1,19 @@
-DIR=lighttpd2
+DIR=lighttpd1.4
 LOC=https://github.com/lighttpd
 
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_OPTS += \
 	--without-lua \
-	--without-libunwind
+	--without-libunwind \
+	--with-openssl \
+	--with-gnutls \
+	--with-libev \
+	--with-zstd \
+	--with-bzip2 \
+	--with-nettle 
 
-MICB_DEPENDS = iconv intl glib-2.0 openssl
+MICB_DEPENDS = iconv intl glib-2.0 openssl gnutls pam libzstd nettle 
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

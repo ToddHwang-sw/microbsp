@@ -12,7 +12,7 @@ VMMAC=00:0a:0b:0c:0d:0e
 QEMU_RUN=\
 		$(QEMU) -m 4096 -nographic -smp 4 \
 		-device e1000,netdev=net0,mac=$(VMMAC) \
-		-netdev tap,id=net0,script=$(BDDIR)/qemu.ifup \
+		-netdev tap,id=net0,script=$(BDDIR)/qemu-if.script \
 		-cdrom $(isoname) \
 		-drive file=$(EXT4HDD) \
 		-drive file=$(EXT4CFG)

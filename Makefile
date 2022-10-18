@@ -543,11 +543,11 @@ ui_%: checkfirst llvm_okay
 ##
 ## projects
 ##
-proj:
-	@make -C $(BDDIR)/projects destination=$(EXTINSTDIR) proj
+proj: checkfirst 
+	@make -C $(BDDIR)/projects destination=$(EXTINSTDIR) prepare all install
 	@$(CLEAN_LIBLA)
 
-proj_%:
+proj_%: checkfirst 
 	@make -C $(BDDIR)/projects destination=$(EXTINSTDIR) $(subst proj_,,$@) 
 	@$(CLEAN_LIBLA)
 
