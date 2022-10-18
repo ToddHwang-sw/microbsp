@@ -1,0 +1,121 @@
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<script language="javascript" type="text/javascript" src="js/myscript.js"></script>
+<script language="javascript">
+
+function WriteDone( jsontext )
+{ /* nothing... */ }
+
+function ApplyDaemon()
+{
+	// httpport 
+	var httpport = document.getElementById("httpport").value;
+	if (!(httpport >= 80 && httpport <= 65000)) {
+		alert("HTTP port should 80 ~ 65000");
+		return ;
+	}
+
+	// sysport 
+	var sysport = document.getElementById("sysport").value;
+	if(!(sysport >= 5000 && sysport <= 65000)) {
+		alert("SYS port should 5000 ~ 65000");
+		return ;
+	}
+
+	// timeout 
+	var timeout = document.getElementById("timeout").value;
+	if(!(timeout >= 1 && timeout <= 10)) {
+		alert("TIMEOUT port should 1 ~ 10");
+		return ;
+	}
+
+	// syncexpire 
+	var syncexpire = document.getElementById("syncexpire").value;
+	if(!(syncexpire >= 1000 && syncexpire <= 10000)) {
+		alert("TIMEOUT port should 1000 ~ 10000");
+		return ;
+	}
+
+	var cmd;
+
+	/* HTTPPORT Writing...*/
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/httpport";
+	XHRPost(WriteDone,  cmd, httpport, true);
+
+	/* SYSPORT Writing...*/
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/sysport";
+	XHRPost(WriteDone,  cmd, sysport, true);
+
+	/* TIMEOUT Writing...*/
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/timeout";
+	XHRPost(WriteDone,  cmd, timeout, true);
+
+	/* SYNCEXPIRE Writing...*/
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/syncexpire";
+	XHRPost(WriteDone,  cmd, syncexpire, true);
+}
+
+function RetrieveXCFGD( JsonText )
+{
+	var obj = JSON.parse( JsonText );
+
+	document.getElementById("httpport").value = obj.httpport;
+	document.getElementById("sysport").value = obj.sysport;
+	document.getElementById("timeout").value = obj.timeout;
+	document.getElementById("syncexpire").value = obj.syncexpire;
+}
+
+function OnLoadDaemon()
+{
+	XHRGet( RetrieveXCFGD,  "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=xcfgd", true );
+}
+
+</script>
+<link rel="stylesheet" type="text/css" href="css/design.css">
+<body onload="OnLoadDaemon()">
+	<table class="table_title">
+    		<tr><td>Configurator Settings</tr></td>
+	</table>
+	<br/>
+	<br/>
+
+	<table class="table_content">
+	<form>
+		<col width=200>
+		<col width=550>
+		<tr>
+			<td class="table_shaded">HTTP Port</td>
+			<td class="table_white">
+				<input type="text" id="httpport" maxlength="5">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">System Port</td>
+			<td class="table_white">
+				<input type="text" id="sysport" maxlength="5">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Timeout</td>
+			<td class="table_white">
+				<input type="text" id="timeout" maxlength="2">
+			</td>
+		</tr>
+		<tr>
+			<td class="table_shaded">Sync Expire</td>
+			<td class="table_white">
+				<input type="text" id="syncexpire" maxlength="4">
+			</td>
+		</tr>
+		<tr>	
+			<td class="table_white" colspan="2" align="right">
+				<input type="button" class="pbutton" id="DaemonApply" value="Apply" onclick="ApplyDaemon()">
+			</td>
+		</tr>
+	</form>
+	</table>
+</body>
+</html>
