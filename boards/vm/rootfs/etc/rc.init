@@ -154,7 +154,7 @@ echo ""
 echo ""
 echo "PYTHON  "
 echo ""
-[ ! -f /bin/python_env.sh ] || ( /bin/python_env.sh / ; echo "Python !!" )
+[ ! -f /bin/python_env.sh ] || /bin/python_env.sh / 
 
 ## eth0 interface
 echo ""
@@ -186,6 +186,14 @@ if [ "$SSHEN" = "1" ]; then
     echo "SSH daemon"
     echo ""
     /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+fi
+
+echo ""
+echo "WEBUI "
+echo ""
+WEBUIEN=`$ASK http/en`
+if [ "$WEBUIEN" = "1" ]; then 
+    [ ! -f /etc/httpd/etc/run.sh ] || /etc/httpd/etc/run.sh 
 fi
 
 echo ""
