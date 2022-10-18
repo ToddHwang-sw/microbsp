@@ -1,5 +1,5 @@
-DIR=zlib-1.2.12
-LOC=https://www.zlib.net
+DIR=zlib
+LOC=https://github.com/madler
 
 include $(TOPDIR)/scripts/env.mk
 
@@ -10,7 +10,7 @@ CROSS_USER_CFLAGS += -fPIC
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) LDSHARED="$(CC) -shared" $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
