@@ -33,6 +33,5 @@ prepare:
 
 all install clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); \
-		make DESTDIR=$(destination) $@ )
+		cd $(BUILDDIR)/$(DIR); make DESTDIR=$(destination) $@ )
 

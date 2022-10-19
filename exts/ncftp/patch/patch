@@ -1,6 +1,6 @@
 diff -uNr ncftp-3.2.6-original/configure ncftp-3.2.6/configure
 --- ncftp-3.2.6-original/configure	2016-12-04 10:54:11.000000000 -0800
-+++ ncftp-3.2.6/configure	2019-10-28 22:17:04.814456125 -0700
++++ ncftp-3.2.6/configure	2022-10-03 15:40:29.769931856 -0700
 @@ -11156,13 +11156,7 @@
  	LIBS="$ac_save_LIBS";
  fi
@@ -18,7 +18,7 @@ diff -uNr ncftp-3.2.6-original/configure ncftp-3.2.6/configure
  echo "configure:11169: checking for long file names" >&5
 diff -uNr ncftp-3.2.6-original/Makefile.bin.in ncftp-3.2.6/Makefile.bin.in
 --- ncftp-3.2.6-original/Makefile.bin.in	2001-10-25 14:46:50.000000000 -0700
-+++ ncftp-3.2.6/Makefile.bin.in	2019-10-28 22:11:40.058310400 -0700
++++ ncftp-3.2.6/Makefile.bin.in	2022-10-03 15:40:29.769931856 -0700
 @@ -24,11 +24,7 @@
  	done
  	-@/bin/rm -f $(prefix)/bin/ncftpspooler
@@ -34,7 +34,7 @@ diff -uNr ncftp-3.2.6-original/Makefile.bin.in ncftp-3.2.6/Makefile.bin.in
  		/bin/rm -f $(mandir)/man1/$$f ; \
 diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
 --- ncftp-3.2.6-original/Makefile.in	2016-08-13 19:16:09.000000000 -0700
-+++ ncftp-3.2.6/Makefile.in	2019-10-28 22:12:02.014269741 -0700
++++ ncftp-3.2.6/Makefile.in	2022-10-03 15:40:29.769931856 -0700
 @@ -56,7 +56,6 @@
  #
  # The visual programs are only built if a working Curses was found.
@@ -52,3 +52,15 @@ diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
  	-@echo 'Done installing NcFTP.'
  
  clean:
+diff -uNr ncftp-3.2.6-original/sh_util/gpshare.c ncftp-3.2.6/sh_util/gpshare.c
+--- ncftp-3.2.6-original/sh_util/gpshare.c	2016-11-12 15:53:39.000000000 -0800
++++ ncftp-3.2.6/sh_util/gpshare.c	2022-10-03 15:41:35.034246680 -0700
+@@ -28,7 +28,7 @@
+ 
+ static int gIsAtty1 = 1, gIsAtty2 = 1;
+ extern int gLoadedBm, gBookmarkMatchMode;
+-Bookmark gBm;
++extern Bookmark gBm;
+ 
+ double
+ FileSize(double size, const char **uStr0, double *uMult0)

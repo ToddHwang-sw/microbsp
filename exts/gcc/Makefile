@@ -5,25 +5,25 @@ GCC_TARGET_FILE=$(DIR)-$(PLATFORM).tar.gz
 
 include $(TOPDIR)/scripts/env.mk
 
-CROSS_USER_CFLAGS=
-CROSS_USER_LFLAGS=
-
 MICB_CONFIGURE_OPTS += \
 	--disable-compressed-debug-sections \
 	--enable-libstdcxx \
+	--disable-libsanitizer \
 	--disable-multilib \
 	--disable-nls \
 	--enable-languages=$(SUPPORTED_LANGUAGES) \
 	--with-gmp=$(INSTALLDIR) \
-       	--with-mpfr=$(INSTALLDIR) \
-       	--with-mpc=$(INSTALLDIR) 
+	--with-mpfr=$(INSTALLDIR) \
+	--with-mpc=$(INSTALLDIR) 
+
+MICB_DEPENDS = mpc mpfr gmp
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( \
 		tar zxvf $(GCCDIR)/$(DIR).tar.gz -C $(MICBSRC); \
 		cd $(MICBSRC)/$(DIR) ; \
-		cat ../../$(MICB_PATCH_FN) | patch -p 1 )
+		cat ../../patch/patch_$(GCC) | patch -p 1 )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS) 
 	

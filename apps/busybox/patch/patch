@@ -1,11 +1,10 @@
-diff -uNr busybox-1.28.0-origin/make_single_applets.sh busybox-1.28.0/make_single_applets.sh
---- busybox-1.28.0-origin/make_single_applets.sh	2018-01-01 11:40:41.000000000 -0800
-+++ busybox-1.28.0/make_single_applets.sh	2019-02-14 17:16:30.827053002 -0800
-@@ -6,7 +6,13 @@
- # All other options which chose general bbox config, applet features, etc,
- # are not modified for the builds.
+diff -uNr busybox-1.35.0-original/make_single_applets.sh busybox-1.35.0/make_single_applets.sh
+--- busybox-1.35.0-original/make_single_applets.sh	2021-12-26 08:53:21.000000000 -0800
++++ busybox-1.35.0/make_single_applets.sh	2022-10-03 13:47:46.329994836 -0700
+@@ -8,6 +8,14 @@
  
--makeopts="-j9"
+ makeopts="-j9"
+ 
 +[ ! -f ./.compile_cmds ] || . ./.compile_cmds
 +
 +DOMAKE="make V=1 CROSS_COMPILE=${CROSS_COMPILE} CFLAGS=\"${CFLAGS}\""
@@ -13,10 +12,11 @@ diff -uNr busybox-1.28.0-origin/make_single_applets.sh busybox-1.28.0/make_singl
 +echo ""                   >> ./comp.sh
 +echo "${DOMAKE} -j9 \$@"  >> ./comp.sh
 +chmod +x ./comp.sh
- 
++
  # The list of all applet config symbols
  test -f include/applets.h || { echo "No include/applets.h file"; exit 1; }
-@@ -54,11 +60,11 @@
+ apps="`
+@@ -58,11 +66,11 @@
  		echo "CONFIG_SH_IS_NONE=y" >>.config
  	fi
  
@@ -26,59 +26,59 @@ diff -uNr busybox-1.28.0-origin/make_single_applets.sh busybox-1.28.0/make_singl
  		echo "Config error for ${app}"
  		mv .config busybox_config_${app}
 -	elif ! make $makeopts >>busybox_make_${app}.log 2>&1; then
-+	elif ! ./comp.sh >>busybox_make_${app}.log 2>&1; then
++	elif ! ./comp.sh $makeopts >>busybox_make_${app}.log 2>&1; then
  		fail=$((fail+1))
  		grep -i -e error: -e warning: busybox_make_${app}.log
  		echo "Build error for ${app}"
-diff -uNr busybox-1.28.0-origin/miscutils/flashcp.c busybox-1.28.0/miscutils/flashcp.c
---- busybox-1.28.0-origin/miscutils/flashcp.c	2017-08-17 04:50:45.000000000 -0700
-+++ busybox-1.28.0/miscutils/flashcp.c	2019-02-14 17:16:07.555052084 -0800
+diff -uNr busybox-1.35.0-original/miscutils/flashcp.c busybox-1.35.0/miscutils/flashcp.c
+--- busybox-1.35.0-original/miscutils/flashcp.c	2021-12-26 08:53:21.000000000 -0800
++++ busybox-1.35.0/miscutils/flashcp.c	2022-10-03 13:48:31.186076850 -0700
 @@ -144,7 +144,7 @@
  			if (i == 0) {
  				int ret;
  				if (count < BUFSIZE)
 -					memset((char*)buf + count, 0, BUFSIZE - count);
-+					memset((char*)buf + count, 0xff, BUFSIZE - count);
++					memset((char*)buf + count, 0xFF, BUFSIZE - count);
  				errno = 0;
  				ret = full_write(fd_d, buf, BUFSIZE);
  				if (ret != BUFSIZE) {
-diff -uNr busybox-1.28.0-origin/miscutils/nandwrite.c busybox-1.28.0/miscutils/nandwrite.c
---- busybox-1.28.0-origin/miscutils/nandwrite.c	2017-10-05 02:53:08.000000000 -0700
-+++ busybox-1.28.0/miscutils/nandwrite.c	2019-02-14 17:16:07.555052084 -0800
-@@ -244,7 +244,7 @@
- 				bb_error_msg_and_die("input size is not rounded up to page size, "
+diff -uNr busybox-1.35.0-original/miscutils/nandwrite.c busybox-1.35.0/miscutils/nandwrite.c
+--- busybox-1.35.0-original/miscutils/nandwrite.c	2021-12-26 08:53:21.000000000 -0800
++++ busybox-1.35.0/miscutils/nandwrite.c	2022-10-03 13:48:54.738120015 -0700
+@@ -251,7 +251,7 @@
+ 				bb_simple_error_msg_and_die("input size is not rounded up to page size, "
  						"use -p to zero pad");
  			/* zero pad to end of write block */
 -			memset(filebuf + cnt, 0, meminfo_writesize - cnt);
-+			memset(filebuf + cnt, 0xff, meminfo_writesize - cnt);
++			memset(filebuf + cnt, 0xFF, meminfo_writesize - cnt);
  		}
  		xwrite(output_fd, filebuf, meminfo_writesize);
  
-diff -uNr busybox-1.28.0-origin/miscutils/ubi_tools.c busybox-1.28.0/miscutils/ubi_tools.c
---- busybox-1.28.0-origin/miscutils/ubi_tools.c	2017-10-20 01:36:58.000000000 -0700
-+++ busybox-1.28.0/miscutils/ubi_tools.c	2019-02-14 17:16:07.555052084 -0800
-@@ -155,9 +155,12 @@
+diff -uNr busybox-1.35.0-original/miscutils/ubi_tools.c busybox-1.35.0/miscutils/ubi_tools.c
+--- busybox-1.35.0-original/miscutils/ubi_tools.c	2021-12-26 08:53:21.000000000 -0800
++++ busybox-1.35.0/miscutils/ubi_tools.c	2022-10-03 13:53:07.986587490 -0700
+@@ -149,9 +149,11 @@
  		opts = getopt32(argv, "^" "s:at" "\0" "-1", &size_bytes_str);
  		opts *= OPTION_s;
  	} else {
 -		opts = getopt32(argv, "^" "m:+d:+n:+N:s:a:+t:" "\0" "-1",
-+		/* Patched */
 +		//opts = getopt32(argv, "^" "m:+d:+n:+N:s:a:+t:" "\0" "-1",
-+		opts = getopt32(argv, "m:+d:+n:+N:s:a:+t:O:+" "\0" "-1",
++		opts = getopt32(argv, "m:+d:+n:+N:s:a:+t:0:+:" "\0" "-1",
  				&mtd_num, &dev_num, &vol_id,
 -				&vol_name, &size_bytes_str, &alignment, &type
 +				&vol_name, &size_bytes_str, &alignment, &type,
-+				&vid_hdr_offset
++                &vid_hdr_offset
  		);
  	}
  
-@@ -166,6 +169,10 @@
+@@ -160,6 +162,11 @@
  	argv += optind;
  	ubi_ctrl = *argv++;
  
-+	/* Patched - default UBI control interface device file name */
-+	if (!ubi_ctrl)
-+		ubi_ctrl = "/dev/ubi_ctrl";
++
++    /* Patched - default UBI control interface device file name */
++    if (!ubi_ctrl)
++        ubi_ctrl = "/dev/ubi_ctrl";
 +
  	fd = xopen(ubi_ctrl, O_RDWR);
  	//xfstat(fd, &st, ubi_ctrl);

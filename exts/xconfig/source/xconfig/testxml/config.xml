@@ -1,10 +1,10 @@
-<?xml version="1.1.1.0" encoding="utf-8"?>
+<?xml version="1.0.0.0" encoding="utf-8"?>
 <config>
-	<product>GATEWAY</product>
-	<date>202201011235</date>
-	<model>TODD-GATEWAY</model>
+	<product>QEMUVM</product>
+	<date>202210161925</date>
+	<model>QemuVM for Developer</model>
 	<operation>
-		<mode>normal</mode>			<!-- operation mode -->
+		<mode>normal</mode>		<!-- operation mode -->
 		<passwd>0</passwd>		<!-- password -->
 		<webui>0</webui>		<!-- webui -->
 		<syslog>
@@ -18,14 +18,12 @@
 	<ssh>
 		<enable>1</enable>          <!-- activate -->
 		<port>22</port>             <!-- service port -->
-		<dir>/var/tmp/myfolder</dir><!-- dir -->
-		<timeout>600</timeout>	 	<!-- timeout -->
 	</ssh>
 	<user>
 		<u0>
 			<valid>1</valid>
-			<name>unixboy</name>
-			<passwd>stepforward</passwd>
+			<name>todd</name>
+			<passwd>12345678</passwd>
 		</u0>          
 		<u1>
 			<valid>0</valid>
@@ -49,11 +47,10 @@
 		</u4>          
 	</user>
 	<lan0>
-		<mode>static</mode>          <!-- static, dhcp, none -->
-		<interface>eth1</interface>
-		<ip>174.100.0.140</ip>
+		<mode>dhcp</mode>          <!-- static, dhcp, none -->
+		<ip>192.167.0.200</ip>
 		<netmask>255.255.255.0</netmask>
-		<gateway>174.100.0.1</gateway>
+		<gateway>192.167.0.1</gateway>
 		<dns>8.8.8.8</dns>
 		<ipv6>
 			<mode>static</mode>     <!-- IPv6 DHCP -->
@@ -64,32 +61,6 @@
 		</ipv6>
 		<capture>0</capture>
 	</lan0>
-	<lan1>
-		<mode>static</mode>          <!-- static, dhcp, none -->
-		<interface>eth2</interface>
-		<ip>174.200.0.140</ip>
-		<netmask>255.255.255.0</netmask>
-		<gateway>174.200.0.1</gateway>
-		<tftpserver>192.168.0.19</tftpserver>
-		<dns>8.8.8.8</dns>
-		<ipv6>
-			<mode>static</mode>     <!-- IPv6 DHCP -->
-			<global>2201:b0d8:2233:1000::</global>
-			<local>4700::</local>
-			<plen>64</plen>
-			<id>10</id>
-		</ipv6>
-		<capture>0</capture>
-	</lan1>
-	<wan>
-		<mode>dhcp</mode>          <!-- static, dhcp, none -->
-		<interface>eth0</interface>
-		<ip>0.0.0.0</ip>
-		<netmask>0.0.0.0</netmask>
-		<gateway>0.0.0.0</gateway>
-		<dns>0.0.0.0</dns>
-		<capture>0</capture>
-	</wan>
 	<xcfgd>
 		<httpport>8082</httpport>  <!-- HTTP service port -->
 		<sysport>56432</sysport>   <!-- Generic socket service port -->
@@ -103,34 +74,4 @@
 			<cafile>/var/tmp/cert.pem</cafile>
 		</tls>
 	</xcfgd>
-	<storage>  <!-- partition information -->
-		<uboot>
-			<u0>
-				<active>0</active>
-				<crc>0</crc>
-				<size>0</size>
-				<version>0</version>
-			</u0>
-			<u1>
-				<active>0</active>
-				<crc>0</crc>
-				<size>0</size>
-				<version>0</version>
-			</u1>
-		</uboot>
-		<kernel>
-			<k0>
-				<active>0</active>
-				<crc>0</crc>
-				<size>0</size>
-				<version>0</version>
-			</k0>
-			<k1>
-				<active>0</active>
-				<crc>0</crc>
-				<size>0</size>
-				<version>0</version>
-			</k1>
-		</kernel>
-	</storage>
 </config>

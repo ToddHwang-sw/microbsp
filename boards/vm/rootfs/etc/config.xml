@@ -1,0 +1,80 @@
+<?xml version="1.0.0.1" encoding="utf-8"?>
+<config>
+	<product>QEMUVM</product>
+	<date>202210171400</date>
+	<model>QEMUVM</model>
+	<operation>
+		<mode>normal</mode>			<!-- operation mode -->
+		<passwd>0</passwd>		<!-- password -->
+		<webui>0</webui>		<!-- webui -->
+		<syslog>
+			<en>1</en>
+			<mode>local</mode>	<!-- local -> /var/log/messages, remote -> UDP -->
+			<ip>10.10.10.30</ip>
+			<port>514</port>	<!-- by default 514 -->
+		</syslog>
+		<date>2022.01.01-12:00:00</date>  <!-- date -->
+	</operation>
+	<ssh>
+		<enable>1</enable>          <!-- activate -->
+		<port>22</port>             <!-- service port -->
+	</ssh>
+	<user>
+		<u0>
+			<valid>1</valid>
+			<name>todd</name>
+			<passwd>12345678</passwd>
+		</u0>          
+		<u1>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u1>          
+		<u2>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd></passwd>
+		</u2>          
+		<u3>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u3>          
+		<u4>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u4>          
+    </user>
+    <http>
+        <en>1</en>
+    </http>
+	<lan0>
+		<mode>dhcp</mode>          <!-- static, dhcp, none -->
+		<ip>192.167.0.120</ip>
+		<netmask>255.255.255.0</netmask>
+		<gateway>192.167.0.1</gateway>
+		<dns>8.8.8.8</dns>
+		<ipv6>
+			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
+			<global>2001:b0d8:2233:1000::</global>
+			<local>4400::</local>
+			<plen>64</plen>
+			<id>1</id>
+		</ipv6>
+		<capture>0</capture>
+	</lan0>
+	<xcfgd>
+		<httpport>8082</httpport>  <!-- HTTP service port -->
+		<sysport>56432</sysport>   <!-- Generic socket service port -->
+		<timeout>2</timeout>	   <!-- Client timeout -->
+		<verbose>0</verbose>	   <!-- Verbosity -->
+		<mainidle>5</mainidle>     <!-- Sleep interval of idle loop -->
+		<syncexpire>1000</syncexpire> <!-- Persistent syncing job expire -->
+        <shellproc>/var/tmp/xconfig/xconfig_shell_proc.sh</shellproc>     <!-- Shell processor -->
+		<tls>
+            <keyfile>/var/tmp/xconfig/key.pem</keyfile>
+            <cafile>/var/tmp/xconfig/cert.pem</cafile>
+		</tls>
+	</xcfgd>
+</config>

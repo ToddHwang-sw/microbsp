@@ -1,8 +1,30 @@
-diff --git a/meson.build b/meson.build
-index c0aad38aa6..bfadc01290 100644
---- a/meson.build
-+++ b/meson.build
-@@ -653,7 +653,7 @@ endif
+diff -uNr systemd-stable-original/meson.build systemd-stable/meson.build
+--- systemd-stable-original/meson.build	2022-10-12 19:25:13.410479841 -0700
++++ systemd-stable/meson.build	2022-10-12 20:19:55.598163183 -0700
+@@ -508,7 +508,9 @@
+         conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
+ endforeach
+ 
+-conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
++## Todd
++##conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
++conf.set10('WANT_LINUX_STAT_H', true)
+ 
+ foreach ident : ['secure_getenv', '__secure_getenv']
+         conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
+@@ -571,6 +573,11 @@
+         conf.set10('HAVE_' + ident[0].to_upper(), have)
+ endforeach
+ 
++## Todd 
++conf.set10('HAVE_STATX', true )
++conf.set10('HAVE_STRUCT_MOUNT_ATTR', true )
++conf.set10('HAVE_STRUCT_STATX', true )
++
+ if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''', args : '-D_GNU_SOURCE')
+         conf.set10('USE_SYS_RANDOM_H', true)
+         conf.set10('HAVE_GETRANDOM', true)
+@@ -655,7 +662,7 @@
  
  ############################################################
  
@@ -11,130 +33,154 @@ index c0aad38aa6..bfadc01290 100644
          error('python3 jinja2 missing')
  endif
  
-diff --git a/tools/catalog-report.py b/tools/catalog-report.py
-index ca1e13df9a..dc349e0dd0 100755
---- a/tools/catalog-report.py
-+++ b/tools/catalog-report.py
+@@ -1437,7 +1444,10 @@
+         have = false
+         libxkbcommon = []
+ endif
+-conf.set10('HAVE_XKBCOMMON', have)
++
++## Todd 
++##conf.set10('HAVE_XKBCOMMON', have)
++conf.set10('HAVE_XKBCOMMON', false)
+ 
+ want_pcre2 = get_option('pcre2')
+ if want_pcre2 != 'false'
+diff -uNr systemd-stable-original/src/core/namespace.c systemd-stable/src/core/namespace.c
+--- systemd-stable-original/src/core/namespace.c	2022-10-12 19:25:13.518480251 -0700
++++ systemd-stable/src/core/namespace.c	2022-10-12 20:12:05.816252575 -0700
+@@ -7,7 +7,7 @@
+ #include <sys/file.h>
+ #include <sys/mount.h>
+ #include <unistd.h>
+-#include <linux/fs.h>
++/* #include <linux/fs.h> */
+ 
+ #include "alloc-util.h"
+ #include "base-filesystem.h"
+diff -uNr systemd-stable-original/src/shared/mount-util.c systemd-stable/src/shared/mount-util.c
+--- systemd-stable-original/src/shared/mount-util.c	2022-10-12 19:25:13.726481042 -0700
++++ systemd-stable/src/shared/mount-util.c	2022-10-12 20:06:20.846010872 -0700
+@@ -7,7 +7,7 @@
+ #include <sys/statvfs.h>
+ #include <unistd.h>
+ #include <linux/loop.h>
+-#include <linux/fs.h>
++/* #include <linux/fs.h> */
+ 
+ #include "alloc-util.h"
+ #include "chase-symlinks.h"
+diff: systemd-stable-original/test/testdata: recursive directory loop
+diff -uNr systemd-stable-original/tools/catalog-report.py systemd-stable/tools/catalog-report.py
+--- systemd-stable-original/tools/catalog-report.py	2022-10-12 19:25:13.922481787 -0700
++++ systemd-stable/tools/catalog-report.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: MIT
  #
  # This file is distributed under the MIT license, see below.
-diff --git a/tools/chromiumos/gen_autosuspend_rules.py b/tools/chromiumos/gen_autosuspend_rules.py
-index cbdd577e95..6fc9062170 100644
---- a/tools/chromiumos/gen_autosuspend_rules.py
-+++ b/tools/chromiumos/gen_autosuspend_rules.py
+diff -uNr systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py systemd-stable/tools/chromiumos/gen_autosuspend_rules.py
+--- systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/chromiumos/gen_autosuspend_rules.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: BSD-3-Clause
  # -*- coding: utf-8 -*-
  
-diff --git a/tools/dbus_exporter.py b/tools/dbus_exporter.py
-index 4da8b82af4..5584f4eca8 100755
---- a/tools/dbus_exporter.py
-+++ b/tools/dbus_exporter.py
+diff -uNr systemd-stable-original/tools/dbus_exporter.py systemd-stable/tools/dbus_exporter.py
+--- systemd-stable-original/tools/dbus_exporter.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/dbus_exporter.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  from argparse import ArgumentParser
  from pathlib import Path
-diff --git a/tools/gdb-sd_dump_hashmaps.py b/tools/gdb-sd_dump_hashmaps.py
-index d2388b7171..132bd8f1e6 100644
---- a/tools/gdb-sd_dump_hashmaps.py
-+++ b/tools/gdb-sd_dump_hashmaps.py
+diff -uNr systemd-stable-original/tools/gdb-sd_dump_hashmaps.py systemd-stable/tools/gdb-sd_dump_hashmaps.py
+--- systemd-stable-original/tools/gdb-sd_dump_hashmaps.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/gdb-sd_dump_hashmaps.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import gdb
-diff --git a/tools/generate-gperfs.py b/tools/generate-gperfs.py
-index d240b2c383..fb35776451 100755
---- a/tools/generate-gperfs.py
-+++ b/tools/generate-gperfs.py
+diff -uNr systemd-stable-original/tools/generate-gperfs.py systemd-stable/tools/generate-gperfs.py
+--- systemd-stable-original/tools/generate-gperfs.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/generate-gperfs.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  """
-diff --git a/tools/list-discoverable-partitions.py b/tools/list-discoverable-partitions.py
-index 37ccd27302..6f08a89878 100644
---- a/tools/list-discoverable-partitions.py
-+++ b/tools/list-discoverable-partitions.py
+diff -uNr systemd-stable-original/tools/list-discoverable-partitions.py systemd-stable/tools/list-discoverable-partitions.py
+--- systemd-stable-original/tools/list-discoverable-partitions.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/list-discoverable-partitions.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import re
-diff --git a/tools/make-autosuspend-rules.py b/tools/make-autosuspend-rules.py
-index 633b7711d1..be6bd1adff 100755
---- a/tools/make-autosuspend-rules.py
-+++ b/tools/make-autosuspend-rules.py
+diff -uNr systemd-stable-original/tools/make-autosuspend-rules.py systemd-stable/tools/make-autosuspend-rules.py
+--- systemd-stable-original/tools/make-autosuspend-rules.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/make-autosuspend-rules.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  # Generate autosuspend rules for devices that have been tested to work properly
-diff --git a/tools/make-directive-index.py b/tools/make-directive-index.py
-index 8a2939959b..f0b3e3368a 100755
---- a/tools/make-directive-index.py
-+++ b/tools/make-directive-index.py
+diff -uNr systemd-stable-original/tools/make-directive-index.py systemd-stable/tools/make-directive-index.py
+--- systemd-stable-original/tools/make-directive-index.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/make-directive-index.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import sys
-diff --git a/tools/make-man-index.py b/tools/make-man-index.py
-index bae36fbabf..a7a8371242 100755
---- a/tools/make-man-index.py
-+++ b/tools/make-man-index.py
+diff -uNr systemd-stable-original/tools/make-man-index.py systemd-stable/tools/make-man-index.py
+--- systemd-stable-original/tools/make-man-index.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/make-man-index.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import collections
-diff --git a/tools/meson-render-jinja2.py b/tools/meson-render-jinja2.py
-index 89735c70ed..408da0988d 100755
---- a/tools/meson-render-jinja2.py
-+++ b/tools/meson-render-jinja2.py
+diff -uNr systemd-stable-original/tools/meson-render-jinja2.py systemd-stable/tools/meson-render-jinja2.py
+--- systemd-stable-original/tools/meson-render-jinja2.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/meson-render-jinja2.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3 
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import ast
-diff --git a/tools/update-dbus-docs.py b/tools/update-dbus-docs.py
-index 473469e457..ac58068741 100755
---- a/tools/update-dbus-docs.py
-+++ b/tools/update-dbus-docs.py
+diff -uNr systemd-stable-original/tools/update-dbus-docs.py systemd-stable/tools/update-dbus-docs.py
+--- systemd-stable-original/tools/update-dbus-docs.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/update-dbus-docs.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import argparse
-diff --git a/tools/update-man-rules.py b/tools/update-man-rules.py
-index 31ed91c432..42168546b5 100755
---- a/tools/update-man-rules.py
-+++ b/tools/update-man-rules.py
+diff -uNr systemd-stable-original/tools/update-man-rules.py systemd-stable/tools/update-man-rules.py
+--- systemd-stable-original/tools/update-man-rules.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/update-man-rules.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  from __future__ import print_function
-diff --git a/tools/xml_helper.py b/tools/xml_helper.py
-index 0361358bec..610c9cbd9c 100755
---- a/tools/xml_helper.py
-+++ b/tools/xml_helper.py
+diff -uNr systemd-stable-original/tools/xml_helper.py systemd-stable/tools/xml_helper.py
+--- systemd-stable-original/tools/xml_helper.py	2022-10-12 19:25:13.926481802 -0700
++++ systemd-stable/tools/xml_helper.py	2022-10-12 19:26:59.042905245 -0700
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3

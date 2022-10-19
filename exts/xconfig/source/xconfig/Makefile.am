@@ -87,7 +87,18 @@ xcfgd_SOURCES = \
 xcrc_SOURCES = \
 	crc/crc32.cpp
 
+DESTCLI=$(DESTDIR)/sbin/xcfgcli.sh
+DESTCONT=$(DESTDIR)/sbin/run_xcfgd.sh
+
 install-exec-hook:
-	(cd $(DESTDIR)$(bindir); ([ -f xcfgd.fact ] || $(LN_S) xcfgd xcfgd.fact))
-	(cd $(DESTDIR)$(bindir); ([ -f xcfgd.hw   ] || $(LN_S) xcfgd xcfgd.hw))
-	(cd $(DESTDIR)$(bindir); ([ -f xcfgd.cfg  ] || $(LN_S) xcfgd xcfgd.cfg))
+	@(cd $(DESTDIR)$(bindir); ([ -f xcfgd.fact ] || $(LN_S) xcfgd xcfgd.fact))
+	@(cd $(DESTDIR)$(bindir); ([ -f xcfgd.hw   ] || $(LN_S) xcfgd xcfgd.hw))
+	@(cd $(DESTDIR)$(bindir); ([ -f xcfgd.cfg  ] || $(LN_S) xcfgd xcfgd.cfg))
+	@[ ! -f $(DESTCLI) ] | \rm -rf $(DESTCLI)
+	@$(INSTALL_DATA) $(top_srcdir)/testxml/xcfgcli.sh $(DESTCLI)
+	@chmod ugo+x $(DESTCLI)
+	@[ ! -f $(DESTCONT) ] | \rm -rf $(DESTCONT)
+	@$(INSTALL_DATA) $(top_srcdir)/testxml/run_xcfgd.sh $(DESTCONT)
+	@chmod ugo+x $(DESTCONT)
+
+

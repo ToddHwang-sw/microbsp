@@ -17,6 +17,12 @@ export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 ##
 ## folders to be included
 ##
+export extra_SUBDIR=\
+		lpps
+
+##
+## folders to be included
+##
 export extra_SUBDIR=
 
 ##
@@ -58,34 +64,34 @@ export SQUASHROOTFS=y
 ## This system is booted by QEMU at ttyS0 line serial basis. 
 ## Terminal should be reopened tty0 graphic interface ... 
 ##
-export TTY0_BASH=/sbin/getty -l /bin/bash -n 0 tty0
+export TTY0_BASH=/bin/bash -l
+## export TTY0_BASH=/sbin/getty -l /bin/bash -n 0 tty0
 
 ##
 ##  ATTENTION !! 
 ##
-##     /dev/sdb1 - /mnt  : Main lower layer (system part - should be used)
 ##
 export BUILDUP_ROOTFS=\
-	[ -d $(XBASEDIR)/proc ] || mkdir -p $(XBASEDIR)/proc  && \
-	[ -d $(XBASEDIR)/var  ] || mkdir -p $(XBASEDIR)/var   && \
-	[ -d $(XBASEDIR)/dev  ] || mkdir -p $(XBASEDIR)/dev   && \
-	[ -d $(XBASEDIR)/sys  ] || mkdir -p $(XBASEDIR)/sys   && \
-	[ -d $(XBASEDIR)/mnt  ] || mkdir -p $(XBASEDIR)/mnt   && \
-	[ -d $(XBASEDIR)/ovr  ] || mkdir -p $(XBASEDIR)/ovr   && \
-	[ -d $(XBASEDIR)/ovr/dev  ] || mkdir -p $(XBASEDIR)/ovr/dev    && \
-	[ -d $(XBASEDIR)/ovr/proc ] || mkdir -p $(XBASEDIR)/ovr/proc   && \
-	[ -s $(XBASEDIR)/tmp  ] || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
-	[ -s $(XBASEDIR)/root ] || ln -s /var/root $(XBASEDIR)/root  && \
-	[ ! -d $(XBASEDIR)/lib    ] || \rm -rf $(XBASEDIR)/lib       && \
-	[ ! -s $(XBASEDIR)/lib64  ] || \rm -rf $(XBASEDIR)/lib64     && \
-	[ ! -d $(XBASEDIR)/etc    ] || \rm -rf $(XBASEDIR)/etc       && \
-	[ -d $(XBASEDIR)/lib    ] || mkdir -p $(XBASEDIR)/lib        && \
-	[ -d $(XBASEDIR)/etc    ] || mkdir -p $(XBASEDIR)/etc        && \
-	[ -d $(XBASEDIR)/root   ] || mkdir -p $(XBASEDIR)/root       && \
+	[ -d $(XBASEDIR)/proc ]       || mkdir -p $(XBASEDIR)/proc  && \
+	[ -d $(XBASEDIR)/var  ]       || mkdir -p $(XBASEDIR)/var   && \
+	[ -d $(XBASEDIR)/dev  ]       || mkdir -p $(XBASEDIR)/dev   && \
+	[ -d $(XBASEDIR)/sys  ]       || mkdir -p $(XBASEDIR)/sys   && \
+	[ -d $(XBASEDIR)/mnt  ]       || mkdir -p $(XBASEDIR)/mnt   && \
+	[ -d $(XBASEDIR)/low2 ]       || mkdir -p $(XBASEDIR)/low2  && \
+	[ -d $(XBASEDIR)/ovr  ]       || mkdir -p $(XBASEDIR)/ovr   && \
+	[ -d $(XBASEDIR)/ovr/dev  ]   || mkdir -p $(XBASEDIR)/ovr/dev      && \
+	[ -d $(XBASEDIR)/ovr/proc ]   || mkdir -p $(XBASEDIR)/ovr/proc     && \
+	[ -s $(XBASEDIR)/tmp  ]       || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
+	[ -s $(XBASEDIR)/root ]       || ln -s /var/root $(XBASEDIR)/root  && \
+	[ ! -d $(XBASEDIR)/lib    ]   || \rm -rf $(XBASEDIR)/lib       && \
+	[ ! -d $(XBASEDIR)/lib64  ]   || \rm -rf $(XBASEDIR)/lib64     && \
+	[ ! -d $(XBASEDIR)/etc    ]   || \rm -rf $(XBASEDIR)/etc       && \
+	[ -d $(XBASEDIR)/lib    ]     || mkdir -p $(XBASEDIR)/lib        && \
+	[ -d $(XBASEDIR)/etc    ]     || mkdir -p $(XBASEDIR)/etc        && \
+	[ -d $(XBASEDIR)/root   ]     || mkdir -p $(XBASEDIR)/root       && \
 	[ -d $(XBASEDIR)/etc/init.d ] || mkdir -p $(XBASEDIR)/etc/init.d                   && \
-	[ -s $(XBASEDIR)/lib64      ] || ( \
-			cd $(XBASEDIR) ; ln -s lib lib64 )                                         && \
-	echo "ttyS0::respawn:/bin/bash -l"              >  $(XBASEDIR)/etc/inittab         && \
+	[ -d $(XBASEDIR)/lib64      ] || mkdir -p $(XBASEDIR)/lib64                        && \
+	echo "ttyS0::respawn:$(TTY0_BASH)"              >  $(XBASEDIR)/etc/inittab         && \
 	echo "::sysinit:/etc/init.d/rcS"                >> $(XBASEDIR)/etc/inittab         && \
 	echo "::shutdown:/etc/init.d/rc.shutdown"       >> $(XBASEDIR)/etc/inittab         && \
 	echo "\#!/bin/bash "                            >  $(XBASEDIR)/etc/init.d/rcS      && \
@@ -97,17 +103,15 @@ export BUILDUP_ROOTFS=\
 	echo "mkdir -p /var/udir"                       >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mkdir -p /var/wdir"                       >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "export PATH=/bin:/sbin:/usr/bin:/usr/sbin">> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "export LD_LIBRARY_PATH=/lib:/lib64 "      >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64 "  \
+                                                	>> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "mount /dev/sda /mnt"                      >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "[ -d /mnt/usr  ] || ( echo \"External disk is not mounted !!\" ; exit 1 ) " \
+							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
+							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t overlay -o lowerdir=/disk,upperdir=/var/udir,workdir=/var/wdir overlay /ovr"   \
-		                        					>> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "echo \"Device file system\" "             >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t devtmpfs devfs /ovr/dev "        >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "echo \"Change root !!\" "                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "chroot /ovr /etc/rc.init"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "\#!/bin/bash"                             >  $(XBASEDIR)/etc/init.d/rc.shutdown   && \
-	echo "root:x:0:"                                >  $(XBASEDIR)/etc/group           && \
-	echo "root:x:0:0:root:/root:/bin/sh"            >  $(XBASEDIR)/etc/passwd          && \
-	echo "root:*:0:0:99999:7:::"                    >  $(XBASEDIR)/etc/shadow          && \
+	echo "mount -t overlay -o lowerdir=/disk,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
+							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "Done" > /dev/null 
 

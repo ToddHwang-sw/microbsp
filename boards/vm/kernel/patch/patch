@@ -134,7 +134,7 @@ diff -uNr linux-5.17.7-orig/arch/x86/ramdisk/Makefile linux-5.17.7/arch/x86/ramd
 +
 +arch/x86/ramdisk/ramdisk.o:
 +	$(Q)[ -f arch/x86/ramdisk/$(SQUASHIMAGE) ] || touch arch/x86/ramdisk/$(SQUASHIMAGE)
-+	$(Q)$(LD) -T arch/x86/ramdisk/ld.script -b binary --oformat elf64-x86-64 \
++	$(Q)$(LD) -T arch/x86/ramdisk/ld.script -r -b binary --oformat $(CONFIG_OUTPUT_FORMAT) \
 +		-o $@ arch/x86/ramdisk/$(SQUASHIMAGE)
 +
 +clean:

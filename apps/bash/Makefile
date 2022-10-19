@@ -1,4 +1,4 @@
-DIR=bash-5.1.8
+DIR=$(BASH)
 LOC=https://ftp.gnu.org/gnu/bash
 
 include $(TOPDIR)/scripts/env.mk

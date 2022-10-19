@@ -30,14 +30,9 @@ COMP_CMDS=CC="$(CC) $(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 		STRIP="$(STRIP)"
 export COMP_CMDS
 
-
 ##
-## Libs required for bootstrap & Languages 
-## 
-export BOOTSTRAP_LIBS=\
-		ld-2.30.so   ld-linux-aarch64.so.* \
-		libc.so*     libc-2.30.so \
-		libm.so*     libm-2.30.so \
-		libcrypt.so* libcrypt-2.30.so
-export SUPPORTED_LANGUAGES=c,c++,go
+## Todd - 10/14/2022 : Temporarily "go" is disabled...
+##
+## export SUPPORTED_LANGUAGES=c,c++,go
+export SUPPORTED_LANGUAGES=c,c++
 

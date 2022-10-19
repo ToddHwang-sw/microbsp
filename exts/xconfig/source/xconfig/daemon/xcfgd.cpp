@@ -601,7 +601,7 @@ static void xcfg_trap( int sig )
 /* Test Certificate */
 static char cert_pem[65536];
 static char key_pem[65536];
-const char * cert_subj = "/C=US/ST=CA/L=Irvine/O=Unixboy/OU=RU/CN=127.0.0.1";
+const char * cert_s/C=US/ST=CA/L=Irvine/O=Unixboy/OU=RU/CN=127.0.0.1ubj = "/C=US/ST=CA/L=Irvine/O=Unixboy/OU=RU/CN=127.0.0.1";
 #endif 
 
 /*

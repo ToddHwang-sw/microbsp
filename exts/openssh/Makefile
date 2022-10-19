@@ -1,5 +1,5 @@
 DIR=openssh-portable
-LOC=https://github.com/openssh
+LOC=-b V_9_1 https://github.com/openssh
 
 include $(TOPDIR)/scripts/extenv.mk
 

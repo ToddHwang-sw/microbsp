@@ -30,12 +30,4 @@ COMP_CMDS=CC="$(CC) $(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 		STRIP="$(STRIP)"
 export COMP_CMDS
 
-##
-## Libs required for bootstrap  
-## 
-export BOOTSTRAP_LIBS=\
-		ld-2.30.so   ld-linux-x86-64.so.* \
-		libc.so*     libc-2.30.so \
-		libm.so*     libm-2.30.so \
-		libcrypt.so* libcrypt-2.30.so
 export SUPPORTED_LANGUAGES=c,c++

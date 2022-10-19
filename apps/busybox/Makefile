@@ -1,10 +1,10 @@
-DIR=busybox-1.28.0
+DIR=$(BUSYBOX)
 LOC=https://busybox.net/downloads
 
 include $(TOPDIR)/scripts/env.mk
 
 MICB_CONFIGURE_MAKEOPTS=\
-	CROSS_COMPILE="$(CROSS_COMP_PREFIX)" CFLAGS="$(CROSS_COMP_FLAGS)" LDFLAGS="-L$(destination)/lib -L$(destination)/usr/lib64" \
+	CROSS_COMPILE="$(CROSS_COMP_PREFIX)" CFLAGS="$(CROSS_COMP_FLAGS) -DLONG_BIT=32" LDFLAGS="-L$(destination)/lib -L$(destination)/usr/lib64" \
 	CONFIG_PREFIX=$(destination) \
 	V=1
 

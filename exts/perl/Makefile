@@ -26,6 +26,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); \
-		make DESTDIR=$(destination)/ $@ )
+		cd $(BUILDDIR)/$(DIR); make DESTDIR=$(destination)/ $@ )
 

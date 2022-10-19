@@ -1,10 +1,12 @@
-DIR=gdb-8.2
+DIR=gdb-11.2
 LOC=ftp://ftp.gnu.org/pub/gnu/gdb
 
 include $(TOPDIR)/scripts/env.mk
 
-CROSS_USER_CFLAGS=
-CROSS_USER_LFLAGS=
+CROSS_USER_CFLAGS+=\
+		-DMB_LEN_MAX=16
+
+MICB_DEPENDS = mpfr mpc gmp
 
 ##
 ## --enable-shared && --diable-static should be elminated from option ... 

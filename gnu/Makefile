@@ -27,7 +27,7 @@ setup_headers:
 config_gcc:
 	[ -d $(RP)/$(GCC) ] || tar zxvf $(RP)/../sources/$(GCC).tar.gz -C $(RP)
 	cd $(RP)/$(GCC);  \
-		[ -f PATCHED ] || cat ../patch/gcc.host.patch | patch -p1
+		[ -f PATCHED ] || cat ../patch/gcc.host.patch_$(GCC) | patch -p1
 	AR=ar \
 	$(RP)/$(GCC)/configure --prefix=$(TOOLCHAIN_ROOT) -target=$(PLATFORM) \
 			--disable-compressed-debug-sections \
@@ -75,7 +75,7 @@ setup_gcc_3:
 config_glibc:
 	[ -d $(RP)/$(GLIBC) ] || tar zxvf $(RP)/../sources/$(GLIBC).tar.gz -C $(RP)
 	cd $(RP)/$(GLIBC); \
-		[ -f PATCHED ] || cat ../patch/glibc.patch | patch -p1
+		[ -f PATCHED ] || cat ../patch/glibc.patch_$(GLIBC) | patch -p1
 	CC="$(TOOLCHAIN_ROOT)/bin/$(CROSS_COMP_PREFIX)gcc $(CROSS_COMP_FLAGS)" \
 	CXX="$(TOOLCHAIN_ROOT)/bin/$(CROSS_COMP_PREFIX)g++ $(CROSS_COMP_FLAGS)" \
 	lib_cv_forced_unwind=yes \

@@ -41,47 +41,49 @@ LIBS	 += -lpthread -ldl
 bin_PROGRAMS = $(LFDM) $(LFMT) $(NETM)
 
 LIBFUSE_SOURCES = \
-	$(LFLDIR)/lib/buffer.c \
-	$(LFLDIR)/lib/cuse_lowlevel.c \
-	$(LFLDIR)/lib/fuse.c \
-	$(LFLDIR)/lib/fuse_log.c \
-	$(LFLDIR)/lib/fuse_loop.c \
-	$(LFLDIR)/lib/fuse_loop_mt.c \
-	$(LFLDIR)/lib/fuse_lowlevel.c \
-	$(LFLDIR)/lib/fuse_opt.c \
-	$(LFLDIR)/lib/fuse_signals.c \
-	$(LFLDIR)/lib/helper.c \
-	$(LFLDIR)/lib/modules/iconv.c \
-	$(LFLDIR)/lib/modules/subdir.c \
-	$(LFLDIR)/lib/mount.c \
-	$(LFLDIR)/lib/mount_util.c
+	libfuse/libfuse/lib/buffer.c \
+	libfuse/libfuse/lib/cuse_lowlevel.c \
+	libfuse/libfuse/lib/fuse.c \
+	libfuse/libfuse/lib/fuse_log.c \
+	libfuse/libfuse/lib/fuse_loop.c \
+	libfuse/libfuse/lib/fuse_loop_mt.c \
+	libfuse/libfuse/lib/fuse_lowlevel.c \
+	libfuse/libfuse/lib/fuse_opt.c \
+	libfuse/libfuse/lib/fuse_signals.c \
+	libfuse/libfuse/lib/helper.c \
+	libfuse/libfuse/lib/modules/iconv.c \
+	libfuse/libfuse/lib/modules/subdir.c \
+	libfuse/libfuse/lib/mount.c \
+	libfuse/libfuse/lib/mount_util.c
 
 TRANSPORT_SOURCES = \
-	$(TOP)/transport.cpp \
-	$(TOP)/udp.cpp \
-	$(TOP)/udp6.cpp \
-	$(TOP)/raw.cpp \
-	$(TOP)/sk.cpp
+	transport.cpp \
+	udp.cpp \
+	udp6.cpp \
+	raw.cpp \
+	sk.cpp
 
 fusemount_SOURCES = \
-	$(LFLDIR)/util/fusermount.c \
-	$(TOP)/malloc.cpp \
+	libfuse/libfuse/util/fusermount.c \
+	malloc.cpp \
 	$(LIBFUSE_SOURCES)
 
 lpps_SOURCES = \
-	$(TOP)/lpps.cpp \
-	$(TOP)/malloc.cpp \
-	$(TOP)/plist.cpp \
-	$(TOP)/sig.cpp \
-	$(TOP)/conf.cpp \
-	$(TOP)/fhandle.cpp \
-	$(JSON)/src/json.cpp \
+	lpps.cpp \
+	malloc.cpp \
+	plist.cpp \
+	sig.cpp \
+	conf.cpp \
+	fhandle.cpp \
+	json/src/json.cpp \
 	$(TRANSPORT_SOURCES) \
 	$(LIBFUSE_SOURCES)
 
 lppsnm_SOURCES = \
-	$(TOP)/lppsnm.cpp \
+	lppsnm.cpp \
 	$(TRANSPORT_SOURCES)
 
 install-exec-hook:
-
+	@[   -d $(DESTDIR)/etc           ] || mkdir -p $(DESTDIR)/etc
+	@[ ! -f $(DESTDIR)/etc/lpps.conf ] || \rm -rf $(DESTDIR)/etc/lpps.conf 
+	@$(INSTALL_DATA) $(TOP)/lpps.conf $(DESTDIR)/etc/lpps.conf

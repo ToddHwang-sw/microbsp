@@ -3,13 +3,19 @@ SYSLIN=isolinux/build/syslinux
 BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
 QEMU=qemu-system-$(_CORE_)
-QEMU_RUN=sudo $(QEMU) -m 1024 -nographic -smp 4 \
-		-netdev user,id=net0 -device e1000,netdev=net0 \
-		-cdrom $(isoname) -usb \
-		-device usb-host,hostbus=2,hostport=1 \
-		-device usb-host,hostbus=1,hostport=2 \
-		-device usb-host,hostbus=1,hostport=3 \
-		-device usb-host,hostbus=1,hostport=4
+
+VMMAC=00:0a:0b:0c:0d:0e
+
+##
+## QEMU configuration 
+##
+QEMU_RUN=\
+		$(QEMU) -m 4096 -nographic -smp 4 \
+		-device e1000,netdev=net0,mac=$(VMMAC) \
+		-netdev tap,id=net0,script=$(BDDIR)/qemu-if.script \
+		-cdrom $(isoname) \
+		-drive file=$(EXT4HDD) \
+		-drive file=$(EXT4CFG)
 
 prepare:
 	@[ -d $(isodir) ]          || mkdir -p $(isodir)
@@ -51,7 +57,7 @@ clean uninstall:
 #########################################################################################################################
 
 run:
-	@$(QEMU_RUN)
+	@sudo $(QEMU_RUN)
 
 stop:
 	@sudo killall $(QEMU)

@@ -1,14 +1,13 @@
-diff --git a/configure.ac b/configure.ac
-index ed3405d37..93ad19b02 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -132,7 +132,8 @@ esac
+diff -uNr SDL-original/configure.ac SDL/configure.ac
+--- SDL-original/configure.ac	2022-10-09 15:56:57.060068610 -0700
++++ SDL/configure.ac	2022-10-09 15:59:03.581082006 -0700
+@@ -127,7 +127,8 @@
  # Uncomment the following line if you want to force SDL and applications
  # built with it to be compiled for a particular architecture.
  #AX_GCC_ARCHFLAG([no], [BASE_CFLAGS="$BASE_CFLAGS $ax_cv_gcc_archflag]")
 -BUILD_CFLAGS="$CFLAGS $CPPFLAGS -DUSING_GENERATED_CONFIG_H"
 +##BUILD_CFLAGS="$CFLAGS $CPPFLAGS -DUSING_GENERATED_CONFIG_H"
-+BUILD_CFLAGS="$CFLAGS $CPPFLAGS"
++BUILD_CFLAGS="$CFLAGS $CPPFLAGS" 
  # The default optimization for SDL is -O3 (Bug #31)
  if test "x$orig_CFLAGS" = x; then
      BUILD_CFLAGS=`echo $BUILD_CFLAGS | sed 's/-O2/-O3/'`

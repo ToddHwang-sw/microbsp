@@ -21,6 +21,9 @@ prepare:
 		cd $(BUILDDIR)/$(GLIBC); \
 		$(COMP_CMDS) $(GLIBCDIR)/configure --prefix= \
 			--build=i686-linux --host=$(PLATFORM) --target=$(PLATFORM)  \
+			--program-prefix=  --program-transform-name= \
+			--enable-shared  \
+			--enable-static  \
 			--disable-multi-arch )
 
 all clean:
@@ -46,10 +49,4 @@ install:
 install_glibc:
 	@[ ! -f $(BUILDDIR)/$(GLIBC_TARGET_FILE) ] || \
 			tar zxvf $(BUILDDIR)/$(GLIBC_TARGET_FILE) -C $(destination) > /dev/null
-	@[ "$(_CORE_)" != "x86_64" ] || (                                   \
-		[ -d $(destination)/lib64 ] || mkdir -p $(destination)/lib64  ; \
-		[ -f $(destination)/lib64/ld-linux-x86-64.so.2 ] || (           \
-			cd $(destination)/lib64;                               \
-			ln -s ../lib/$(subst glibc,ld,$(GLIBC)).so ld-linux-x86-64.so.2 \
-		))
 

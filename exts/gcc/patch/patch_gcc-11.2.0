@@ -1,0 +1,25 @@
+diff -uNr gcc-11.2.0-original/libstdc++-v3/configure gcc-11.2.0/libstdc++-v3/configure
+--- gcc-11.2.0-original/libstdc++-v3/configure	2021-07-27 23:55:09.228314429 -0700
++++ gcc-11.2.0/libstdc++-v3/configure	2022-10-14 09:50:08.356097398 -0700
+@@ -19839,6 +19839,10 @@
+   for ac_header in fenv.h
+ do :
+   ac_fn_cxx_check_header_mongrel "$LINENO" "fenv.h" "ac_cv_header_fenv_h" "$ac_includes_default"
++
++  ## Todd 
++  ac_cv_header_fenv_h=no
++
+ if test "x$ac_cv_header_fenv_h" = xyes; then :
+   cat >>confdefs.h <<_ACEOF
+ #define HAVE_FENV_H 1
+@@ -19885,6 +19889,10 @@
+ else
+   ac_c99_fenv_tr1=no
+ fi
++
++## Todd
++ac_c99_fenv_tr1=no
++
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   fi
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_c99_fenv_tr1" >&5

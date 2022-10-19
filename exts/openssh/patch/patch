@@ -1,12 +1,144 @@
-diff --git a/Makefile.in b/Makefile.in
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -382,7 +382,7 @@ distprep: catman-do depend-check
+diff -uNr openssh-portable-portable/Makefile.in openssh-portable/Makefile.in
+--- openssh-portable-portable/Makefile.in	2022-10-15 07:18:22.031412029 -0700
++++ openssh-portable/Makefile.in	2022-10-15 09:03:22.673046447 -0700
+@@ -377,7 +377,7 @@
  	$(AUTORECONF)
  	-rm -rf autom4te.cache .depend.bak
  
 -install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key check-config
-+install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key
++install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key 
  install-nokeys: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf
  install-nosysconf: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files
  
+@@ -419,6 +419,8 @@
+ 	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
+ 	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
+ 	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
++	$(MKDIR_P) $(DESTDIR)/etc/sshd
++	$(INSTALL) -m 644 $(abs_top_srcdir)/sshd_config.mbsp $(DESTDIR)/etc/sshd/sshd_config
+ 
+ install-sysconf:
+ 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
+diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_config.mbsp
+--- openssh-portable-portable/sshd_config.mbsp	1969-12-31 16:00:00.000000000 -0800
++++ openssh-portable/sshd_config.mbsp	2022-10-15 07:22:24.184344014 -0700
+@@ -0,0 +1,119 @@
++#	$OpenBSD: sshd_config,v 1.104 2021/07/02 05:11:21 dtucker Exp $
++
++# This is the sshd server system-wide configuration file.  See
++# sshd_config(5) for more information.
++
++# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
++
++# The strategy used for options in the default sshd_config shipped with
++# OpenSSH is to specify options with their default value where
++# possible, but leave them commented.  Uncommented options override the
++# default value.
++
++#Port 22
++#AddressFamily any
++#ListenAddress 0.0.0.0
++#ListenAddress ::
++
++#HostKey /etc/ssh/ssh_host_rsa_key
++#HostKey /etc/ssh/ssh_host_ecdsa_key
++#HostKey /etc/ssh/ssh_host_ed25519_key
++
++# Ciphers and keying
++#RekeyLimit default none
++
++# Logging
++#SyslogFacility AUTH
++#LogLevel INFO
++
++# Authentication:
++
++#LoginGraceTime 2m
++#PermitRootLogin prohibit-password
++PermitRootLogin yes
++#StrictModes yes
++#MaxAuthTries 6
++#MaxSessions 10
++
++#PubkeyAuthentication yes
++
++# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
++# but this is overridden so installations will only check .ssh/authorized_keys
++AuthorizedKeysFile	.ssh/authorized_keys
++
++#AuthorizedPrincipalsFile none
++
++#AuthorizedKeysCommand none
++#AuthorizedKeysCommandUser nobody
++
++# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
++#HostbasedAuthentication no
++# Change to yes if you don't trust ~/.ssh/known_hosts for
++# HostbasedAuthentication
++#IgnoreUserKnownHosts no
++# Don't read the user's ~/.rhosts and ~/.shosts files
++#IgnoreRhosts yes
++
++# To disable tunneled clear text passwords, change to no here!
++#PasswordAuthentication yes
++#PermitEmptyPasswords no
++PermitEmptyPasswords yes
++
++# Change to no to disable s/key passwords
++#KbdInteractiveAuthentication yes
++
++# Kerberos options
++#KerberosAuthentication no
++#KerberosOrLocalPasswd yes
++#KerberosTicketCleanup yes
++#KerberosGetAFSToken no
++
++# GSSAPI options
++#GSSAPIAuthentication no
++#GSSAPICleanupCredentials yes
++
++# Set this to 'yes' to enable PAM authentication, account processing,
++# and session processing. If this is enabled, PAM authentication will
++# be allowed through the KbdInteractiveAuthentication and
++# PasswordAuthentication.  Depending on your PAM configuration,
++# PAM authentication via KbdInteractiveAuthentication may bypass
++# the setting of "PermitRootLogin without-password".
++# If you just want the PAM account and session checks to run without
++# PAM authentication, then enable this but set PasswordAuthentication
++# and KbdInteractiveAuthentication to 'no'.
++#UsePAM no
++
++#AllowAgentForwarding yes
++#AllowTcpForwarding yes
++#GatewayPorts no
++#X11Forwarding no
++X11Forwarding yes
++#X11DisplayOffset 10
++#X11UseLocalhost yes
++#PermitTTY yes
++#PrintMotd yes
++#PrintLastLog yes
++#TCPKeepAlive yes
++#PermitUserEnvironment no
++#Compression delayed
++#ClientAliveInterval 0
++#ClientAliveCountMax 3
++#UseDNS no
++#PidFile /var/run/sshd.pid
++#MaxStartups 10:30:100
++#PermitTunnel no
++#ChrootDirectory none
++#VersionAddendum none
++
++# no default banner path
++#Banner none
++
++# override default of no subsystems
++Subsystem	sftp	/usr/bin/sftp-server
++
++# Example of overriding settings on a per-user basis
++#Match User anoncvs
++#	X11Forwarding no
++#	AllowTcpForwarding no
++#	PermitTTY no
++#	ForceCommand cvs server
