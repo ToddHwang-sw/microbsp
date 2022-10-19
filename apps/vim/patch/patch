@@ -1,0 +1,13 @@
+diff --git a/src/auto/configure b/src/auto/configure
+index d958964ab..711d6869c 100755
+--- a/src/auto/configure
++++ b/src/auto/configure
+@@ -413,7 +413,7 @@ as_fn_error ()
+     $as_echo "$as_me:${as_lineno-$LINENO}: error: $2" >&$4
+   fi
+   $as_echo "$as_me: error: $2" >&2
+-  as_fn_exit $as_status
++##  as_fn_exit $as_status
+ } # as_fn_error
+ 
+ if expr a : '\(a\)' >/dev/null 2>&1 &&
