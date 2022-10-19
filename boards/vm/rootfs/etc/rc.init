@@ -171,6 +171,14 @@ else
     ifconfig eth0 $IP netmask $NETMASK up
 fi
 
+echo ""
+echo "Network - Interface Capture"
+echo ""
+CAPTURE=`$ASK lan0/capture`
+if [ "$CAPTURE" = "1" ]; then 
+    tcpdump -c 1000000 -w /var/tmp/eth0.pcap -i eth0 
+fi
+
 SSHDIR=/root/.ssh
 
 SSHEN=`$ASK ssh/enable`

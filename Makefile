@@ -13,15 +13,17 @@ export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}
 # Patch file name 
 export DEV_PATCH_FILE=patch.develop
 
-#
-# "vm" mode needs external USB disk keeping "image.ext4" of /board/vm/.
-# USB device node should be passed to boards/vm/Makefile . 
-#
-export EXT4HDD=/dev/sdd1
-export EXT4CFG=/dev/sdd2
-
 # board specific environment 
 include $(BDDIR)/env.mk
+
+#
+# "vm" mode needs external USB disk/image file keeping "image.ext4" of /board/vm/.
+# USB device node/file image  should be passed to boards/vm/Makefile . 
+#
+## export EXT4HDD=/dev/sdd1
+## export EXT4CFG=/dev/sdd2
+export EXT4HDD=$(BDDIR)/$(EXTDISKNM)
+export EXT4CFG=$(BDDIR)/$(CFGDISKNM)
 
 # architecture environment 
 ##
@@ -124,12 +126,12 @@ export BASH=bash-5.1.8
 export BUSYBOX=busybox-1.35.0
 
 ##
-## Bash needed libraries...
+## Libraries needed by Bash 
 export BASH_PRG=$(TOPDIR)/apps/bash/$(BUILDDIR)/$(BASH)/bash
 export BASH_NEEDS_LIBS=$(shell if [ -f $(BASH_PRG) ] ; then ( readelf -a $(BASH_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
 
 ##
-## Busybox utilities 
+## Libraries needed by Busybox utilities 
 export BUSY_PRG=$(TOPDIR)/apps/busybox/$(BUILDDIR)/$(BUSYBOX)/busybox
 export BUSY_NEEDS_LIBS =$(shell if [ -f $(BUSY_PRG) ] ; then ( readelf -a $(BUSY_PRG) | grep NEEDED | awk '{print $$5}' | sed -e 's/\[//g' -e 's/\]//g' ) ; fi)
 
@@ -669,9 +671,11 @@ wipeout:
 extdisk:
 	@cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
 	@$(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS)
+	@[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(BDDIR)/$(CFGDISKNM) bs=1M count=$(CFGDISKBLKS)
 
 extdisk_clean:
 	@$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
+	@[ -z $(CFGDISKNM) ] || ( [ ! -f $(BDDIR)/$(CFGDISKNM) ] || \rm -rf $(BDDIR)/$(CFGDISKNM) )
 			
 
 ##

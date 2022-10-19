@@ -51,6 +51,16 @@ export EXTDISKNM=image.ext4
 export EXTDISKBLKS=4K
 
 ##
+## Configuration disk image file name
+##
+export CFGDISKNM=
+
+##
+## size of external disk : 1M x 10 = 10M
+##
+export CFGDISKBLKS=
+
+##
 ## UI disk volume name 
 ##
 export UIDISK=ui

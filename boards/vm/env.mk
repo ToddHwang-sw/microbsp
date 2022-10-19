@@ -18,6 +18,7 @@ export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 ## folders to be included
 ##
 export extra_SUBDIR=\
+		tcpdump \
 		lpps
 
 ##
@@ -39,6 +40,16 @@ export EXTDISKNM=image.ext4
 ## size of external disk : 1M x 6K = 6G
 ##
 export EXTDISKBLKS=6K
+
+##
+## Configuration disk image file name
+##
+export CFGDISKNM=config.ext4
+
+##
+## size of external disk : 1M x 10 = 10M
+##
+export CFGDISKBLKS=10
 
 ##
 ## UI disk volume name 
