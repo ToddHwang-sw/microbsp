@@ -11,9 +11,13 @@ CROSS_USER_CFLAGS += -DMB_LEN_MAX=16
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(FILENM) )
+	@[ ! -f ./patch/patch ] || ( \
+		cd $(BUILDDIR)/$(DIR) ; \
+		cat ../../../patch/patch | patch -p 1; \
+		)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS)  \
-		LIBS="-lncurses -ltinfo" \
+		LIBS="-lncurses -ltinfo -lrt -lpthread" \
 		vim_cv_toupper_broken=yes \
 		vim_cv_getcwd_broken=yes \
 		vim_cv_tgetent=yes \
