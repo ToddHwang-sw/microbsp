@@ -1,4 +1,6 @@
 #!/bin/sh
 
-openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem -subj /C=US/ST=CA/L=Irvine/O=Todd/OU=RU/CN=127.0.0.1
+Path=$1
+
+openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout $Path/key.pem -out $Path/cert.pem -config $Path/req.txt >& /dev/null
 

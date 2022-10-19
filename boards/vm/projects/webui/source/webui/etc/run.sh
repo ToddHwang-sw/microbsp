@@ -1,7 +1,7 @@
 #!/bin/sh
 
 executed=`ps -aef | grep lighttpd | wc -l`
-[ "$executed" = "0" ] || killall lighttpd
+[ "$executed" = "0" ] || killall -q lighttpd
 WEBTMPDIR=/var/tmp/lighttpd
 [ ! -d $WEBTMPDIR ] || \rm -rf $WEBTMPDIR
 mkdir -p $WEBTMPDIR
@@ -14,5 +14,12 @@ mkdir -p $WEBTMPDIR/compress
 ## change rmem paramtere
 echo 2097152 > /proc/sys/net/core/rmem_default
 echo 2097152 > /proc/sys/net/core/rmem_max
-## HTTP server ....
-lighttpd -f lighttpd.conf 
+
+## For HTTPS 
+[ -f /etc/httpd/etc/cert.pem ] || ( \
+    cd /etc/httpd/etc ; \
+    ./genkey.sh ./ ; \
+    cat ./key.pem >> ./cert.pem )
+
+## HTTP server 
+lighttpd -f /etc/httpd/etc/lighttpd.conf 
