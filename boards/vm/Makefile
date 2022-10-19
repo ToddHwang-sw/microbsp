@@ -7,7 +7,7 @@ QEMU=qemu-system-$(_CORE_)
 ##
 ## Random MAC address
 ## 
-VMMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
+VMMAC=00:00:00:00:01:01
 
 ##
 ## QEMU configuration 
