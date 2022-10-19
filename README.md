@@ -1374,13 +1374,111 @@ __  _| (_) |/ /_    / /_| || |_  | |     _ _ __  _   ___  __
 
 
 
+chpasswd: password for 'root' changed
+
+XCFGD Configurator - wait 5
+
+[   93.018198] EXT4-fs (sdb): recovery complete
+[   93.109111] EXT4-fs (sdb): mounted filesystem with ordered data mode. Quota mode: none.
+Waiting it for getting ready to work..
+Daemon Running...
+DBG:main                :649  TEMPORARY FILE - SYNC : /var/tmp/xcfgXQxtEgu
+DBG:main                :673  XML1 : /etc/config.xml
+DBG:main                :669  DEV : /config/db
+DBG:main                :665  STANDADLONE MODE
+DBG:main                :752  TEMPORARY DIRECTORY = (/var/tmp/170)
+MSG:xml_storage_open    :1222 /config/db Physical Information = ( 4 x 128 Kbytes + 2 x 1024 Kbytes ) 4
+DBG:xml_storage_open    :1253 /config/db has been opened
+MSG:xml_storage_open    :1262 FILE /config/db SIZE=2621440
+DBG:xml_storage_open    :1306 HEADER[ 0 ] FLAGS=0 DIRTY=1
+DBG:xml_storage_open    :1306 HEADER[ 1 ] FLAGS=0 DIRTY=0
+DBG:xml_storage_open    :1306 HEADER[ 2 ] FLAGS=0 DIRTY=0
+DBG:xml_storage_open    :1306 HEADER[ 3 ] FLAGS=0 DIRTY=0
+MSG:xml_storage_open    :1312 xml_storage_open : HEADER ANALSYS [4/4]
+MSG:xml_storage_open    :1320 xml_storage_open : HEADER LOCATION = ( 00000000 00020000 00040000 00060000 )
+MSG:xml_storage_open    :1351 DATA[ 0 ] has 8 blocks
+MSG:xml_storage_open    :1351 DATA[ 1 ] has 8 blocks
+MSG:xml_storage_open    :1364 xml_storage_open : DATA LOCATION = ( 00080000 00180000 )
+DBG:xml_storage_open    :1386 /config/db configured and prepared before
+DBG:_xml_storage_header_print:862  [[DUMP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[BROKEN FIXUP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY+ONDIRTY CHECK]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[RECOVER BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[FINALLY WRITTEN]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_fetch:767  DIRTY HEADER[ 0  ] START = 0x20000 / DATA OFFSET = 524288 FLAG=0000
+MSG:xml_storage_validate:1440 HEADER[0 ]::MAGIC=OK
+MSG:xml_storage_validate:1441 HEADER[0 ]::RSIZE=2102
+MSG:xml_storage_validate:1442 HEADER[0 ]::START=80000
+MSG:xml_storage_validate:1443 HEADER[0 ]::CRC  =3f76
+MSG:xml_storage_validate:1493 Temporary XML file name : (/var/tmp/170/config.xml)
+DBG:xml_storage_validate:1507 /etc/config.xml write 2102/2102
+MSG:xml_storage_validate:1519 STORAGE VALIDATED [0]
+DBG:config_xml_merge    :401  VERSION (1.0.0.1 vs 1.0.0.1)
+DBG:config_xml_merge    :404  CURRENTLY LATEST VERSION
+3
+2
+1
+
+
+DATE
+
+Sat Oct 15 12:00:00 UTC 2022
+
+Logging daemon
+
+
+USER
+
+
+GIT
+
+
+PYTHON
+
+
 Network - VMware should use Host-only interface for this OS
 
+[  110.227389] e1000: Intel(R) PRO/1000 Network Driver
+[  110.228007] e1000: Copyright (c) 1999-2006 Intel Corporation.
+[  111.308984] ACPI: \_SB_.LNKC: Enabled at IRQ 11
+[  111.635095] e1000 0000:00:03.0 eth0: (PCI:33MHz:32-bit) 00:0a:0b:0c:0d:0e
+[  111.636504] e1000 0000:00:03.0 eth0: Intel(R) PRO/1000 Network Connection
 udhcpc: started, v1.35.0
 Setting IP address 0.0.0.0 on eth0
-[   60.245261] 8021q: adding VLAN 0 to HW filter on device eth0
-[   60.251928] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-[   60.255724] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[  113.094337] 8021q: adding VLAN 0 to HW filter on device eth0
+[  113.101170] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+[  113.102432] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
 udhcpc: broadcasting discover
 udhcpc: broadcasting select for 192.167.0.162, server 192.167.0.1
 udhcpc: lease of 192.167.0.162 obtained from 192.167.0.1, lease time 7200
@@ -1391,15 +1489,21 @@ Adding router 192.167.0.1
 Recreating /etc/resolv.conf
  Adding DNS server 192.167.0.1
  Adding DNS server 8.8.8.8
-chpasswd: password for 'root' changed
-Thu Nov 25 12:00:00 UTC 2021
-TELNET daemon
-sh-5.1# 
-sh-5.1# 
-sh-5.1# 
-sh-5.1# 
-sh-5.1# 
-sh-5.1# ifconfig
+
+SSH key setup in /root/.ssh
+
+
+SSH daemon
+
+
+WEBUI
+
+killall: lighttpd: no process killed
+
+Shell
+bash-5.1#
+bash-5.1#
+bash-5.1# ifconfig
 eth0      Link encap:Ethernet  HWaddr 00:0A:0B:0C:0D:0E  
           inet addr:192.167.0.162  Bcast:192.167.0.255  Mask:255.255.255.0
           inet6 addr: fe80::20a:bff:fe0c:d0e/64 Scope:Link
@@ -1449,18 +1553,65 @@ lo        Link encap:Local Loopback
   # make TBOARD=vm lib app ext
 ```
 
-# [3] Booting Image Building
+# [3] Platform specfic binaries Building ( HTTP server, currently ) 
 
 ```#!/bin/sh
 
-  # make TBOARD=vm board ramdisk
+  # make TBOARD=vm proj 
+```
+
+# [4] Booting Image Building
+
+```#!/bin/sh
+
+  # make TBOARD=vm board ramdisk extdisk 
 ```
 
 
 - Unlikely with the case of raspberry PI, we will get "output.iso" file under boards/vm .
 
 
-# [4] Running/Stopping "output.iso"
+# [5] Burning external USB disk partition 
+
+```#!/bin/sh
+
+  # sudo dd if=boards/vm/image.ext4 of=/dev/sdd1 bs=128M 
+  # sudo mkfs.ext4 -F /dev/sdd2
+```
+
+- /dev/sdd USB memory stick is partitioned as follows. 
+
+| Partition |  Size           |
+|-----------| --------------- |
+|  sdd1/    |  10Gbytes       |
+|  sdd2/    |  10Mbytes       |
+
+- /dev/sdd1 will be used for main R/W disk space. 
+- /dev/sdd2 will be used for configuration data space. 
+
+```#!/bin/sh
+
+# sudo fdisk /dev/sdd
+
+Welcome to fdisk (util-linux 2.37.2).
+...
+
+
+Command (m for help): p
+Disk /dev/sdd: 57.84 GiB, 62109253632 bytes, 121307136 sectors
+Disk model: Ultra Fit
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x6fb5f594
+
+Device     Boot    Start      End  Sectors Size Id Type
+/dev/sdd1           2048 20973567 20971520  10G 83 Linux
+/dev/sdd2       20973568 20994047    20480  10M 83 Linux
+```
+
+# [6] Running/Stopping "output.iso"
 
 - We can run this file as below.
 ```#!/bin/sh
@@ -1468,10 +1619,16 @@ lo        Link encap:Local Loopback
   # make TBOARD=vm vmrun
 
 
-  If you want to explicitly specify USB stick device, use the following option. 
+  If you want to explicitly specify USB stick device, use the following option "EXT4HDD" . 
 
 
-  # make TBOARD=vm EXT4DISK_MNTDIR=/dev/sde1 vmrun 
+  # make TBOARD=vm EXT4HDD=/dev/sde1 vmrun 
+
+
+  If you want to explicitly specify configuration partition device, use the following option "EXT4CFG" . 
+
+
+  # make TBOARD=vm EXT4HDD=/dev/sde1 EXT4CFG=/dev/sdg2 vmrun 
 
 ```
 
