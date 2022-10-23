@@ -17,7 +17,7 @@ prepare:
 		)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS)  \
-		LIBS="-lncurses -ltinfo -lrt -lpthread" \
+		LIBS="-L$(destination)/lib -L$(destination)/lib64 -lncursesw -ltinfow -lrt -lpthread" \
 		vim_cv_toupper_broken=yes \
 		vim_cv_getcwd_broken=yes \
 		vim_cv_tgetent=yes \
@@ -29,7 +29,7 @@ prepare:
 		vim_cv_bcopy_handles_overlap=yes \
 		vim_cv_memcpy_handles_overlap=yes \
 		./configure --prefix= --target=$(PLATFORM) --build=i686-linux --host=$(PLATFORM) \
-			--disable-arabic --disable-sysmouse --disable-nls --with-tlib=ncurses
+			--disable-arabic --disable-sysmouse --disable-nls --with-tlib=ncursesw
 
 all install clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

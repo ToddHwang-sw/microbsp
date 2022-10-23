@@ -1,10 +1,12 @@
 
+
+
 WHY MicroBSP
 ==========
 
 
 * Everyone is now happy with diverse uses and mega-tons of free resources of raspberry pi.
-* How about embedded system system programer ?? - Still they are happy too?
+* How about embedded system system programmer ?? - Still they are happy too?
 * None of source-level software distribution for raspberry PI is disclosed on the Internet. It's very scarce.
 * Just downloading and flashing images into SD card cannot make system programmer happy who is strongly eager to dig into system bottom level.
 * Poor system programmer like me just can only spend less than \$50 for an embedded platform. - Raspberry PI becomes the answer.
@@ -13,8 +15,11 @@ WHY MicroBSP
 
 MicroBSP
 ------------
-1. To do something various in raspberry PI, the need of specific board support packaage was risen from a few of possible cases; (1) Free application running/testing/validation  (2) Probing/verifiying Linux kernel functios (3) Systematic distribution/management of software stacks .
-2. MicroBSP was intended to assist the needs for my private individual reason and public share purposes based on its inherent flexibility and simplicity.
+1. MicroBSP has been intended for 
+- Quick verification of application/environment of Linux environment
+- Verification/testing of Linux kernel functions. 
+ 
+2. MicroBSP is to assist the needs for my private individual reason and public share purposes based on its inherent flexibility and simplicity.
 
 SHORTAGES
 ==========
@@ -57,7 +62,7 @@ Required Softwares
 ```
 
 
-<span style="color:blue; font-size:2em">Raspberry PI</span>
+<span style="color:blue; font-size:4em">Raspberry PI</span>
 ===============
 
 Testbed Components
@@ -867,7 +872,7 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 
 ```
 
-<span style="color:blue; font-size:2em">Ubuntu QEMU</span>
+<span style="color:blue; font-size:4em">Ubuntu QEMU</span>
 ===============
 
 Testbed Components

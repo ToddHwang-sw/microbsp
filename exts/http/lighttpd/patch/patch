@@ -1,0 +1,12 @@
+diff -uNr lighttpd1.4-original/configure.ac lighttpd1.4/configure.ac
+--- lighttpd1.4-original/configure.ac	2022-10-21 15:54:21.111689140 -0700
++++ lighttpd1.4/configure.ac	2022-10-21 16:05:54.651719261 -0700
+@@ -62,7 +62,7 @@
+ dnl Checks for programs.
+ AC_PROG_CC
+ AC_PROG_CC_C99
+-AX_PROG_CC_FOR_BUILD
++AX_CC_FOR_BUILD
+ LT_PATH_LD
+ AC_PROG_INSTALL
+ AC_PROG_CPP

@@ -203,6 +203,7 @@ EXTDIR=\
 	fdisk \
 	iperf \
 	ncftp \
+	ntpclient \
 	sqlite \
 	iconv \
 	autoconf \
@@ -219,6 +220,7 @@ EXTDIR=\
 	openssh \
 	gcc \
 	gdb \
+	gdbm \
 	perl \
 	python \
 	pciaccess \
@@ -231,6 +233,7 @@ EXTDIR=\
 	xconfig \
 	http/fastcgi \
 	http/lighttpd \
+	tcpdump \
 	json \
 	jq \
 	texinfo \

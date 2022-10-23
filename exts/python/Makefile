@@ -1,5 +1,5 @@
-DIR=Python-3.8.6
-PYTHONVER=3.8.6
+PYTHONVER=3.10.8
+DIR=Python-$(PYTHONVER)
 LOC=https://www.python.org/ftp/python/$(PYTHONVER)
 FILENM=$(DIR).tar.xz
 SAMPLEENVFILE=bin/python_env.sh
@@ -17,13 +17,18 @@ MICB_CONFIGURE_RUNENV += \
 MICB_CONFIGURE_OPTS += \
 	--enable-optimizations \
 	--disable-profiling \
-	--with-ensurepip=no
+	--with-openssl=$(INSTALLDIR) \
+	--without-ensurepip
 
-MICB_CONFIGURE_PRG = ./configure 
+##
+##	--with-ensurepip=install
 
-MICB_DEPENDS = openssl ncurses libffi
+MICB_CONFIGURE_PRG = ./configure
 
-CROSS_USER_LFLAGS += -lgcov 
+MICB_DEPENDS = expat openssl ncurses libffi
+
+CROSS_USER_CFLAGS += -I$(EXTINSTDIR)/include 
+CROSS_USER_LFLAGS += -L$(EXTINSTDIR)/lib -lgcov 
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -33,8 +38,6 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
-##
-##
 all: 
 	@cd $(BUILDDIR)/$(DIR); \
 		make build_all; \

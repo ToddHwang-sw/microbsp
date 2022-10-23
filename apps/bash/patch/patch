@@ -1,0 +1,13 @@
+diff -uNr bash-5.1.8-original/support/Makefile.in bash-5.1.8/support/Makefile.in
+--- bash-5.1.8-original/support/Makefile.in	2018-05-11 11:28:43.000000000 -0700
++++ bash-5.1.8/support/Makefile.in	2022-10-23 12:40:45.971949689 -0700
+@@ -53,7 +53,8 @@
+ LOCAL_DEFS = @LOCAL_DEFS@
+ 
+ LIBS = @LIBS@
+-LIBS_FOR_BUILD = ${LIBS}		# XXX
++## LIBS_FOR_BUILD = ${LIBS}		# XXX
++LIBS_FOR_BUILD = 
+ 
+ LOCAL_LDFLAGS = @LOCAL_LDFLAGS@
+ LDFLAGS = @LDFLAGS@ $(LOCAL_LDFLAGS) $(CFLAGS)

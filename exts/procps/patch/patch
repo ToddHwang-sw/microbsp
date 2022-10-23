@@ -1,18 +1,3 @@
-diff -uNr procps-original/configure.ac procps/configure.ac
---- procps-original/configure.ac	2022-10-03 15:03:04.067843493 -0700
-+++ procps/configure.ac	2022-10-03 15:06:12.688442312 -0700
-@@ -228,8 +228,8 @@
-     [AC_MSG_ERROR([Cannot have both --enable-watch8bit and --without-ncurses])])
- else
-   AM_CONDITIONAL(WITH_NCURSES, true)
--  PKG_CHECK_MODULES([NCURSES], [ncursesw],
--    [AC_DEFINE([HAVE_NCURSES], [1], [Use NCURSESW])],
-+  PKG_CHECK_MODULES([NCURSES], [ncurses],
-+    [AC_DEFINE([HAVE_NCURSES], [1], [Use NCURSES])],
-     [
-       AS_IF([test "x$enable_watch8bit" = "xyes"],
-         [AC_MSG_ERROR([Cannot find ncurses wide library ncursesw with --enable-watch8bit])])
-Binary files procps-original/.git/index and procps/.git/index differ
 diff -uNr procps-original/Makefile.am procps/Makefile.am
 --- procps-original/Makefile.am	2022-10-03 15:03:04.067843493 -0700
 +++ procps/Makefile.am	2022-10-03 15:04:46.616158144 -0700

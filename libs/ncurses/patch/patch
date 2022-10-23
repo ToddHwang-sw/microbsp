@@ -1,54 +1,41 @@
-diff --git a/Makefile.in b/Makefile.in
-index cb8cd42..5d9c178 100644
---- a/Makefile.in
-+++ b/Makefile.in
-@@ -45,6 +45,7 @@ NCURSES_PATCH	= @NCURSES_PATCH@
- prefix		= @prefix@
- exec_prefix	= @exec_prefix@
+diff -uNr ncurses-6.3-original/misc/Makefile.in ncurses-6.3/misc/Makefile.in
+--- ncurses-6.3-original/misc/Makefile.in	2021-07-03 12:07:50.000000000 -0700
++++ ncurses-6.3/misc/Makefile.in	2022-10-23 06:57:02.460543056 -0700
+@@ -154,7 +154,8 @@
+ @MAKE_PC_FILES@				test -f $$name || continue; \
+ @MAKE_PC_FILES@				echo installing $$name; \
+ @MAKE_PC_FILES@				$(INSTALL_DATA) $$name $(DESTDIR)$(PKG_CONFIG_LIBDIR)/$$name; \
+-@MAKE_PC_FILES@			done \
++@MAKE_PC_FILES@			done; \
++@MAKE_PC_FILES@			$(INSTALL_DATA) $(srcdir)/ncurses.pc $(DESTDIR)$(PKG_CONFIG_LIBDIR)/ncurses.pc; \
+ @MAKE_PC_FILES@			;; \
+ @MAKE_PC_FILES@		*) \
+ @MAKE_PC_FILES@			echo "...skip actual install: no destination was given" ; \
+@@ -198,7 +199,8 @@
+ @MAKE_PC_FILES@			test -f $$name || continue; \
+ @MAKE_PC_FILES@			echo uninstalling $$name; \
+ @MAKE_PC_FILES@			rm -f $(DESTDIR)$(PKG_CONFIG_LIBDIR)/$$name; \
+-@MAKE_PC_FILES@		done \
++@MAKE_PC_FILES@		done; \
++@MAKE_PC_FILES@		rm -f $(DESTDIR)$(PKG_CONFIG_LIBDIR)/ncurses.pc; \
+ @MAKE_PC_FILES@		;; \
+ @MAKE_PC_FILES@	esac'
  
-+srcdir		= @srcdir@
- bindir		= @bindir@
- ticdir		= @TERMINFO@
- includedir	= @includedir@
-@@ -92,6 +93,10 @@ mostlyclean \
- realclean \
- depend \
- sources \
--tags \
-+tags ::
-+
- uninstall \
- install ::
-+	@[ "$@" = "install"   ] || ( \
-+		[ ! -f $(destination)/lib/pkgconfig/ncurses.pc ] || \rm -rf $(destination)/lib/pkgconfig/ncurses.pc )
-+	@[ "$@" = "uninstall" ] || cp -rf $(srcdir)/ncurses.pc $(destination)/lib/pkgconfig
-diff --git a/ncurses/curses.priv.h b/ncurses/curses.priv.h
-index cfb3e62..f01e9df 100644
---- a/ncurses/curses.priv.h
-+++ b/ncurses/curses.priv.h
-@@ -1080,7 +1080,7 @@ extern NCURSES_EXPORT(void) _nc_expanded (void);
- #if USE_WIDEC_SUPPORT
- extern NCURSES_EXPORT(bool) _nc_is_charable(wchar_t);
- extern NCURSES_EXPORT(int) _nc_to_char(wint_t);
--extern NCURSES_EXPORT(wint_t) _nc_to_widechar(int);
-+/* extern NCURSES_EXPORT(wint_t) _nc_to_widechar(int); */
- #endif
- 
- /* doupdate.c */
-diff --git a/ncurses.pc b/ncurses.pc
-new file mode 100644
-index 0000000..e485cbf
---- /dev/null
-+++ b/ncurses.pc
-@@ -0,0 +1,11 @@
+diff -uNr ncurses-6.3-original/misc/ncurses.pc ncurses-6.3/misc/ncurses.pc
+--- ncurses-6.3-original/misc/ncurses.pc	1969-12-31 16:00:00.000000000 -0800
++++ ncurses-6.3/misc/ncurses.pc	2022-10-22 21:52:41.747468018 -0700
+@@ -0,0 +1,14 @@
 +prefix=
 +exec_prefix=${prefix}
-+libdir=${prefix}/lib
++libdir=${exec_prefix}/lib
 +includedir=${prefix}/include
++abi_version=6
++major_version=6
++version=6.3.20211021
 +
 +Name: ncurses
-+URL: http://gnu/ncurses
-+Description: Ncursrs library
-+Version: @PACKAGE_VERSION@
-+Libs: -L${libdir} -lncurses -ltinfo
-+Cflags: -I${includedir}/ncurses -I${includedir}
++Description: ncurses Top-level Library
++Requires.private: ncursesw panelw menuw tinfow formw
++Libs:  -L${libdir}
++Libs.private: -ldl -lpthread 
++Cflags:  -D_GNU_SOURCE -D_DEFAULT_SOURCE -I${includedir} -I${includedir}/ncursesw 

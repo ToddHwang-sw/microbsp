@@ -31,7 +31,6 @@ export extra_SUBDIR=\
 		radvd \
 		npd6 \
 		dnsmasq \
-		tcpdump \
 		i2ctool \
 		gpio 
 

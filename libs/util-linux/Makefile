@@ -12,12 +12,11 @@ MICB_CONFIGURE_OPTS +=\
 	--enable-libmount \
 	--enable-mount \
 	--enable-mountpoint \
-	--disable-widechar \
+	--enable-widechar \
 	--disable-all-programs \
-	--with-ncurses \
-	--without-ncursesw \
-	--without-readline \
-	--without-tinfo \
+	--with-ncursesw \
+	--with-readline \
+	--with-tinfo \
 	--without-utempter \
 	--without-libiconv-prefix \
 	--disable-makeinstall-chown
