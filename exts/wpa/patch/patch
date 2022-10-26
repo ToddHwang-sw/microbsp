@@ -1,6 +1,6 @@
 diff -uNr wpa_supplicant-2.9-original/src/ap/Makefile wpa_supplicant-2.9/src/ap/Makefile
 --- wpa_supplicant-2.9-original/src/ap/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/ap/Makefile	2020-07-11 20:58:01.097524181 -0700
++++ wpa_supplicant-2.9/src/ap/Makefile	2022-10-23 19:38:40.147016956 -0700
 @@ -71,6 +71,6 @@
  	x_snoop.o
  
@@ -11,7 +11,7 @@ diff -uNr wpa_supplicant-2.9-original/src/ap/Makefile wpa_supplicant-2.9/src/ap/
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/common/Makefile wpa_supplicant-2.9/src/common/Makefile
 --- wpa_supplicant-2.9-original/src/common/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/common/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/common/Makefile	2022-10-23 19:38:40.147016956 -0700
 @@ -23,6 +23,6 @@
  	wpa_common.o
  
@@ -22,7 +22,7 @@ diff -uNr wpa_supplicant-2.9-original/src/common/Makefile wpa_supplicant-2.9/src
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/crypto/Makefile wpa_supplicant-2.9/src/crypto/Makefile
 --- wpa_supplicant-2.9-original/src/crypto/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/crypto/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/crypto/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -1,7 +1,7 @@
 -all: libcrypto.a
 +all: libWcrypto.a
@@ -45,7 +45,7 @@ diff -uNr wpa_supplicant-2.9-original/src/crypto/Makefile wpa_supplicant-2.9/src
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/eap_common/Makefile wpa_supplicant-2.9/src/eap_common/Makefile
 --- wpa_supplicant-2.9-original/src/eap_common/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/eap_common/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/eap_common/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -26,6 +26,6 @@
  	ikev2_common.o
  
@@ -56,7 +56,7 @@ diff -uNr wpa_supplicant-2.9-original/src/eap_common/Makefile wpa_supplicant-2.9
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/eapol_auth/Makefile wpa_supplicant-2.9/src/eapol_auth/Makefile
 --- wpa_supplicant-2.9-original/src/eapol_auth/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/eapol_auth/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/eapol_auth/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -11,6 +11,6 @@
  LIB_OBJS = eapol_auth_sm.o eapol_auth_dump.o
  
@@ -67,7 +67,7 @@ diff -uNr wpa_supplicant-2.9-original/src/eapol_auth/Makefile wpa_supplicant-2.9
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/eapol_supp/Makefile wpa_supplicant-2.9/src/eapol_supp/Makefile
 --- wpa_supplicant-2.9-original/src/eapol_supp/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/eapol_supp/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/eapol_supp/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -13,6 +13,6 @@
  LIB_OBJS = eapol_supp_sm.o
  
@@ -78,7 +78,7 @@ diff -uNr wpa_supplicant-2.9-original/src/eapol_supp/Makefile wpa_supplicant-2.9
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/eap_peer/Makefile wpa_supplicant-2.9/src/eap_peer/Makefile
 --- wpa_supplicant-2.9-original/src/eap_peer/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/eap_peer/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/eap_peer/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -18,6 +18,6 @@
  	eap_methods.o
  
@@ -89,7 +89,7 @@ diff -uNr wpa_supplicant-2.9-original/src/eap_peer/Makefile wpa_supplicant-2.9/s
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/eap_server/Makefile wpa_supplicant-2.9/src/eap_server/Makefile
 --- wpa_supplicant-2.9-original/src/eap_server/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/eap_server/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/eap_server/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -16,6 +16,6 @@
  	eap_server_methods.o
  
@@ -100,7 +100,7 @@ diff -uNr wpa_supplicant-2.9-original/src/eap_server/Makefile wpa_supplicant-2.9
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/l2_packet/Makefile wpa_supplicant-2.9/src/l2_packet/Makefile
 --- wpa_supplicant-2.9-original/src/l2_packet/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/l2_packet/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/l2_packet/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -11,6 +11,6 @@
  LIB_OBJS = l2_packet_linux.o
  
@@ -111,7 +111,7 @@ diff -uNr wpa_supplicant-2.9-original/src/l2_packet/Makefile wpa_supplicant-2.9/
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/p2p/Makefile wpa_supplicant-2.9/src/p2p/Makefile
 --- wpa_supplicant-2.9-original/src/p2p/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/p2p/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/p2p/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -24,6 +24,6 @@
  	p2p_utils.o
  
@@ -122,7 +122,7 @@ diff -uNr wpa_supplicant-2.9-original/src/p2p/Makefile wpa_supplicant-2.9/src/p2
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/radius/Makefile wpa_supplicant-2.9/src/radius/Makefile
 --- wpa_supplicant-2.9-original/src/radius/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/radius/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/radius/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -18,6 +18,6 @@
  	radius_server.o
  
@@ -133,7 +133,7 @@ diff -uNr wpa_supplicant-2.9-original/src/radius/Makefile wpa_supplicant-2.9/src
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/rsn_supp/Makefile wpa_supplicant-2.9/src/rsn_supp/Makefile
 --- wpa_supplicant-2.9-original/src/rsn_supp/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/rsn_supp/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/rsn_supp/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -23,6 +23,6 @@
  	wpa_ie.o
  
@@ -144,7 +144,7 @@ diff -uNr wpa_supplicant-2.9-original/src/rsn_supp/Makefile wpa_supplicant-2.9/s
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/tls/Makefile wpa_supplicant-2.9/src/tls/Makefile
 --- wpa_supplicant-2.9-original/src/tls/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/tls/Makefile	2020-07-11 20:58:01.101524186 -0700
++++ wpa_supplicant-2.9/src/tls/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -35,6 +35,6 @@
  
  
@@ -155,7 +155,7 @@ diff -uNr wpa_supplicant-2.9-original/src/tls/Makefile wpa_supplicant-2.9/src/tl
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/utils/Makefile wpa_supplicant-2.9/src/utils/Makefile
 --- wpa_supplicant-2.9-original/src/utils/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/utils/Makefile	2020-07-11 20:58:01.105524192 -0700
++++ wpa_supplicant-2.9/src/utils/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -38,6 +38,6 @@
  #LIB_OBJS += pcsc_funcs.o
  
@@ -166,7 +166,7 @@ diff -uNr wpa_supplicant-2.9-original/src/utils/Makefile wpa_supplicant-2.9/src/
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/src/wps/Makefile wpa_supplicant-2.9/src/wps/Makefile
 --- wpa_supplicant-2.9-original/src/wps/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/src/wps/Makefile	2020-07-11 20:58:01.105524192 -0700
++++ wpa_supplicant-2.9/src/wps/Makefile	2022-10-23 19:38:40.151016981 -0700
 @@ -36,6 +36,6 @@
  	wps_upnp_web.o
  
@@ -177,7 +177,7 @@ diff -uNr wpa_supplicant-2.9-original/src/wps/Makefile wpa_supplicant-2.9/src/wp
  -include $(OBJS:%.o=%.d)
 diff -uNr wpa_supplicant-2.9-original/wpa_supplicant/Makefile wpa_supplicant-2.9/wpa_supplicant/Makefile
 --- wpa_supplicant-2.9-original/wpa_supplicant/Makefile	2019-08-07 06:25:25.000000000 -0700
-+++ wpa_supplicant-2.9/wpa_supplicant/Makefile	2020-07-11 20:58:09.789535887 -0700
++++ wpa_supplicant-2.9/wpa_supplicant/Makefile	2022-10-23 19:38:58.619133832 -0700
 @@ -17,9 +17,9 @@
  endif
  endif
@@ -191,6 +191,15 @@ diff -uNr wpa_supplicant-2.9-original/wpa_supplicant/Makefile wpa_supplicant-2.9
  PKG_CONFIG ?= pkg-config
  
  CFLAGS += $(EXTRA_CFLAGS)
+@@ -1633,7 +1633,7 @@
+ 
+ ifdef CONFIG_READLINE
+ OBJS_c += ../src/utils/edit_readline.o
+-LIBS_c += -lreadline -lncurses
++LIBS_c += -lreadline -lncursesw
+ else
+ ifdef CONFIG_WPA_CLI_EDIT
+ OBJS_c += ../src/utils/edit.o
 @@ -2049,4 +2049,4 @@
  	rm -f libwpa_client.so
  	rm -f libwpa_test1 libwpa_test2

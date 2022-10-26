@@ -9,7 +9,7 @@ MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS)
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz 
+	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

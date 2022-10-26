@@ -10,7 +10,7 @@ GSTREAMER_OPTS += \
 	-D base-install=$(UIXINSTDIR)
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 gstreamer-1.0 x11 alsa libdrm libxml-2.0 \
-               pangocairo gdk-pixbuf-2.0
+               pango pangocairo cairo gdk-pixbuf-2.0
 
 include $(shell pwd)/../gstreamer.mk
 

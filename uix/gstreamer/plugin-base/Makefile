@@ -10,6 +10,6 @@ GSTREAMER_OPTS += \
 	-D base-install=$(UIXINSTDIR) 
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 gstreamer-1.0 x11 alsa \
-	       graphene-1.0 pangocairo
+	       graphene-1.0 pango pangocairo
 
 include $(shell pwd)/../gstreamer.mk

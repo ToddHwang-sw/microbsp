@@ -1,5 +1,6 @@
-DIR=harfbuzz
-LOC=https://github.com/harfbuzz
+BUZZVER=5.3.0
+DIR=harfbuzz-$(BUZZVER)
+LOC=https://github.com/harfbuzz/harfbuzz/releases/download/$(BUZZVER)
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -17,7 +18,7 @@ CROSS_USER_LFLAGS += -lglapi
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -f $(MICBSRC)/$(DIR).tar.xz   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)

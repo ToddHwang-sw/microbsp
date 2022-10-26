@@ -1,0 +1,23 @@
+diff -uNr openssl-1.1.1c-original/Configurations/unix-Makefile.tmpl openssl-1.1.1c/Configurations/unix-Makefile.tmpl
+--- openssl-1.1.1c-original/Configurations/unix-Makefile.tmpl	2019-05-28 06:12:21.000000000 -0700
++++ openssl-1.1.1c/Configurations/unix-Makefile.tmpl	2022-10-23 14:47:33.970042576 -0700
+@@ -155,18 +155,7 @@
+                            : catdir($prefix, $config{openssldir}))
+                       : catdir($prefix, "ssl");
+               $openssldir -}
+-LIBDIR={- our $libdir = $config{libdir};
+-          unless ($libdir) {
+-              #
+-              # if $prefix/lib$target{multilib} is not an existing
+-              # directory, then assume that it's not searched by linker
+-              # automatically, in which case adding $target{multilib} suffix
+-              # causes more grief than we're ready to tolerate, so don't...
+-              our $multilib =
+-                  -d "$prefix/lib$target{multilib}" ? $target{multilib} : "";
+-              $libdir = "lib$multilib";
+-          }
+-          file_name_is_absolute($libdir) ? "" : $libdir -}
++LIBDIR=lib
+ # $(libdir) is chosen to be compatible with the GNU coding standards
+ libdir={- file_name_is_absolute($libdir)
+           ? $libdir : '$(INSTALLTOP)/$(LIBDIR)' -}
