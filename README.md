@@ -1736,3 +1736,51 @@ Partial Build
 
   # make TBOARD=vm SUBDIR=python distclean ext
 ```
+
+<span style="color:blue; font-size:4em">How Python</span>
+===============
+
+Setting up PIP 
+---------
+
+```#!/bin/sh
+
+bash-5.1# python3 -m ensurepip
+Looking in links: /tmp/tmp5p1wvqlw
+Processing /var/tmp/tmp/tmp5p1wvqlw/setuptools-63.2.0-py3-none-any.whl
+Processing /var/tmp/tmp/tmp5p1wvqlw/pip-22.2.2-py3-none-any.whl
+Installing collected packages: setuptools, pip
+  WARNING: The scripts pip3 and pip3.10 are installed in '//bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed pip-22.2.2 setuptools-63.2.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+bash-5.1# 
+
+```
+
+Upgrading PIP
+---------
+
+```#!/bin/sh
+
+bash-5.1# python3 -m pip install --upgrade pip
+WARNING: The directory '/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo'.
+Requirement already satisfied: pip in /lib/python3.10/site-packages (22.2.2)
+Collecting pip
+  Downloading pip-22.3-py3-none-any.whl (2.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 646.9 kB/s eta 0:00:00
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 22.2.2
+    Uninstalling pip-22.2.2:
+      Successfully uninstalled pip-22.2.2
+  WARNING: The scripts pip, pip3 and pip3.10 are installed in '//bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed pip-22.3
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+bash-5.1# 
+
+```
+
+
+
