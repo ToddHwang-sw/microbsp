@@ -9,13 +9,13 @@ ifeq ($(_CORE_),aarch64)
 endif
 
 MICB_CONFIGURE_OPTS += \
-	--without-readline \
+	--with-readline \
 	--disable-device-mapper \
 	--enable-fs \
 	--enable-largefile \
 	--enable-read-only
 
-MICB_DEPENDS = uuid blkid
+MICB_DEPENDS = ncurses uuid blkid
 
 CROSS_USER_CFLAGS += \
 	-D MB_LEN_MAX=16 

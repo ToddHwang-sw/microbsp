@@ -1,8 +1,7 @@
-diff --git a/gdk/wayland/meson.build b/gdk/wayland/meson.build
-index 833945f666..9ee07c3521 100644
---- a/gdk/wayland/meson.build
-+++ b/gdk/wayland/meson.build
-@@ -38,7 +38,8 @@ gdk_wayland_deps = [
+diff -uNr gtk-original/gdk/wayland/meson.build gtk/gdk/wayland/meson.build
+--- gtk-original/gdk/wayland/meson.build	2022-10-24 20:42:32.970857833 -0700
++++ gtk/gdk/wayland/meson.build	2022-10-24 20:46:16.260539423 -0700
+@@ -38,7 +38,8 @@
    wlegldep,
  ]
  
@@ -12,11 +11,10 @@ index 833945f666..9ee07c3521 100644
  
  # Format:
  #  - protocol name
-diff --git a/meson.build b/meson.build
-index a35ba7b172..c2838037ca 100644
---- a/meson.build
-+++ b/meson.build
-@@ -7,7 +7,7 @@ project('gtk', 'c',
+diff -uNr gtk-original/meson.build gtk/meson.build
+--- gtk-original/meson.build	2022-10-24 20:42:33.294860340 -0700
++++ gtk/meson.build	2022-10-25 19:09:06.838773641 -0700
+@@ -7,7 +7,7 @@
            # https://github.com/mesonbuild/meson/issues/2289
            'c_std=gnu99',
          ],
@@ -25,7 +23,7 @@ index a35ba7b172..c2838037ca 100644
          license: 'LGPLv2.1+')
  
  glib_req           = '>= 2.66.0'
-@@ -394,11 +394,11 @@ graphene_dep   = dependency('graphene-gobject-1.0', version: graphene_req,
+@@ -394,11 +394,11 @@
                              fallback: ['graphene', 'graphene_dep'])
  iso_codes_dep  = dependency('iso-codes', required: false)
  
@@ -42,7 +40,7 @@ index a35ba7b172..c2838037ca 100644
  fontconfig_dep = [] # only used in x11 backend
  
  if os_win32
-@@ -466,7 +466,8 @@ if wayland_enabled
+@@ -466,7 +466,8 @@
    if not wlprotocolsdep.found()
      wlproto_dir = subproject('wayland-protocols').get_variable('wayland_protocols_srcdir')
    else
@@ -52,7 +50,7 @@ index a35ba7b172..c2838037ca 100644
    endif
  
    wayland_pkgs = [
-@@ -789,8 +790,8 @@ endif
+@@ -789,8 +790,8 @@
  subdir('po')
  subdir('po-properties')
  
@@ -63,11 +61,10 @@ index a35ba7b172..c2838037ca 100644
  
  # Keep this in sync with post-install.sh expected arguments
  if not meson.is_cross_build()
-diff --git a/meson_options.txt b/meson_options.txt
-index 71b01ec5c8..a15b6f7639 100644
---- a/meson_options.txt
-+++ b/meson_options.txt
-@@ -125,3 +125,11 @@ option('install-tests',
+diff -uNr gtk-original/meson_options.txt gtk/meson_options.txt
+--- gtk-original/meson_options.txt	2022-10-24 20:42:33.294860340 -0700
++++ gtk/meson_options.txt	2022-10-24 20:46:16.260539423 -0700
+@@ -125,3 +125,11 @@
         type: 'boolean',
         value: 'false',
         description : 'Install tests')

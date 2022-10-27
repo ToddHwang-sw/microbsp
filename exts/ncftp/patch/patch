@@ -1,6 +1,6 @@
 diff -uNr ncftp-3.2.6-original/configure ncftp-3.2.6/configure
 --- ncftp-3.2.6-original/configure	2016-12-04 10:54:11.000000000 -0800
-+++ ncftp-3.2.6/configure	2022-10-03 15:40:29.769931856 -0700
++++ ncftp-3.2.6/configure	2022-10-23 13:46:58.939781726 -0700
 @@ -11156,13 +11156,7 @@
  	LIBS="$ac_save_LIBS";
  fi
@@ -18,7 +18,7 @@ diff -uNr ncftp-3.2.6-original/configure ncftp-3.2.6/configure
  echo "configure:11169: checking for long file names" >&5
 diff -uNr ncftp-3.2.6-original/Makefile.bin.in ncftp-3.2.6/Makefile.bin.in
 --- ncftp-3.2.6-original/Makefile.bin.in	2001-10-25 14:46:50.000000000 -0700
-+++ ncftp-3.2.6/Makefile.bin.in	2022-10-03 15:40:29.769931856 -0700
++++ ncftp-3.2.6/Makefile.bin.in	2022-10-23 13:46:58.939781726 -0700
 @@ -24,11 +24,7 @@
  	done
  	-@/bin/rm -f $(prefix)/bin/ncftpspooler
@@ -34,8 +34,14 @@ diff -uNr ncftp-3.2.6-original/Makefile.bin.in ncftp-3.2.6/Makefile.bin.in
  		/bin/rm -f $(mandir)/man1/$$f ; \
 diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
 --- ncftp-3.2.6-original/Makefile.in	2016-08-13 19:16:09.000000000 -0700
-+++ ncftp-3.2.6/Makefile.in	2022-10-03 15:40:29.769931856 -0700
-@@ -56,7 +56,6 @@
++++ ncftp-3.2.6/Makefile.in	2022-10-23 13:49:33.936822965 -0700
+@@ -51,12 +51,10 @@
+ 	$(INSTALL_PROGRAM) bin/ncftpput@EXEEXT@ "$(DESTDIR)$(BINDIR)/ncftpput@EXEEXT@"
+ 	$(INSTALL_PROGRAM) bin/ncftpls@EXEEXT@ "$(DESTDIR)$(BINDIR)/ncftpls@EXEEXT@"
+ 	$(INSTALL_PROGRAM) bin/ncftpbatch@EXEEXT@ "$(DESTDIR)$(BINDIR)/ncftpbatch@EXEEXT@"
+-	-@test -f "$(DESTDIR)$(BINDIR)/ncftpspooler@EXEEXT@" && echo /bin/rm "$(DESTDIR)$(BINDIR)/ncftpspooler@EXEEXT@" && /bin/rm "$(DESTDIR)$(BINDIR)/ncftpspooler@EXEEXT@"
+-	ln "$(DESTDIR)$(BINDIR)/ncftpbatch@EXEEXT@" "$(DESTDIR)$(BINDIR)/ncftpspooler@EXEEXT@"
++
  #
  # The visual programs are only built if a working Curses was found.
  #
@@ -43,7 +49,7 @@ diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
  	-@echo '..... Installing the manual pages .....'
  	$(INSTALL_DATA) doc/man/ncftp.1 "$(DESTDIR)$(mandir)/man1/ncftp.1"
  	$(INSTALL_DATA) doc/man/ncftpget.1 "$(DESTDIR)$(mandir)/man1/ncftpget.1"
-@@ -65,7 +64,7 @@
+@@ -65,7 +63,7 @@
  	$(INSTALL_DATA) doc/man/ncftpspooler.1 "$(DESTDIR)$(mandir)/man1/ncftpspooler.1"
  	$(INSTALL_DATA) doc/man/ncftpls.1 "$(DESTDIR)$(mandir)/man1/ncftpls.1"
  	-@echo '..... Finishing up .....'
@@ -54,7 +60,7 @@ diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
  clean:
 diff -uNr ncftp-3.2.6-original/sh_util/gpshare.c ncftp-3.2.6/sh_util/gpshare.c
 --- ncftp-3.2.6-original/sh_util/gpshare.c	2016-11-12 15:53:39.000000000 -0800
-+++ ncftp-3.2.6/sh_util/gpshare.c	2022-10-03 15:41:35.034246680 -0700
++++ ncftp-3.2.6/sh_util/gpshare.c	2022-10-23 13:46:58.939781726 -0700
 @@ -28,7 +28,7 @@
  
  static int gIsAtty1 = 1, gIsAtty2 = 1;
@@ -64,3 +70,21 @@ diff -uNr ncftp-3.2.6-original/sh_util/gpshare.c ncftp-3.2.6/sh_util/gpshare.c
  
  double
  FileSize(double size, const char **uStr0, double *uMult0)
+diff -uNr ncftp-3.2.6-original/sio/Makefile.in ncftp-3.2.6/sio/Makefile.in
+--- ncftp-3.2.6-original/sio/Makefile.in	2016-11-14 15:17:43.000000000 -0800
++++ ncftp-3.2.6/sio/Makefile.in	2022-10-23 13:49:04.560625643 -0700
+@@ -63,14 +63,12 @@
+ 	-@echo $(VER) > sio.version
+ 	-@chmod a+r $(LIB) sio.h usio.h
+ 	-@if [ "x@DEBUGBUILD@" = xyes ] ; then $(COPY) "$(LIB)" "$(LIB_d)" ; fi
+-	-@$(LIST) "$(LIB)" "$(LIB_d)" 2>/dev/null
+ 
+ install: $(LIB)
+ 	$(COPY) "$(LIB)" "$(PREFIX)/lib/$(LIB)"
+ 	-if [ "x@DEBUGBUILD@" = xyes ] ; then $(COPY) "$(LIB_d)" "$(PREFIX)/lib/$(LIB_d)" ; fi
+ 	$(COPY) sio.h usio.h "$(PREFIX)/include/"
+ 	-chmod a+r "$(PREFIX)/lib/$(LIB)" "$(PREFIX)/lib/$(LIB_d)" "$(PREFIX)/include/sio.h" "$(PREFIX)/include/usio.h" 2>/dev/null
+-	-@$(LIST) "$(PREFIX)/lib/$(LIB)" "$(PREFIX)/lib/$(LIB_d)" "$(PREFIX)/include/sio.h" "$(PREFIX)/include/usio.h" 2>/dev/null
+ 
+ dynamic: $(LIBSO)
+ 

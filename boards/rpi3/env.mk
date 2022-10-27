@@ -31,7 +31,6 @@ export extra_SUBDIR=\
 		radvd \
 		npd6 \
 		dnsmasq \
-		tcpdump \
 		i2ctool \
 		gpio 
 
@@ -49,6 +48,16 @@ export EXTDISKNM=image.ext4
 ## size of external disk : 1M x 4K = 4G
 ##
 export EXTDISKBLKS=4K
+
+##
+## Configuration disk image file name
+##
+export CFGDISKNM=
+
+##
+## size of external disk : 1M x 10 = 10M
+##
+export CFGDISKBLKS=
 
 ##
 ## UI disk volume name 

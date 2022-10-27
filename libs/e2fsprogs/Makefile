@@ -10,7 +10,7 @@ MICB_CONFIGURE_OPTS += \
 	--disable-resizer \
 	--disable-defrag \
 	--disable-hardening \
-	--disable-libuuid \
+	--enable-libuuid \
 	--disable-libblkid \
 	--disable-profile \
 	--disable-ubsan \

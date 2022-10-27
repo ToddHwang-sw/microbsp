@@ -1,0 +1,19 @@
+diff -uNr ntpclient-original/Makefile ntpclient/Makefile
+--- ntpclient-original/Makefile	1969-12-31 16:00:00.000000000 -0800
++++ ntpclient/Makefile	2022-10-20 13:38:31.470659358 -0700
+@@ -0,0 +1,15 @@
++EXEC = ntpclient
++OBJS = source/c/main.o
++
++all: $(EXEC)
++
++$(EXEC): $(OBJS)
++	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
++
++install:
++	@if [ ! -d $(destination)/bin ]; then mkdir -p $(destination)/bin; fi
++	@cp $(EXEC) $(destination)/bin/$(EXEC)
++
++clean:
++	-rm -f $(EXEC) *.elf *.o
++

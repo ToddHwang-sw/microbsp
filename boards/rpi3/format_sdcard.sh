@@ -44,7 +44,7 @@ DRIVE=$1
 [ "$DRIVE" != "" ] || DRIVE=sdc
 
 check=`lsblk | grep $DRIVE | wc -l`
-if [ "$check" == "0" ]; then 
+if [ "$check" = "0" ]; then
 	echo "/dev/$DRIVE is not found !! "
 	exit
 fi
@@ -59,7 +59,7 @@ fi
 ## Deleting existing partitions 
 ##
 echo "Deleting partitions in /dev/$DRIVE "
-sudo sh -c " fdisk --wipe always /dev/$DRIVE <<END
+sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 d 
 
 d
@@ -81,14 +81,16 @@ d
 d
 
 w
+END " &>> $LOGFILE
 
-END " >& $LOGFILE
+sleep 1
+echo "-----------------------------------------------------"
 
 ##
 ## Making partitions 
 ##
 echo "Making partitions in /dev/$DRIVE "
-sudo sh -c " fdisk /dev/$DRIVE <<END
+sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 n
 p
 1
@@ -125,26 +127,37 @@ n
 +$OVRPPSIZE
 
 w
-
 END " &>> $LOGFILE
 
+sleep 1
+echo "-----------------------------------------------------"
+
 echo "Changing BOOT PARTITION to FAT"
-sudo sh -c " fdisk /dev/$DRIVE <<END
+sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 t
 1
 c
-
 w
-
 END " &>> $LOGFILE
 
-echo "Building BOOT partition /dev/${DRIVE}1 "
+sleep 1
+echo "-----------------------------------------------------"
+
+echo "Turning on Bootable Flag"
+sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
+a
+1
+w
+END " &>> $LOGFILE
+
+echo "Building BOOT partition /dev/${DRIVE}1"
 if [ -f $BOOTFILE ]; then
-	mkfs.vfat -n $BOOTPNAME /dev/${DRIVE}1  >& /dev/null
+    echo "Yes Boot FILe!!!"
+	mkfs.vfat -n $BOOTPNAME /dev/${DRIVE}1 
 	[ ! -d $TMPDIR ] || \rm -rf $TMPDIR
 	mkdir -p $TMPDIR
 	mount /dev/${DRIVE}1 $TMPDIR 
-	tar zxvf $BOOTFILE -C $TMPDIR >& /dev/null
+	tar zxvf $BOOTFILE -C $TMPDIR 
 	sync
 	sync
 	umount $TMPDIR
@@ -168,12 +181,7 @@ fi
 
 echo "Cleaning the rest partition /dev/${DRIVE}6 /dev/${DRIVE}7 "
 
-sudo sh -c " mkfs.ext4 -j -L ${OVRVOLNAME}2 /dev/${DRIVE}6 <<END
-y
+sudo mkfs.ext4 -j -F -L ${OVRVOLNAME}2 /dev/${DRIVE}6
 
-END" &>> LOGFILE
+sudo mkfs.ext4 -j -F -L ${OVRVOLNAME}3 /dev/${DRIVE}7
 
-sudo sh -c " mkfs.ext4 -j -L ${OVRVOLNAME}3 /dev/${DRIVE}7 <<END
-y
-
-END" &>> LOGFILE

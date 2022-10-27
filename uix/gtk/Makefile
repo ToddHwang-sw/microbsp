@@ -22,7 +22,7 @@ MICB_MESON_OPTS += \
 	-D base-install=$(UIXINSTDIR) 
 
 MICB_DEPENDS = ncurses libmount bkid iconv intl glib-2.0 libffi libdrm expat libxml-2.0 libjpeg \
-	pangocairo gio-unix-2.0 gdk-pixbuf-2.0 graphene-gobject-1.0 pixman-1 \
+	pango pangocairo pangoft2 gio-unix-2.0 gdk-pixbuf-2.0 graphene-gobject-1.0 pixman-1 \
 	cairo-script 
 
 CROSS_USER_LFLAGS += -lcairo-script-interpreter

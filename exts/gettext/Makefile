@@ -20,7 +20,7 @@ MICB_CONFIGURE_OPTS += \
 ## DESTDIR will screw all up. 
 MICB_CONFIGURE_MAKEOPTS = V=1 prefix=$(destination) 
 
-MICB_DEPENDS = intl zlib liblzma
+MICB_DEPENDS = intl zlib liblzma ncurses
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

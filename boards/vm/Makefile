@@ -4,7 +4,10 @@ BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
 QEMU=qemu-system-$(_CORE_)
 
-VMMAC=00:0a:0b:0c:0d:0e
+##
+## Random MAC address
+## 
+VMMAC=00:00:00:00:01:01
 
 ##
 ## QEMU configuration 

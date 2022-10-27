@@ -1,7 +1,7 @@
-<?xml version="1.0.0.1" encoding="utf-8"?>
+<?xml version="1.0.0.2" encoding="utf-8"?>
 <config>
 	<product>QEMUVM</product>
-	<date>202210171400</date>
+	<date>202210191600</date>
 	<model>QEMUVM</model>
 	<operation>
 		<mode>normal</mode>			<!-- operation mode -->
@@ -16,7 +16,7 @@
 		<date>2022.01.01-12:00:00</date>  <!-- date -->
 	</operation>
 	<ssh>
-		<enable>1</enable>          <!-- activate -->
+		<en>1</en>          <!-- activate -->
 		<port>22</port>             <!-- service port -->
 	</ssh>
 	<user>
@@ -49,9 +49,13 @@
     <http>
         <en>1</en>
     </http>
+    <ntp>
+        <en>1</en>
+    </ntp>
 	<lan0>
-		<mode>dhcp</mode>          <!-- static, dhcp, none -->
-		<ip>192.167.0.120</ip>
+        <mode>dhcp</mode>          <!-- static, dhcp, none -->
+        <mac>random</mac>
+		<ip>192.167.0.162</ip>
 		<netmask>255.255.255.0</netmask>
 		<gateway>192.167.0.1</gateway>
 		<dns>8.8.8.8</dns>
@@ -62,7 +66,7 @@
 			<plen>64</plen>
 			<id>1</id>
 		</ipv6>
-		<capture>0</capture>
+        <capture>0</capture>
 	</lan0>
 	<xcfgd>
 		<httpport>8082</httpport>  <!-- HTTP service port -->

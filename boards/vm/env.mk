@@ -41,6 +41,16 @@ export EXTDISKNM=image.ext4
 export EXTDISKBLKS=6K
 
 ##
+## Configuration disk image file name
+##
+export CFGDISKNM=config.ext4
+
+##
+## size of external disk : 1M x 10 = 10M
+##
+export CFGDISKBLKS=10
+
+##
 ## UI disk volume name 
 ##
 export UIDISK=
@@ -70,6 +80,9 @@ export TTY0_BASH=/bin/bash -l
 ##
 ##  ATTENTION !! 
 ##
+## sysinit:/etc/init.d/rcS    --> called at booting time from booting disk 
+## shutdown:/etc/rc.shutdown  --> called at off time from overlayed space (boards/vm/rootfs/etc/rc.shutdown)
+##
 ##
 export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/proc ]       || mkdir -p $(XBASEDIR)/proc  && \
@@ -93,7 +106,7 @@ export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/lib64      ] || mkdir -p $(XBASEDIR)/lib64                        && \
 	echo "ttyS0::respawn:$(TTY0_BASH)"              >  $(XBASEDIR)/etc/inittab         && \
 	echo "::sysinit:/etc/init.d/rcS"                >> $(XBASEDIR)/etc/inittab         && \
-	echo "::shutdown:/etc/init.d/rc.shutdown"       >> $(XBASEDIR)/etc/inittab         && \
+	echo "::shutdown:/etc/rc.shutdown"              >> $(XBASEDIR)/etc/inittab         && \
 	echo "\#!/bin/bash "                            >  $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount -t proc proc /proc "                >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount -t tmpfs ram /var  -o size=4m "     >> $(XBASEDIR)/etc/init.d/rcS      && \
@@ -111,7 +124,7 @@ export BUILDUP_ROOTFS=\
 	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t overlay -o lowerdir=/disk,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
+	echo "mount -t overlay -o noauto,lowerdir=/disk:/mnt/usr,upperdir=/mnt/up,workdir=/mnt/work overlay /ovr" \
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "Done" > /dev/null 
 

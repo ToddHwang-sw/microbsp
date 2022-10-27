@@ -162,18 +162,33 @@ echo "Network - VMware should use Host-only interface for this OS"
 echo ""
 modprobe e1000
 
+## eth0 MAC address 
+ETHMAC=`$ASK lan0/mac`
+if [ "$ETHMAC" = "random" ]; then
+    ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
+fi
+ifconfig eth0 hw ether $ETHMAC 
+
 NETMODE=`$ASK lan0/mode`
-if [ "$NETMODE" = "dhcp" ]; then 
-    udhcpc -i eth0 
+if [ "$NETMODE" = "dhcp" ]; then
+    udhcpc -x lease:120 -i eth0 
 else
     IP=`$ASK lan0/ip`
     NETMASK=`$ASK lan0/netmask`
     ifconfig eth0 $IP netmask $NETMASK up
 fi
 
+echo ""
+echo "Network - Interface Capture"
+echo ""
+CAPTURE=`$ASK lan0/capture`
+if [ "$CAPTURE" = "1" ]; then 
+    tcpdump -c 1000000 -w /var/tmp/eth0.pcap -i eth0  &
+fi
+
 SSHDIR=/root/.ssh
 
-SSHEN=`$ASK ssh/enable`
+SSHEN=`$ASK ssh/en`
 if [ "$SSHEN" = "1" ]; then 
     echo ""
     echo "SSH key setup in $SSHDIR "
@@ -186,6 +201,25 @@ if [ "$SSHEN" = "1" ]; then
     echo "SSH daemon"
     echo ""
     /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+fi
+
+echo ""
+echo "NTP " 
+echo ""
+NTPEN=`$ASK ntp/en`
+if [ "$NTPEN" = "1" ]; then 
+    apptime=("`ntpclient`")
+    skip=1
+    cnt=0
+    CTIME=
+    for d in ${apptime[@]}; do
+        if [ "$cnt" -gt "$skip" ] ; then
+                CTIME=$CTIME"$d "
+        fi
+        cnt=`expr $cnt + 1`
+    done
+    CTIME=`echo $CTIME | xargs`
+    date -R -s "$CTIME"
 fi
 
 echo ""
