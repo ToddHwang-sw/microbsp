@@ -124,7 +124,7 @@ export BUILDUP_ROOTFS=\
 	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t overlay -o lowerdir=/disk,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
+	echo "mount -t overlay -o noauto,lowerdir=/disk:/mnt/usr,upperdir=/mnt/up,workdir=/mnt/work overlay /ovr" \
 							                        >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "Done" > /dev/null 
 

@@ -170,8 +170,8 @@ fi
 ifconfig eth0 hw ether $ETHMAC 
 
 NETMODE=`$ASK lan0/mode`
-if [ "$NETMODE" = "dhcp" ]; then 
-    udhcpc -i eth0 
+if [ "$NETMODE" = "dhcp" ]; then
+    udhcpc -x lease:120 -i eth0 
 else
     IP=`$ASK lan0/ip`
     NETMASK=`$ASK lan0/netmask`

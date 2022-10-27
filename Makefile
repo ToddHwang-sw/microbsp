@@ -184,7 +184,8 @@ LIBDIR=\
 	libpam \
 	libpcap \
 	libev \
-	libtool
+	libtool \
+	libattr
 SUBDIR+=$(LIBDIR)
 
 ## Applications 
@@ -424,7 +425,8 @@ checkfirst:
 	fi
 	@[ -d $(STAGEDIR) ] || ( \
 		mkdir -p $(STAGEDIR); \
-		mkdir -p $(STAGEDIR)/work \
+		mkdir -p $(STAGEDIR)/up    \
+		mkdir -p $(STAGEDIR)/work  \
 		mkdir -p $(EXTINSTDIR); \
 		mkdir -p $(EXTINSTDIR)/root; \
 		mkdir -p $(EXTINSTDIR)/home; \
@@ -698,8 +700,9 @@ uidisk_clean:
 ## BUILDUP_ROOTFS --> Please refer to boards/rpi3/env.mk 
 ##
 run_bootstrap: checkfirst
-	@make -C apps/busybox destination=$(XBASEDIR) -f Makefile.bootstrap prepare all install
-	@make -C apps/bash    destination=$(XBASEDIR) install
+	@make -C apps/busybox         destination=$(XBASEDIR) -f Makefile.bootstrap prepare all install
+	@make -C apps/bash            destination=$(XBASEDIR) install
+	@make -C apps/tools/overlayfs destination=$(XBASEDIR) prepare all install
 	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown

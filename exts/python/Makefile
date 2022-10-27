@@ -18,7 +18,7 @@ MICB_CONFIGURE_OPTS += \
 	--enable-optimizations \
 	--disable-profiling \
 	--with-openssl=$(INSTALLDIR) \
-	--without-ensurepip
+	--with-ensurepip=install
 
 ##
 ##	--with-ensurepip=install
