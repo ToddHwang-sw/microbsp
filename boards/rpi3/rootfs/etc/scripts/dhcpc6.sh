@@ -34,13 +34,13 @@ dhcpc_stop() {
 }
 
 case $OPR in
-        start   )
-                dhcpc_start 
-                ;;
-        stop    ) 
-                dhcpc_stop 
-                ;;
-        *       ) # Display usage if no parameters given
-                help
+    start)
+        dhcpc_start 
+        ;;
+    stop) 
+        dhcpc_stop 
+        ;;
+    *) # Display usage if no parameters given
+        help
 esac
 

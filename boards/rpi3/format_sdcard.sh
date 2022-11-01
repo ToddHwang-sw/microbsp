@@ -8,10 +8,10 @@ TMPDIR=/tmp/linuxrpi.rpi3.tmpdir
 ##
 BOOTPSIZE=128M
 RAMDISKPSIZE=1G
-ROOTPSIZE=4G
+ROOTPSIZE=8G
 OVRPSIZE=8G
 UIPSIZE=4G
-OVRPPSIZE=1G
+CFGPSIZE=10M
 
 ##
 ## BOOT Partition
@@ -30,7 +30,10 @@ IMAGEFILE=image.ext4
 ## UI Partition 
 UIFILE=ui.ext4
 
-OVRVOLNAME=low
+##
+## CFG Partition
+CFGVOLNM=config
+CFGFILE=config.ext4
 
 ## who is running this script 
 whoami=`whoami`
@@ -61,6 +64,10 @@ fi
 echo "Deleting partitions in /dev/$DRIVE "
 sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 d 
+
+d
+
+d
 
 d
 
@@ -120,11 +127,7 @@ n
 
 n
 
-+$OVRPPSIZE
-
-n
-
-+$OVRPPSIZE
++$CFGPSIZE
 
 w
 END " &>> $LOGFILE
@@ -157,7 +160,7 @@ if [ -f $BOOTFILE ]; then
 	[ ! -d $TMPDIR ] || \rm -rf $TMPDIR
 	mkdir -p $TMPDIR
 	mount /dev/${DRIVE}1 $TMPDIR 
-	tar zxvf $BOOTFILE -C $TMPDIR 
+	tar zxvf $BOOTFILE -C $TMPDIR > /dev/null 2>&1 
 	sync
 	sync
 	umount $TMPDIR
@@ -179,9 +182,8 @@ if [ -f $UIFILE ]; then
 	sudo dd if=$UIFILE  of=/dev/${DRIVE}5 bs=128M
 fi
 
-echo "Cleaning the rest partition /dev/${DRIVE}6 /dev/${DRIVE}7 "
-
-sudo mkfs.ext4 -j -F -L ${OVRVOLNAME}2 /dev/${DRIVE}6
-
-sudo mkfs.ext4 -j -F -L ${OVRVOLNAME}3 /dev/${DRIVE}7
+echo "Building CFG partition /dev/${DRIVE}6"
+if [ -f $CFGFILE ]; then
+	sudo dd if=$CFGFILE  of=/dev/${DRIVE}6 bs=128K
+fi
 

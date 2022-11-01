@@ -16,7 +16,7 @@ help() {
 dhcpc_start() {
 	# DHCPv6 configuration file creation 	
 	cat > $DHCPC_V4_CONF <<-EOF
-	send dhcp-lease-time 7200;
+	send dhcp-lease-time 120;
 	prepend domain-name-servers 127.0.0.1;
 	request subnet-mask, broadcast-address, routers, domain-name-servers;
 	timeout 60;
@@ -39,13 +39,13 @@ dhcpc_stop() {
 }
 
 case $OPR in
-        start   )
-                dhcpc_start 
-                ;;
-        stop    ) 
-                dhcpc_stop 
-                ;;
-        *       ) # Display usage if no parameters given
-                help
+    start)
+        dhcpc_start 
+        ;;
+    stop) 
+        dhcpc_stop 
+        ;;
+    *) # Display usage if no parameters given
+        help
 esac
 

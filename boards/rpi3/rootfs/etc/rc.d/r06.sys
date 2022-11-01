@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /boot/conf.sys
+ASK='xcfgcli.sh get '
 
 case $1 in
 	"start")
@@ -8,16 +8,10 @@ case $1 in
 		modprobe brcmutil
 		modprobe brcmfmac
 	
-		## eth0 interface
-		ifconfig $ETHINTERFACE up
-
 		/etc/scripts/wlan_ap.sh start 		
 		;;
 	"stop")
 		/etc/scripts/wlan_ap.sh stop
-
-		## eth0 interface
-		ifconfig $ETHINTERFACE down 
 
 		echo "[WLAN] BRCM Unloading modules..."
 		rmmod brcmfmac

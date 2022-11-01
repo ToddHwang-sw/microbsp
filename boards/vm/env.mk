@@ -21,11 +21,6 @@ export extra_SUBDIR=\
 		lpps
 
 ##
-## folders to be included
-##
-export extra_SUBDIR=
-
-##
 ## external disk volume name 
 ##
 export EXTDISK=apps
@@ -43,7 +38,12 @@ export EXTDISKBLKS=6K
 ##
 ## Configuration disk image file name
 ##
-export CFGDISKNM=config.ext4
+export CFGVOLNM=config
+
+##
+## Configuration disk image file name
+##
+export CFGDISKNM=$(CFGVOLNM).ext4
 
 ##
 ## size of external disk : 1M x 10 = 10M

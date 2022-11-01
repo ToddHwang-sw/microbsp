@@ -1,26 +1,47 @@
 #!/bin/sh
 
-. /boot/conf.sys
+ASK='xcfgcli.sh get '
+WAN=`$ASK wan/name`
+LAN=`$ASK lan/name`
+
+## 5 seconds ..
+WAITIP=5
 
 case $1 in
 	"start")
-		[ "$USEAP" = "1" ] || exit 0
-
 		echo [IPV6] START .....
-		/etc/scripts/dhcpc6.sh start wlan0
-		sleep 1
+		/etc/scripts/dhcpc6.sh start $WAN
+
+        echo "Waiting for My IP6..."
+        ipdone=0
+        cnt=0
+        lcount=$WAITIP
+        while [ "$ipdone" = "0" ];  do
+            ipnum=`ifconfig $WAN | grep "Scope:Global" | wc -l`
+            if [ "$ipnum" = "0" ]; then
+                echo "Waiting $cnt"
+                sleep 1
+            else
+                ipaddr=`ifconfig $WAN | grep "Scope:Global" | awk '{print $3}'`
+                echo "IPv6 address '$ipaddr' configured."
+                ipdone=1
+            fi
+            if [ "$cnt" = "$lcount" ]; then break; fi
+            cnt=`expr $cnt + 1`
+        done
+
 		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		ifconfig -a
 		echo ""
 		echo ""
 		cat /etc/resolv.conf
 		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		/etc/scripts/radvd.sh start br0
+		/etc/scripts/radvd.sh start $LAN
 		;;
 	"stop")
 		echo [IPV6] STOPPING.... 
-		/etc/scripts/radvd.sh stop br0
-		/etc/scripts/dhcpc6.sh stop wlan0
+		/etc/scripts/radvd.sh stop $LAN
+		/etc/scripts/dhcpc6.sh stop $WAN
 		;;
 	"*")
 		;;

@@ -8,15 +8,26 @@ DHCPFILE=dhcpd.conf
 LFILE=dhcpd.leases
 PFILE=dhcpd.pid
 
-. /boot/conf.sys
+ASK='xcfgcli.sh get '
+BRINTF=`$ASK lan/name`
+BRCAPTURE=`$ASK lan/capture`
+APINTF=`$ASK lan/interfaces/wlan0`
+ETHINTF=`$ASK lan/interfaces/eth0`
+APSSID=`$ASK lan/ssid`
+APPASSWORD=`$ASK lan/password`
+APIP=`$ASK lan/ip`
+APNET=${APIP%.*}
+APNODE=${APIP##*.}
+APMASK=`$ASK lan/netmask`
 
-tcpdump_CMD="tcpdump -i $BRINTERFACE"
+DHCPSTART=`$ASK lan/start`
+DHCPEND=`$ASK lan/end`
+
+tcpdump_CMD="tcpdump -i $BRINTF"
 tcpdump_PID=`ps -aef | grep -e "$tcpdump_CMD" | head -n 1 | awk '{print $1}'`
 
 case $1 in
 	"start")
-		[ "$USEAP" = "1" ] || exit 0
-
 		echo "[WLAN] Building up $APCONFDIR/$CFILE"
 		[ -d $APCONFDIR ] || mkdir -p $APCONFDIR
 		[ -d $PIDDIR ] || mkdir -p $PIDDIR
@@ -25,9 +36,9 @@ case $1 in
 		## AP hostapd ...
 		##
 		cat > $APCONFDIR/$CFILE  <<-EOF
-		interface=$APINTERFACE
+		interface=$APINTF
 		ctrl_interface=$APCONFDIR/ctrl
-		bridge=$BRINTERFACE
+		bridge=$BRINTF
 		driver=nl80211
 		ssid=$APSSID
 		channel=1
@@ -50,10 +61,13 @@ case $1 in
 		/usr/local/bin/hostapd -dd -B -P $PIDDIR/hostapd.pid $APCONFDIR/$CFILE &
 		sleep 1
 
+		echo "[ETH] Ethernet"
+        ifconfig $ETHINTF up
+
 		echo "[BRIDGE] Bridge creation...."
-		brctl addbr $BRINTERFACE
-		brctl addif $BRINTERFACE $ETHINTERFACE
-		brctl addif $BRINTERFACE $APINTERFACE
+		brctl addbr $BRINTF
+		brctl addif $BRINTF $ETHINTF
+		brctl addif $BRINTF $APINTF
 
 		##
 		## IPv4 DHCP server ...
@@ -68,25 +82,28 @@ case $1 in
 			option broadcast-address $APNET.255;
 		}
 		EOF
-		ifconfig $BRINTERFACE $APNET.$APNODE netmask $APMASK up
+		ifconfig $BRINTF $APNET.$APNODE netmask $APMASK up
 		[ ! -f $APCONFDIR/$LFILE ] || \rm -rf $APCONFDIR/$LFILE
 		touch $APCONFDIR/$LFILE
-		dhcpd -4 -d -cf $APCONFDIR/$DHCPFILE -lf $APCONFDIR/$LFILE -pf $PIDDIR/$PFILE $BRINTERFACE &
+		dhcpd -4 -d -cf $APCONFDIR/$DHCPFILE -lf $APCONFDIR/$LFILE -pf $PIDDIR/$PFILE $BRINTF &
 		sleep 1
 
 		##
 		## tcpdump 
 		##
-		[ "$BRCAPTURE" = "0" ] || $tcpdump_CMD -c 99999 -w /var/tmp/pcap_$BRINTERFACE.pcap &
+		[ "$BRCAPTURE" = "0" ] || $tcpdump_CMD -c 99999 -w /var/tmp/pcap_$BRINTF.pcap &
 		;;
 	"stop")
 		echo "[WLAN] TCPDUMP down..."
 		[ "$BRCAPTURE" = "0" ] || kill -9 $tcpdump_PID
 
 		echo "[BRIDGE] Bridge shutdown..."
-		brctl delif $BRINTERFACE $APINTERFACE
-		brctl delif $BRINTERFACE $ETHINTERFACE
-		brctl delbr $BRINTERFACE
+		brctl delif $BRINTF $APINTF
+		brctl delif $BRINTF $ETHINTF
+		brctl delbr $BRINTF
+
+		echo "[ETH] Ethernet"
+        ifconfig $ETHINTF down
 
 		echo "[WLAN] Shutting down..."
 		pid=`cat $PIDDIR/hostapd.pid`
@@ -95,8 +112,7 @@ case $1 in
 		pid=`cat $PIDDIR/$PFILE`
 		kill -9 $pid
 
-		ifconfig $BRINTERFACE down 
-
+		ifconfig $BRINTF down 
 		;;
 	"*")
 		;;

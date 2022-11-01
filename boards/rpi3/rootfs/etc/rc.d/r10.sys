@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. /boot/conf.sys
-
 case $1 in
 	"start")
 		echo "QT initialization"
