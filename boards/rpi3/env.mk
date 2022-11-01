@@ -32,7 +32,8 @@ export extra_SUBDIR=\
 		npd6 \
 		dnsmasq \
 		i2ctool \
-		gpio 
+		gpio \
+		lpps
 
 ##
 ## external disk volume name 
@@ -45,19 +46,24 @@ export EXTDISK=apps
 export EXTDISKNM=image.ext4
 
 ##
-## size of external disk : 1M x 4K = 4G
+## size of external disk : 1M x 8K = 8G
 ##
-export EXTDISKBLKS=4K
+export EXTDISKBLKS=8K
 
 ##
 ## Configuration disk image file name
 ##
-export CFGDISKNM=
+export CFGVOLNM=config
+
+##
+## Configuration disk image file name
+##
+export CFGDISKNM=$(CFGVOLNM).ext4
 
 ##
 ## size of external disk : 1M x 10 = 10M
 ##
-export CFGDISKBLKS=
+export CFGDISKBLKS=10
 
 ##
 ## UI disk volume name 
@@ -94,7 +100,6 @@ export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/sys  ] || mkdir -p $(XBASEDIR)/sys   && \
 	[ -d $(XBASEDIR)/mnt  ] || mkdir -p $(XBASEDIR)/mnt   && \
 	[ -d $(XBASEDIR)/ui   ] || mkdir -p $(XBASEDIR)/ui    && \
-	[ -d $(XBASEDIR)/low2 ] || mkdir -p $(XBASEDIR)/low2  && \
 	[ -d $(XBASEDIR)/ovr  ] || mkdir -p $(XBASEDIR)/ovr   && \
 	[ -s $(XBASEDIR)/tmp  ] || ln -s /var/tmp  $(XBASEDIR)/tmp   && \
 	[ -s $(XBASEDIR)/root ] || ln -s /var/root $(XBASEDIR)/root  && \
@@ -118,17 +123,14 @@ export BUILDUP_ROOTFS=\
 	echo "export LD_LIBRARY_PATH=/lib:/lib64 "      >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount /dev/mmcblk0p3 /mnt"                >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount /dev/mmcblk0p5 /ui"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount /dev/mmcblk0p7 /low2"               >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/usr  ] || ( echo \"External disk is not mounted !!\" ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "[ -d /low2     ] || ( echo \"Second lowerdisk is not mounted !!\" ; exit 1 ) " \
-							>> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "[ -d /low3     ] || ( echo \"Third lowerdisk is not mounted !!\"  ; exit 1 ) " \
+	echo "[ -d /mnt/up   ] || ( echo \"Upper disk is not mounted !!\" ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Mounting...\" "                    >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount -t overlay -o lowerdir=/disk:/ui:/low2,upperdir=/mnt/usr,workdir=/mnt/work overlay /ovr" \
+	echo "mount -t overlay -o lowerdir=/disk:/ui:/mnt/usr,upperdir=/mnt/up,workdir=/mnt/work overlay /ovr" \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "echo \"Device file system\" "             >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "mount -t devtmpfs devfs /ovr/dev "        >> $(XBASEDIR)/etc/init.d/rcS      && \

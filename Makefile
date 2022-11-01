@@ -676,7 +676,9 @@ wipeout:
 extdisk:
 	@cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
 	@$(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS)
-	@[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(BDDIR)/$(CFGDISKNM) bs=1M count=$(CFGDISKBLKS)
+	@[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(EXT4CFG) bs=1M count=$(CFGDISKBLKS)
+	@[ -z $(CFGDISKNM) ] || sudo mkfs.ext4 -j -F -L $(CFGVOLNM) $(EXT4CFG)
+
 
 extdisk_clean:
 	@$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
@@ -718,7 +720,6 @@ kernel_%:
 	@echo "Kernel configuration/cleanup"
 	@echo ""
 	@make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) $(subst kernel_,,$@)
-	@if [ "$(subst kernel_,,$@)" = "all" ] ; then make -C modules KERNDIR=$(KERNDIR) all install; fi
 	@if [ "$(subst kernel_,,$@)" = "clean" ] ; then \
 		echo ""	                     ; \
 		echo "Cleaning image..."     ; \
@@ -726,8 +727,7 @@ kernel_%:
 	       	make -C $(BDDIR) clean       ; \
 	fi
 
-mod_%:
-	@make KERNDIR=$(KERNDIR) -C modules $(subst mod_,,$@)
+modules_%:
 	@if [ "$(subst mod_,,$@)" = "install" ] ; then \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) install ;              \
 		make -C $(BDDIR)        destination=$(INSTALLDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install ; \
@@ -750,10 +750,6 @@ board: run_bootstrap
 	@echo "Copying static rootfs...."
 	@echo ""
 	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/ 
-	@echo ""
-	@echo "Building private modules..."
-	@echo ""
-	@make -C modules KERNDIR=$(KERNDIR) all install
 	@echo ""
 	@echo "Merging $(INSTALLDIR) and GLIBC ...."
 	@echo ""

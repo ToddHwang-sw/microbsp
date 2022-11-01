@@ -1,10 +1,21 @@
 #!/bin/sh
 
-## mount file systems 
-mount -t proc   proc   /proc
-mount -t tmpfs  ram    /var  -o size=512m
-mount -t sysfs  sys    /sys
+busywait() {
+    cnt=$1
+    while [ "$cnt" != "0" ]
+    do
+        sleep 1
+        echo "$cnt"
+        cnt=`expr $cnt - 1`
+    done
+    echo ""
+}
 
+## mount file systems 
+mount -t proc     proc   /proc
+mount -t tmpfs    ram    /var  -o size=512m
+mount -t sysfs    sys    /sys
+mount -t devtmpfs devfs  /dev
 ## basic..
 mkdir /var/config/ /var/db/ /var/tmp /var/log /var/run /var/lock /var/empty
 
@@ -22,7 +33,7 @@ mount -t devpts devpts  /dev/pts
 ##
 ## Export Libraries...
 ##
-export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib
+export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
 
 ##
 ## Export Path....
@@ -50,58 +61,132 @@ touch /var/tmp/shadow
 ## issue file - telnetd
 touch /var/tmp/issue
 
+## group file for root
+echo "root:x:0:"          > /etc/group
+echo "sshd:x:1001:root"   >> /etc/group
+
+## register root user
+echo "root:x:0:0:root:/root:/bin/sh"                       > /etc/passwd
+echo "sshd:x:1001:1001:SSH,,,:/var/tmp/sshd:/sbin/nologin" >> /etc/passwd
+
+## shadow file for password
+echo "root:*:16897:0:99999:7:::" > /etc/shadow
+
+## password
+echo "root:" | chpasswd
+
+##
+## config mount 
+
 ## lo interface
 ifconfig lo up
 
-## group file for root 
-echo "root:x:0:" > /etc/group
+echo ""
+echo "XCFGD Configurator - wait 5"
+echo ""
+XCFGDIR=/config
+[ -d $XCFGDIR ] || mkdir -p $XCFGDIR
+mount /dev/mmcblk0p6 $XCFGDIR
+/sbin/run_xcfgd.sh \
+    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
-## register root user
-echo "root:x:0:0:root:/root:/bin/sh" > /etc/passwd
+echo "Waiting it for getting ready to work.."
+busywait 3
 
-## shadow file for password 
-echo "root:*:16897:0:99999:7:::" > /etc/shadow
+##
+## Macros needed to access configuration
+##
+ASK='xcfgcli.sh get'
 
-## password 
-echo "root:" | chpasswd
-
-DATEVAL="2019.08.01-12:00:00"
+DATEVAL="2022.10.30-12:00:00"
 date $DATEVAL
 
-echo ""
-echo ""
-echo "WORK PARTITION ..."
-echo ""
-echo ""
-mount /dev/mmcblk0p6 /home/root
 
 echo ""
+echo "Logging daemon"
 echo ""
-echo "GIT ... "
-echo ""
-echo ""
-git config --global core.pager 'more'
+SYSLOG=`$ASK operation/syslog/en`
+if [ "$SYSLOG" = "1" ]; then 
+    NETLOT=""
+    NETSYSL=`$ASK operation/syslog/mode`
+    if [ "$NETSYSL" = "remote" ]; then
+        LOGSVRIP=`$ASK operation/syslog/ip`
+        LOGSVRPORT=`$ASK operation/syslog/port`
+        NETLOPT="-R $LOGSVRIP:$LOGSVRPORT"
+    fi  
+    syslogd $NETLOPT -s 10240 -b 0 -l 8 -O /var/log/messages
+    klogd
+fi
+
 
 echo ""
+echo "USER "
 echo ""
-echo "PYTHON ... "
-echo ""
-echo ""
-source /bin/python_env.sh /
+cnt=0
+done=0
+while [ "$done" = "0" ]
+do
+    valid=`$ASK user/u$cnt/valid`
+    if [ "$valid" = "error" ]; then
+        done=1;
+    fi  
+    if [ "$valid" = "1" ]; then
+        un=`$ASK user/u$cnt/name`
+        pw=`$ASK user/u$cnt/passwd`
+        if [ ! -d /home/$un ]; then
+            mkdir /home/$un
+            adduser -h /home/$un -G root -s /bin/sh -D $un 
+            echo "$un:$pw" | chpasswd
+            echo "User [ $un/$pw ] created"
+        fi
+    fi  
+    cnt=`expr $cnt + 1`
+done
+
 
 echo ""
+echo "GIT "
 echo ""
-echo " QT Runtime environment"
+[ ! -f /bin/git ] || git config --global http.sslVerify false
+[ ! -f /bin/git ] || git config --global core.pager 'more'
+
+
 echo ""
+echo "PYTHON  "
+echo ""
+[ ! -f /bin/python_env.sh ] || /bin/python_env.sh / 
+
+
+echo ""
+echo "QT Runtime environment"
 echo ""
 QT=Qt-5.12.12
 export QT_PLUGIN_PATH=/usr/local/$QT/plugins
-export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/local/lib:/usr/local/$QT/lib:/usr/local/lib/pulseaudio/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/$QT/lib:/usr/local/lib/pulseaudio/
+
 
 echo ""
+echo "SSH SERVER "
+echo ""
+SSHDIR=/root/.ssh
+SSHEN=`$ASK ssh/en`
+if [ "$SSHEN" = "1" ]; then
+    echo ""
+    echo "SSH key setup in $SSHDIR "
+    echo ""
+    [ -d $SSHDIR ] || mkdir -p $SSHDIR
+    [ -f $SSHDIR/id_rsa ] || ( \
+        ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+
+    echo ""
+    echo "SSH daemon"
+    echo ""
+    /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa
+fi
+
+
 echo ""
 echo "INIT FILE STARTS ..."
-echo ""
 echo ""
 cnt=0
 while true 
@@ -112,12 +197,12 @@ do
 	cnt=`expr $cnt + 1`
 done
 
+
 echo ""
+echo "Linux Terminal ..."
 echo ""
-echo "CONSOLE ..."
-echo ""
-echo ""
-export COLUMNS=512
+export COLUMNS=160
+export TERM=linux
 
 sleep 1
 

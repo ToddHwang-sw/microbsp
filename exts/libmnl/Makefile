@@ -1,14 +1,13 @@
-DIR=libmnl
-LOC=git://git.netfilter.org
-	
+DIR=libmnl-1.0.5
+LOC=http://www.netfilter.org/projects/libmnl/files
+
+
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	@$(MICB_CONFIGURE_AUTOCONF)
+	@[ -f $(MICBSRC)/$(DIR).tar.bz2  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

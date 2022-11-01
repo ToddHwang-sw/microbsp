@@ -4,21 +4,24 @@ WPACONFDIR=/var/tmp/wpa_supplicant
 PIDDIR=/var/run/wpa_supplicant
 CFILE=1.conf
 
-. /boot/conf.sys
-
-tcpdump_CMD="tcpdump -i $STAINTERFACE"
-tcpdump_PID=`ps -aef | grep -e $tcpdump_CMD | head -n 1 | awk '{print $1}'`
+ASK='xcfgcli.sh get '
+STAINT=`$ASK wan/name`
+USESTA=`$ASK wan/mode`
+STACAPTURE=`$ASK wan/capture`
+STASSID=`$ASK wan/ssid`
+STAPASSWORD=`$ASK wan/password`
 
 case $1 in
 	"start")
-		[ "$USESTA" = "1" ] || exit 0
+		[ "$USESTA" != "none" ] || exit 0
 
-		ifconfig $STAINTERFACE up
+		ifconfig $STAINT up
 
 		##
 		## tcpdump 
 		##
-		[ "$STACAPTURE" = "0" ] || $tcpdump_CMD -c 99999 -w /var/tmp/pcap_$STAINTERFACE.pcap &
+		[ "$STACAPTURE" = "0" ] || \
+            tcpdump -i $STAINT -c 99999 -w /var/tmp/pcap_$STAINT.pcap &
 
 		echo "[WLAN] Building up $WPACONFDIR/$CFILE"
 		[ -d $WPACONFDIR ] || mkdir -p $WPACONFDIR
@@ -39,7 +42,7 @@ case $1 in
 
 		echo "[WLAN] Running WPA Suppplicant !!"
 		[ -d $PIDDIR ] || mkdir -p $PIDDIR
-		wpa_supplicant -B -D wext -i $STAINTERFACE -c $WPACONFDIR/$CFILE -P $PIDDIR/wpa.pid
+		wpa_supplicant -B -D wext -i $STAINT -c $WPACONFDIR/$CFILE -P $PIDDIR/wpa.pid
 		cnt=0
 		while [ $cnt -lt 3 ];  do
 			echo "Waiting Connect .. $cnt"
@@ -47,42 +50,58 @@ case $1 in
 			cnt=`expr $cnt + 1`
 		done
 
+        ## eth0 MAC address
+        ETHMAC=`$ASK wan/mac`
+        if [ "$ETHMAC" = "random" ]; then
+            ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
+        fi
+        ifconfig $STAINT hw ether $ETHMAC
+
+        NETMODE=`$ASK wan/mode`
+        if [ "$NETMODE" = "dhcp" ]; then
+            echo "IPv4 DHCP ..."
+            /etc/scripts/dhcpc.sh start $STAINT
+        else
+            IP=`$ASK wan/ip`
+            NETMASK=`$ASK wan/netmask`
+            ifconfig $STAINT $IP netmask $NETMASK up
+            route add -net 0.0.0.0 dev $STAINT
+        fi
+
 		#
 		# IPv4 
 		#
-		echo "IPv4 DHCP ..."
-		/etc/scripts/dhcpc.sh start $STAINTERFACE
 
 		## Waiting for IPv4 address seconds ...
 		cnt=0
 		while [ $cnt -lt 5 ]; do
-			ipnum=`ifconfig $STAINTERFACE | grep "inet addr" | wc -l`
+			ipnum=`ifconfig $STAINT | grep "inet addr" | wc -l`
 			if [ "$ipnum" = "0" ]; then
 				echo "Waiting IP .. $cnt"
 				sleep 1
 			else
-				ipaddr=`ifconfig $STAINTERFACE | grep "inet addr" | awk '{print $2}'`
+				ipaddr=`ifconfig $STAINT | grep "inet addr" | awk '{print $2}'`
 				ipaddr=${ipaddr#addr:}
 				echo "IP address '$ipaddr' configured."
 				break
 			fi
 			cnt=`expr $cnt + 1`
 		done
-
 		;;
 	"stop")
 		echo "[WLAN] Shutting down..."
-		/etc/scripts/dhcpc.sh   stop $STAINTERFACE
+		/etc/scripts/dhcpc.sh stop $STAINT
 
 		pid=`cat $PIDDIR/wpa.pid`
 		kill -9 $pid
 		pid=`cat $PIDDIR/udhcpc.pid`
 		kill -9 $pid
-		ifconfig $STAINTERFACE down 
+		ifconfig $STAINT down 
 
 		echo "[WLAN] TCPDUMP down..."
-		[ "$STACAPTURE" = "0" ] || kill -9 $tcpdump_PID
+		[ "$STACAPTURE" = "0" ] || killall tcpdump
 		;;
 	"*")
 		;;
 esac
+

@@ -1,13 +1,53 @@
-diff --git a/src/scanner.l b/src/scanner.l
-index 45699c8..cd7cfaa 100644
---- a/src/scanner.l
-+++ b/src/scanner.l
-@@ -10,7 +10,7 @@
+diff -uNr nftables-0.9.7-original/src/nfnl_osf.c nftables-0.9.7/src/nfnl_osf.c
+--- nftables-0.9.7-original/src/nfnl_osf.c	2020-10-27 03:06:37.005670004 -0700
++++ nftables-0.9.7/src/nfnl_osf.c	2022-10-31 18:40:25.365000010 -0700
+@@ -27,8 +27,8 @@
+ #include <string.h>
+ #include <time.h>
  
- %{
+-#include <netinet/ip.h>
+-#include <netinet/tcp.h>
++/*#include <netinet/ip.h>
++#include <netinet/tcp.h> */
  
--#include <limits.h>
-+#include <linux/limits.h>
- #include <glob.h>
- #include <netinet/in.h>
- #include <arpa/inet.h>
+ #include <linux/unistd.h>
+ 
+diff -uNr nftables-0.9.7-original/src/parser_bison.c nftables-0.9.7/src/parser_bison.c
+--- nftables-0.9.7-original/src/parser_bison.c	2020-10-27 03:07:18.373656809 -0700
++++ nftables-0.9.7/src/parser_bison.c	2022-10-31 18:48:03.331915338 -0700
+@@ -87,7 +87,22 @@
+ #include <linux/netfilter/nf_conntrack_tuple_common.h>
+ #include <linux/netfilter/nf_nat.h>
+ #include <linux/netfilter/nf_log.h>
+-#include <linux/netfilter/nfnetlink_osf.h>
++/* #include <linux/netfilter/nfnetlink_osf.h> */
++
++#ifndef NF_OSF_TTL_TRUE
++    #define NF_OSF_TTL_TRUE			0	/* True ip and fingerprint TTL comparison */
++#endif
++
++/* Check if ip TTL is less than fingerprint one */
++#ifndef NF_OSF_TTL_LESS
++    #define NF_OSF_TTL_LESS			1
++#endif
++
++/* Do not compare ip and fingerprint TTL at all */
++#ifndef NF_OSF_TTL_NOCHECK
++    #define NF_OSF_TTL_NOCHECK		2
++#endif
++
+ #include <linux/netfilter/nf_synproxy.h>
+ #include <linux/xfrm.h>
+ #include <netinet/ip_icmp.h>
+diff -uNr nftables-0.9.7-original/src/rule.c nftables-0.9.7/src/rule.c
+--- nftables-0.9.7-original/src/rule.c	2020-10-27 03:06:37.017669999 -0700
++++ nftables-0.9.7/src/rule.c	2022-10-31 18:38:23.008200514 -0700
+@@ -33,7 +33,7 @@
+ #include <linux/netfilter_arp.h>
+ #include <linux/netfilter_ipv4.h>
+ #include <linux/netfilter/nf_synproxy.h>
+-#include <net/if.h>
++/* #include <net/if.h> */
+ #include <linux/netfilter_bridge.h>
+ 
+ static const char *const tcp_state_to_name[] = {

@@ -2,12 +2,8 @@
 
 case $1 in
         "start")
-                modprobe cfg80211
-                modprobe mac80211
                 ;;
         "stop")
-                rmmod mac80211
-                rmmod cfg80211
                 ;;
 esac
 

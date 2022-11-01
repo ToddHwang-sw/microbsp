@@ -1,18 +1,13 @@
-DIR=libnftnl
-LOC=-b libnftnl-1.2.1 git://git.netfilter.org
-	
+DIR=libnftnl-1.1.8
+LOC=http://www.netfilter.org/projects/libnftnl/files
+
 include $(TOPDIR)/scripts/extenv.mk
-
-MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
-
-MICB_CONFIGURE_PRG=./configure 
 
 MICB_DEPENDS = libmnl
 
 prepare:
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR) ; git clone --single-branch $(LOC)/$(DIR).git )
-	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

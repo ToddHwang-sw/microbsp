@@ -1,9 +1,15 @@
 #!/bin/sh
 
-. /boot/conf.sys
+ASK='xcfgcli.sh get '
 
 OPR=$1
-LAN=$BRINTERFACE
+LAN=`$ASK lan/name`
+
+IPV6_ID=`$ASK lan/ipv6/id`
+STAINTF=`$ASK wan/name`
+APIP=`$ASK lan/ip`
+APNET=${APIP%.*}
+APNODE=${APIP##*.}
 
 PREFIX_LEN=64
 GPREFIX_LEN=128
@@ -24,16 +30,9 @@ GOOGLEDNS1=2001:4860:4860::8888
 GOOGLEDNS2=2001:4860:4860::8844
 
 radvd_start() {
-
 	if [ -f $RADVD_CONF ]; then 
 		rm -f $RADVD_CONF
 	fi
-
-	if [ "$USE_NAT6" = "1" ]; then
-                IPV6NS="$IPV6_ADDR"
-        else
-		IPV6NS=$(echo `cat /etc/resolv.conf | grep ":" | sed -e 's/nameserver //g'`)
-        fi
 
 	cat > $RADVD_CONF <<-EOF
 	interface $LAN {
@@ -53,7 +52,8 @@ radvd_start() {
 			AdvPreferredLifetime 4294967295;
 		};
 
-		RDNSS $IPV6NS {
+		RDNSS $GOOGLEDNS1 $GOOGLEDNS2 {
+            AdvRDNSSLifetime 30;
 		};
 	}; 
 	EOF
@@ -62,7 +62,7 @@ radvd_start() {
 	echo $PREFIX_ADDR > $PREFIXFILE
 
 	# global address setting ~
-	[ "$IPV6INFO" = "" ] || ifconfig $LAN add $IPV6_ADDR/$GPREFIX_LEN
+	ifconfig $LAN add $IPV6_ADDR/$GPREFIX_LEN
 	echo $IPV6_ADDR > $ADDRFILE
 
 	#
@@ -74,10 +74,11 @@ radvd_start() {
 	prefix=$PREFIX_ADDR:
 	interface=$LAN
 	EOF
-	[ "$IPV6INFO" = "" ] || npd6 -c $NPDCONF
+	npd6 -c $NPDCONF
 
 	# Run radvd (2 process)
-	[ "$IPV6INFO" = "" ] || ( radvd -C $RADVD_CONF -p $RADVD_PID;  sleep 3 )
+	radvd -C $RADVD_CONF -p $RADVD_PID
+    sleep 3
 
 	# DHCPv6
 	BR0_IPV6_ADDR=`ifconfig br0 | grep "Scope:Link" | awk {'print $3'} | cut -d "/" -f 1`
@@ -89,12 +90,13 @@ radvd_start() {
 	EOF
 	rm -f $DHCPD_V6_LEASE
 	touch $DHCPD_V6_LEASE
-	[ "$IPV6INFO" = "" ] || ( dhcpd -6 -cf $DHCPD_V6_CONF -lf $DHCPD_V6_LEASE -pf $DHCPD_V6_PID $LAN ; sleep 1 )
+	dhcpd -6 -cf $DHCPD_V6_CONF -lf $DHCPD_V6_LEASE -pf $DHCPD_V6_PID $LAN
+    sleep 1
 
 	echo "[DNS] Masquerading start ..."
 	echo "$APNET.$APNODE  $DOMAIN" > $DNSCONF
-	[ "$IPV6INFO" = "" ] || echo "$IPV6_PREFIX$IPV6_ID  $DOMAIN" >> $DNSCONF
-	dnsmasq -a $APNET.$APNODE -i $BRINTERFACE -H $DNSCONF -r /etc/resolv.conf -u root -x $DNSPIDFILE
+	echo "$IPV6_PREFIX$IPV6_ID  $DOMAIN" >> $DNSCONF
+	dnsmasq -a $APNET.$APNODE -i $LAN -H $DNSCONF -r /etc/resolv.conf -u root -x $DNSPIDFILE
 	sleep 1
 }
 
@@ -121,11 +123,9 @@ radvd_stop() {
 	fi
 }
 
-IPV6INFO=`ifconfig $STAINTERFACE | grep -e "Scope:Global" | awk '{print $3}'`
+IPV6INFO=`ifconfig $STAINTF | grep -e "Scope:Global" | awk '{print $3}'`
 if [ "$IPV6INFO" != "" ]; then
-        if [ "$USE_NAT6" = "0" ]; then
-                IPV6_PREFIX=${IPV6INFO%::*}"::"
-        fi
+    IPV6_PREFIX=${IPV6INFO%::*}"::"
 fi
 
 IPV6_ADDR=$IPV6_PREFIX$IPV6_ID
@@ -134,13 +134,13 @@ PREFIX_ADDR_STR_LEN=$(expr $TEMP_VALUE \* 4 + $TEMP_VALUE - 1)
 PREFIX_ADDR=${IPV6_ADDR:0:$PREFIX_ADDR_STR_LEN}
 
 case $OPR in
-        start)
-                radvd_start 
-                ;;
-        stop) 
-                radvd_stop 
-                ;;
-        *) 
-		;;
+    start)
+        radvd_start 
+        ;;
+    stop) 
+        radvd_stop 
+        ;;
+    *) 
+        ;;
 esac
 

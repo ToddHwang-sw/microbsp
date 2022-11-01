@@ -1,57 +1,90 @@
 
 
+Why not using Yocto  
+------------
 
-WHY MicroBSP
-==========
+
+* **Yocto** must be the strongest player in embedded Linux BSP(Board Support Package) tracks. In programmer's viewpoint, I think the followings are amazing characteristics of the Yocto.   
+  - The greatest attraction of the Yocto is fully automatic build dependency setup. - Just user simply specify dependency with a keyword "DEPENDS", and the Yocto constructs full dependency tree and tries to build from the bottom nodes of the tree. 
+  - QEMU basis cross compilation strategy provides a total environmental separation from host machine, which will not be interfered/conflicted with host machine environment.
+  - No occurrence of root access authentication during compilation. - None of CLI commands beginning with "sudo" .
+  - Packaging is also supported in various forms; rpm, ipk, .. 
+ 
+* Many detail operations of Yocto are totally implemeted/abstracted from "Python" classes, and it is not easy to understand how they work. 
+
+* Final usages of BSP sources for embedded system are usually limited to 2 or 3 such as cross compiler generation, building applications, required utilities and the creation of final image to be downloaded into embedded board. 
 
 
-* Everyone is now happy with diverse uses and mega-tons of free resources of raspberry pi.
-* How about embedded system system programmer ?? - Still they are happy too?
-* None of source-level software distribution for raspberry PI is disclosed on the Internet. It's very scarce.
-* Just downloading and flashing images into SD card cannot make system programmer happy who is strongly eager to dig into system bottom level.
-* Poor system programmer like me just can only spend less than \$50 for an embedded platform. - Raspberry PI becomes the answer.
-* <strong>Yocto</strong> - a bunch set of meta-layers could be stressful to a system programmer exteremely familiar with old-dated build trees like uClinux.
-* As a consequence, I simply ran to UART console based raspberry pi embedded board. I don't want fancy desktop environment, even I don't have extra mouse and keyboard to manipulate graphical widgets on HDMI monitor. HDMI monitor? Oh.. its more than $150 on Amazon.
 
 MicroBSP
 ------------
-1. MicroBSP has been intended for 
-- Quick verification of application/environment of Linux environment
-- Verification/testing of Linux kernel functions. 
- 
-2. MicroBSP is to assist the needs for my private individual reason and public share purposes based on its inherent flexibility and simplicity.
 
-SHORTAGES
-==========
+* I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **QEMU VM** - Yocto is too much big cat to catch up these mices only for my private use. 
+
+* **Raspberry PI** is the cheapest embedded board I can purchase easily from Amazon in less than $40, and **QEMU VM** can be easily activated in Ubuntu Linux installed PC. -  For poor system programmer like me, Raspberry PI becomes the right answer.
+
+* I want the BSP to keep folder/source structure to be easily hacked/manipulated. 
+
+* I don't want fancy desktop environment since I have no extra mouse and keyboard to use with the raspberry pi. HDMI monitor for the PI ? Oh.. no its more than $100 on Amazon. Just simple UART connection with the embedded board will be good for me. 
+
+* **MicroBSP** can be used for 
+	- Quick verification of GNU applications in embedded environment 
+	- Fast evaluation of embedded application 
+	- Fast evaluation of Linux kernel features 
+
+* MicroBSP is to assist the needs for my private individual reason and public share purposes based on its inherent flexibility and simplicity.
+
+Summary
+------------
 
 
-* Since MicroBSP is based on classic Makefile, I could not find a way to automatically resolve <strong>build dependency</strong>.
-* User should not change the order of folders listed in a environment <strong>SUBDIR</strong> in top-level Makefile.
-* Python based build system like "Yocto" can generate <strong>RPM</strong> packages but MicroBSP cannot construct RPM packages yet.
-* MicroBSP does not use QEMU VM system based cross compilation like "Yocto".
+* MicroBSP vs. Yocto 
+
+|           | Yocto     |  MicroBSP       |
+|-----------|-----------| --------------- |
+| Host Cross Toolchain | Yes       |  Yes            |
+| Native Cross Toolchain | Yes       |  Yes            |
+| ARM CPU   | Yes       |  Yes            |
+| Intel CPU | Yes       |  Yes            |
+| 32bit     | Yes       |  No             |
+| Packages  | rpm,ipk,..  |  No             |
+| Versioning| Yes       |  No             |
+| Final Images   | Yes |  Yes             |
+| Core/Board Separation    | Yes |  No    |
+| Kernel/Application Separation    | No   |  No    |
+
+* 32 bit CPU board was not tested with MicroBSP. 
+* CPU core and board is not separated in MicroBSP. - Even board A and board B are using the same core type "Cortex-A53", but we need to use 2 arch layers for both boards.  
+
+* MicroBSP is 100% Makefile based raspberry pi software build tree. 
+* Building transaction should begin with <strong>GNU cross toolchain construction</strong>.
+* Everything has been tested and proved in <strong>Ubuntu 22.04</strong>.
+* The followings are used to compose cross toolchain from MicroBSP. 
+
+|  S/W       | Version  |
+|------------|----------|
+|   GLIBC    |  2.36    |
+|   GCC      |  11.2.0  |
+|  BINUTILS  |  2.38    |
+|   BASH     |  5.1.8   |
+|  BUSYBOX   |  1.35.0  |
+
+* Version of each native applications/libraries can be found in corresponding Makefile, and the following simply enumerates a few of those. 
 
 
-NOTICE
-==========
+|  S/W       | Version  |
+|------------|----------|
+| OpenSSL    |  1.1.1c  |
+|   GDB      |  11.2    |
+|   Perl     |  5.24.1  |
+|  Python    |  3.10.8  |
 
-* MicroBSP is 100% Makefile based raspberry pi software build tree.
-* Software building begins with <strong>GNU toolchain construction</strong>.
-* Everything has been tested and proved in <strong>Ubuntu 20.04</strong>.
-* MicroBSP kicks at the starting line in cross compiler build to QT graphic system.
-* Raspberry PI 3+ has been used for coding for MicroBSP. (boards/rpi3)
-* X86_64 platform has been tested through QEMU emulator in ubuntu.
+* MicroBSP has **Overlay File System** basis booting policy. 
+* Total booting disk image has the following hierarchy. 
 
-July/17/2022
-* Development branch (dev1) has been modifed for <strong>Ubuntu LTS22.04 </strong>.
-* "QT" is not supported. - How to build ?? 
 
-Oct/11/2022
-* GLIBC version is now 2.36
-* GCC   version is now 11.2.0
-* BINUTILS version is now 2.38
-
-Required Softwares
-===============================
+<span style="color:blue; font-size:4em">Setting up Prerequisite Utilities/Libraries</span>
+==========================
 
 - Fundamental libraries/applications will be installed by the following command.
 - <strong>This can work in Ubuntu. </strong>
