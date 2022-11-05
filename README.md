@@ -15,8 +15,6 @@ Why not using Yocto
 * Final usages of BSP sources for embedded system are usually limited to 2 or 3 such as cross compiler generation, building applications, required utilities and the creation of final image to be downloaded into embedded board. 
 
 
-![](doc/MyfileTest.png)
-
 MicroBSP
 ------------
 
