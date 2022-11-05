@@ -10,11 +10,12 @@ Why not using Yocto
   - No occurrence of root access authentication during compilation. - None of CLI commands beginning with "sudo" .
   - Packaging is also supported in various forms; rpm, ipk, .. 
  
-* Many detail operations of Yocto are totally implemeted/abstracted from "Python" classes, and it is not easy to understand how they work. 
+* Many detail operations of Yocto are totally implemeted/abstracted from "Python" classes, and it is not easy to fully digest how they work. 
 
 * Final usages of BSP sources for embedded system are usually limited to 2 or 3 such as cross compiler generation, building applications, required utilities and the creation of final image to be downloaded into embedded board. 
 
 
+![](doc/MyfileTest.png)
 
 MicroBSP
 ------------
@@ -71,13 +72,19 @@ Summary
 
 * Version of each native applications/libraries can be found in corresponding Makefile, and the following simply enumerates a few of those. 
 
-
 |  S/W       | Version  |
 |------------|----------|
 | OpenSSL    |  1.1.1c  |
 |   GDB      |  11.2    |
 |   Perl     |  5.24.1  |
 |  Python    |  3.10.8  |
+
+* Linux kernels used for both raspberry pi and QEMU VM are as follows. 
+
+|  Type            | Linux kernel version |
+|------------------|----------------------|
+| Raspberry PI     |  5.10.x              |
+| QEMU VM          |  5.17.7              |
 
 * MicroBSP has **Overlay File System** basis booting policy. 
 * Total booting disk image has the following hierarchy. 
@@ -93,7 +100,6 @@ Summary
 
   # make installcomps
 ```
-
 
 <span style="color:blue; font-size:4em">Raspberry PI</span>
 ===============
@@ -116,7 +122,6 @@ Operation Setup
   - WLAN1 : Raspberry PI Built-in WLAN (<strong>Broadcom BRCM43455</strong>)
 * WAN
   - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek</strong>)
-* IPv6 support
 * UART baudrate = 921600bps (not 115200bps)
 
 Booting Shot
