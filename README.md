@@ -94,18 +94,21 @@ Overlay Root File System
 
 The following shows the structure of root file system constructed by overlay file system mount process. Overlay file system components; lower, upper, work directory is organized with folders in both **_base** and **_stagedir** created after the step **Boot Image Building** .  
 
-
-|  Type            |  Folders                | 
+|  Dir Type        |  Folders                | 
 |------------------|-------------------------|
 | Lower dir        |  _base , _stagedir/usr  |
-| Upper dir        |  _stagedir/up            |
-| Work  dir        |  _stagedir/work          |
+| Upper dir        |  _stagedir/up           |
+| Work  dir        |  _stagedir/work         |
 
 - Upper dir and Work dir should be placed in the same disk partition so they are located in the same folder **_stagedir**. 
 
+- **_base** is populated from both libs/ and apps/ in MicroBSP. 
+- **_stagedir** is populated from exts/ folder in MicroBSP. 
+- Applications in bootstrap image **rootfs.cramfs** is populated from **apps/busybox** . 
+
 ![](doc/overlay_hierarchy.png)
 
-About detail description of **overlay file system** , please refer to [How/What Overlay File System Does](https://www.datalight.com/blog/2016/01/27/explaining-overlayfs-%E2%80%93-what-it-does-and-how-it-works/).
+- About detail description of **overlay file system** , please refer to [How/What Overlay File System Does](https://www.datalight.com/blog/2016/01/27/explaining-overlayfs-%E2%80%93-what-it-does-and-how-it-works/).
 
 - File system mount is achieved in two steps;
 	* First, bootstrap file system is mounted at booting time
@@ -134,6 +137,12 @@ Testbed Components
 * [UART Cable for Raspberry PI](https://www.amazon.com/FEANTEEK-TTL232R-Raspberry-Serial-Windows/dp/B08HLSS5T4/ref=sr_1_1_sspa?keywords=raspberry+pi+3%2B+UART+cable&qid=1636520578&sr=8-1-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExTEFJTFcwNlNKT0lIJmVuY3J5cHRlZElkPUEwMjc5MjEwTjlUUDBEWEtNTzJTJmVuY3J5cHRlZEFkSWQ9QTA3NDE2NTBMV0xWUDdaRlZFV0gmd2lkZ2V0TmFtZT1zcF9hdGYmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl )
 
 * [TP-Link USB WiFi Dongle](https://www.amazon.com/TP-Link-TL-WN823N-Wireless-network-Raspberry/dp/B0088TKTY2/ref=sr_1_15?keywords=tp+link+usb+wifi+adapter&qid=1636520657&qsid=132-7915930-0137541&sr=8-15&sres=B08D72GSMS%2CB008IFXQFU%2CB07P6N2TZH%2CB08KHV7H1S%2CB07PB1X4CN%2CB07P5PRK7J%2CB00JBJ6VG8%2CB00YUU3KC6%2CB002SZEOLG%2CB00K11UIV4%2CB0088TKTY2%2CB01MR6M8EC%2CB00HC01KMS%2CB0799C35LV%2CB01NBMJGA9%2CB00A8GVNNY&srpt=NETWORK_INTERFACE_CONTROLLER_ADAPTER)
+
+How it looks
+---------
+
+![](doc/rpi.png)
+
 
 Operation Setup
 ---------
