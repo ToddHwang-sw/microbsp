@@ -825,10 +825,10 @@ Device     Boot    Start      End  Sectors  Size Id Type
 |  /dev/sde2 |  rootfs.squashfs |
 |  /dev/sde3 |  image.ext4      |
 |  /dev/sde5 |  ui.ext4         |
-|  /dev/sde6 |       X          |
+|  /dev/sde6 |  config.ext4     |
 |  /dev/sde7 |       X          |
 
-- /dev/sde5 is mounted into /root . /dev/sde6 and /dev/sde7 are overlayed.
+- /dev/sde5 is mounted into /root . /dev/sde7 are overlayed.
 - User can copy images into partitions as follows.
 
 ```#!/bin/sh
@@ -846,62 +846,63 @@ Device     Boot    Start      End  Sectors  Size Id Type
   # sudo ./format_sdcard.sh sdc
 ```
 
-- Rootfs.squashfs , boot.tgz, image.ext4 are all copied into the disk.
+- Rootfs.squashfs , boot.tgz, image.ext4, config.ext4 are all copied into the disk.
 - CAUTION) Existing partitions on the SDcard will be deleted upon running "format_sdcard.sh" .
 
 # [5] WLAN Configuration
 
-- The following is a file <strong>boards/rpi3/firmware/conf.sys</strong> for configuration file.
-- Simply change values of <strong>STASSID</strong> and <strong>STAPASSWORD</strong> attributes as defined in your WLAN environment.
-By default, <em>LOOSERS</em> and <em>12345678</em> are used.
+- User can configure required settings by using a tool **xcfgcli.sh** as follows. 
 
 ```#!/bin/sh
+bash-5.1# 
+bash-5.1# xcfgcli.sh get wan | jq
+{
+  "mode": "dhcp",
+  "name": "wlan0",
+  "mac": "random",
+  "ssid": "finemyap",
+  "password": "12345678",
+  "ip": "192.167.0.162",
+  "netmask": "255.255.255.0",
+  "gateway": "192.167.0.1",
+  "dns": "8.8.8.8",
+  "ipv6": {
+    "mode": "dhcp",
+    "global": "2001:b0d8:2233:1000::",
+    "local": "4400::",
+    "plen": "64",
+    "id": "1"
+  },
+  "capture": "0"
+}
+bash-5.1# 
 
-##
-## WiFi AP
-##
-USEAP=1
-BRCAPTURE=1
-BRINTERFACE=br0
-ETHINTERFACE=eth0
-APINTERFACE=wlan1
-APSSID=RPI3
-APPASSWORD=12345678
-
-# Only C class
-APNET=172.145.1
-APNODE=1
-APMASK=255.255.255.0
-DOMAIN=todd.rpi3.com
-DHCPSTART=100
-DHCPEND=200
-
-##
-## IPv6 RADVD
-##
-IPV6_PREFIX=2602:9900:1234:6e4c::
-IPV6_ID=2000
-USE_NAT6=1
-
-##
-## WiFi STA
-##
-USESTA=1
-STACAPTURE=1
-STAINTERFACE=wlan0
-STASSID=LOOSERS
-STAPASSWORD=12345678
-
-##
-## TL-WN725N : 8188eu (150Mbps)
-## TL-WN825N : 8192eu (300Mbps)
-##
-RTKDRV=8192eu
 
 ```
 
-- <strong>APSSID</strong> and <strong>APPASSWORD</strong> are SSID and password used for internal LAN adaptation.
-- <strong>APNET></strong> and <strong>APMASK</strong> is IP address ranges distributed to attached stations.
+- <strong>ssid</strong> and <strong>password</strong> in **wan** section are used for home gateway connection.
+
+```#!/bin/sh
+bash-5.1# 
+bash-5.1# 
+bash-5.1# xcfgcli.sh put wan/ssid MyHomeNetwork
+MyHomeNetwork
+bash-5.1# STORAGE UPDATE 
+
+bash-5.1# 
+bash-5.1# 
+bash-5.1# xcfgcli.sh put wan/password onetwothree
+onetwothree
+bash-5.1# STORAGE UPDATE 
+
+bash-5.1# 
+
+
+```
+
+
+- User can see **/config/db** file and it keeps all configuration variable managed through **xcfgcli.sh**, and  **/etc/config.xml** is the XML file maintaining all configurable parameters defined in raspberry PI setup. 
+
 
 
 # [6] Available Packages 
