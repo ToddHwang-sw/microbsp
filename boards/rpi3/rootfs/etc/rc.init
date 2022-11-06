@@ -154,7 +154,7 @@ echo ""
 echo ""
 echo "PYTHON  "
 echo ""
-[ ! -f /bin/python_env.sh ] || /bin/python_env.sh / 
+[ ! -f /bin/python_env.sh ] || source /bin/python_env.sh / 
 
 
 echo ""

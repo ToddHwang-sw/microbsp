@@ -88,6 +88,43 @@ Summary
 * Total booting disk image has the following hierarchy. 
 
 
+Folder Hierarchy
+------------
+
+The directory hieararchy of MicroBSP is...
+
+
+```#!/bin/sh
+
+  # ls
+  todd@vostro:/media/todd/work/microbsp$ ls -la
+  total 260
+  drwxrwxr-x 13 todd todd  4096 Nov  6 07:12 .  
+  drwxrwxr-x  4 todd todd  4096 Oct 26 13:19 ..
+  drwxrwxr-x  7 todd todd  4096 Oct 26 09:18 apps
+  drwxrwxr-x  5 todd todd  4096 Oct 23 14:09 arch
+  drwxrwxr-x  5 todd todd  4096 Oct 23 14:09 boards
+  drwxrwxr-x  2 todd todd  4096 Nov  6 06:46 doc
+  drwxrwxr-x 65 todd todd  4096 Nov  2 20:01 exts
+  drwxrwxr-x  8 todd todd  4096 Nov  5 21:40 .git
+  drwxrwxr-x  8 todd todd  4096 Oct 23 14:11 gnu
+  drwxrwxr-x 37 todd todd  4096 Oct 26 09:35 libs
+  -rw-rw-r--  1 todd todd 29714 Nov  3 06:51 Makefile
+  -rw-rw-r--  1 todd todd 87500 Nov  6 07:12 README.md
+  drwxrwxr-x  2 todd todd  4096 Nov  2 22:13 scripts
+  drwxrwxr-x 43 todd todd  4096 Oct 25 20:27 uix
+  todd@vostro:/media/todd/work/microbsp$ 
+
+```
+
+
+|  Folders       | Description   |
+|----------------|----------|
+| **apps/**          | Basic application required for bootstrap disks |
+| **libs/**          | Libraries  |
+| **exts/**          | Libraries/Applications for high level functions  |
+| **uix/**           | Graphic/Multimedia related Libraries/Applications   |
+
 
 Overlay Root File System 
 ------------

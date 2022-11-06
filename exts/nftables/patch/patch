@@ -1,17 +1,3 @@
-diff -uNr nftables-0.9.7-original/src/nfnl_osf.c nftables-0.9.7/src/nfnl_osf.c
---- nftables-0.9.7-original/src/nfnl_osf.c	2020-10-27 03:06:37.005670004 -0700
-+++ nftables-0.9.7/src/nfnl_osf.c	2022-10-31 18:40:25.365000010 -0700
-@@ -27,8 +27,8 @@
- #include <string.h>
- #include <time.h>
- 
--#include <netinet/ip.h>
--#include <netinet/tcp.h>
-+/*#include <netinet/ip.h>
-+#include <netinet/tcp.h> */
- 
- #include <linux/unistd.h>
- 
 diff -uNr nftables-0.9.7-original/src/parser_bison.c nftables-0.9.7/src/parser_bison.c
 --- nftables-0.9.7-original/src/parser_bison.c	2020-10-27 03:07:18.373656809 -0700
 +++ nftables-0.9.7/src/parser_bison.c	2022-10-31 18:48:03.331915338 -0700

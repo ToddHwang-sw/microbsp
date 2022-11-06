@@ -4,9 +4,9 @@ ASK='xcfgcli.sh get '
 
 OPR=$1
 LAN=`$ASK lan/name`
+WAN=`$ASK wan/name`
 
 IPV6_ID=`$ASK lan/ipv6/id`
-STAINTF=`$ASK wan/name`
 APIP=`$ASK lan/ip`
 APNET=${APIP%.*}
 APNODE=${APIP##*.}
@@ -36,9 +36,10 @@ radvd_start() {
 
 	cat > $RADVD_CONF <<-EOF
 	interface $LAN {
+
 		AdvSendAdvert on;
-		MinRtrAdvInterval 3;
-		MaxRtrAdvInterval 10;
+		MinRtrAdvInterval 60;
+		MaxRtrAdvInterval 120;
 		AdvDefaultPreference high;
 		AdvDefaultLifetime 8999;
 		AdvReachableTime 30000;
@@ -52,9 +53,6 @@ radvd_start() {
 			AdvPreferredLifetime 4294967295;
 		};
 
-		RDNSS $GOOGLEDNS1 $GOOGLEDNS2 {
-            AdvRDNSSLifetime 30;
-		};
 	}; 
 	EOF
 
@@ -64,6 +62,7 @@ radvd_start() {
 	# global address setting ~
 	ifconfig $LAN add $IPV6_ADDR/$GPREFIX_LEN
 	echo $IPV6_ADDR > $ADDRFILE
+    ip -6 route add $PREFIX_ADDR::/$PREFIX_LEN dev $LAN
 
 	#
 	# Neighbor proxy
@@ -81,11 +80,11 @@ radvd_start() {
     sleep 3
 
 	# DHCPv6
-	BR0_IPV6_ADDR=`ifconfig br0 | grep "Scope:Link" | awk {'print $3'} | cut -d "/" -f 1`
+	LAN_IPV6_ADDR=`ifconfig $LAN | grep "Scope:Link" | awk {'print $3'} | cut -d "/" -f 1`
 	cat > $DHCPD_V6_CONF <<-EOF
 	authoritative;
 	subnet6 $PREFIX_ADDR::/$PREFIX_LEN {
-		option dhcp6.name-servers $BR0_IPV6_ADDR;
+		option dhcp6.name-servers $LAN_IPV6_ADDR;
 	}
 	EOF
 	rm -f $DHCPD_V6_LEASE
@@ -123,7 +122,7 @@ radvd_stop() {
 	fi
 }
 
-IPV6INFO=`ifconfig $STAINTF | grep -e "Scope:Global" | awk '{print $3}'`
+IPV6INFO=`ifconfig $WAN | grep -e "Scope:Global" | awk '{print $3}'`
 if [ "$IPV6INFO" != "" ]; then
     IPV6_PREFIX=${IPV6INFO%::*}"::"
 fi
