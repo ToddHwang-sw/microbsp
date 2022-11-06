@@ -88,6 +88,30 @@ Summary
 * Total booting disk image has the following hierarchy. 
 
 
+
+Overlay Root File System 
+------------
+
+The following shows the structure of root file system constructed by overlay file system mount process. Overlay file system components; lower, upper, work directory is organized with folders in both **_base** and **_stagedir** created after the step **Boot Image Building** .  
+
+
+|  Type            |  Folders                | 
+|------------------|-------------------------|
+| Lower dir        |  _base , _stagedir/usr  |
+| Upper dir        |  _stagedir/up            |
+| Work  dir        |  _stagedir/work          |
+
+- Upper dir and Work dir should be placed in the same disk partition so they are located in the same folder **_stagedir**. 
+
+![](doc/overlay_hierarchy.png)
+
+About detail description of **overlay file system** , please refer to [How/What Overlay File System Does](https://www.datalight.com/blog/2016/01/27/explaining-overlayfs-%E2%80%93-what-it-does-and-how-it-works/).
+
+- File system mount is achieved in two steps;
+	* First, bootstrap file system is mounted at booting time
+	* Second, moves to **/ovr** folder by using **"choot /ovr /etc/rc.init"** for next booting.
+
+
 <span style="color:blue; font-size:4em">Setting up Prerequisite Utilities/Libraries</span>
 ==========================
 
