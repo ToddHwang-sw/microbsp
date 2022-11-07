@@ -1,55 +1,24 @@
-diff --git a/Makefile.am b/Makefile.am
-index 423b7ed6..5472375b 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -244,7 +244,7 @@ isl_test_imath_LDFLAGS = @MP_LDFLAGS@
- isl_test_imath_LDADD = libisl.la @MP_LIBS@
- endif
- 
--isl_polyhedron_sample_LDADD = libisl.la
-+isl_polyhedron_sample_LDADD = libisl.la @MP_LIBS@
- isl_polyhedron_sample_SOURCES = \
- 	polyhedron_sample.c
- 
-@@ -288,23 +288,23 @@ isl_polyhedron_minimize_LDADD = libisl.la @MP_LIBS@
- isl_polyhedron_minimize_SOURCES = \
- 	polyhedron_minimize.c
- 
--isl_polytope_scan_LDADD = libisl.la
-+isl_polytope_scan_LDADD = libisl.la @MP_LIBS@
- isl_polytope_scan_SOURCES = \
- 	polytope_scan.c
- 
--isl_polyhedron_detect_equalities_LDADD = libisl.la
-+isl_polyhedron_detect_equalities_LDADD = libisl.la @MP_LIBS@
- isl_polyhedron_detect_equalities_SOURCES = \
- 	polyhedron_detect_equalities.c
- 
--isl_polyhedron_remove_redundant_equalities_LDADD = libisl.la
-+isl_polyhedron_remove_redundant_equalities_LDADD = libisl.la @MP_LIBS@
- isl_polyhedron_remove_redundant_equalities_SOURCES = \
- 	polyhedron_remove_redundant_equalities.c
- 
--isl_cat_LDADD = libisl.la
-+isl_cat_LDADD = libisl.la @MP_LIBS@
- isl_cat_SOURCES = \
- 	cat.c
- 
--isl_closure_LDADD = libisl.la
-+isl_closure_LDADD = libisl.la @MP_LIBS@
- isl_closure_SOURCES = \
- 	closure.c
- 
-diff --git a/configure.ac b/configure.ac
-index f082ed40..c2940a6f 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -20,7 +20,7 @@ fi
+diff -uNr isl-original/configure.ac isl/configure.ac
+--- isl-original/configure.ac	2022-11-06 20:22:17.421930462 -0800
++++ isl/configure.ac	2022-11-06 20:25:52.990606861 -0800
+@@ -20,7 +20,6 @@
  
  AC_PROG_CC
  AC_PROG_CXX
 -AX_PROG_CC_FOR_BUILD
-+##AX_PROG_CC_FOR_BUILD
  
  AX_CC_MAXOPT
  AX_GCC_WARN_UNUSED_RESULT
+Binary files isl-original/.git/index and isl/.git/index differ
+diff -uNr isl-original/m4/ax_create_pkgconfig_info.m4 isl/m4/ax_create_pkgconfig_info.m4
+--- isl-original/m4/ax_create_pkgconfig_info.m4	2022-11-06 20:22:17.545930863 -0800
++++ isl/m4/ax_create_pkgconfig_info.m4	2022-11-06 20:32:23.135756979 -0800
+@@ -216,7 +216,7 @@
+ Description: @PACKAGE_DESCRIPTION@
+ Version: @PACKAGE_VERSION@
+ Requires: @PACKAGE_REQUIRES@
+-Libs: -L\${libdir} @LDFLAGS@ @LIBS@
++Libs: -L\${libdir} @LDFLAGS@ 
+ Cflags: -I\${includedir} @CPPFLAGS@
+ AXEOF
+ fi # DONE generate $pkgconfig_generate.in

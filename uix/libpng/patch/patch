@@ -1,0 +1,10 @@
+diff -uNr libpng-1.6.37-original/libpng.pc.in libpng-1.6.37/libpng.pc.in
+--- libpng-1.6.37-original/libpng.pc.in	2019-04-14 11:10:32.000000000 -0700
++++ libpng-1.6.37/libpng.pc.in	2022-11-06 20:48:57.327820597 -0800
+@@ -8,5 +8,5 @@
+ Version: @PNGLIB_VERSION@
+ Requires: zlib
+ Libs: -L${libdir} -lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
+-Libs.private: @LIBS@
++Libs.private: -lm -ldl -lz -lpthread
+ Cflags: -I${includedir}

@@ -6,7 +6,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_CONFIGURE_OPTS += \
 	--disable-xml-docs \
 	--disable-doxygen-docs \
-	--disable-ducktype-docs
+	--disable-ducktype-docs \
+	--enable-systemd=no
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 

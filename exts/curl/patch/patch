@@ -1,8 +1,17 @@
-diff --git a/src/Makefile.in b/src/Makefile.in
-index c35b2a3..aa855e9 100644
---- a/src/Makefile.in
-+++ b/src/Makefile.in
-@@ -982,7 +982,7 @@ libcurltool.la: $(libcurltool_la_OBJECTS) $(libcurltool_la_DEPENDENCIES) $(EXTRA
+diff -uNr curl-7.81.0-original/libcurl.pc.in curl-7.81.0/libcurl.pc.in
+--- curl-7.81.0-original/libcurl.pc.in	2021-12-09 23:40:37.000000000 -0800
++++ curl-7.81.0/libcurl.pc.in	2022-11-06 20:42:52.569905522 -0800
+@@ -35,5 +35,5 @@
+ Description: Library to transfer files with ftp, http, etc.
+ Version: @CURLVERSION@
+ Libs: -L${libdir} -lcurl @LIBCURL_NO_SHARED@
+-Libs.private: @LIBCURL_LIBS@
++Libs.private: -lidn2 alssh2 -lssh2 -lnettle -lgnutls -lssl -lcrypto -lssl -lcrypto -lz -lcrypto -ldl -lgmp -lhogweed -lpthread -lssl -pthread
+ Cflags: -I${includedir} @CPPFLAG_CURL_STATICLIB@
+diff -uNr curl-7.81.0-original/src/Makefile.in curl-7.81.0/src/Makefile.in
+--- curl-7.81.0-original/src/Makefile.in	2022-01-03 13:33:07.000000000 -0800
++++ curl-7.81.0/src/Makefile.in	2022-11-06 20:40:57.193199679 -0800
+@@ -982,7 +982,7 @@
  
  curl$(EXEEXT): $(curl_OBJECTS) $(curl_DEPENDENCIES) $(EXTRA_curl_DEPENDENCIES) 
  	@rm -f curl$(EXEEXT)

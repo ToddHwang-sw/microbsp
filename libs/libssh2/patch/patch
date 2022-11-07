@@ -1,0 +1,11 @@
+diff -uNr libssh2-original/libssh2.pc.in libssh2/libssh2.pc.in
+--- libssh2-original/libssh2.pc.in	2022-11-06 19:34:51.263021665 -0800
++++ libssh2/libssh2.pc.in	2022-11-06 19:35:39.531373320 -0800
+@@ -12,6 +12,5 @@
+ Description: Library for SSH-based communication
+ Version: @LIBSSH2VER@
+ Requires.private: @LIBSREQUIRED@
+-Libs: -L${libdir} -lssh2 @LIBS@
+-Libs.private: @LIBS@
++Libs: -L${libdir} -lssh2 
+ Cflags: -I${includedir}
