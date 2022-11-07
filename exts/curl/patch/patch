@@ -6,7 +6,7 @@ diff -uNr curl-7.81.0-original/libcurl.pc.in curl-7.81.0/libcurl.pc.in
  Version: @CURLVERSION@
  Libs: -L${libdir} -lcurl @LIBCURL_NO_SHARED@
 -Libs.private: @LIBCURL_LIBS@
-+Libs.private: -lidn2 alssh2 -lssh2 -lnettle -lgnutls -lssl -lcrypto -lssl -lcrypto -lz -lcrypto -ldl -lgmp -lhogweed -lpthread -lssl -pthread
++Libs.private: -lidn2 -lssh2 -lnettle -lgnutls -lssl -lcrypto -lssl -lcrypto -lz -lcrypto -ldl -lgmp -lhogweed -lpthread -lssl -pthread
  Cflags: -I${includedir} @CPPFLAG_CURL_STATICLIB@
 diff -uNr curl-7.81.0-original/src/Makefile.in curl-7.81.0/src/Makefile.in
 --- curl-7.81.0-original/src/Makefile.in	2022-01-03 13:33:07.000000000 -0800
