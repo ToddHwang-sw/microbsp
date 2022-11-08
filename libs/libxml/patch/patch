@@ -1,0 +1,32 @@
+diff -uNr libxml2-original/configure.ac libxml2/configure.ac
+--- libxml2-original/configure.ac	2022-11-06 19:53:11.215913184 -0800
++++ libxml2/configure.ac	2022-11-06 19:58:39.132814897 -0800
+@@ -1117,7 +1117,7 @@
+ 
+ XML_LIBS="-lxml2"
+ XML_LIBTOOLLIBS="libxml2.la"
+-XML_PRIVATE_LIBS="$Z_LIBS $LZMA_LIBS $THREAD_LIBS $ICONV_LIBS $ICU_LIBS $LIBM $NET_LIBS"
++XML_PRIVATE_LIBS="-lz -llzma -lm -lpthread -ldl $ICONV_LIBS $ICU_LIBS $LIBM $NET_LIBS"
+ XML_PRIVATE_CFLAGS="$Z_CFLAGS $LZMA_CFLAGS $THREAD_CFLAGS $ICONV_CFLAGS $ICU_CFLAGS"
+ 
+ AC_SUBST(AM_CFLAGS)
+diff -uNr libxml2-original/libxml-2.0.pc.in libxml2/libxml-2.0.pc.in
+--- libxml2-original/libxml-2.0.pc.in	2022-11-06 19:53:11.323913497 -0800
++++ libxml2/libxml-2.0.pc.in	2022-11-06 20:06:58.102075870 -0800
+@@ -9,5 +9,5 @@
+ Description: libXML library version2.
+ Requires:
+ Libs: -L${libdir} @XML_LIBS@
+-Libs.private: @XML_PRIVATE_LIBS@ @LIBS@
++Libs.private: @XML_PRIVATE_LIBS@
+ Cflags: @XML_INCLUDEDIR@ @XML_CFLAGS@
+diff -uNr libxml2-original/libxml-2.0-uninstalled.pc.in libxml2/libxml-2.0-uninstalled.pc.in
+--- libxml2-original/libxml-2.0-uninstalled.pc.in	2022-11-06 19:53:11.323913497 -0800
++++ libxml2/libxml-2.0-uninstalled.pc.in	2022-11-06 20:07:07.190129339 -0800
+@@ -9,5 +9,5 @@
+ Description: libXML library version2.
+ Requires:
+ Libs: -L${libdir} @XML_LIBS@
+-Libs.private: @XML_PRIVATE_LIBS@ @LIBS@
++Libs.private: @XML_PRIVATE_LIBS@
+ Cflags: @XML_INCLUDEDIR@ @XML_CFLAGS@

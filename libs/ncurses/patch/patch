@@ -1,6 +1,18 @@
+diff -uNr ncurses-6.3-original/misc/gen-pkgconfig.in ncurses-6.3/misc/gen-pkgconfig.in
+--- ncurses-6.3-original/misc/gen-pkgconfig.in	2021-08-07 14:36:33.000000000 -0700
++++ ncurses-6.3/misc/gen-pkgconfig.in	2022-11-06 19:47:07.730754806 -0800
+@@ -235,7 +235,7 @@
+ Version: \${version}
+ ${USEURL}URL: https://invisible-island.net/ncurses
+ Requires.private: $reqs
+-Libs: $lib_flags $LIBS
++Libs: -L\${libdir} $LIBS
+ Libs.private: @LIBS@ $main_libs
+ Cflags: $CFLAGS
+ EOF
 diff -uNr ncurses-6.3-original/misc/Makefile.in ncurses-6.3/misc/Makefile.in
 --- ncurses-6.3-original/misc/Makefile.in	2021-07-03 12:07:50.000000000 -0700
-+++ ncurses-6.3/misc/Makefile.in	2022-10-23 06:57:02.460543056 -0700
++++ ncurses-6.3/misc/Makefile.in	2022-11-06 19:45:40.262435478 -0800
 @@ -154,7 +154,8 @@
  @MAKE_PC_FILES@				test -f $$name || continue; \
  @MAKE_PC_FILES@				echo installing $$name; \
@@ -23,7 +35,7 @@ diff -uNr ncurses-6.3-original/misc/Makefile.in ncurses-6.3/misc/Makefile.in
  
 diff -uNr ncurses-6.3-original/misc/ncurses.pc ncurses-6.3/misc/ncurses.pc
 --- ncurses-6.3-original/misc/ncurses.pc	1969-12-31 16:00:00.000000000 -0800
-+++ ncurses-6.3/misc/ncurses.pc	2022-10-22 21:52:41.747468018 -0700
++++ ncurses-6.3/misc/ncurses.pc	2022-11-06 19:45:40.262435478 -0800
 @@ -0,0 +1,14 @@
 +prefix=
 +exec_prefix=${prefix}

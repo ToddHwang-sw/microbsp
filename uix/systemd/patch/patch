@@ -1,18 +1,18 @@
 diff -uNr systemd-stable-original/meson.build systemd-stable/meson.build
---- systemd-stable-original/meson.build	2022-10-12 19:25:13.410479841 -0700
-+++ systemd-stable/meson.build	2022-10-12 20:19:55.598163183 -0700
-@@ -508,7 +508,9 @@
+--- systemd-stable-original/meson.build	2022-11-06 19:07:35.596740698 -0800
++++ systemd-stable/meson.build	2022-11-06 19:13:38.176758931 -0800
+@@ -518,8 +518,8 @@
          conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
  endforeach
  
 -conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
-+## Todd
-+##conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
-+conf.set10('WANT_LINUX_STAT_H', true)
+-conf.set10('WANT_LINUX_FS_H', want_linux_fs_h)
++conf.set10('WANT_LINUX_STAT_H', true )
++conf.set10('WANT_LINUX_FS_H', false )
  
  foreach ident : ['secure_getenv', '__secure_getenv']
          conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
-@@ -571,6 +573,11 @@
+@@ -582,6 +582,12 @@
          conf.set10('HAVE_' + ident[0].to_upper(), have)
  endforeach
  
@@ -21,10 +21,11 @@ diff -uNr systemd-stable-original/meson.build systemd-stable/meson.build
 +conf.set10('HAVE_STRUCT_MOUNT_ATTR', true )
 +conf.set10('HAVE_STRUCT_STATX', true )
 +
++
  if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''', args : '-D_GNU_SOURCE')
          conf.set10('USE_SYS_RANDOM_H', true)
          conf.set10('HAVE_GETRANDOM', true)
-@@ -655,7 +662,7 @@
+@@ -666,7 +672,7 @@
  
  ############################################################
  
@@ -33,46 +34,19 @@ diff -uNr systemd-stable-original/meson.build systemd-stable/meson.build
          error('python3 jinja2 missing')
  endif
  
-@@ -1437,7 +1444,10 @@
+@@ -1459,7 +1465,7 @@
          have = false
          libxkbcommon = []
  endif
 -conf.set10('HAVE_XKBCOMMON', have)
-+
-+## Todd 
-+##conf.set10('HAVE_XKBCOMMON', have)
 +conf.set10('HAVE_XKBCOMMON', false)
  
  want_pcre2 = get_option('pcre2')
  if want_pcre2 != 'false'
-diff -uNr systemd-stable-original/src/core/namespace.c systemd-stable/src/core/namespace.c
---- systemd-stable-original/src/core/namespace.c	2022-10-12 19:25:13.518480251 -0700
-+++ systemd-stable/src/core/namespace.c	2022-10-12 20:12:05.816252575 -0700
-@@ -7,7 +7,7 @@
- #include <sys/file.h>
- #include <sys/mount.h>
- #include <unistd.h>
--#include <linux/fs.h>
-+/* #include <linux/fs.h> */
- 
- #include "alloc-util.h"
- #include "base-filesystem.h"
-diff -uNr systemd-stable-original/src/shared/mount-util.c systemd-stable/src/shared/mount-util.c
---- systemd-stable-original/src/shared/mount-util.c	2022-10-12 19:25:13.726481042 -0700
-+++ systemd-stable/src/shared/mount-util.c	2022-10-12 20:06:20.846010872 -0700
-@@ -7,7 +7,7 @@
- #include <sys/statvfs.h>
- #include <unistd.h>
- #include <linux/loop.h>
--#include <linux/fs.h>
-+/* #include <linux/fs.h> */
- 
- #include "alloc-util.h"
- #include "chase-symlinks.h"
 diff: systemd-stable-original/test/testdata: recursive directory loop
 diff -uNr systemd-stable-original/tools/catalog-report.py systemd-stable/tools/catalog-report.py
---- systemd-stable-original/tools/catalog-report.py	2022-10-12 19:25:13.922481787 -0700
-+++ systemd-stable/tools/catalog-report.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/catalog-report.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/catalog-report.py	2022-11-06 19:15:29.648825052 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -80,8 +54,8 @@ diff -uNr systemd-stable-original/tools/catalog-report.py systemd-stable/tools/c
  #
  # This file is distributed under the MIT license, see below.
 diff -uNr systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py systemd-stable/tools/chromiumos/gen_autosuspend_rules.py
---- systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/chromiumos/gen_autosuspend_rules.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/chromiumos/gen_autosuspend_rules.py	2022-11-06 19:15:52.056840780 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -89,8 +63,8 @@ diff -uNr systemd-stable-original/tools/chromiumos/gen_autosuspend_rules.py syst
  # -*- coding: utf-8 -*-
  
 diff -uNr systemd-stable-original/tools/dbus_exporter.py systemd-stable/tools/dbus_exporter.py
---- systemd-stable-original/tools/dbus_exporter.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/dbus_exporter.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/dbus_exporter.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/dbus_exporter.py	2022-11-06 19:16:12.824856016 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -98,8 +72,8 @@ diff -uNr systemd-stable-original/tools/dbus_exporter.py systemd-stable/tools/db
  from argparse import ArgumentParser
  from pathlib import Path
 diff -uNr systemd-stable-original/tools/gdb-sd_dump_hashmaps.py systemd-stable/tools/gdb-sd_dump_hashmaps.py
---- systemd-stable-original/tools/gdb-sd_dump_hashmaps.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/gdb-sd_dump_hashmaps.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/gdb-sd_dump_hashmaps.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/gdb-sd_dump_hashmaps.py	2022-11-06 19:16:29.088868377 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -107,8 +81,8 @@ diff -uNr systemd-stable-original/tools/gdb-sd_dump_hashmaps.py systemd-stable/t
  
  import gdb
 diff -uNr systemd-stable-original/tools/generate-gperfs.py systemd-stable/tools/generate-gperfs.py
---- systemd-stable-original/tools/generate-gperfs.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/generate-gperfs.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/generate-gperfs.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/generate-gperfs.py	2022-11-06 19:16:43.648879745 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -116,8 +90,8 @@ diff -uNr systemd-stable-original/tools/generate-gperfs.py systemd-stable/tools/
  
  """
 diff -uNr systemd-stable-original/tools/list-discoverable-partitions.py systemd-stable/tools/list-discoverable-partitions.py
---- systemd-stable-original/tools/list-discoverable-partitions.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/list-discoverable-partitions.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/list-discoverable-partitions.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/list-discoverable-partitions.py	2022-11-06 19:17:04.648896638 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -125,8 +99,8 @@ diff -uNr systemd-stable-original/tools/list-discoverable-partitions.py systemd-
  
  import re
 diff -uNr systemd-stable-original/tools/make-autosuspend-rules.py systemd-stable/tools/make-autosuspend-rules.py
---- systemd-stable-original/tools/make-autosuspend-rules.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/make-autosuspend-rules.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/make-autosuspend-rules.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/make-autosuspend-rules.py	2022-11-06 19:17:21.872910906 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -134,8 +108,8 @@ diff -uNr systemd-stable-original/tools/make-autosuspend-rules.py systemd-stable
  
  # Generate autosuspend rules for devices that have been tested to work properly
 diff -uNr systemd-stable-original/tools/make-directive-index.py systemd-stable/tools/make-directive-index.py
---- systemd-stable-original/tools/make-directive-index.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/make-directive-index.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/make-directive-index.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/make-directive-index.py	2022-11-06 19:17:36.528923344 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -143,8 +117,8 @@ diff -uNr systemd-stable-original/tools/make-directive-index.py systemd-stable/t
  
  import sys
 diff -uNr systemd-stable-original/tools/make-man-index.py systemd-stable/tools/make-man-index.py
---- systemd-stable-original/tools/make-man-index.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/make-man-index.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/make-man-index.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/make-man-index.py	2022-11-06 19:17:50.280935250 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -152,17 +126,17 @@ diff -uNr systemd-stable-original/tools/make-man-index.py systemd-stable/tools/m
  
  import collections
 diff -uNr systemd-stable-original/tools/meson-render-jinja2.py systemd-stable/tools/meson-render-jinja2.py
---- systemd-stable-original/tools/meson-render-jinja2.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/meson-render-jinja2.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/meson-render-jinja2.py	2022-11-06 19:07:36.064740459 -0800
++++ systemd-stable/tools/meson-render-jinja2.py	2022-11-06 19:18:08.536951388 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
-+#!/usr/bin/python3 
++#!/usr/bin/python3
  # SPDX-License-Identifier: LGPL-2.1-or-later
  
  import ast
 diff -uNr systemd-stable-original/tools/update-dbus-docs.py systemd-stable/tools/update-dbus-docs.py
---- systemd-stable-original/tools/update-dbus-docs.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/update-dbus-docs.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/update-dbus-docs.py	2022-11-06 19:07:36.068740457 -0800
++++ systemd-stable/tools/update-dbus-docs.py	2022-11-06 19:18:27.912968918 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -170,8 +144,8 @@ diff -uNr systemd-stable-original/tools/update-dbus-docs.py systemd-stable/tools
  
  import argparse
 diff -uNr systemd-stable-original/tools/update-man-rules.py systemd-stable/tools/update-man-rules.py
---- systemd-stable-original/tools/update-man-rules.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/update-man-rules.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/update-man-rules.py	2022-11-06 19:07:36.068740457 -0800
++++ systemd-stable/tools/update-man-rules.py	2022-11-06 19:18:44.648984400 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3
@@ -179,8 +153,8 @@ diff -uNr systemd-stable-original/tools/update-man-rules.py systemd-stable/tools
  
  from __future__ import print_function
 diff -uNr systemd-stable-original/tools/xml_helper.py systemd-stable/tools/xml_helper.py
---- systemd-stable-original/tools/xml_helper.py	2022-10-12 19:25:13.926481802 -0700
-+++ systemd-stable/tools/xml_helper.py	2022-10-12 19:26:59.042905245 -0700
+--- systemd-stable-original/tools/xml_helper.py	2022-11-06 19:07:36.068740457 -0800
++++ systemd-stable/tools/xml_helper.py	2022-11-06 19:19:01.136999935 -0800
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python3
 +#!/usr/bin/python3

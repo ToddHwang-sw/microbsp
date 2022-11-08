@@ -1,6 +1,6 @@
 diff -uNr Python-3.10.8-original/configure Python-3.10.8/configure
 --- Python-3.10.8-original/configure	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/configure	2022-10-24 22:18:06.993075157 -0700
++++ Python-3.10.8/configure	2022-11-06 20:35:51.432348022 -0800
 @@ -1341,13 +1341,7 @@
  target=$target_alias
  
@@ -69,7 +69,7 @@ diff -uNr Python-3.10.8-original/configure Python-3.10.8/configure
  ac_clean_files=$ac_clean_files_save
 diff -uNr Python-3.10.8-original/Makefile.pre.in Python-3.10.8/Makefile.pre.in
 --- Python-3.10.8-original/Makefile.pre.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Makefile.pre.in	2022-10-26 22:54:09.869886749 -0700
++++ Python-3.10.8/Makefile.pre.in	2022-11-06 20:35:51.436348033 -0800
 @@ -1270,7 +1270,7 @@
  			upgrade) ensurepip="--upgrade" ;; \
  			install|*) ensurepip="" ;; \
@@ -134,3 +134,25 @@ diff -uNr Python-3.10.8-original/Makefile.pre.in Python-3.10.8/Makefile.pre.in
  
  # bpo-21536: Misc/python-config.sh is generated in the build directory
  # from $(srcdir)Misc/python-config.sh.in.
+diff -uNr Python-3.10.8-original/Misc/python-embed.pc.in Python-3.10.8/Misc/python-embed.pc.in
+--- Python-3.10.8-original/Misc/python-embed.pc.in	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/Misc/python-embed.pc.in	2022-11-06 20:38:28.036786067 -0800
+@@ -8,6 +8,6 @@
+ Description: Embed Python into an application
+ Requires:
+ Version: @VERSION@
+-Libs.private: @LIBS@
++Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
+ Libs: -L${libdir} -lpython@VERSION@@ABIFLAGS@
+ Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
+diff -uNr Python-3.10.8-original/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
+--- Python-3.10.8-original/Misc/python.pc.in	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/Misc/python.pc.in	2022-11-06 20:38:47.348839794 -0800
+@@ -8,6 +8,6 @@
+ Description: Build a C extension for Python
+ Requires:
+ Version: @VERSION@
+-Libs.private: @LIBS@
++Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
+ Libs:
+ Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@

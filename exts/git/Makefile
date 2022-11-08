@@ -19,7 +19,7 @@ MICB_CONFIGURE_PRG = ./configure
 
 MICB_CONFIGURE_MAKEOPTS += "V=1"
 
-MICB_DEPENDS = libcurl
+MICB_DEPENDS = openssl libssh2 nettle zlib expat iconv libcurl
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

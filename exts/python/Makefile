@@ -53,7 +53,7 @@ all:
 			printf "export PYTHONHOME=\$$BASE\n"    >> $(SAMPLEENVFILE)	;	\
 			printf "export PYTHONPATH=\$$BASE/bin\n">> $(SAMPLEENVFILE)	;	\
 			printf "export PATH=\$$PATH:\$$PYTHONPATH\n"                             >> $(SAMPLEENVFILE)	;	\
-			printf "export LD_LIBRARY_PATH=/lib:/usr/lib:\$$PYTHONHOME/lib\n"        >> $(SAMPLEENVFILE)	;	\
+			printf "export LD_LIBRARY_PATH=\$$LD_LIBRARY_PATH:\$$PYTHONHOME/lib\n"   >> $(SAMPLEENVFILE)	;	\
 			chmod +x $(SAMPLEENVFILE)
 	@cd $(BUILDDIR)/$(DIR)/$(PYTHONTINSTD); \
 		tar jcvf $(PYTHON_PKG) * 

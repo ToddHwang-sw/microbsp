@@ -5,10 +5,8 @@ include $(TOPDIR)/scripts/env.mk
 
 MICB_CONFIGURE_OPTS += \
 		--enable-largefile \
-		--with-libiconv-prefix=$(INSTALLDIR) \
-		--with-libintl-prefix=$(INSTALLDIR) \
-
-MICB_DEPENDS = iconv intl 
+		--without-libiconv-prefix \
+		--without-libintl-prefix \
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

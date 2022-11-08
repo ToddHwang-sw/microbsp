@@ -10,10 +10,9 @@ Why not using Yocto
   - No occurrence of root access authentication during compilation. - None of CLI commands beginning with "sudo" .
   - Packaging is also supported in various forms; rpm, ipk, .. 
  
-* Many detail operations of Yocto are totally implemeted/abstracted from "Python" classes, and it is not easy to understand how they work. 
+* Many detail operations of Yocto are totally implemeted/abstracted from "Python" classes, and it is not easy to fully digest how they work. 
 
 * Final usages of BSP sources for embedded system are usually limited to 2 or 3 such as cross compiler generation, building applications, required utilities and the creation of final image to be downloaded into embedded board. 
-
 
 
 MicroBSP
@@ -71,7 +70,6 @@ Summary
 
 * Version of each native applications/libraries can be found in corresponding Makefile, and the following simply enumerates a few of those. 
 
-
 |  S/W       | Version  |
 |------------|----------|
 | OpenSSL    |  1.1.1c  |
@@ -79,8 +77,79 @@ Summary
 |   Perl     |  5.24.1  |
 |  Python    |  3.10.8  |
 
+* Linux kernels used for both raspberry pi and QEMU VM are as follows. 
+
+|  Type            | Linux kernel version |
+|------------------|----------------------|
+| Raspberry PI     |  5.10.x              |
+| QEMU VM          |  5.17.7              |
+
 * MicroBSP has **Overlay File System** basis booting policy. 
 * Total booting disk image has the following hierarchy. 
+
+
+Folder Hierarchy
+------------
+
+The directory hieararchy of MicroBSP is...
+
+
+```#!/bin/sh
+
+  # ls
+  todd@vostro:/media/todd/work/microbsp$ ls -la
+  total 260
+  drwxrwxr-x 13 todd todd  4096 Nov  6 07:12 .  
+  drwxrwxr-x  4 todd todd  4096 Oct 26 13:19 ..
+  drwxrwxr-x  7 todd todd  4096 Oct 26 09:18 apps
+  drwxrwxr-x  5 todd todd  4096 Oct 23 14:09 arch
+  drwxrwxr-x  5 todd todd  4096 Oct 23 14:09 boards
+  drwxrwxr-x  2 todd todd  4096 Nov  6 06:46 doc
+  drwxrwxr-x 65 todd todd  4096 Nov  2 20:01 exts
+  drwxrwxr-x  8 todd todd  4096 Nov  5 21:40 .git
+  drwxrwxr-x  8 todd todd  4096 Oct 23 14:11 gnu
+  drwxrwxr-x 37 todd todd  4096 Oct 26 09:35 libs
+  -rw-rw-r--  1 todd todd 29714 Nov  3 06:51 Makefile
+  -rw-rw-r--  1 todd todd 87500 Nov  6 07:12 README.md
+  drwxrwxr-x  2 todd todd  4096 Nov  2 22:13 scripts
+  drwxrwxr-x 43 todd todd  4096 Oct 25 20:27 uix
+  todd@vostro:/media/todd/work/microbsp$ 
+
+```
+
+
+|  Folders       | Description   |
+|----------------|----------|
+| **apps/**          | Basic application required for bootstrap disks |
+| **libs/**          | Libraries  |
+| **exts/**          | Libraries/Applications for high level functions  |
+| **uix/**           | Graphic/Multimedia related Libraries/Applications   |
+
+
+Overlay Root File System 
+------------
+
+The following shows the structure of root file system constructed by overlay file system mount process. Overlay file system components; lower, upper, work directory is organized with folders in both **_base** and **_stagedir** created after the step **Boot Image Building** .  
+
+|  Dir Type        |  Folders                | 
+|------------------|-------------------------|
+| Lower dir        |  _base , _stagedir/usr  |
+| Upper dir        |  _stagedir/up           |
+| Work  dir        |  _stagedir/work         |
+
+- Upper dir and Work dir should be placed in the same disk partition so they are located in the same folder **_stagedir**. 
+
+- **_base** is populated from both libs/ and apps/ in MicroBSP. 
+- **_stagedir** is populated from exts/ folder in MicroBSP. 
+- Applications in bootstrap image **rootfs.cramfs** is populated from **apps/busybox** . 
+
+![](doc/overlay_hierarchy.png)
+
+- About detail description of **overlay file system** , please refer to [How/What Overlay File System Does](https://www.datalight.com/blog/2016/01/27/explaining-overlayfs-%E2%80%93-what-it-does-and-how-it-works/).
+
+- File system mount is achieved in two steps;
+	* First, bootstrap file system is mounted at booting time
+	* Second, moves to **/ovr** folder by using **"choot /ovr /etc/rc.init"** for next booting.
 
 
 <span style="color:blue; font-size:4em">Setting up Prerequisite Utilities/Libraries</span>
@@ -94,7 +163,6 @@ Summary
   # make installcomps
 ```
 
-
 <span style="color:blue; font-size:4em">Raspberry PI</span>
 ===============
 
@@ -107,6 +175,12 @@ Testbed Components
 
 * [TP-Link USB WiFi Dongle](https://www.amazon.com/TP-Link-TL-WN823N-Wireless-network-Raspberry/dp/B0088TKTY2/ref=sr_1_15?keywords=tp+link+usb+wifi+adapter&qid=1636520657&qsid=132-7915930-0137541&sr=8-15&sres=B08D72GSMS%2CB008IFXQFU%2CB07P6N2TZH%2CB08KHV7H1S%2CB07PB1X4CN%2CB07P5PRK7J%2CB00JBJ6VG8%2CB00YUU3KC6%2CB002SZEOLG%2CB00K11UIV4%2CB0088TKTY2%2CB01MR6M8EC%2CB00HC01KMS%2CB0799C35LV%2CB01NBMJGA9%2CB00A8GVNNY&srpt=NETWORK_INTERFACE_CONTROLLER_ADAPTER)
 
+How it looks
+---------
+
+![](doc/rpi.png)
+
+
 Operation Setup
 ---------
 
@@ -116,7 +190,6 @@ Operation Setup
   - WLAN1 : Raspberry PI Built-in WLAN (<strong>Broadcom BRCM43455</strong>)
 * WAN
   - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek</strong>)
-* IPv6 support
 * UART baudrate = 921600bps (not 115200bps)
 
 Booting Shot
@@ -789,10 +862,10 @@ Device     Boot    Start      End  Sectors  Size Id Type
 |  /dev/sde2 |  rootfs.squashfs |
 |  /dev/sde3 |  image.ext4      |
 |  /dev/sde5 |  ui.ext4         |
-|  /dev/sde6 |       X          |
+|  /dev/sde6 |  config.ext4     |
 |  /dev/sde7 |       X          |
 
-- /dev/sde5 is mounted into /root . /dev/sde6 and /dev/sde7 are overlayed.
+- /dev/sde5 is mounted into /root . /dev/sde7 are overlayed.
 - User can copy images into partitions as follows.
 
 ```#!/bin/sh
@@ -810,62 +883,63 @@ Device     Boot    Start      End  Sectors  Size Id Type
   # sudo ./format_sdcard.sh sdc
 ```
 
-- Rootfs.squashfs , boot.tgz, image.ext4 are all copied into the disk.
+- Rootfs.squashfs , boot.tgz, image.ext4, config.ext4 are all copied into the disk.
 - CAUTION) Existing partitions on the SDcard will be deleted upon running "format_sdcard.sh" .
 
 # [5] WLAN Configuration
 
-- The following is a file <strong>boards/rpi3/firmware/conf.sys</strong> for configuration file.
-- Simply change values of <strong>STASSID</strong> and <strong>STAPASSWORD</strong> attributes as defined in your WLAN environment.
-By default, <em>LOOSERS</em> and <em>12345678</em> are used.
+- User can configure required settings by using a tool **xcfgcli.sh** as follows. 
 
 ```#!/bin/sh
+bash-5.1# 
+bash-5.1# xcfgcli.sh get wan | jq
+{
+  "mode": "dhcp",
+  "name": "wlan0",
+  "mac": "random",
+  "ssid": "finemyap",
+  "password": "12345678",
+  "ip": "192.167.0.162",
+  "netmask": "255.255.255.0",
+  "gateway": "192.167.0.1",
+  "dns": "8.8.8.8",
+  "ipv6": {
+    "mode": "dhcp",
+    "global": "2001:b0d8:2233:1000::",
+    "local": "4400::",
+    "plen": "64",
+    "id": "1"
+  },
+  "capture": "0"
+}
+bash-5.1# 
 
-##
-## WiFi AP
-##
-USEAP=1
-BRCAPTURE=1
-BRINTERFACE=br0
-ETHINTERFACE=eth0
-APINTERFACE=wlan1
-APSSID=RPI3
-APPASSWORD=12345678
-
-# Only C class
-APNET=172.145.1
-APNODE=1
-APMASK=255.255.255.0
-DOMAIN=todd.rpi3.com
-DHCPSTART=100
-DHCPEND=200
-
-##
-## IPv6 RADVD
-##
-IPV6_PREFIX=2602:9900:1234:6e4c::
-IPV6_ID=2000
-USE_NAT6=1
-
-##
-## WiFi STA
-##
-USESTA=1
-STACAPTURE=1
-STAINTERFACE=wlan0
-STASSID=LOOSERS
-STAPASSWORD=12345678
-
-##
-## TL-WN725N : 8188eu (150Mbps)
-## TL-WN825N : 8192eu (300Mbps)
-##
-RTKDRV=8192eu
 
 ```
 
-- <strong>APSSID</strong> and <strong>APPASSWORD</strong> are SSID and password used for internal LAN adaptation.
-- <strong>APNET></strong> and <strong>APMASK</strong> is IP address ranges distributed to attached stations.
+- <strong>ssid</strong> and <strong>password</strong> in **wan** section are used for home gateway connection.
+
+```#!/bin/sh
+bash-5.1# 
+bash-5.1# 
+bash-5.1# xcfgcli.sh put wan/ssid MyHomeNetwork
+MyHomeNetwork
+bash-5.1# STORAGE UPDATE 
+
+bash-5.1# 
+bash-5.1# 
+bash-5.1# xcfgcli.sh put wan/password onetwothree
+onetwothree
+bash-5.1# STORAGE UPDATE 
+
+bash-5.1# 
+
+
+```
+
+
+- User can see **/config/db** file and it keeps all configuration variable managed through **xcfgcli.sh**, and  **/etc/config.xml** is the XML file maintaining all configurable parameters defined in raspberry PI setup. 
+
 
 
 # [6] Available Packages 

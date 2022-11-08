@@ -12,7 +12,7 @@ case $1 in
 		cat > $NFTCONF <<-EOF
         flush ruleset 
 
-        table inet filter {
+        table ip filter {
             chain input {
                 type filter hook input priority 0; policy drop;
 
@@ -70,6 +70,26 @@ case $1 in
                 oifname $WAN masquerade
             }
         }
+
+        table ip6 filter {
+            chain input {
+                type filter hook input priority 0;
+                ct state established accept
+                ct state related accept
+                iif lo accept
+                ## tcp dport ssh counter accept
+                icmpv6 type { nd-neighbor-solicit, echo-request, nd-router-advert, nd-neighbor-advert } accept
+                ## counter log drop
+            }
+
+            chain output {
+                type filter hook output priority 0;
+                ct state established accept
+                ct state related accept
+                oif lo accept
+                ct state new counter accept
+            }
+        }
 		EOF
 
 		##
@@ -79,6 +99,7 @@ case $1 in
 		# IPv4 forwarding enable 
 		echo 1 > /proc/sys/net/ipv4/ip_forward
 		echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+
 		;;
 	"stop")
 		nft flush ruleset

@@ -1,0 +1,20 @@
+diff -uNr dbus-original/dbus-1.pc.in dbus/dbus-1.pc.in
+--- dbus-original/dbus-1.pc.in	2022-11-06 20:54:58.973365569 -0800
++++ dbus/dbus-1.pc.in	2022-11-06 20:57:00.513840235 -0800
+@@ -17,5 +17,5 @@
+ Description: Free desktop message bus
+ Version: @VERSION@
+ Libs: -L${libdir} -ldbus-1
+-Libs.private: @LIBDBUS_LIBS@
++Libs.private: -lblkid -ldl -lffi -lgio-2.0 -lglib-2.0 -lgmodule-2.0 -lgobject-2.0 -liconv -lintl -lm -lmount -lpcre -lpthread -lz -pthread
+ Cflags: -I${includedir}/dbus-1.0 -I${libdir}/dbus-1.0/include @DBUS_STATIC_BUILD_CPPFLAGS@
+diff -uNr dbus-original/dbus-1-uninstalled.pc.in dbus/dbus-1-uninstalled.pc.in
+--- dbus-original/dbus-1-uninstalled.pc.in	2022-11-06 20:54:58.973365569 -0800
++++ dbus/dbus-1-uninstalled.pc.in	2022-11-06 20:57:32.281961711 -0800
+@@ -16,5 +16,5 @@
+ Description: Free desktop message bus (uninstalled copy)
+ Version: @VERSION@
+ Libs: ${abs_top_builddir}/dbus/libdbus-1.la
+-Libs.private: @LIBDBUS_LIBS@
++Libs.private: -lblkid -ldl -lffi -lgio-2.0 -lglib-2.0 -lgmodule-2.0 -lgobject-2.0 -liconv -lintl -lm -lmount -lpcre -lpthread -lz -pthread
+ Cflags: -I${abs_top_srcdir} @DBUS_STATIC_BUILD_CPPFLAGS@
