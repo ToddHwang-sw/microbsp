@@ -11,7 +11,8 @@ prepare:
 			sed -i "s/CONFIG_PLATFORM_ARM_AARCH64 = n/CONFIG_PLATFORM_ARM_AARCH64 = y/" Makefile ; \
 			sed -i "s/CONFIG_POWER_SAVING = y/CONFIG_POWER_SAVING = n/" Makefile ; \
 			sed -i "s/CONFIG_BT_COEXIST = y/CONFIG_BT_COEXIST = n/" Makefile ; \
-			sed -i "s/ONFIG_PLATFORM_I386_PC = y/ONFIG_PLATFORM_I386_PC = n/" Makefile )
+			sed -i "s/ONFIG_PLATFORM_I386_PC = y/ONFIG_PLATFORM_I386_PC = n/" Makefile ; \
+		[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
 
 all clean:
 	@[ ! -d $(DIR) ] || \

@@ -1,0 +1,84 @@
+diff -uNr rtl8192eu-linux-original/core/crypto/sha256_i.h rtl8192eu-linux/core/crypto/sha256_i.h
+--- rtl8192eu-linux-original/core/crypto/sha256_i.h	2022-11-07 19:01:52.749469208 -0800
++++ rtl8192eu-linux/core/crypto/sha256_i.h	2022-11-07 19:02:53.333331902 -0800
+@@ -11,15 +11,15 @@
+ 
+ #define SHA256_BLOCK_SIZE 64
+ 
+-struct sha256_state {
++struct sha256_state_ {
+ 	u64 length;
+ 	u32 state[8], curlen;
+ 	u8 buf[SHA256_BLOCK_SIZE];
+ };
+ 
+-void sha256_init(struct sha256_state *md);
+-int sha256_process(struct sha256_state *md, const unsigned char *in,
++void sha256_init_(struct sha256_state_ *md);
++int sha256_process_(struct sha256_state_ *md, const unsigned char *in,
+ 		   unsigned long inlen);
+-int sha256_done(struct sha256_state *md, unsigned char *out);
++int sha256_done_(struct sha256_state_ *md, unsigned char *out);
+ 
+ #endif /* SHA256_I_H */
+diff -uNr rtl8192eu-linux-original/core/crypto/sha256-internal.c rtl8192eu-linux/core/crypto/sha256-internal.c
+--- rtl8192eu-linux-original/core/crypto/sha256-internal.c	2022-11-07 19:01:52.749469208 -0800
++++ rtl8192eu-linux/core/crypto/sha256-internal.c	2022-11-07 19:03:50.645224044 -0800
+@@ -26,17 +26,17 @@
+ int sha256_vector(size_t num_elem, const u8 *addr[], const size_t *len,
+ 		  u8 *mac)
+ {
+-	struct sha256_state ctx;
++	struct sha256_state_ ctx;
+ 	size_t i;
+ 
+ 	if (TEST_FAIL())
+ 		return -1;
+ 
+-	sha256_init(&ctx);
++	sha256_init_(&ctx);
+ 	for (i = 0; i < num_elem; i++)
+-		if (sha256_process(&ctx, addr[i], len[i]))
++		if (sha256_process_(&ctx, addr[i], len[i]))
+ 			return -1;
+-	if (sha256_done(&ctx, mac))
++	if (sha256_done_(&ctx, mac))
+ 		return -1;
+ 	return 0;
+ }
+@@ -82,7 +82,7 @@
+ #endif
+ 
+ /* compress 512-bits */
+-static int sha256_compress(struct sha256_state *md, unsigned char *buf)
++static int sha256_compress(struct sha256_state_ *md, unsigned char *buf)
+ {
+ 	u32 S[8], W[64], t0, t1;
+ 	u32 t;
+@@ -125,7 +125,7 @@
+ 
+ 
+ /* Initialize the hash state */
+-void sha256_init(struct sha256_state *md)
++void sha256_init_(struct sha256_state_ *md)
+ {
+ 	md->curlen = 0;
+ 	md->length = 0;
+@@ -146,7 +146,7 @@
+    @param inlen  The length of the data (octets)
+    @return CRYPT_OK if successful
+ */
+-int sha256_process(struct sha256_state *md, const unsigned char *in,
++int sha256_process_(struct sha256_state_ *md, const unsigned char *in,
+ 		   unsigned long inlen)
+ {
+ 	unsigned long n;
+@@ -186,7 +186,7 @@
+    @param out [out] The destination of the hash (32 bytes)
+    @return CRYPT_OK if successful
+ */
+-int sha256_done(struct sha256_state *md, unsigned char *out)
++int sha256_done_(struct sha256_state_ *md, unsigned char *out)
+ {
+ 	int i;
+ 
