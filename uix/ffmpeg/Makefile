@@ -1,5 +1,5 @@
 DIR=ffmpeg
-LOC=-b release/2.8 https://git.ffmpeg.org
+LOC=-b release/4.4 https://git.ffmpeg.org
 
 include $(TOPDIR)/scripts/uixenv.mk
 

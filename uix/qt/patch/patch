@@ -1,55 +1,47 @@
-diff --git a/qtbase/src/corelib/configure.json b/qtbase/src/corelib/configure.json
---- a/qtbase/src/corelib/configure.json
-+++ b/qtbase/src/corelib/configure.json
-@@ -42,9 +42,9 @@
-                     "g_source_add_poll(NULL, NULL);"
-                 ]
-             },
--            "headers": "glib.h",
-+            "headers": "glib-2.0/glib.h",
-             "sources": [
--                { "type": "pkgConfig", "args": "glib-2.0 gthread-2.0" }
-+                { "libs": "-lglib-2.0 -lgthread-2.0 -lgio-2.0 -lgobject-2.0 -lgmodule-2.0", "condition": "!config.win32" }
-             ]
-         },
-         "posix_iconv": {
-@@ -602,7 +602,7 @@
-             "label": "GLib",
-             "autoDetect": "!config.win32",
-             "condition": "libs.glib",
--            "output": [ "privateFeature", "feature" ]
-+            "output": [ "privateFeature" ]
-         },
-         "glibc": {
-             "label": "GNU libc",
-diff --git a/qtbase/src/gui/configure.json b/qtbase/src/gui/configure.json
---- a/qtbase/src/gui/configure.json
-+++ b/qtbase/src/gui/configure.json
-@@ -148,11 +148,12 @@
-                     "#endif"
-                 ]
-             },
--            "headers": "directfb.h",
-+            "headers": "directfb/directfb.h",
-             "sources": [
--                { "type": "pkgConfig", "args": "directfb" }
-+                { "libs": "-ldirectfb", "condition": "!config.win32" }
-             ]
-         },
+diff -uNr qt-everywhere-src-5.12.12-original/qt3d/src/3rdparty/assimp/contrib/zip/src/zip.c qt-everywhere-src-5.12.12/qt3d/src/3rdparty/assimp/contrib/zip/src/zip.c
+--- qt-everywhere-src-5.12.12-original/qt3d/src/3rdparty/assimp/contrib/zip/src/zip.c	2021-10-04 01:46:04.000000000 -0700
++++ qt-everywhere-src-5.12.12/qt3d/src/3rdparty/assimp/contrib/zip/src/zip.c	2022-11-10 06:21:12.276300806 -0800
+@@ -48,6 +48,7 @@
+         }                      \
+     } while (0)
+ 
++#if 0
+ static char *basename(const char *name) {
+     char const *p;
+     char const *base = name += FILESYSTEM_PREFIX_LEN(name);
+@@ -65,6 +66,7 @@
+ 
+     return (char *)base;
+ }
++#endif
+ 
+ static int mkpath(const char *path) {
+     char const *p;
+diff -uNr qt-everywhere-src-5.12.12-original/qtbase/src/corelib/global/qglobal.h qt-everywhere-src-5.12.12/qtbase/src/corelib/global/qglobal.h
+--- qt-everywhere-src-5.12.12-original/qtbase/src/corelib/global/qglobal.h	2021-11-15 22:41:20.000000000 -0800
++++ qt-everywhere-src-5.12.12/qtbase/src/corelib/global/qglobal.h	2022-11-10 06:19:11.905563865 -0800
+@@ -51,6 +51,10 @@
+ #  include <stddef.h>
+ #endif
+ 
++#ifdef __cplusplus
++    #include <limits>
++#endif
 +
-         "dwrite": {
-             "label": "DirectWrite",
-             "test": {
-diff --git a/qtmultimedia/src/multimedia/configure.json b/qtmultimedia/src/multimedia/configure.json
---- a/qtmultimedia/src/multimedia/configure.json
-+++ b/qtmultimedia/src/multimedia/configure.json
-@@ -52,8 +52,7 @@
-             "export": "gstreamer",
-             "test": "gstreamer",
-             "sources": [
--                { "type": "pkgConfig",
--                  "args": "gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-pbutils-1.0" }
-+                { "libs": "-lgstreamer-1.0", "condition": "!config.msvc" }
-             ]
-         },
-         "gstreamer_app_0_10": {
+ /*
+    QT_VERSION is (major << 16) + (minor << 8) + patch.
+ */
+diff -uNr qt-everywhere-src-5.12.12-original/qtlocation/src/3rdparty/mapbox-gl-native/include/mbgl/util/util.hpp qt-everywhere-src-5.12.12/qtlocation/src/3rdparty/mapbox-gl-native/include/mbgl/util/util.hpp
+--- qt-everywhere-src-5.12.12-original/qtlocation/src/3rdparty/mapbox-gl-native/include/mbgl/util/util.hpp	2021-10-04 01:45:49.000000000 -0700
++++ qt-everywhere-src-5.12.12/qtlocation/src/3rdparty/mapbox-gl-native/include/mbgl/util/util.hpp	2022-11-10 07:25:32.074071992 -0800
+@@ -13,6 +13,10 @@
+ 
+ #endif
+ 
++#ifdef __cplusplus
++    #include <stdint.h>
++#endif
++
+ // GCC 4.9 compatibility
+ #if !defined(__GNUC__) || __GNUC__ >= 5
+ #define MBGL_CONSTEXPR constexpr

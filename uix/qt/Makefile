@@ -1,6 +1,6 @@
-DIR=qt5
-FILENM=$(DIR).git
-LOC=-b 5.12 https://code.qt.io/qt
+VER=5.12
+DIR=qt-everywhere-src-$(VER).12
+LOC=https://download.qt.io/archive/qt/$(VER)/$(VER).12/single/
 
 ## Ubuntu 22.04 
 SHELL := /bin/bash 
@@ -25,7 +25,7 @@ MICB_DEPENDS=\
 		libavdevice 									\
 		wayland-egl wayland-client wayland-cursor wayland-server\
 		libsystemd ncurses liblz4 libcap gl egl                 \
-		libevdev mtdev libudev harfbuzz \
+		libevdev mtdev libudev harfbuzz                 \
 
 
 ## save time ??? 
@@ -59,10 +59,8 @@ prepare: python_req
 			\rm -rf $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) \
 		)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( \
-		$(UNCOMPRESS) $(LOC)/$(DIR).git;\
-		pushd $(MICBSRC)/$(DIR); 		\
-		perl init-repository --module-subset=qtbase; 	\
-		popd ; 							\
+		[ -f $(MICBSRC)/$(DIR).tar.xz ] || wget -P $(MICBSRC) $(LOC)/$(DIR).tar.xz ; \
+		tar xvf $(MICBSRC)/$(DIR).tar.xz -C $(MICBSRC) >& /dev/null ; \
 		$(MICB_PATCH) )
 	@[ -f $(BUILDDIR)/$(UBUNTU_LTSHDR) ] || ( \
 		touch $(BUILDDIR)/$(UBUNTU_LTSHDR) ; \

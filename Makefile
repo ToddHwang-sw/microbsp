@@ -319,14 +319,7 @@ UIDIR=\
 	pulseaudio             \
 	microwindows	       \
 	vncserver              \
-
-##
-## QT5 was taken out of build candidates. 
-## Under ubuntu 22LTS, very painful jobs to make unified compilation file for QT5. 
-##
-UIDIR_TODO=\
 	qt
-
 SUBDIR+=$(UIDIR)
 
 # Component folders - apps, libs, exts, uix
