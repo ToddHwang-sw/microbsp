@@ -2,7 +2,7 @@ diff --git a/Makefile.am b/Makefile.am
 index 409ab7d..69ace2e 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -46,10 +46,6 @@ dist_noinst_SCRIPTS = \
+@@ -47,10 +47,6 @@ dist_noinst_SCRIPTS = \
  
  SUBDIRS = \
  	src \

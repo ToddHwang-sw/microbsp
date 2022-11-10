@@ -25,7 +25,7 @@ diff -uNr iperf-2.0.5-origin/compat/signal.c iperf-2.0.5/compat/signal.c
 diff -uNr iperf-2.0.5-origin/src/main.cpp iperf-2.0.5/src/main.cpp
 --- iperf-2.0.5-origin/src/main.cpp	2019-07-17 08:32:37.000000000 -0700
 +++ iperf-2.0.5/src/main.cpp	2019-08-16 17:07:19.765516217 -0700
-@@ -303,7 +303,7 @@
+@@ -252,7 +252,7 @@
      // We try to not allow a single interrupt handled by multiple threads
      // to completely kill the app so we save off the first thread ID
      // then that is the only thread that can supply the next interrupt

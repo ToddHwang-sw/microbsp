@@ -1,22 +1,96 @@
-diff --git a/Makefile b/Makefile
-index b0ab3ed0cc..2f16411309 100644
---- a/Makefile
-+++ b/Makefile
-@@ -94,7 +94,7 @@ endef
- 
- define DOSUBDIR
- $(foreach V,$(SUBDIR_VARS),$(eval $(call RESET,$(V))))
--SUBDIR := $(1)/
-+FFMPEG_SUBDIR := $(1)/
- include $(SRC_PATH)/$(1)/Makefile
- -include $(SRC_PATH)/$(1)/$(ARCH)/Makefile
- -include $(SRC_PATH)/$(1)/$(INTRINSICS)/Makefile
-diff --git a/common.mak b/common.mak
-index 7569d35bb1..cfe22d04d4 100644
---- a/common.mak
-+++ b/common.mak
-@@ -13,7 +13,7 @@ else
- YASMD=
+diff -uNr ffmpeg-original/configure ffmpeg/configure
+--- ffmpeg-original/configure	2022-11-09 20:23:36.100929280 -0800
++++ ffmpeg/configure	2022-11-09 20:37:04.042450046 -0800
+@@ -5445,19 +5445,19 @@
+         SLIBNAME_WITH_VERSION='$(SLIBPREF)$(FULLNAME)-$(LIBVERSION)$(SLIBSUF)'
+         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
+         if test_cmd lib.exe -list; then
+-            SLIB_EXTRA_CMD=-'lib.exe -nologo -machine:$(LIBTARGET) -def:$$(@:$(SLIBSUF)=.def) -out:$(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
++            SLIB_EXTRA_CMD=-'lib.exe -nologo -machine:$(LIBTARGET) -def:$$(@:$(SLIBSUF)=.def) -out:$(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
+             if enabled x86_64; then
+                 LIBTARGET=x64
+             fi
+         else
+-            SLIB_EXTRA_CMD=-'$(DLLTOOL) -m $(LIBTARGET) -d $$(@:$(SLIBSUF)=.def) -l $(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib) -D $(SLIBNAME_WITH_MAJOR)'
++            SLIB_EXTRA_CMD=-'$(DLLTOOL) -m $(LIBTARGET) -d $$(@:$(SLIBSUF)=.def) -l $(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib) -D $(SLIBNAME_WITH_MAJOR)'
+         fi
+         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
+         SLIB_INSTALL_LINKS=
+         SLIB_INSTALL_EXTRA_SHLIB='$(SLIBNAME:$(SLIBSUF)=.lib)'
+         SLIB_INSTALL_EXTRA_LIB='lib$(SLIBNAME:$(SLIBSUF)=.dll.a) $(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=.def)'
+-        SLIB_CREATE_DEF_CMD='EXTERN_PREFIX="$(EXTERN_PREFIX)" AR="$(AR_CMD)" NM="$(NM_CMD)" $(SRC_PATH)/compat/windows/makedef $(SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
+-        SHFLAGS='-shared -Wl,--out-implib,$(SUBDIR)lib$(SLIBNAME:$(SLIBSUF)=.dll.a) -Wl,--disable-auto-image-base $$(@:$(SLIBSUF)=.def)'
++        SLIB_CREATE_DEF_CMD='EXTERN_PREFIX="$(EXTERN_PREFIX)" AR="$(AR_CMD)" NM="$(NM_CMD)" $(SRC_PATH)/compat/windows/makedef $(FFMPEG_SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
++        SHFLAGS='-shared -Wl,--out-implib,$(FFMPEG_SUBDIR)lib$(SLIBNAME:$(SLIBSUF)=.dll.a) -Wl,--disable-auto-image-base $$(@:$(SLIBSUF)=.def)'
+         enabled x86_64 && objformat="win64" || objformat="win32"
+         dlltool="${cross_prefix}dlltool"
+         ranlib=:
+@@ -5493,12 +5493,12 @@
+         SLIBSUF=".dll"
+         SLIBNAME_WITH_VERSION='$(SLIBPREF)$(FULLNAME)-$(LIBVERSION)$(SLIBSUF)'
+         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
+-        SLIB_CREATE_DEF_CMD='EXTERN_PREFIX="$(EXTERN_PREFIX)" $(SRC_PATH)/compat/windows/makedef $(SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
++        SLIB_CREATE_DEF_CMD='EXTERN_PREFIX="$(EXTERN_PREFIX)" $(SRC_PATH)/compat/windows/makedef $(FFMPEG_SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
+         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
+         SLIB_INSTALL_LINKS=
+         SLIB_INSTALL_EXTRA_SHLIB='$(SLIBNAME:$(SLIBSUF)=.lib)'
+         SLIB_INSTALL_EXTRA_LIB='$(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=.def)'
+-        SHFLAGS='-dll -def:$$(@:$(SLIBSUF)=.def) -implib:$(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
++        SHFLAGS='-dll -def:$$(@:$(SLIBSUF)=.def) -implib:$(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
+         enabled x86_64 && objformat="win64" || objformat="win32"
+         ranlib=:
+         enable dos_paths
+@@ -5513,7 +5513,7 @@
+         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
+         SLIB_INSTALL_LINKS=
+         SLIB_INSTALL_EXTRA_LIB='lib$(FULLNAME).dll.a'
+-        SHFLAGS='-shared -Wl,--out-implib,$(SUBDIR)lib$(FULLNAME).dll.a'
++        SHFLAGS='-shared -Wl,--out-implib,$(FFMPEG_SUBDIR)lib$(FULLNAME).dll.a'
+         enabled x86_64 && objformat="win64" || objformat="win32"
+         enable dos_paths
+         enabled shared && ! enabled small && test_cmd $windres --version && enable gnu_windres
+@@ -5538,19 +5538,19 @@
+         objformat="aout"
+         add_cppflags -D_GNU_SOURCE
+         add_ldflags -Zomf -Zbin-files -Zargs-wild -Zhigh-mem -Zmap
+-        SHFLAGS='$(SUBDIR)$(NAME).def -Zdll -Zomf'
++        SHFLAGS='$(FFMPEG_SUBDIR)$(NAME).def -Zdll -Zomf'
+         LIBSUF="_s.a"
+         SLIBPREF=""
+         SLIBSUF=".dll"
+         SLIBNAME_WITH_VERSION='$(SLIBPREF)$(FULLNAME)-$(LIBVERSION)$(SLIBSUF)'
+         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(shell echo $(FULLNAME) | cut -c1-6)$(LIBMAJOR)$(SLIBSUF)'
+-        SLIB_CREATE_DEF_CMD='echo LIBRARY $(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=) INITINSTANCE TERMINSTANCE > $(SUBDIR)$(FULLNAME).def; \
+-            echo CODE PRELOAD MOVEABLE DISCARDABLE >> $(SUBDIR)$(FULLNAME).def; \
+-            echo DATA PRELOAD MOVEABLE MULTIPLE NONSHARED >> $(SUBDIR)$(FULLNAME).def; \
+-            echo EXPORTS >> $(SUBDIR)$(FULLNAME).def; \
+-            emxexp $(OBJS) >> $(SUBDIR)$(FULLNAME).def'
+-        SLIB_EXTRA_CMD='emximp -o $(SUBDIR)$(LIBPREF)$(FULLNAME)_dll.a $(SUBDIR)$(FULLNAME).def; \
+-            emximp -o $(SUBDIR)$(LIBPREF)$(FULLNAME)_dll.lib $(SUBDIR)$(FULLNAME).def;'
++        SLIB_CREATE_DEF_CMD='echo LIBRARY $(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=) INITINSTANCE TERMINSTANCE > $(FFMPEG_SUBDIR)$(FULLNAME).def; \
++            echo CODE PRELOAD MOVEABLE DISCARDABLE >> $(FFMPEG_SUBDIR)$(FULLNAME).def; \
++            echo DATA PRELOAD MOVEABLE MULTIPLE NONSHARED >> $(FFMPEG_SUBDIR)$(FULLNAME).def; \
++            echo EXPORTS >> $(FFMPEG_SUBDIR)$(FULLNAME).def; \
++            emxexp $(OBJS) >> $(FFMPEG_SUBDIR)$(FULLNAME).def'
++        SLIB_EXTRA_CMD='emximp -o $(FFMPEG_SUBDIR)$(LIBPREF)$(FULLNAME)_dll.a $(FFMPEG_SUBDIR)$(FULLNAME).def; \
++            emximp -o $(FFMPEG_SUBDIR)$(LIBPREF)$(FULLNAME)_dll.lib $(FFMPEG_SUBDIR)$(FULLNAME).def;'
+         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
+         SLIB_INSTALL_LINKS=
+         SLIB_INSTALL_EXTRA_LIB='$(LIBPREF)$(FULLNAME)_dll.a $(LIBPREF)$(FULLNAME)_dll.lib'
+@@ -6904,7 +6904,7 @@
+ if enabled proper_dce; then
+     echo "X { local: *; };" > $TMPV
+     if test_ldflags -Wl,${version_script},$TMPV; then
+-        append SHFLAGS '-Wl,${version_script},\$(SUBDIR)lib\$(NAME).ver'
++        append SHFLAGS '-Wl,${version_script},\$(FFMPEG_SUBDIR)lib\$(NAME).ver'
+         quotes='""'
+         test_cc <<EOF && enable symver_asm_label
+ void ff_foo(void) __asm__ ("av_foo@VERSION");
+diff -uNr ffmpeg-original/ffbuild/common.mak ffmpeg/ffbuild/common.mak
+--- ffmpeg-original/ffbuild/common.mak	2022-11-09 20:23:36.124929332 -0800
++++ ffmpeg/ffbuild/common.mak	2022-11-09 20:38:05.206554462 -0800
+@@ -10,7 +10,7 @@
+ X86ASMD=
  endif
  
 -ifndef SUBDIR
@@ -24,26 +98,26 @@ index 7569d35bb1..cfe22d04d4 100644
  
  ifndef V
  Q      = @
-@@ -107,12 +107,12 @@ TESTPROGS += $(TESTPROGS-yes)
+@@ -128,12 +128,12 @@
  LDLIBS       = $(FFLIBS:%=%$(BUILDSUF))
- FFEXTRALIBS := $(LDLIBS:%=$(LD_LIB)) $(EXTRALIBS)
+ FFEXTRALIBS := $(LDLIBS:%=$(LD_LIB)) $(foreach lib,EXTRALIBS-$(NAME) $(FFLIBS:%=EXTRALIBS-%),$($(lib))) $(EXTRALIBS)
  
 -OBJS      := $(sort $(OBJS:%=$(SUBDIR)%))
 -SLIBOBJS  := $(sort $(SLIBOBJS:%=$(SUBDIR)%))
--TESTOBJS  := $(TESTOBJS:%=$(SUBDIR)%) $(TESTPROGS:%=$(SUBDIR)%-test.o)
--TESTPROGS := $(TESTPROGS:%=$(SUBDIR)%-test$(EXESUF))
+-TESTOBJS  := $(TESTOBJS:%=$(SUBDIR)tests/%) $(TESTPROGS:%=$(SUBDIR)tests/%.o)
+-TESTPROGS := $(TESTPROGS:%=$(SUBDIR)tests/%$(EXESUF))
 -HOSTOBJS  := $(HOSTPROGS:%=$(SUBDIR)%.o)
 -HOSTPROGS := $(HOSTPROGS:%=$(SUBDIR)%$(HOSTEXESUF))
 +OBJS      := $(sort $(OBJS:%=$(FFMPEG_SUBDIR)%))
 +SLIBOBJS  := $(sort $(SLIBOBJS:%=$(FFMPEG_SUBDIR)%))
-+TESTOBJS  := $(TESTOBJS:%=$(FFMPEG_SUBDIR)%) $(TESTPROGS:%=$(FFMPEG_SUBDIR)%-test.o)
-+TESTPROGS := $(TESTPROGS:%=$(FFMPEG_SUBDIR)%-test$(EXESUF))
++TESTOBJS  := $(TESTOBJS:%=$(FFMPEG_SUBDIR)tests/%) $(TESTPROGS:%=$(FFMPEG_SUBDIR)tests/%.o)
++TESTPROGS := $(TESTPROGS:%=$(FFMPEG_SUBDIR)tests/%$(EXESUF))
 +HOSTOBJS  := $(HOSTPROGS:%=$(FFMPEG_SUBDIR)%.o)
 +HOSTPROGS := $(HOSTPROGS:%=$(FFMPEG_SUBDIR)%$(HOSTEXESUF))
  TOOLS     += $(TOOLS-yes)
  TOOLOBJS  := $(TOOLS:%=tools/%.o)
  TOOLS     := $(TOOLS:%=tools/%$(EXESUF))
-@@ -123,9 +123,9 @@ DEP_LIBS := $(foreach lib,$(FFLIBS),$(call PATH_LIBNAME,$(lib),$(CONFIG_SHARED:y
+@@ -144,9 +144,9 @@
  STATIC_DEP_LIBS := $(foreach lib,$(FFLIBS),$(call PATH_LIBNAME,$(lib)))
  
  SRC_DIR    := $(SRC_PATH)/lib$(NAME)
@@ -53,309 +127,64 @@ index 7569d35bb1..cfe22d04d4 100644
 -SKIPHEADERS := $(SKIPHEADERS:%=$(SUBDIR)%)
 +SKIPHEADERS := $(SKIPHEADERS:%=$(FFMPEG_SUBDIR)%)
  HOBJS        = $(filter-out $(SKIPHEADERS:.h=.h.o),$(ALLHEADERS:.h=.h.o))
- checkheaders: $(HOBJS)
- .SECONDARY:   $(HOBJS:.o=.c)
-diff --git a/configure b/configure
-index c7d889d16f..7c821bb153 100755
---- a/configure
-+++ b/configure
-@@ -4361,18 +4361,18 @@ case $target_os in
-         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
-         dlltool="${cross_prefix}dlltool"
-         if check_cmd lib.exe -list; then
--            SLIB_EXTRA_CMD=-'sed -e "s/ @[^ ]*//" $$(@:$(SLIBSUF)=.orig.def) > $$(@:$(SLIBSUF)=.def); lib.exe /machine:$(LIBTARGET) /def:$$(@:$(SLIBSUF)=.def) /out:$(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
-+            SLIB_EXTRA_CMD=-'sed -e "s/ @[^ ]*//" $$(@:$(SLIBSUF)=.orig.def) > $$(@:$(SLIBSUF)=.def); lib.exe /machine:$(LIBTARGET) /def:$$(@:$(SLIBSUF)=.def) /out:$(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
-             if enabled x86_64; then
-                 LIBTARGET=x64
-             fi
-         elif check_cmd $dlltool --version; then
--            SLIB_EXTRA_CMD=-'sed -e "s/ @[^ ]*//" $$(@:$(SLIBSUF)=.orig.def) > $$(@:$(SLIBSUF)=.def); $(DLLTOOL) -m $(LIBTARGET) -d $$(@:$(SLIBSUF)=.def) -l $(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib) -D $(SLIBNAME_WITH_MAJOR)'
-+            SLIB_EXTRA_CMD=-'sed -e "s/ @[^ ]*//" $$(@:$(SLIBSUF)=.orig.def) > $$(@:$(SLIBSUF)=.def); $(DLLTOOL) -m $(LIBTARGET) -d $$(@:$(SLIBSUF)=.def) -l $(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib) -D $(SLIBNAME_WITH_MAJOR)'
-         fi
-         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
-         SLIB_INSTALL_LINKS=
-         SLIB_INSTALL_EXTRA_SHLIB='$(SLIBNAME:$(SLIBSUF)=.lib)'
-         SLIB_INSTALL_EXTRA_LIB='lib$(SLIBNAME:$(SLIBSUF)=.dll.a) $(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=.def)'
--        SHFLAGS='-shared -Wl,--output-def,$$(@:$(SLIBSUF)=.orig.def) -Wl,--out-implib,$(SUBDIR)lib$(SLIBNAME:$(SLIBSUF)=.dll.a) -Wl,--enable-runtime-pseudo-reloc -Wl,--enable-auto-image-base'
-+        SHFLAGS='-shared -Wl,--output-def,$$(@:$(SLIBSUF)=.orig.def) -Wl,--out-implib,$(FFMPEG_SUBDIR)lib$(SLIBNAME:$(SLIBSUF)=.dll.a) -Wl,--enable-runtime-pseudo-reloc -Wl,--enable-auto-image-base'
-         objformat="win32"
-         ranlib=:
-         enable dos_paths
-@@ -4392,12 +4392,12 @@ case $target_os in
-         SLIBSUF=".dll"
-         SLIBNAME_WITH_VERSION='$(SLIBPREF)$(FULLNAME)-$(LIBVERSION)$(SLIBSUF)'
-         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
--        SLIB_CREATE_DEF_CMD='$(SRC_PATH)/compat/windows/makedef $(SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
-+        SLIB_CREATE_DEF_CMD='$(SRC_PATH)/compat/windows/makedef $(FFMPEG_SUBDIR)lib$(NAME).ver $(OBJS) > $$(@:$(SLIBSUF)=.def)'
-         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
-         SLIB_INSTALL_LINKS=
-         SLIB_INSTALL_EXTRA_SHLIB='$(SLIBNAME:$(SLIBSUF)=.lib)'
-         SLIB_INSTALL_EXTRA_LIB='$(SLIBNAME_WITH_MAJOR:$(SLIBSUF)=.def)'
--        SHFLAGS='-dll -def:$$(@:$(SLIBSUF)=.def) -implib:$(SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
-+        SHFLAGS='-dll -def:$$(@:$(SLIBSUF)=.def) -implib:$(FFMPEG_SUBDIR)$(SLIBNAME:$(SLIBSUF)=.lib)'
-         objformat="win32"
-         ranlib=:
-         enable dos_paths
-@@ -4412,7 +4412,7 @@ case $target_os in
-         SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
-         SLIB_INSTALL_LINKS=
-         SLIB_INSTALL_EXTRA_LIB='lib$(FULLNAME).dll.a'
--        SHFLAGS='-shared -Wl,--out-implib,$(SUBDIR)lib$(FULLNAME).dll.a'
-+        SHFLAGS='-shared -Wl,--out-implib,$(FFMPEG_SUBDIR)lib$(FULLNAME).dll.a'
-         objformat="win32"
-         enable dos_paths
-         enabled shared && ! enabled small && check_cmd $windres --version && enable gnu_windres
-@@ -4437,19 +4437,19 @@ case $target_os in
-         objformat="aout"
-         add_cppflags -D_GNU_SOURCE
-         add_ldflags -Zomf -Zbin-files -Zargs-wild -Zmap
--        SHFLAGS='$(SUBDIR)$(NAME).def -Zdll -Zomf'
-+        SHFLAGS='$(FFMPEG_SUBDIR)$(NAME).def -Zdll -Zomf'
-         LIBSUF="_s.a"
-         SLIBPREF=""
-         SLIBSUF=".dll"
-         SLIBNAME_WITH_VERSION='$(SLIBPREF)$(NAME)-$(LIBVERSION)$(SLIBSUF)'
-         SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(shell echo $(NAME) | cut -c1-6)$(LIBMAJOR)$(SLIBSUF)'
--        SLIB_CREATE_DEF_CMD='echo LIBRARY $(SLIBNAME_WITH_MAJOR) INITINSTANCE TERMINSTANCE > $(SUBDIR)$(NAME).def; \
--            echo CODE PRELOAD MOVEABLE DISCARDABLE >> $(SUBDIR)$(NAME).def; \
--            echo DATA PRELOAD MOVEABLE MULTIPLE NONSHARED >> $(SUBDIR)$(NAME).def; \
--            echo EXPORTS >> $(SUBDIR)$(NAME).def; \
--            emxexp $(OBJS) >> $(SUBDIR)$(NAME).def'
--        SLIB_EXTRA_CMD='emximp -o $(SUBDIR)$(LIBPREF)$(NAME)_dll.a $(SUBDIR)$(NAME).def; \
--            emximp -o $(SUBDIR)$(LIBPREF)$(NAME)_dll.lib $(SUBDIR)$(NAME).def;'
-+        SLIB_CREATE_DEF_CMD='echo LIBRARY $(SLIBNAME_WITH_MAJOR) INITINSTANCE TERMINSTANCE > $(FFMPEG_SUBDIR)$(NAME).def; \
-+            echo CODE PRELOAD MOVEABLE DISCARDABLE >> $(FFMPEG_SUBDIR)$(NAME).def; \
-+            echo DATA PRELOAD MOVEABLE MULTIPLE NONSHARED >> $(FFMPEG_SUBDIR)$(NAME).def; \
-+            echo EXPORTS >> $(FFMPEG_SUBDIR)$(NAME).def; \
-+            emxexp $(OBJS) >> $(FFMPEG_SUBDIR)$(NAME).def'
-+        SLIB_EXTRA_CMD='emximp -o $(FFMPEG_SUBDIR)$(LIBPREF)$(NAME)_dll.a $(FFMPEG_SUBDIR)$(NAME).def; \
-+            emximp -o $(FFMPEG_SUBDIR)$(LIBPREF)$(NAME)_dll.lib $(FFMPEG_SUBDIR)$(NAME).def;'
-         SLIB_INSTALL_EXTRA_LIB='$(LIBPREF)$(NAME)_dll.a $(LIBPREF)$(NAME)_dll.lib'
-         enable dos_paths
-         enable_weak os2threads
-@@ -5593,7 +5593,7 @@ enabled xmm_clobber_test &&
+ PTXOBJS      = $(filter %.ptx.o,$(OBJS))
+ $(HOBJS):     CCFLAGS += $(CFLAGS_HEADERS)
+diff -uNr ffmpeg-original/ffbuild/library.mak ffmpeg/ffbuild/library.mak
+--- ffmpeg-original/ffbuild/library.mak	2022-11-09 20:23:36.128929341 -0800
++++ ffmpeg/ffbuild/library.mak	2022-11-09 20:38:31.806599635 -0800
+@@ -1,7 +1,7 @@
+ include $(SRC_PATH)/ffbuild/common.mak
  
- echo "X{};" > $TMPV
- if test_ldflags -Wl,--version-script,$TMPV; then
--    append SHFLAGS '-Wl,--version-script,\$(SUBDIR)lib\$(NAME).ver'
-+    append SHFLAGS '-Wl,--version-script,\$(FFMPEG_SUBDIR)lib\$(NAME).ver'
-     check_cc <<EOF && enable symver_asm_label
- void ff_foo(void) __asm__ ("av_foo@VERSION");
- void ff_foo(void) { ${inline_asm+__asm__($quotes);} }
-diff --git a/doc/tablegen.txt b/doc/tablegen.txt
-index 4c4f036e6a..a3ca81cce9 100644
---- a/doc/tablegen.txt
-+++ b/doc/tablegen.txt
-@@ -66,5 +66,5 @@ Makefile changes
- To make the automatic table creation work, you must manually declare the
- new dependency.
- For this add a line similar to this:
--$(SUBDIR)example.o: $(SUBDIR)example_tables.h
-+$(FFMPEG_SUBDIR)example.o: $(FFMPEG_SUBDIR)example_tables.h
- under the "ifdef CONFIG_HARDCODED_TABLES" section in the Makefile.
-diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 50883044a5..f2d9a2afbf 100644
---- a/libavcodec/Makefile
-+++ b/libavcodec/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME = avcodec
- 
-@@ -967,47 +967,47 @@ HOSTPROGS = aac_tablegen                                                \
- 
- CLEANFILES = *_tables.c *_tables.h *_tablegen$(HOSTEXESUF)
- 
--$(SUBDIR)dct-test$(EXESUF): $(SUBDIR)dctref.o $(SUBDIR)aandcttab.o
--$(SUBDIR)dv_tablegen$(HOSTEXESUF): $(SUBDIR)dvdata_host.o
-+$(FFMPEG_SUBDIR)dct-test$(EXESUF): $(FFMPEG_SUBDIR)dctref.o $(FFMPEG_SUBDIR)aandcttab.o
-+$(FFMPEG_SUBDIR)dv_tablegen$(HOSTEXESUF): $(FFMPEG_SUBDIR)dvdata_host.o
- 
- TRIG_TABLES  = cos cos_fixed sin
--TRIG_TABLES := $(TRIG_TABLES:%=$(SUBDIR)%_tables.c)
-+TRIG_TABLES := $(TRIG_TABLES:%=$(FFMPEG_SUBDIR)%_tables.c)
- 
--$(TRIG_TABLES): $(SUBDIR)%_tables.c: $(SUBDIR)cos_tablegen$(HOSTEXESUF)
-+$(TRIG_TABLES): $(FFMPEG_SUBDIR)%_tables.c: $(FFMPEG_SUBDIR)cos_tablegen$(HOSTEXESUF)
- 	$(M)./$< $* > $@
- 
- ifdef CONFIG_SMALL
--$(SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=1
-+$(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=1
- else
--$(SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=0
-+$(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=0
+ ifeq (,$(filter %clean config,$(MAKECMDGOALS)))
+--include $(SUBDIR)lib$(NAME).version
++-include $(FFMPEG_SUBDIR)lib$(NAME).version
  endif
  
- GEN_HEADERS = cabac_tables.h cbrt_tables.h cbrt_fixed_tables.h aacps_tables.h aacps_fixed_tables.h aacsbr_tables.h \
-               aacsbr_fixed_tables.h aac_tables.h dsd_tables.h dv_tables.h     \
-               sinewin_tables.h sinewin_fixed_tables.h mpegaudio_tables.h motionpixels_tables.h \
-               pcm_tables.h qdm2_tables.h
--GEN_HEADERS := $(addprefix $(SUBDIR), $(GEN_HEADERS))
-+GEN_HEADERS := $(addprefix $(FFMPEG_SUBDIR), $(GEN_HEADERS))
- 
--$(GEN_HEADERS): $(SUBDIR)%_tables.h: $(SUBDIR)%_tablegen$(HOSTEXESUF)
-+$(GEN_HEADERS): $(FFMPEG_SUBDIR)%_tables.h: $(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF)
- 	$(M)./$< > $@
- 
- ifdef CONFIG_HARDCODED_TABLES
--$(SUBDIR)aacdec.o: $(SUBDIR)cbrt_tables.h
--$(SUBDIR)aacdec_fixed.o: $(SUBDIR)cbrt_fixed_tables.h
--$(SUBDIR)aacps_float.o: $(SUBDIR)aacps_tables.h
--$(SUBDIR)aacps_fixed.o: $(SUBDIR)aacps_fixed_tables.h
--$(SUBDIR)aacsbr.o: $(SUBDIR)aacsbr_tables.h
--$(SUBDIR)aacsbr_fixed.o: $(SUBDIR)aacsbr_fixed_tables.h
--$(SUBDIR)aactab.o: $(SUBDIR)aac_tables.h
--$(SUBDIR)aactab_fixed.o: $(SUBDIR)aac_fixed_tables.h
--$(SUBDIR)cabac.o: $(SUBDIR)cabac_tables.h
--$(SUBDIR)dsddec.o: $(SUBDIR)dsd_tables.h
--$(SUBDIR)dvenc.o: $(SUBDIR)dv_tables.h
--$(SUBDIR)sinewin.o: $(SUBDIR)sinewin_tables.h
--$(SUBDIR)sinewin_fixed.o: $(SUBDIR)sinewin_fixed_tables.h
--$(SUBDIR)mpegaudiodec_fixed.o: $(SUBDIR)mpegaudio_tables.h
--$(SUBDIR)mpegaudiodec_float.o: $(SUBDIR)mpegaudio_tables.h
--$(SUBDIR)motionpixels.o: $(SUBDIR)motionpixels_tables.h
--$(SUBDIR)pcm.o: $(SUBDIR)pcm_tables.h
--$(SUBDIR)qdm2.o: $(SUBDIR)qdm2_tables.h
-+$(FFMPEG_SUBDIR)aacdec.o: $(FFMPEG_SUBDIR)cbrt_tables.h
-+$(FFMPEG_SUBDIR)aacdec_fixed.o: $(FFMPEG_SUBDIR)cbrt_fixed_tables.h
-+$(FFMPEG_SUBDIR)aacps_float.o: $(FFMPEG_SUBDIR)aacps_tables.h
-+$(FFMPEG_SUBDIR)aacps_fixed.o: $(FFMPEG_SUBDIR)aacps_fixed_tables.h
-+$(FFMPEG_SUBDIR)aacsbr.o: $(FFMPEG_SUBDIR)aacsbr_tables.h
-+$(FFMPEG_SUBDIR)aacsbr_fixed.o: $(FFMPEG_SUBDIR)aacsbr_fixed_tables.h
-+$(FFMPEG_SUBDIR)aactab.o: $(FFMPEG_SUBDIR)aac_tables.h
-+$(FFMPEG_SUBDIR)aactab_fixed.o: $(FFMPEG_SUBDIR)aac_fixed_tables.h
-+$(FFMPEG_SUBDIR)cabac.o: $(FFMPEG_SUBDIR)cabac_tables.h
-+$(FFMPEG_SUBDIR)dsddec.o: $(FFMPEG_SUBDIR)dsd_tables.h
-+$(FFMPEG_SUBDIR)dvenc.o: $(FFMPEG_SUBDIR)dv_tables.h
-+$(FFMPEG_SUBDIR)sinewin.o: $(FFMPEG_SUBDIR)sinewin_tables.h
-+$(FFMPEG_SUBDIR)sinewin_fixed.o: $(FFMPEG_SUBDIR)sinewin_fixed_tables.h
-+$(FFMPEG_SUBDIR)mpegaudiodec_fixed.o: $(FFMPEG_SUBDIR)mpegaudio_tables.h
-+$(FFMPEG_SUBDIR)mpegaudiodec_float.o: $(FFMPEG_SUBDIR)mpegaudio_tables.h
-+$(FFMPEG_SUBDIR)motionpixels.o: $(FFMPEG_SUBDIR)motionpixels_tables.h
-+$(FFMPEG_SUBDIR)pcm.o: $(FFMPEG_SUBDIR)pcm_tables.h
-+$(FFMPEG_SUBDIR)qdm2.o: $(FFMPEG_SUBDIR)qdm2_tables.h
- endif
-diff --git a/libavdevice/Makefile b/libavdevice/Makefile
-index f57ec0bcb1..5567efdf9a 100644
---- a/libavdevice/Makefile
-+++ b/libavdevice/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME    = avdevice
- 
-diff --git a/libavfilter/Makefile b/libavfilter/Makefile
-index a2af794e20..6a7bcde8be 100644
---- a/libavfilter/Makefile
-+++ b/libavfilter/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME = avfilter
- 
-diff --git a/libavformat/Makefile b/libavformat/Makefile
-index f598e9caff..62c687b758 100644
---- a/libavformat/Makefile
-+++ b/libavformat/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME = avformat
- 
-diff --git a/libavutil/Makefile b/libavutil/Makefile
-index ac9313f89a..b583ea4ba3 100644
---- a/libavutil/Makefile
-+++ b/libavutil/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME = avutil
- 
-@@ -203,4 +203,4 @@ TOOLS = crypto_bench ffhash ffeval ffescape
- tools/crypto_bench$(EXESUF): ELIBS += $(if $(VERSUS),$(subst +, -l,+$(VERSUS)),)
- tools/crypto_bench$(EXESUF): CFLAGS += -DUSE_EXT_LIBS=0$(if $(VERSUS),$(subst +,+USE_,+$(VERSUS)),)
- 
--$(SUBDIR)lzo-test$(EXESUF): ELIBS = -llzo2
-+$(FFMPEG_SUBDIR)lzo-test$(EXESUF): ELIBS = -llzo2
-diff --git a/libpostproc/Makefile b/libpostproc/Makefile
-index b9bb4beb8a..d36031e8bb 100644
---- a/libpostproc/Makefile
-+++ b/libpostproc/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
- 
- NAME = postproc
- FFLIBS = avutil
-diff --git a/library.mak b/library.mak
-index 6f95f63410..eb8ea2a6a9 100644
---- a/library.mak
-+++ b/library.mak
-@@ -5,38 +5,38 @@ LIBMAJOR   := $(lib$(NAME)_VERSION_MAJOR)
+ LIBVERSION := $(lib$(NAME)_VERSION)
+@@ -9,15 +9,15 @@
  LIBMINOR   := $(lib$(NAME)_VERSION_MINOR)
  INCINSTDIR := $(INCDIR)/lib$(NAME)
  
 -INSTHEADERS := $(INSTHEADERS) $(HEADERS:%=$(SUBDIR)%)
 +INSTHEADERS := $(INSTHEADERS) $(HEADERS:%=$(FFMPEG_SUBDIR)%)
  
--all-$(CONFIG_STATIC): $(SUBDIR)$(LIBNAME)
--all-$(CONFIG_SHARED): $(SUBDIR)$(SLIBNAME)
-+all-$(CONFIG_STATIC): $(FFMPEG_SUBDIR)$(LIBNAME)
-+all-$(CONFIG_SHARED): $(FFMPEG_SUBDIR)$(SLIBNAME)
- 
--$(SUBDIR)%-test.o: $(SUBDIR)%-test.c
-+$(FFMPEG_SUBDIR)%-test.o: $(FFMPEG_SUBDIR)%-test.c
- 	$(COMPILE_C)
- 
--$(SUBDIR)%-test.o: $(SUBDIR)%.c
-+$(FFMPEG_SUBDIR)%-test.o: $(FFMPEG_SUBDIR)%.c
- 	$(COMPILE_C)
- 
--$(SUBDIR)%-test.i: $(SUBDIR)%-test.c
-+$(FFMPEG_SUBDIR)%-test.i: $(FFMPEG_SUBDIR)%-test.c
- 	$(CC) $(CCFLAGS) $(CC_E) $<
- 
--$(SUBDIR)%-test.i: $(SUBDIR)%.c
-+$(FFMPEG_SUBDIR)%-test.i: $(FFMPEG_SUBDIR)%.c
- 	$(CC) $(CCFLAGS) $(CC_E) $<
- 
--$(SUBDIR)x86/%$(DEFAULT_YASMD).asm: $(SUBDIR)x86/%.asm
-+$(FFMPEG_SUBDIR)x86/%$(DEFAULT_YASMD).asm: $(FFMPEG_SUBDIR)x86/%.asm
- 	$(DEPYASM) $(YASMFLAGS) -I $(<D)/ -M -o $@ $< > $(@:.asm=.d)
- 	$(YASM) $(YASMFLAGS) -I $(<D)/ -e $< | sed '/^%/d;/^$$/d;' > $@
- 
--$(SUBDIR)x86/%.o: $(SUBDIR)x86/%$(YASMD).asm
-+$(FFMPEG_SUBDIR)x86/%.o: $(FFMPEG_SUBDIR)x86/%$(YASMD).asm
- 	$(DEPYASM) $(YASMFLAGS) -I $(<D)/ -M -o $@ $< > $(@:.o=.d)
- 	$(YASM) $(YASMFLAGS) -I $(<D)/ -o $@ $<
- 	-$(if $(ASMSTRIPFLAGS), $(STRIP) $(ASMSTRIPFLAGS) $@)
+-all-$(CONFIG_STATIC): $(SUBDIR)$(LIBNAME)  $(SUBDIR)lib$(FULLNAME).pc
+-all-$(CONFIG_SHARED): $(SUBDIR)$(SLIBNAME) $(SUBDIR)lib$(FULLNAME).pc
++all-$(CONFIG_STATIC): $(FFMPEG_SUBDIR)$(LIBNAME)  $(FFMPEG_SUBDIR)lib$(FULLNAME).pc
++all-$(CONFIG_SHARED): $(FFMPEG_SUBDIR)$(SLIBNAME) $(FFMPEG_SUBDIR)lib$(FULLNAME).pc
  
 -LIBOBJS := $(OBJS) $(SUBDIR)%.h.o $(TESTOBJS)
 +LIBOBJS := $(OBJS) $(FFMPEG_SUBDIR)%.h.o $(TESTOBJS)
  $(LIBOBJS) $(LIBOBJS:.o=.s) $(LIBOBJS:.o=.i):   CPPFLAGS += -DHAVE_AV_CONFIG_H
- $(TESTOBJS) $(TESTOBJS:.o=.i): CPPFLAGS += -DTEST
- $(TESTOBJS) $(TESTOBJS:.o=.i): CFLAGS += -Umain
  
 -$(SUBDIR)$(LIBNAME): $(OBJS)
 +$(FFMPEG_SUBDIR)$(LIBNAME): $(OBJS)
  	$(RM) $@
  	$(AR) $(ARFLAGS) $(AR_O) $^
  	$(RANLIB) $@
-@@ -48,49 +48,49 @@ install-libs-$(CONFIG_SHARED): install-lib$(NAME)-shared
+@@ -29,57 +29,57 @@
  
  define RULES
  $(TOOLS):     THISLIB = $(FULLNAME:%=$(LD_LIB))
 -$(TESTPROGS): THISLIB = $(SUBDIR)$(LIBNAME)
 +$(TESTPROGS): THISLIB = $(FFMPEG_SUBDIR)$(LIBNAME)
  
- $(TESTPROGS) $(TOOLS): %$(EXESUF): %.o $(EXEOBJS)
- 	$$(LD) $(LDFLAGS) $(LDEXEFLAGS) $$(LD_O) $$(filter %.o,$$^) $$(THISLIB) $(FFEXTRALIBS) $$(ELIBS)
+ $(LIBOBJS): CPPFLAGS += -DBUILDING_$(NAME)
+ 
+ $(TESTPROGS) $(TOOLS): %$(EXESUF): %.o
+ 	$$(LD) $(LDFLAGS) $(LDEXEFLAGS) $$(LD_O) $$(filter %.o,$$^) $$(THISLIB) $(FFEXTRALIBS) $$(EXTRALIBS-$$(*F)) $$(ELIBS)
+ 
+-$(SUBDIR)lib$(NAME).version: $(SUBDIR)version.h | $(SUBDIR)
++$(FFMPEG_SUBDIR)lib$(NAME).version: $(FFMPEG_SUBDIR)version.h | $(FFMPEG_SUBDIR)
+ 	$$(M) $$(SRC_PATH)/ffbuild/libversion.sh $(NAME) $$< > $$@
+ 
+-$(SUBDIR)lib$(FULLNAME).pc: $(SUBDIR)version.h ffbuild/config.sh | $(SUBDIR)
++$(FFMPEG_SUBDIR)lib$(FULLNAME).pc: $(FFMPEG_SUBDIR)version.h ffbuild/config.sh | $(FFMPEG_SUBDIR)
+ 	$$(M) $$(SRC_PATH)/ffbuild/pkgconfig_generate.sh $(NAME) "$(DESC)"
+ 
+-$(SUBDIR)lib$(NAME).ver: $(SUBDIR)lib$(NAME).v $(OBJS)
++$(FFMPEG_SUBDIR)lib$(NAME).ver: $(FFMPEG_SUBDIR)lib$(NAME).v $(OBJS)
+ 	$$(M)sed 's/MAJOR/$(lib$(NAME)_VERSION_MAJOR)/' $$< | $(VERSION_SCRIPT_POSTPROCESS_CMD) > $$@
  
 -$(SUBDIR)$(SLIBNAME): $(SUBDIR)$(SLIBNAME_WITH_MAJOR)
 -	$(Q)cd ./$(SUBDIR) && $(LN_S) $(SLIBNAME_WITH_MAJOR) $(SLIBNAME)
@@ -365,7 +194,7 @@ index 6f95f63410..eb8ea2a6a9 100644
 -$(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SLIBOBJS) $(SUBDIR)lib$(NAME).ver
 +$(FFMPEG_SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SLIBOBJS) $(FFMPEG_SUBDIR)lib$(NAME).ver
  	$(SLIB_CREATE_DEF_CMD)
- 	$$(LD) $(SHFLAGS) $(LDFLAGS) $(LDLIBFLAGS) $$(LD_O) $$(filter %.o,$$^) $(FFEXTRALIBS)
+ 	$$(LD) $(SHFLAGS) $(LDFLAGS) $(LDSOFLAGS) $$(LD_O) $$(filter %.o,$$^) $(FFEXTRALIBS)
  	$(SLIB_EXTRA_CMD)
  
 -ifdef SUBDIR
@@ -375,14 +204,10 @@ index 6f95f63410..eb8ea2a6a9 100644
  endif
  
  clean::
--	$(RM) $(addprefix $(SUBDIR),*-test$(EXESUF) $(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
--	    $(CLEANSUFFIXES:%=$(SUBDIR)$(ARCH)/%)
-+	$(RM) $(addprefix $(FFMPEG_SUBDIR),*-test$(EXESUF) $(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
-+	    $(CLEANSUFFIXES:%=$(FFMPEG_SUBDIR)$(ARCH)/%)
- 
- distclean:: clean
--	$(RM) $(DISTCLEANSUFFIXES:%=$(SUBDIR)%) $(DISTCLEANSUFFIXES:%=$(SUBDIR)$(ARCH)/%)
-+	$(RM) $(DISTCLEANSUFFIXES:%=$(FFMPEG_SUBDIR)%) $(DISTCLEANSUFFIXES:%=$(FFMPEG_SUBDIR)$(ARCH)/%)
+-	$(RM) $(addprefix $(SUBDIR),$(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
+-	    $(CLEANSUFFIXES:%=$(SUBDIR)$(ARCH)/%) $(CLEANSUFFIXES:%=$(SUBDIR)tests/%)
++	$(RM) $(addprefix $(FFMPEG_SUBDIR),$(CLEANFILES) $(CLEANSUFFIXES) $(LIBSUFFIXES)) \
++	    $(CLEANSUFFIXES:%=$(FFMPEG_SUBDIR)$(ARCH)/%) $(CLEANSUFFIXES:%=$(FFMPEG_SUBDIR)tests/%)
  
 -install-lib$(NAME)-shared: $(SUBDIR)$(SLIBNAME)
 +install-lib$(NAME)-shared: $(FFMPEG_SUBDIR)$(SLIBNAME)
@@ -412,7 +237,7 @@ index 6f95f63410..eb8ea2a6a9 100644
  	$(Q)mkdir -p "$(PKGCONFIGDIR)"
  	$$(INSTALL) -m 644 $$^ "$(PKGCONFIGDIR)"
  
-@@ -110,7 +110,7 @@ endef
+@@ -101,7 +101,7 @@
  
  $(eval $(RULES))
  
@@ -422,33 +247,101 @@ index 6f95f63410..eb8ea2a6a9 100644
 +$(TESTPROGS): $(DEP_LIBS) $(FFMPEG_SUBDIR)$(LIBNAME)
  
  testprogs: $(TESTPROGS)
-diff --git a/libswresample/Makefile b/libswresample/Makefile
-index 120ee3385d..2fe7e636cb 100644
---- a/libswresample/Makefile
-+++ b/libswresample/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
+diff -uNr ffmpeg-original/libavcodec/Makefile ffmpeg/libavcodec/Makefile
+--- ffmpeg-original/libavcodec/Makefile	2022-11-09 20:23:36.136929358 -0800
++++ ffmpeg/libavcodec/Makefile	2022-11-09 20:37:43.726517883 -0800
+@@ -1257,19 +1257,19 @@
  
- NAME = swresample
- FFLIBS = avutil
-diff --git a/libswscale/Makefile b/libswscale/Makefile
-index a9f9e03b25..0db07958f4 100644
---- a/libswscale/Makefile
-+++ b/libswscale/Makefile
-@@ -1,4 +1,4 @@
--include $(SUBDIR)../config.mak
-+include $(FFMPEG_SUBDIR)../config.mak
+ CLEANFILES = *_tables.c *_tables.h *_tablegen$(HOSTEXESUF)
  
- NAME = swscale
+-$(SUBDIR)tests/dct$(EXESUF): $(SUBDIR)dctref.o $(SUBDIR)aandcttab.o
+-$(SUBDIR)dv_tablegen$(HOSTEXESUF): $(SUBDIR)dvdata_host.o
++$(FFMPEG_SUBDIR)tests/dct$(EXESUF): $(FFMPEG_SUBDIR)dctref.o $(FFMPEG_SUBDIR)aandcttab.o
++$(FFMPEG_SUBDIR)dv_tablegen$(HOSTEXESUF): $(FFMPEG_SUBDIR)dvdata_host.o
  
-diff --git a/libswscale/x86/Makefile b/libswscale/x86/Makefile
-index 69012077bb..b059046ac9 100644
---- a/libswscale/x86/Makefile
-+++ b/libswscale/x86/Makefile
+ TRIG_TABLES  = cos cos_fixed sin
+-TRIG_TABLES := $(TRIG_TABLES:%=$(SUBDIR)%_tables.c)
++TRIG_TABLES := $(TRIG_TABLES:%=$(FFMPEG_SUBDIR)%_tables.c)
+ 
+-$(TRIG_TABLES): $(SUBDIR)%_tables.c: $(SUBDIR)cos_tablegen$(HOSTEXESUF)
++$(TRIG_TABLES): $(FFMPEG_SUBDIR)%_tables.c: $(FFMPEG_SUBDIR)cos_tablegen$(HOSTEXESUF)
+ 	$(M)./$< $* > $@
+ 
+ ifdef CONFIG_SMALL
+-$(SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=1
++$(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=1
+ else
+-$(SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=0
++$(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF): HOSTCFLAGS += -DCONFIG_SMALL=0
+ endif
+ 
+ GEN_HEADERS = cbrt_tables.h cbrt_fixed_tables.h aacps_tables.h aacps_fixed_tables.h \
+@@ -1277,23 +1277,23 @@
+               sinewin_tables.h sinewin_fixed_tables.h mpegaudio_tables.h \
+               mpegaudiodec_common_tables.h motionpixels_tables.h \
+               pcm_tables.h qdm2_tables.h
+-GEN_HEADERS := $(addprefix $(SUBDIR), $(GEN_HEADERS))
++GEN_HEADERS := $(addprefix $(FFMPEG_SUBDIR), $(GEN_HEADERS))
+ 
+-$(GEN_HEADERS): $(SUBDIR)%_tables.h: $(SUBDIR)%_tablegen$(HOSTEXESUF)
++$(GEN_HEADERS): $(FFMPEG_SUBDIR)%_tables.h: $(FFMPEG_SUBDIR)%_tablegen$(HOSTEXESUF)
+ 	$(M)./$< > $@
+ 
+ ifdef CONFIG_HARDCODED_TABLES
+-$(SUBDIR)cbrt_data.o: $(SUBDIR)cbrt_tables.h
+-$(SUBDIR)cbrt_data_fixed.o: $(SUBDIR)cbrt_fixed_tables.h
+-$(SUBDIR)aacdec_fixed.o: $(SUBDIR)sinewin_fixed_tables.h
+-$(SUBDIR)aacps_float.o: $(SUBDIR)aacps_tables.h
+-$(SUBDIR)aacps_fixed.o: $(SUBDIR)aacps_fixed_tables.h
+-$(SUBDIR)dvenc.o: $(SUBDIR)dv_tables.h
+-$(SUBDIR)motionpixels.o: $(SUBDIR)motionpixels_tables.h
+-$(SUBDIR)mpegaudiodec_common.o: $(SUBDIR)mpegaudiodec_common_tables.h
+-$(SUBDIR)mpegaudiodec_fixed.o: $(SUBDIR)mpegaudio_tables.h
+-$(SUBDIR)mpegaudiodec_float.o: $(SUBDIR)mpegaudio_tables.h
+-$(SUBDIR)pcm.o: $(SUBDIR)pcm_tables.h
+-$(SUBDIR)qdm2.o: $(SUBDIR)qdm2_tables.h
+-$(SUBDIR)sinewin.o: $(SUBDIR)sinewin_tables.h
++$(FFMPEG_SUBDIR)cbrt_data.o: $(FFMPEG_SUBDIR)cbrt_tables.h
++$(FFMPEG_SUBDIR)cbrt_data_fixed.o: $(FFMPEG_SUBDIR)cbrt_fixed_tables.h
++$(FFMPEG_SUBDIR)aacdec_fixed.o: $(FFMPEG_SUBDIR)sinewin_fixed_tables.h
++$(FFMPEG_SUBDIR)aacps_float.o: $(FFMPEG_SUBDIR)aacps_tables.h
++$(FFMPEG_SUBDIR)aacps_fixed.o: $(FFMPEG_SUBDIR)aacps_fixed_tables.h
++$(FFMPEG_SUBDIR)dvenc.o: $(FFMPEG_SUBDIR)dv_tables.h
++$(FFMPEG_SUBDIR)motionpixels.o: $(FFMPEG_SUBDIR)motionpixels_tables.h
++$(FFMPEG_SUBDIR)mpegaudiodec_common.o: $(FFMPEG_SUBDIR)mpegaudiodec_common_tables.h
++$(FFMPEG_SUBDIR)mpegaudiodec_fixed.o: $(FFMPEG_SUBDIR)mpegaudio_tables.h
++$(FFMPEG_SUBDIR)mpegaudiodec_float.o: $(FFMPEG_SUBDIR)mpegaudio_tables.h
++$(FFMPEG_SUBDIR)pcm.o: $(FFMPEG_SUBDIR)pcm_tables.h
++$(FFMPEG_SUBDIR)qdm2.o: $(FFMPEG_SUBDIR)qdm2_tables.h
++$(FFMPEG_SUBDIR)sinewin.o: $(FFMPEG_SUBDIR)sinewin_tables.h
+ endif
+diff -uNr ffmpeg-original/libavutil/Makefile ffmpeg/libavutil/Makefile
+--- ffmpeg-original/libavutil/Makefile	2022-11-09 20:23:36.740930665 -0800
++++ ffmpeg/libavutil/Makefile	2022-11-09 20:38:46.158623950 -0800
+@@ -261,4 +261,4 @@
+ tools/crypto_bench$(EXESUF): ELIBS += $(if $(VERSUS),$(subst +, -l,+$(VERSUS)),)
+ tools/crypto_bench$(EXESUF): CFLAGS += -DUSE_EXT_LIBS=0$(if $(VERSUS),$(subst +,+USE_,+$(VERSUS)),)
+ 
+-$(SUBDIR)tests/lzo$(EXESUF): ELIBS = -llzo2
++$(FFMPEG_SUBDIR)tests/lzo$(EXESUF): ELIBS = -llzo2
+diff -uNr ffmpeg-original/libswscale/x86/Makefile ffmpeg/libswscale/x86/Makefile
+--- ffmpeg-original/libswscale/x86/Makefile	2022-11-09 20:23:36.792930778 -0800
++++ ffmpeg/libswscale/x86/Makefile	2022-11-09 20:39:05.018655842 -0800
 @@ -1,4 +1,4 @@
 -$(SUBDIR)x86/swscale_mmx.o: CFLAGS += $(NOREDZONE_FLAGS)
 +$(FFMPEG_SUBDIR)x86/swscale_mmx.o: CFLAGS += $(NOREDZONE_FLAGS)
  
  OBJS                            += x86/rgb2rgb.o                        \
                                     x86/swscale.o                        \
+diff -uNr ffmpeg-original/Makefile ffmpeg/Makefile
+--- ffmpeg-original/Makefile	2022-11-09 20:23:36.092929263 -0800
++++ ffmpeg/Makefile	2022-11-09 20:36:26.262385123 -0800
+@@ -97,7 +97,7 @@
+ 
+ define DOSUBDIR
+ $(foreach V,$(SUBDIR_VARS),$(eval $(call RESET,$(V))))
+-SUBDIR := $(1)/
++FFMPEG_SUBDIR := $(1)/
+ include $(SRC_PATH)/$(1)/Makefile
+ -include $(SRC_PATH)/$(1)/$(ARCH)/Makefile
+ -include $(SRC_PATH)/$(1)/$(INTRINSICS)/Makefile

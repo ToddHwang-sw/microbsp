@@ -2,7 +2,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 823332d..6996c38 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -725,9 +725,9 @@ function(get_link_libraries OUT TARGET)
+@@ -745,9 +745,9 @@ function(get_link_libraries OUT TARGET)
      set(${OUT} ${RESULT} PARENT_SCOPE)
  endfunction()
  

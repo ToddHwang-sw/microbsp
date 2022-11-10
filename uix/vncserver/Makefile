@@ -31,7 +31,8 @@ MICB_CMAKE_COMMON_OPTS += \
 MICB_DEPENDS = libjpeg libpng libpng16 sdl2 gnutls openssl x11 libdrm_freedreno libdrm_nouveau  \
 	       expat libffi intl libudev uuid blkid waylandd-server egl gl glesv2 \
 	       xcb-xfixes wayland-server xcb-dri3 xshmfence ncurses xcb-present xcb-sync xcb-randr \
-	       libsystemd zlib libcap liblzo liblzma liblz4 libzstd
+	       libsystemd zlib libcap liblzo liblzma liblz4 libzstd \
+		   libavsample libavcodec libavutil libavfilter libavformat 
 
 CROSS_USER_LFLAGS += -lglapi
 

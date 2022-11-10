@@ -26,7 +26,7 @@ index e7fc3ee..3802bf5 100644
 +++ b/meson.build
 @@ -2,7 +2,7 @@ project(
  	'wayland', 'c',
- 	version: '1.20.90',
+ 	version: '1.21.90',
  	license: 'MIT',
 -	meson_version: '>= 0.56.0',
 +	meson_version: '>= 0.50.0',
@@ -37,7 +37,7 @@ diff --git a/src/meson.build b/src/meson.build
 index 266c8b1..2654349 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -70,8 +70,8 @@ if get_option('scanner')
+@@ -78,8 +78,8 @@ if get_option('scanner')
  endif
  
  if meson.is_cross_build() or not get_option('scanner')
