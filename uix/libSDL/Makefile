@@ -1,5 +1,5 @@
 DIR=SDL
-LOC=-b 2.0.22 https://github.com/libsdl-org
+LOC=-b release-2.26.x https://github.com/libsdl-org
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -19,10 +19,16 @@ MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-client \
 
 CROSS_USER_LFLAGS += -lglapi
 
-prepare:
+prepare_xx:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF)
+	cd $(BUILDDIR)/$(DIR); \
+		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
+
+prepare:
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

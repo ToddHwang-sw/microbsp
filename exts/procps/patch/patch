@@ -1,6 +1,6 @@
 diff -uNr procps-original/Makefile.am procps/Makefile.am
---- procps-original/Makefile.am	2022-10-03 15:03:04.067843493 -0700
-+++ procps/Makefile.am	2022-10-03 15:04:46.616158144 -0700
+--- procps-original/Makefile.am	2022-11-25 22:13:28.773803136 -0800
++++ procps/Makefile.am	2022-11-25 22:16:03.118314331 -0800
 @@ -20,8 +20,6 @@
  ACLOCAL_AMFLAGS = -I m4
  SUBDIRS = \
@@ -10,9 +10,11 @@ diff -uNr procps-original/Makefile.am procps/Makefile.am
  	testsuite
  
  AM_CFLAGS = -Ilibrary/include
-@@ -409,5 +407,3 @@
+@@ -409,7 +407,5 @@
  
  get-trans:
  	echo "Getting the latest translations from translationproject.org..."
 -	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng/  po
 -	rsync -Lrtvz  translationproject.org::tp/latest/procps-ng-man/  po-man
+ 	rm -f po-man/man.stamp
+ 	make -C po-man man.stamp
