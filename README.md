@@ -18,7 +18,7 @@ Why not using Yocto
 MicroBSP
 ------------
 
-* I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **QEMU VM** - Yocto is too much big cat to catch up these mices only for my private use. 
+* I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **QEMU VM** - Yocto might be a big cat to come with for catching up these mices under coverage of my private preferences; just for build/compile/...
 
 * **Raspberry PI** is the cheapest embedded board I can purchase easily from Amazon in less than $40, and **QEMU VM** can be easily activated in Ubuntu Linux installed PC. -  For poor system programmer like me, Raspberry PI becomes the right answer.
 
@@ -53,7 +53,7 @@ Summary
 | Kernel/Application Separation    | No   |  No    |
 
 * 32 bit CPU board was not tested with MicroBSP. 
-* CPU core and board is not separated in MicroBSP. - Even board A and board B are using the same core type "Cortex-A53", but we need to use 2 arch layers for both boards.  
+* Architecture(CPU core) and board is not separated in MicroBSP. - Even board A and board B are using the same core type "Cortex-A53", but we need to use 2 arch layers for both boards.  
 
 * MicroBSP is 100% Makefile based raspberry pi software build tree. 
 * Building transaction should begin with <strong>GNU cross toolchain construction</strong>.
@@ -932,7 +932,7 @@ bash-5.1# xcfgcli.sh put wan/password onetwothree
 onetwothree
 bash-5.1# STORAGE UPDATE 
 
-bash-5.1# 
+bash-5.1# reboot -f   
 
 
 ```

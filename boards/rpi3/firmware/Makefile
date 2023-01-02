@@ -1,6 +1,6 @@
 LOC=https://github.com/raspberrypi/firmware/raw/stable/boot/
 FWS=bootcode.bin start.elf start_x.elf fixup.dat fixup_x.dat
-FILES=$(FWS) config.txt cmdline.txt conf.sys
+FILES=$(FWS) config.txt cmdline.txt
 
 prepare:
 	@for f in $(FWS); do \

@@ -1,5 +1,5 @@
 DIR=gst-libav
-LOC=-b 1.10 https://gitlab.freedesktop.org/gstreamer
+LOC=-b 1.18 https://gitlab.freedesktop.org/gstreamer
 
 include $(TOPDIR)/scripts/uixenv.mk
 

@@ -1,19 +1,21 @@
-diff --git a/meson.build b/meson.build
-index 9c76440..82de016 100644
---- a/meson.build
-+++ b/meson.build
-@@ -9,10 +9,10 @@ version_arr = gst_version.split('.')
- gst_version_major = version_arr[0]
- gst_version_minor = version_arr[1]
+diff -uNr gst-libav-original/meson.build gst-libav/meson.build
+--- gst-libav-original/meson.build	2022-11-26 09:06:32.948526444 -0800
++++ gst-libav/meson.build	2022-11-26 09:09:55.180905606 -0800
+@@ -16,13 +16,13 @@
+ endif
  
--libavfilter_dep = dependency('libavfilter', version: '>= 6.47.100')
--libavformat_dep = dependency('libavformat', version: '>= 57.41.100')
--libavcodec_dep = dependency('libavcodec', version: '>= 57.48.101')
--libavutil_dep = dependency('libavutil', version: '>= 55.28.100')
-+libavfilter_dep = dependency('libavfilter', version: '>= 2.47.100')
-+libavformat_dep = dependency('libavformat', version: '>= 27.41.100')
-+libavcodec_dep = dependency('libavcodec', version: '>= 27.48.101')
-+libavutil_dep = dependency('libavutil', version: '>= 25.28.100')
+ api_version = '1.0'
+-libavfilter_dep = dependency('libavfilter', version: '>= 7.16.100',
++libavfilter_dep = dependency('libavfilter', version: '>= 1.16.100',
+   fallback: ['FFmpeg', 'libavfilter_dep'])
+-libavformat_dep = dependency('libavformat', version: '>= 58.12.100',
++libavformat_dep = dependency('libavformat', version: '>= 18.12.100',
+   fallback: ['FFmpeg', 'libavformat_dep'])
+-libavcodec_dep = dependency('libavcodec', version: '>= 58.18.100',
++libavcodec_dep = dependency('libavcodec', version: '>= 18.18.100',
+   fallback: ['FFmpeg', 'libavcodec_dep'])
+-libavutil_dep = dependency('libavutil', version: '>= 56.14.100',
++libavutil_dep = dependency('libavutil', version: '>= 16.14.100',
+   fallback: ['FFmpeg', 'libavutil_dep'])
  
  libav_deps = [libavfilter_dep, libavformat_dep, libavcodec_dep, libavutil_dep]
- 
