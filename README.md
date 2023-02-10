@@ -1,7 +1,42 @@
+## Table of Contents
+1. [Why not Yocto](#whynotyocto)
+2. [MicroBSP](#microbsp)
+3. [Summary](#summary)
+4. [Folder Hieararchy](#folder)
+5. [Overlay Root File System](#overlayrootfs)
+6. [Setting up Prerequisite Utilities/Libraries](#prereq)
+7. [Raspberry PI](#rpi3)
+	1. [Poor man's gadgets](#rpi3_component)
+	2. [How it looks](#rpi3_look)
+	3. [Device operation](#rpi3_operation)
+	4. [Booting Shot](#rpi3_boot)
+	5. [Procedures](#rpi3_procedures)
+		1. [Toolchain](#rpi3_toolchain)
+		2. [Libraries, Applications, Extra Applications](#rpi3_library)
+		3. [Booting Image](#rpi3_bootimage)
+		4. [Creating UI image (Embedded QT - Cross-compilation)](#rpi3_ui) 
+		5. [Bootable SD Card](#rpi3_sdcard)
+		6. [WLAN Configuration](#rpi3_wlan)
+		7. [Available Packages](#rpi3_packages)
+8. [QEMU VM](#qemu) 
+	1. [Testbed components](#qemu_component)
+	2. [Setup](#qemu_setup) 
+	3. [Booting Shot](#qemu_boot)
+	4. [Procedures](#qemu_procedures)
+		1. [Toolchain](#qemu_toolchain)
+		2. [Libraries, Applications, Extra Applications](#qemu_library)
+		3. [Platform specfic binaries ( HTTP server, currently )](#qemu_http)
+		4. [Booting Image Creation](#qemu_bootimage)
+		5. [Partitioning external USB disk](#qemu_partition)
+		6. [Running/Stopping "output.iso"](#qemu_control)
+	5. [Host Network](#qemu_hostnetwork)
+9. [Selective Compilation](#selective_compile)
+10. [How Python](#python)
+	1. [Setting up PIP](#python_pip)
+	2. [Upgrading PIP](#python_upgrade_pip)
 
 
-Why not using Yocto  
-------------
+## Why not using Yocto  <a name="whynotyocto"></a>
 
 
 * **Yocto** must be the strongest player in embedded Linux BSP(Board Support Package) tracks. In programmer's viewpoint, I think the followings are amazing characteristics of the Yocto.   
@@ -15,8 +50,7 @@ Why not using Yocto
 * Final usages of BSP sources for embedded system are usually limited to 2 or 3 such as cross compiler generation, building applications, required utilities and the creation of final image to be downloaded into embedded board. 
 
 
-MicroBSP
-------------
+## MicroBSP  <a name="microbsp"></a>
 
 * I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **QEMU VM** - Yocto might be a big cat to come with for catching up these mices under coverage of my private preferences; just for build/compile/...
 
@@ -33,8 +67,7 @@ MicroBSP
 
 * MicroBSP is to assist the needs for my private individual reason and public share purposes based on its inherent flexibility and simplicity.
 
-Summary
-------------
+## Summary <a name="summary"></a>
 
 
 * MicroBSP vs. Yocto 
@@ -88,8 +121,8 @@ Summary
 * Total booting disk image has the following hierarchy. 
 
 
-Folder Hierarchy
-------------
+## Folder Hierarchy <a name="folder"></a>
+
 
 The directory hieararchy of MicroBSP is...
 
@@ -126,8 +159,8 @@ The directory hieararchy of MicroBSP is...
 | **uix/**           | Graphic/Multimedia related Libraries/Applications   |
 
 
-Overlay Root File System 
-------------
+## Overlay Root File Sysyem  <a name="overlayrootfs"></a>
+
 
 The following shows the structure of root file system constructed by overlay file system mount process. Overlay file system components; lower, upper, work directory is organized with folders in both **_base** and **_stagedir** created after the step **Boot Image Building** .  
 
@@ -152,8 +185,8 @@ The following shows the structure of root file system constructed by overlay fil
 	* Second, moves to **/ovr** folder by using **"choot /ovr /etc/rc.init"** for next booting.
 
 
-<span style="color:blue; font-size:4em">Setting up Prerequisite Utilities/Libraries</span>
-==========================
+## Setting up Prerequisite Utilities/Libraries  <a name="prereq"></a>
+
 
 - Fundamental libraries/applications will be installed by the following command.
 - <strong>This can work in Ubuntu. </strong>
@@ -163,11 +196,10 @@ The following shows the structure of root file system constructed by overlay fil
   # make installcomps
 ```
 
-<span style="color:blue; font-size:4em">Raspberry PI</span>
-===============
+## Raspberry PI  <a name="rpi3"></a>
 
-Testbed Components
----------
+
+### Poor man's gadgets <a name="rpi3_component"></a>
 
 * [Raspberry PI 3+](https://www.amazon.com/CanaKit-Raspberry-Complete-Starter-Kit/dp/B01C6Q2GSY/ref=sr_1_6?keywords=raspberry+pi+3%2B&qid=1636520388&qsid=132-7915930-0137541&sr=8-6&sres=B07BCC8PK7%2CB01C6EQNNK%2CB07KKBCXLY%2CB01C6Q2GSY%2CB01LPLPBS8%2CB07BDR5PDW%2CB07BC567TW%2CB07BFH96M3%2CB07N38B86S%2CB0778CZ97B%2CB09HGXHRLQ%2CB08C254F73%2CB08G8QYFCD%2CB01N13X8V1%2CB09HH2BFN4%2CB06W54L7B5)
 
@@ -175,14 +207,12 @@ Testbed Components
 
 * [TP-Link USB WiFi Dongle](https://www.amazon.com/TP-Link-TL-WN823N-Wireless-network-Raspberry/dp/B0088TKTY2/ref=sr_1_15?keywords=tp+link+usb+wifi+adapter&qid=1636520657&qsid=132-7915930-0137541&sr=8-15&sres=B08D72GSMS%2CB008IFXQFU%2CB07P6N2TZH%2CB08KHV7H1S%2CB07PB1X4CN%2CB07P5PRK7J%2CB00JBJ6VG8%2CB00YUU3KC6%2CB002SZEOLG%2CB00K11UIV4%2CB0088TKTY2%2CB01MR6M8EC%2CB00HC01KMS%2CB0799C35LV%2CB01NBMJGA9%2CB00A8GVNNY&srpt=NETWORK_INTERFACE_CONTROLLER_ADAPTER)
 
-How it looks
----------
+### How it looks <a name="rpi3_look"></a>
 
 ![](doc/rpi.png)
 
 
-Operation Setup
----------
+### Device operation <a name="rpi3_operation"></a>
 
 * Home Gateway
 * LAN
@@ -192,8 +222,7 @@ Operation Setup
   - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek</strong>)
 * UART baudrate = 921600bps (not 115200bps)
 
-Booting Shot
------------
+### Booting Shot <a name="rpi3_boot"></a>
 
   ```sh
 
@@ -770,10 +799,11 @@ bash-5.1#
 bash-5.1# 
 
   ```
-## Procedures
+
+### Procedures <a name="rpi3_procedures"></a>
 
 
-# [1] Toolchain Building
+#### Toolchain Building <a name="rpi3_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/rpi3</strong> folder.
 ```#!/bin/sh
@@ -790,14 +820,14 @@ bash-5.1#
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
 
 
-# [2] Libraries, Applications, Extra Applications Building
+#### Libraries, Applications, Extra Applications Building <a name="rpi3_library"></a>
 
 ```#!/bin/sh
 
   # make TBOARD=rpi3 lib app ext
 ```
 
-# [3] Booting Image Building
+#### Booting Image Building <a name="rpi3_bootimage"></a>
 
 ```#!/bin/sh
 
@@ -818,7 +848,8 @@ To prevent this, just simply clean up <strong>board/rpi3/kernel/build</strong> f
   # sudo \rm -rf ./boards/rpi3/kernel/build/*
 ```
 
-# [4] Creating UI image (Embedded QT - Cross-compilation)
+#### Creating UI image (Embedded QT - Cross-compilation) <a name="rpi3_ui"></a>
+
 
 ```#!/bin/sh
 
@@ -828,7 +859,8 @@ To prevent this, just simply clean up <strong>board/rpi3/kernel/build</strong> f
 - It takes fairly long time to build up all subfolders under /uix.
 - The final step is building Embedded QT. 
 
-# [5] Formatting SD Card
+#### Formatting SD Card <a name="rpi3_sdcard"></a>
+
 
 - Currently,the following 6 partitions should be used. (<strong>/dev/sde4</strong> is actually the top-level container for partitions; /dev/sde[5,6,7].)
 
@@ -886,7 +918,8 @@ Device     Boot    Start      End  Sectors  Size Id Type
 - Rootfs.squashfs , boot.tgz, image.ext4, config.ext4 are all copied into the disk.
 - CAUTION) Existing partitions on the SDcard will be deleted upon running "format_sdcard.sh" .
 
-# [5] WLAN Configuration
+#### WLAN Configuration <a name="rpi3_wlan"></a>
+
 
 - User can configure required settings by using a tool **xcfgcli.sh** as follows. 
 
@@ -941,8 +974,7 @@ bash-5.1# reboot -f
 - User can see **/config/db** file and it keeps all configuration variable managed through **xcfgcli.sh**, and  **/etc/config.xml** is the XML file maintaining all configurable parameters defined in raspberry PI setup. 
 
 
-
-# [6] Available Packages 
+#### Available Packages <a name="rpi3_packages"></a> 
 
 - The following command prints the list of available packages from Microbsp. 
 - <strong>MIBC_DEPENDS</strong> section inside of Makefile can choose any of those required . 
@@ -979,11 +1011,10 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 
 ```
 
-<span style="color:blue; font-size:4em">Ubuntu QEMU</span>
-===============
+## Ubuntu QEMU  <a name="qemu"></a>
 
-Testbed Components
----------
+### Testbed components <a name="qemu_component"></a>
+
 
 * [QEMU VM  Emulator](https://www.unixmen.com/how-to-install-and-configure-qemu-in-ubuntu/)
 * USB Storage stick with "image.ext4"
@@ -1002,21 +1033,19 @@ Testbed Components
  
     We can know that USB disk is mounted as "sdd"
 
-  # dd if=image.ext4 of=/dev/sdd bs=32M 
+  # sudo dd if=image.ext4 of=/dev/sdd bs=32M 
  
     <It might take a long time to flash 6G image into USB stick. >
 
 ```
 
 
-
-Operation Setup
----------
+### Setup <a name="qemu_setup"></a>
 
 * Just bash shell
 
-Booting Shot
------------
+### Booting Shot<a name="qemu_boot"></a>
+
 
   ```sh
 
@@ -1638,10 +1667,10 @@ lo        Link encap:Local Loopback
 
 - User can see "eth0" interface is activated in VM, which will be named as "tap0" in host. 
 
-## Procedures
+### Procedures <a name="qemu_procedures"></a>
 
 
-# [1] Toolchain Building
+#### Toolchain <a name="qemu_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/qvm</strong> folder.
 ```#!/bin/sh
@@ -1657,22 +1686,21 @@ lo        Link encap:Local Loopback
  * "TBOARD" indicates type of board which is the name of folders in boards/ .
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
 
-
-# [2] Libraries, Applications, Extra Applications Building
+#### Libraries, Applications, Extra Applications <a name="qemu_library"></a>
 
 ```#!/bin/sh
 
   # make TBOARD=vm lib app ext
 ```
 
-# [3] Platform specfic binaries Building ( HTTP server, currently ) 
+#### Platform specfic binaries ( HTTP server, currently )  <a name="qemu_http"></a>
 
 ```#!/bin/sh
 
   # make TBOARD=vm proj 
 ```
 
-# [4] Booting Image Building
+#### Booting Image Creation <a name="qemu_bootimage"></a>
 
 ```#!/bin/sh
 
@@ -1682,8 +1710,8 @@ lo        Link encap:Local Loopback
 
 - Unlikely with the case of raspberry PI, we will get "output.iso" file under boards/vm .
 
+#### Partitioning external USB disk  <a name="qemu_partition"></a>
 
-# [5] Burning external USB disk partition 
 
 ```#!/bin/sh
 
@@ -1723,7 +1751,7 @@ Device     Boot    Start      End  Sectors Size Id Type
 /dev/sdd2       20973568 20994047    20480  10M 83 Linux
 ```
 
-# [6] Running/Stopping "output.iso"
+#### Running/Stopping "output.iso" <a name="qemu_control"></a>
 
 - We can run this file as below.
 ```#!/bin/sh
@@ -1750,8 +1778,7 @@ Device     Boot    Start      End  Sectors Size Id Type
   # make TBOARD=vm vmstop
 ```
 
-Host Network 
-===============================
+### Host Network <a name="qemu_hostnetwork"></a>
 
 - VM machine is connected to host machine through "TAP" interface. 
 - The following shows how host network is composed to support an isolated interface between VM and the host . 
@@ -1810,8 +1837,8 @@ br0		8000.f6f890ceb6be	no          enp19s0
 |  tap0     |  Virtual name of "eth0" in  VM            |
 
 
-Partial Build
-===============================
+## Selective Compilation <a name="selective_compile"></a>
+
 
 - Each applications/libaries are located under folders names among apps/, libs/, exts/ and they are all associated with specific category names.  
 
@@ -1844,11 +1871,10 @@ Partial Build
   # make TBOARD=vm SUBDIR=python distclean ext
 ```
 
-<span style="color:blue; font-size:4em">How Python</span>
-===============
+## How Python <a name="python"></a>
 
-Setting up PIP 
----------
+### Setting up PIP <a name="python_pip"></a>
+
 
 ```#!/bin/sh
 
@@ -1865,8 +1891,8 @@ bash-5.1#
 
 ```
 
-Upgrading PIP
----------
+### Upgrading PIP <a name="python_upgrade_pip"></a>
+
 
 ```#!/bin/sh
 
@@ -1888,6 +1914,4 @@ WARNING: Running pip as the 'root' user can result in broken permissions and con
 bash-5.1# 
 
 ```
-
-
 
