@@ -30,6 +30,13 @@
 		5. [Partitioning external USB disk](#qemu_partition)
 		6. [Running/Stopping "output.iso"](#qemu_control)
 	5. [Host Network](#qemu_hostnetwork)
+		1. [Realtek WLAN configuration](#qemu_realtek)
+			1. [802.11a AP](#qemu_80211a_ap)
+			2. [802.11g AP](#qemu_80211g_ap)
+		2. [Renaming network interfaces](#qemu_renaming_ubuntu)
+		3. [NAT network configuration](#qemu_nat)
+		4. [DHCP/DNS configuration](#qemu_dns)
+		5. [Host Network Setup Script](#qemu_script)
 9. [Selective Compilation](#selective_compile)
 10. [How Python](#python)
 	1. [Setting up PIP](#python_pip)
@@ -127,10 +134,8 @@
 The directory hieararchy of MicroBSP is...
 
 
-```#!/bin/sh
-
-  # ls
-  todd@vostro:/media/todd/work/microbsp$ ls -la
+```
+  # ls -la
   total 260
   drwxrwxr-x 13 todd todd  4096 Nov  6 07:12 .  
   drwxrwxr-x  4 todd todd  4096 Oct 26 13:19 ..
@@ -146,8 +151,7 @@ The directory hieararchy of MicroBSP is...
   -rw-rw-r--  1 todd todd 87500 Nov  6 07:12 README.md
   drwxrwxr-x  2 todd todd  4096 Nov  2 22:13 scripts
   drwxrwxr-x 43 todd todd  4096 Oct 25 20:27 uix
-  todd@vostro:/media/todd/work/microbsp$ 
-
+  #
 ```
 
 
@@ -191,8 +195,7 @@ The following shows the structure of root file system constructed by overlay fil
 - Fundamental libraries/applications will be installed by the following command.
 - <strong>This can work in Ubuntu. </strong>
 
-```#!/bin/sh
-
+```
   # make installcomps
 ```
 
@@ -224,8 +227,7 @@ The following shows the structure of root file system constructed by overlay fil
 
 ### Booting Shot <a name="rpi3_boot"></a>
 
-  ```sh
-
+  ```
 [    0.000000] Linux version 5.10.110-v8 (todd@vostro) (aarch64-any-linux-gnu-gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.38) #1 SMP PREEMPT Wed Oct 12 21:16:58 PDT 2022
 [    0.000000] random: fast init done
 [    0.000000] Machine model: Raspberry Pi 3 Model B Plus Rev 1.3
@@ -806,13 +808,11 @@ bash-5.1#
 #### Toolchain Building <a name="rpi3_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/rpi3</strong> folder.
-```#!/bin/sh
-
+```
   # sudo make TBOARD=rpi3 TOOLCHAIN_ROOT=/opt/rpi3 toolchain
 ```
 - Without an option "TOOLCHAIN_ROOT=", the toolchain will be installed under <strong>./gnu/toolchain</strong> folder.
-```#!/bin/sh
-
+```
   # make TBOARD=rpi3 toolchain
 ```
 
@@ -822,15 +822,13 @@ bash-5.1#
 
 #### Libraries, Applications, Extra Applications Building <a name="rpi3_library"></a>
 
-```#!/bin/sh
-
+```
   # make TBOARD=rpi3 lib app ext
 ```
 
 #### Booting Image Building <a name="rpi3_bootimage"></a>
 
-```#!/bin/sh
-
+```
   # make TBOARD=rpi3 board ramdisk extdisk
 ```
 
@@ -843,16 +841,14 @@ bash-5.1#
 - <span style="color:red"> <em> Kernel is referenced multiple times both at toochain building and booting image building. When the toolchain has been built with "sudo" command prefix to locate it under super-user priviledge folder (when you use "TOOLCHAIN_ROOT=" option), access conflict error may happen since the booting image building is accomplished under normal user priviledge.  
 To prevent this, just simply clean up <strong>board/rpi3/kernel/build</strong> folder as follows, </em> </span>
 
-```#!/bin/sh
-
+```
   # sudo \rm -rf ./boards/rpi3/kernel/build/*
 ```
 
 #### Creating UI image (Embedded QT - Cross-compilation) <a name="rpi3_ui"></a>
 
 
-```#!/bin/sh
-
+```
   # make TBOARD=rpi3 ui uidisk 
 ```
 
@@ -864,7 +860,7 @@ To prevent this, just simply clean up <strong>board/rpi3/kernel/build</strong> f
 
 - Currently,the following 6 partitions should be used. (<strong>/dev/sde4</strong> is actually the top-level container for partitions; /dev/sde[5,6,7].)
 
-```#!/bin/sh
+```
 
 Command (m for help): p
 Disk /dev/sde: 59.64 GiB, 64021856256 bytes, 125042688 sectors
@@ -900,17 +896,15 @@ Device     Boot    Start      End  Sectors  Size Id Type
 - /dev/sde5 is mounted into /root . /dev/sde7 are overlayed.
 - User can copy images into partitions as follows.
 
-```#!/bin/sh
+```
   # sudo dd if=./board/rpi3/rootfs.squashfs of=/dev/sde2 bs=128M
   # sudo dd if=./board/rpi3/image.ext4      of=/dev/sde3 bs=128M  - It takes long time.
-
 ```
 
 - Shell script to make these partitions automatically is available under board/rpi3 as follows.
   If MMC for raspberry PI was mounted on "/dev/sdc",
 
-```#!/bin/sh
-
+```
   # cd boards/rpi3
   # sudo ./format_sdcard.sh sdc
 ```
@@ -923,7 +917,7 @@ Device     Boot    Start      End  Sectors  Size Id Type
 
 - User can configure required settings by using a tool **xcfgcli.sh** as follows. 
 
-```#!/bin/sh
+```
 bash-5.1# 
 bash-5.1# xcfgcli.sh get wan | jq
 {
@@ -946,13 +940,11 @@ bash-5.1# xcfgcli.sh get wan | jq
   "capture": "0"
 }
 bash-5.1# 
-
-
 ```
 
 - <strong>ssid</strong> and <strong>password</strong> in **wan** section are used for home gateway connection.
 
-```#!/bin/sh
+```
 bash-5.1# 
 bash-5.1# 
 bash-5.1# xcfgcli.sh put wan/ssid MyHomeNetwork
@@ -966,8 +958,6 @@ onetwothree
 bash-5.1# STORAGE UPDATE 
 
 bash-5.1# reboot -f   
-
-
 ```
 
 
@@ -980,10 +970,8 @@ bash-5.1# reboot -f
 - <strong>MIBC_DEPENDS</strong> section inside of Makefile can choose any of those required . 
 
 
-```#!/bin/sh
-
-
-todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
+```
+# make TBOARD=rpi3 pkglist
 
 /media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/bash.pc
 /media/todd/work/github/microbsp/boards/rpi3/_install/disk/lib/pkgconfig/liblzma.pc
@@ -1005,7 +993,7 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 - When your new pacakage needs both openssl and libz libraries, the following line needs to be added into Makefile. 
   Path should be omitted at <strong>MICB_DEPENDS</strong> line. 
 
-```#!/bin/sh
+```
 
   MICB_DEPENDS = openssl zlib 
 
@@ -1019,8 +1007,7 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 * [QEMU VM  Emulator](https://www.unixmen.com/how-to-install-and-configure-qemu-in-ubuntu/)
 * USB Storage stick with "image.ext4"
 
-```#!/bin/sh
-
+```
   # cd boards/vm
 
   # sudo dmesg | grep "sd "
@@ -1047,8 +1034,7 @@ todd@vostro:/media/todd/work/github/microbsp$ make TBOARD=rpi3 pkglist
 ### Booting Shot<a name="qemu_boot"></a>
 
 
-  ```sh
-
+  ```
   USB storage stick should be plugged in...
 
 
@@ -1565,7 +1551,7 @@ DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc
 DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
 DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
 DBG:_xml_storage_header_print:870  ===========
-DBG:_xml_storage_header_print:862  [[DIRTY BLOCK PROCESS]]
+DBG:_xml_storage_header_:print:862  [[DIRTY BLOCK PROCESS]]
 DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=3f76 size=836
 DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
 DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
@@ -1673,13 +1659,11 @@ lo        Link encap:Local Loopback
 #### Toolchain <a name="qemu_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/qvm</strong> folder.
-```#!/bin/sh
-
+```
   # sudo make TBOARD=vm TOOLCHAIN_ROOT=/opt/qvm toolchain
 ```
 - With the following command, the toolchain will be setup under <strong>./gnu/toolchain</strong> folder.
-```#!/bin/sh
-
+```
   # make TBOARD=vm toolchain
 ```
 
@@ -1688,22 +1672,19 @@ lo        Link encap:Local Loopback
 
 #### Libraries, Applications, Extra Applications <a name="qemu_library"></a>
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm lib app ext
 ```
 
 #### Platform specfic binaries ( HTTP server, currently )  <a name="qemu_http"></a>
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm proj 
 ```
 
 #### Booting Image Creation <a name="qemu_bootimage"></a>
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm board ramdisk extdisk 
 ```
 
@@ -1713,8 +1694,7 @@ lo        Link encap:Local Loopback
 #### Partitioning external USB disk  <a name="qemu_partition"></a>
 
 
-```#!/bin/sh
-
+```
   # sudo dd if=boards/vm/image.ext4 of=/dev/sdd1 bs=128M 
   # sudo mkfs.ext4 -F /dev/sdd2
 ```
@@ -1729,8 +1709,7 @@ lo        Link encap:Local Loopback
 - /dev/sdd1 will be used for main R/W disk space. 
 - /dev/sdd2 will be used for configuration data space. 
 
-```#!/bin/sh
-
+```
 # sudo fdisk /dev/sdd
 
 Welcome to fdisk (util-linux 2.37.2).
@@ -1754,87 +1733,441 @@ Device     Boot    Start      End  Sectors Size Id Type
 #### Running/Stopping "output.iso" <a name="qemu_control"></a>
 
 - We can run this file as below.
-```#!/bin/sh
-
+```
   # make TBOARD=vm vmrun
-
+```
 
   If you want to explicitly specify USB stick device, use the following option "EXT4HDD" . 
 
-
+```
   # make TBOARD=vm EXT4HDD=/dev/sde1 vmrun 
-
+```
 
   If you want to explicitly specify configuration partition device, use the following option "EXT4CFG" . 
 
-
+```
   # make TBOARD=vm EXT4HDD=/dev/sde1 EXT4CFG=/dev/sdg2 vmrun 
-
 ```
 
 - We can stop running QEMU emulator.
-```#!/bin/sh
-
+```
   # make TBOARD=vm vmstop
 ```
 
 ### Host Network <a name="qemu_hostnetwork"></a>
 
-- VM machine is connected to host machine through "TAP" interface. 
-- The following shows how host network is composed to support an isolated interface between VM and the host . 
-
-
-```#!/bin/sh
-
-#
-# ifconfig 
+The following is the example of active network interfaces in Ubuntu 22.04. 
+```
+# ifconfig
 br0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.167.0.120  netmask 255.255.255.0  broadcast 192.167.0.255
-        inet6 ---------------------  prefixlen 64  scopeid 0x20<link>
-        ether ---------------------  txqueuelen 1000  (Ethernet)
-        RX packets 52600  bytes 61025479 (61.0 MB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 10051  bytes 1690332 (1.6 MB)
+        inet 10.5.5.1  netmask 255.255.255.0  broadcast 10.5.5.255
+        inet6 fe80::f4f8:90ff:fece:b6be  prefixlen 64  scopeid 0x20<link>
+        ether f6:f8:90:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 258316  bytes 18293695 (18.2 MB)
+        RX errors 0  dropped 25  overruns 0  frame 0
+        TX packets 984870  bytes 3220903936 (3.2 GB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-enp19s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        ether ---------------------  txqueuelen 1000  (Ethernet)
-        RX packets 166615  bytes 186468648 (186.4 MB)
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether f0:4d:a2:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 93667  bytes 66442891 (66.4 MB)
+        TX packets 0  bytes 0 (0.0 B)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         inet 127.0.0.1  netmask 255.0.0.0
         inet6 ::1  prefixlen 128  scopeid 0x10<host>
         loop  txqueuelen 1000  (Local Loopback)
-        RX packets 6895  bytes 688217 (688.2 KB)
+        RX packets 51  bytes 4403 (4.4 KB)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 6895  bytes 688217 (688.2 KB)
+        TX packets 51  bytes 4403 (4.4 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 tap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet6 fe80::2c8c:afff:fec4:d674  prefixlen 64  scopeid 0x20<link>
-        ether 2e:8c:af:c4:d6:74  txqueuelen 1000  (Ethernet)
-        RX packets 29  bytes 3034 (3.0 KB)
+        ether 2e:8c:af:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 72  bytes 10241 (10.2 KB)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 277  bytes 52212 (52.2 KB)
+        TX packets 94  bytes 12755 (12.7 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-#
-#
-# brctl show 
-bridge name	bridge id		STP enabled	interfaces
-br0		8000.f6f890ceb6be	no          enp19s0
-                                        tap0
+wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.167.0.111  netmask 255.255.255.0  broadcast 192.167.0.255
+        inet6 fe80::1351:a93d:5d08:39aa  prefixlen 64  scopeid 0x20<link>
+        ether 90:de:80:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 2275381  bytes 3428022487 (3.4 GB)
+        RX errors 0  dropped 317  overruns 0  frame 0
+        TX packets 294001  bytes 38305219 (38.3 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
+wlan240: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether 60:02:b4:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1608  bytes 114212 (114.2 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlanap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether 92:de:80:XX:XX:XX  txqueuelen 1000  (Ethernet)
+        RX packets 260771  bytes 31296760 (31.2 MB)
+        RX errors 0  dropped 30  overruns 0  frame 0
+        TX packets 2212617  bytes 3365397554 (3.3 GB)
+        TX errors 0  dropped 1556 overruns 0  carrier 0  collisions 0
 
 ```
 
-| Interface |  Description                              |
-|-----------| ----------------------------------------- |
-|  enp19s0  |  Ethernet interface of the host (laptop)  |
-|  tap0     |  Virtual name of "eth0" in  VM            |
+- The network can be illustrated as follows. 
+
+![](doc/host_network.png)
+
+
+- Each of the network interfaces....
+ 
+
+| Interface |  Device      |   Description                              |
+|-----------| -------------|------------------------------------------- |
+|  eth0     |  Laptop      | Built-in ethernet interface                |
+|  tap0     |  Ubuntu VM   | Virtual ethernet interface created by Ubuntu VM |
+|  br0      |  Laptop      | Bridge interface to tie up network interfaces |
+|  wlan0    |  Realtek Dongle | 802.11a WLAN Client interface           |
+|  wlanap0  |  Realtek Dongle | 802.11a WLAN AP interface               |
+|  wlan240  |  Laptop(PCI) | 802.11g WLAN AP interface - Atheros PCI card |
+
+
+- Currently, **eth0** interface is not used. 
+ 
+- **wlan0** 802.11a client interface is created from [Realtek device](https://www.amazon.com/dp/B09KKLCHZZ?psc=1&ref=ppx_yo2ov_dt_b_product_details) dongle for WAN network access. It attaches to a home gateway. **wlanap0** interface is also created from the same Realtek device dongle and it is configured as 802.11a AP. External user devices with 802.11a capability may attach to this AP network. 
+
+- Laptop built-in WiFi is activated as **wlan240** for 2.4GHz 802.11g AP network. My dell vostro laptop has very old "Atheros WiFi SDcard" and it can only supports 802.11g speed.
+
+- **br0** is basically aggregating 2 interfaces; **wlanap0** and **wlan240**. All the devices attached to one of both interfaces will get the same domain of IP address if a DHCP server would be activated on top of **br0** interface. 
+
+- NAT(Network Address Translation) is configured between **wlan0** (WAN interface) and **br0** (LAN interface). 
+
+
+#### Realtek WLAN configuration <a name="qemu_realtek"></a>
+
+
+- [External WiFi dongle](https://www.amazon.com/dp/B09KKLCHZZ?psc=1&ref=ppx_yo2ov_dt_b_product_details) is used for Client and AP support at the same time. This product is based on Realtek **8822BU** high speed WiFi chipset. 
+- Usually depending on device driver configuration of Realtek driver software, we can easily create both Wireless client and AP interfaces at the same time. 
+- You can download and setup 8822BU device driver [here](https://github.com/morrownr/88x2bu-20210702). 
+- User needs edit a file in the driver to make enable AP and client modes at the same time as follows. **CONFIG_CONCURRENT_MODE** should be turned on. 
+
+```
+~work/88x2bu-20210702# cat Makefile | grep "CONFIG_CONCURRENT_MODE"
+..
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+..
+
+```
+
+- Before heading to the build process, there is a few of utilities needed for building realtek driver. 
+
+```
+~work/88x2bu-20210702# sudo apt install -y build-essential dkms git iw
+```
+
+- Build command is as follows. 
+
+```
+~work/88x2bu-20210702# sudo ./install-driver.sh 
+```
+
+
+- If the build was completed successfully, we can see **/etc/modprobe.d/88x2bu.conf**. To activate AP interface together with client interface, we better choose the following **options** line. 
+
+
+```
+~work/88x2bu-20210702# cat /etc/modprobe.d/88x2bu.conf
+# /etc/modprobe.d/88x2bu.conf
+#
+...
+#		wifi: rtw88: Add rtw8822bu chipset support
+#
+# The following line blacklists (deactivates) the above in-kernel driver.
+blacklist rtw88_8822bu
+#
+# Edit the following line to change, add or delete options:
+#options 88x2bu rtw_drv_log_level=1 rtw_led_ctrl=1 rtw_vht_enable=1 rtw_switch_usb_mode=0
+#
+# Note: To activate USB3 mode, change rtw_switch_usb_mode above to rtw_switch_usb_mode=1
+#
+# Note: The above `options` line is a good default for managed mode. Below is
+# an example for AP mode. Modify as required after reading the documentation:
+#options 88x2bu rtw_drv_log_level=1 rtw_led_ctrl=1 rtw_vht_enable=2 rtw_power_mgnt=1 rtw_beamform_cap=1 rtw_switch_usb_mode=1 rtw_dfs_region_domain=1
+options 88x2bu rtw_drv_log_level=1 rtw_vht_enable=2 rtw_power_mgnt=1 rtw_beamform_cap=1 rtw_switch_usb_mode=0 rtw_dfs_region_domain=1
+#
+...
+
+```
+
+##### 802.11a AP <a name=qemu_80211a_ap> </a>
+
+- We can create AP instance as follows.
+
+```
+# sudo hostapd -dddd -B ./hostapd_a.conf
+```
+
+- **hostapd_a.conf**
+
+```
+# cat ./hostapd_a.conf
+interface=wlanap0
+ctrl_interface=/var/tmp/hostapd/ctrl
+bridge=br0
+driver=nl80211
+ssid=TestAP_Highspeed
+channel=36
+ieee80211d=1
+ieee80211h=1
+ieee80211n=1
+require_ht=1
+ieee80211ac=1
+wmm_enabled=1
+country_code=US
+hw_mode=a
+macaddr_acl=0
+auth_algs=3
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=12345678
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+```
+
+- User can see a network ID **TestAP_Highspeed** . Passwortd is **12345678**. 
+
+##### 802.11g AP <a name=qemu_80211g_ap> </a>
+
+
+- We can create AP instance as follows.
+
+```
+# sudo hostapd -dddd -B ./hostapd_g.conf
+```
+
+- **hostapd_g.conf**
+
+```
+# cat hostapd_g.conf
+interface=wlan240
+ctrl_interface=/var/tmp/hostapd2/ctrl
+bridge=br0
+driver=nl80211
+ssid=TestAP_lowspeed
+channel=6
+ieee80211d=1
+ieee80211h=1
+wmm_enabled=1
+country_code=US
+hw_mode=g
+macaddr_acl=0
+auth_algs=3
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=12345678
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+```
+
+- User can see a network ID **TestAP_lowspeed** . Passwortd is **12345678**. 
+
+#### Renaming network interfaces <a name="qemu_renaming_ubuntu"></a>
+
+- Aliasing the name of network interface can be done through **/etc/udev/rules.d/70-persistent-net.rules** file as follows. 
+
+```
+~work/88x2bu-20210702# cat /etc/udev/rules.d/70-persistent-net.rules 
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="60:02:b4:XX:XX:XX", ATTR{dev_id}=="0x0", ATTR{type}=="1", NAME="wlan240"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="90:de:80:XX:XX:XX", ATTR{dev_id}=="0x0", ATTR{type}=="1", NAME="wlan0"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="92:de:80:XX:XX:XX", ATTR{dev_id}=="0x0", ATTR{type}=="1", NAME="wlanap0"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="f0:4d:a2:XX:XX:XX", ATTR{dev_id}=="0x0", ATTR{type}=="1", NAME="eth0"
+~work/88x2bu-20210702#
+
+```
+
+
+
+#### NAT network configuration <a name="qemu_nat"></a>
+
+- **NAT** is needed between **wlan0** (WAN) and **br0** (LAN). 
+- Ubuntu 22.04 is based on **ufw** system and it has to be changed to support **IP forwarding** and it can be done through **/etc/default/ufw** 
+- **DEFAULT_FORWARD_POLICY** should be **ACCEPT** not **DROP** as follows. 
+
+```
+~work/88x2bu-20210702# cat /etc/default/ufw
+# /etc/default/ufw
+#
+
+# Set to yes to apply rules to support IPv6 (no means only IPv6 on loopback
+# accepted). You will need to 'disable' and then 'enable' the firewall for
+# the changes to take affect.
+IPV6=yes
+
+# Set the default input policy to ACCEPT, DROP, or REJECT. Please note that if
+# you change this you will most likely want to adjust your rules.
+DEFAULT_INPUT_POLICY="DROP"
+
+# Set the default output policy to ACCEPT, DROP, or REJECT. Please note that if
+# you change this you will most likely want to adjust your rules.
+DEFAULT_OUTPUT_POLICY="ACCEPT"
+
+#
+# Todd : DROP -> ACCEPT 
+#
+# Set the default forward policy to ACCEPT, DROP or REJECT.  Please note that
+# if you change this you will most likely want to adjust your rules
+DEFAULT_FORWARD_POLICY="ACCEPT"
+
+# Set the default application policy to ACCEPT, DROP, REJECT or SKIP. Please
+# note that setting this to ACCEPT may be a security risk. See 'man ufw' for
+...
+
+```
+
+- The following **NAT** masquerading option should be added into **/etc/ufw/before.rules** . We can see the output interface is specified as **wlan0** and the source address of routed packets is "10.5.5.x". This will be the range of LAN IP address. 
+
+```
+~work/88x2bu-20210702# sudo cat /etc/ufw/before.rules 
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+
+# NAT Table rules
+*nat
+:POSTROUTING ACCEPT [0:0]
+
+# Forward Traffic
+-A POSTROUTING -s 10.5.5.0/24 -o wlan0 -j MASQUERADE
+
+COMMIT
+...
+
+```
+
+- More detail description is found [here](https://semfionetworks.com/blog/wlan-pi-bridge-wi-fi-hotspot-to-ethernet-interface/)
+
+#### DHCP/DNS configuration <a name="qemu_dns"></a>
+
+- DHCP and DNS service instance is created on top of **br0** interface (1) to distribute private IP addresses to all outstanding devices attached to either **wlanap0** or **wlan240** AP interfaces.
+- All ubuntu VM machines created with **tapX** interface which becomes a member of bridge interface **br0** will receive the same domain IP address. 
+- Detail information about DHCP/DNS configuration will be found [here](https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/).
+
+- The following shows how **br0** LAN bridge network works if one Ubuntu VM was created.  
+
+
+```
+# sudo brctl show br0
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.f6f890ceb6be       no              tap0
+                                                        wlan240
+                                                        wlanap0
+```
+
+- We are using "dnsmasq" utility and it can be downloaded into Ubuntu with a command. 
+
+```
+# sudo apt install dnsmasq
+```
+
+- **/etc/dnsmasq** configuration file needs to be properly edited as follows. 
+
+```
+# You can control how dnsmasq talks to a server: this forces
+# queries to 10.1.2.3 to be routed via eth1
+# server=10.1.2.3@eth1
+server=8.8.8.8@wlan0
+
+# If you want dnsmasq to listen for DHCP and DNS requests only on
+# specified interfaces (and the loopback) give the name of the
+# interface (eg eth0) here.
+# Repeat the line for more than one interface.
+interface=br0
+
+# Uncomment this to enable the integrated DHCP server, you need
+# to supply the range of addresses available for lease and optionally
+# a lease time. If you have more than one network, you will need to
+# repeat this for each network on which you want to supply DHCP
+# service.
+dhcp-range=10.5.5.10,10.5.5.100,12h
+
+dhcp-option=option:router,10.5.5.1
+dhcp-option=option:dns-server,10.5.5.1
+dhcp-option=option:ntp-server,10.5.5.1
+dhcp-option=option:netmask,255.255.255.0
+dhcp-leasefile=/var/tmp/dnsmasq.leases
+
+```
+
+- **server=** indicates "where dnsmasq will ask domain name service" . In this case, all the domain name service will be asked to google server(8.8.8.8) through **wlan0** WAN interface.
+
+- **interface=** indicates "which interface will be monitored for DNS/DHCP service".
+ 
+#### Host Network Setup Script <a name="qemu_script"></a>
+
+- Totally automated setup is as follows. 
+
+```
+# cat ./setup_network.sh
+#!/bin/sh
+
+##
+## hostapd_a.conf - 11A mode
+## hostapd_g.conf - 11G mode
+##
+HOSTAP_A_CONF=./hostapd_a.conf
+HOSTAP_G_CONF=./hostapd_g.conf
+
+## Applying NAT/IP forward configuration
+sudo ufw disable
+sudo ufw enable 
+sudo ufw disable
+sudo iptables -t nat -L -v
+sleep 1
+
+sudo brctl addbr br0 
+
+\rm -rf ./hostap*.log
+
+## N/A AP
+sudo hostapd -ddddd -B $HOSTAP_A_CONF > ./hostap_a.log
+
+## G AP
+sudo hostapd -ddddd -B $HOSTAP_G_CONF > ./hostap_g.log
+
+sleep 1
+
+## bridge interface setup 
+sudo ifconfig br0 up
+sudo ifconfig br0 10.5.5.1 netmask 255.255.255.0 up
+
+# DNS
+# - disabling pre-installed DNS resolver service 
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+
+if [ -s /etc/resolv.conf ]; then
+    sudo unlink /etc/resolv.conf
+    echo nameserver 8.8.8.8 | sudo tee /etc/resolv.conf
+fi
+
+##
+## Reactivates new service ... 
+sudo systemctl restart dnsmasq
+
+```
 
 
 ## Selective Compilation <a name="selective_compile"></a>
@@ -1851,8 +2184,7 @@ br0		8000.f6f890ceb6be	no          enp19s0
 
 - If you want to build "apps/vim" folder for VIM application, just do the following. "distclean" command removes the build temporary folder.
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm SUBDIR=vim distclean app
 ```
 
@@ -1860,14 +2192,12 @@ br0		8000.f6f890ceb6be	no          enp19s0
 - Building inside of each subfolders has 3 steps; prerpare, all, install. Each substep is triggered through {app|lib|ext}_### as below.  
 
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm SUBDIR=vim app_all  
 ```
 - If you want to build "exts/python" folder,  
 
-```#!/bin/sh
-
+```
   # make TBOARD=vm SUBDIR=python distclean ext
 ```
 
@@ -1876,8 +2206,7 @@ br0		8000.f6f890ceb6be	no          enp19s0
 ### Setting up PIP <a name="python_pip"></a>
 
 
-```#!/bin/sh
-
+```
 bash-5.1# python3 -m ensurepip
 Looking in links: /tmp/tmp5p1wvqlw
 Processing /var/tmp/tmp/tmp5p1wvqlw/setuptools-63.2.0-py3-none-any.whl
@@ -1888,20 +2217,18 @@ Installing collected packages: setuptools, pip
 Successfully installed pip-22.2.2 setuptools-63.2.0
 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 bash-5.1# 
-
 ```
 
 ### Upgrading PIP <a name="python_upgrade_pip"></a>
 
 
-```#!/bin/sh
-
+```
 bash-5.1# python3 -m pip install --upgrade pip
 WARNING: The directory '/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo'.
 Requirement already satisfied: pip in /lib/python3.10/site-packages (22.2.2)
 Collecting pip
   Downloading pip-22.3-py3-none-any.whl (2.1 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 646.9 kB/s eta 0:00:00
+     ???????????????????????????????????????? 2.1/2.1 MB 646.9 kB/s eta 0:00:00
 Installing collected packages: pip
   Attempting uninstall: pip
     Found existing installation: pip 22.2.2
@@ -1912,6 +2239,6 @@ Installing collected packages: pip
 Successfully installed pip-22.3
 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 bash-5.1# 
-
 ```
+
 
