@@ -1852,12 +1852,14 @@ wlanap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 - [External WiFi dongle](https://www.amazon.com/dp/B09KKLCHZZ?psc=1&ref=ppx_yo2ov_dt_b_product_details) is used for Client and AP support at the same time. This product is based on Realtek **8822BU** high speed WiFi chipset. 
 - Usually depending on device driver configuration of Realtek driver software, we can easily create both Wireless client and AP interfaces at the same time. 
 - You can download and setup 8822BU device driver [here](https://github.com/morrownr/88x2bu-20210702). 
-- User needs edit a file in the driver; 
+- User needs edit a file in the driver to make enable AP and client modes at the same time as follows. **CONFIG_CONCURRENT_MODE** should be turned on. 
 
 ```
-~work/88x2bu-20210702# cat Makefile | grep "CONFIG_AP_MODE ="
-CONFIG_AP_MODE = y
-~work/88x2bu-20210702# 
+~work/88x2bu-20210702# cat Makefile | grep "CONFIG_CONCURRENT_MODE"
+..
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+..
+
 ```
 
 - Before heading to the build process, there is a few of utilities needed for building realtek driver. 
