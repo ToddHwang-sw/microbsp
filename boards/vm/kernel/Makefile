@@ -36,7 +36,7 @@ prepare:
 		cp patch/$(KERNELVER).config  $(BUILDDIR)/$(KERNELVER)/.config ; \
 		cd $(BUILDDIR)/$(KERNELVER) ;                                    \
 		cat patch | patch -p 1 ;                                         \
-		make ARCH=$(_CORE_) oldconfig \
+		make ARCH=$(_CORE_) olddefconfig \
 	)
 
 all:

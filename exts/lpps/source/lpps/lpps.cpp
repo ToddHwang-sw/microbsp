@@ -27,11 +27,6 @@
 
 #include "transport.h"
 
-//
-// commenting out callback functions not yet implemented....
-//
-#define EXTRA_UNSUPPORT
-
 using namespace std;
 
 #define KILO(n)	((n) << 10)
@@ -2179,76 +2174,24 @@ static int lpps_flush(const char *apath, struct fuse_file_info *fi)
 	int option = 0;
 	char * path = lpps_path_option( (char *)apath, &option );
 	int ret = 0;
+        ppriv * priv;
 
 	if (!apath)
 		ERR(" PATH=NULL\n");
 
 	PATH_CHECK(path)
 
+        //
+        // rewinding back to ... 
+        //
+        priv = (ppriv *)get_priv( fi->fh );  // private structure
+        if ( !bit_includes(priv->flags,OPTION_WAIT) )
+                priv_rewind(priv);
+
 	DBG(" %s \n", path );
 
 	return ret;
 }
-
-
-#ifndef EXTRA_UNSUPPORT
-
-// A C C E S S 
-static int lpps_access(const char *apath, int mask)
-{
-	char * path = lpps_path_option( (char *)apath, NULL );
-
-	PATH_CHECK(path)
-
-	DBG(" %s %x \n", path, mask);
-
-        return 0;
-}
-
-// M K N O D 
-static int lpps_mknod(const char *apath, mode_t mode, dev_t rdev)
-{
-	char * path = lpps_path_option( (char *)apath, NULL );
-
-	PATH_CHECK(path)
-
-	DBG(" %s %x \n", path, (int)mode );
-
-        return 0;
-}
-
-// F S Y N C 
-static int lpps_fsync(const char *apath, int isdatasync, struct fuse_file_info *fi)
-{
-	char * path = lpps_path_option( (char *)apath, NULL );
-	lpps_inode_t * trace;
-
-	PATH_CHECK(path)
-
-	DBG(" %s %d \n", path, isdatasync );
-
-	return 0;
-}
-
-// L I N K 
-static int lpps_link(const char *from, const char *to)
-{
-	DBG(" %s %s \n", from, to);
-
-	return 0;
-}
-// T R U N C A T E 
-static int lpps_truncate(const char *apath, off_t size, struct fuse_file_info *fi)
-{
-	char * path = lpps_path_option( (char *)apath, NULL );
-
-	PATH_CHECK(path)
-
-	DBG(" %s %d \n", path, (int)size );
-
-	return 0;
-}
-#endif  // EXTRA_UNSUPPORT 
 
 // U T I M E N S 
 static int lpps_utimens(const char *apath, const struct timespec tv[2], struct fuse_file_info *fi)
@@ -2746,15 +2689,16 @@ static int lpps_read(const char *apath, char *rbuf, size_t size, off_t offset, s
 	if (eof) { // check beginning of data 
 		DBG(" %s - REACH TO AN END %d > %d \n", (char *)path, (int)offset, (int)filesize );
 
-		// rewind to the beginning of the file 
-		// End of read transaction !! 
-		priv_rewind(priv);
-
 		if ( !bit_includes(priv->flags,OPTION_WAIT) ) {
 			DBG(" %s - TERMINATE %-4d \n", (char *)path, fi->unique );
 			LPPS_UNLOCK();
 			return dumpamt; // read transaction end !!
 		} else {
+                        // 02122023 - Todd 
+                        //
+                        // Rewinding at only the case of WAITING state...
+                        //
+                        priv_rewind(priv);
 			DBG(" %s - WAIT OPTION INCLUDED %-4d \n", (char *)path, fi->unique );
 		}
 	}
@@ -3243,13 +3187,6 @@ int main(int argc,char *argv[])
 	lpps_oper.chmod		= lpps_chmod;
 	lpps_oper.chown		= lpps_chown;
 	lpps_oper.flush		= lpps_flush;
-#ifndef EXTRA_UNSUPPORT
-	lpps_oper.access	= lpps_access; 
-	lpps_oper.fsync		= lpps_fsync;
-	lpps_oper.link		= lpps_link;
-	lpps_oper.mknod		= lpps_mknod; 
-	lpps_oper.truncate	= lpps_truncate;
-#endif
 	lpps_oper.utimens	= lpps_utimens;
 	lpps_oper.open		= lpps_open;
 	lpps_oper.read		= lpps_read;
