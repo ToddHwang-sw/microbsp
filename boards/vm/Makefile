@@ -2,24 +2,6 @@ SYSLIN=isolinux/build/syslinux
 
 BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
-QEMU=qemu-system-$(_CORE_)
-
-##
-## Random MAC address
-## 
-VMMAC=00:00:00:00:01:01
-
-##
-## QEMU configuration 
-##
-QEMU_RUN=\
-		$(QEMU) -m 4096 -nographic -smp 4 \
-		-device e1000,netdev=net0,mac=$(VMMAC) \
-		-netdev tap,id=net0,script=$(BDDIR)/qemu-if.script \
-		-cdrom $(isoname) \
-		-drive file=$(EXT4HDD) \
-		-drive file=$(EXT4CFG)
-
 prepare:
 	@[ -d $(isodir) ]          || mkdir -p $(isodir)
 	@[ -d $(isodir)/boot ]     || mkdir -p $(isodir)/boot 
@@ -58,10 +40,10 @@ clean uninstall:
 #
 #
 #########################################################################################################################
+VMFILE=./vm-$(_CORE_).sh
 
 run:
-	@sudo $(QEMU_RUN)
+	@sudo $(VMFILE) run $(BDDIR)
 
 stop:
-	@sudo killall $(QEMU)
-
+	@sudo $(VMFILE) stop $(BDDIR)
