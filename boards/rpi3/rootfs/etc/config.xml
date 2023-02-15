@@ -60,11 +60,11 @@
             <wlan0>wlan1</wlan0>
             <eth0>eth0</eth0>
         </interfaces>
-        <ip>192.169.0.1</ip>
+        <ip>10.5.5.1</ip>
         <start>50</start>
         <end>240</end>
 		<netmask>255.255.255.0</netmask>
-		<gateway>192.169.0.1</gateway>
+		<gateway>10.5.5.1</gateway>
 		<dns>8.8.8.8</dns>
 		<ipv6>
 			<mode>dhcp</mode>     <!-- IPv6 DHCP -->

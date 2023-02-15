@@ -9,7 +9,7 @@ export _ARCH_=$(_CORE_)-rpi3
 export PLATFORM=$(_CORE_)-any-linux-gnu
 
 ## kernel version 
-export KERNELVER=linux-rpi-5.10.y
+export KERNELVER=linux-rpi-5.15.y
 
 ## Linux Kernel compile
 export KERNELMAKE=make ARCH=arm64 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"

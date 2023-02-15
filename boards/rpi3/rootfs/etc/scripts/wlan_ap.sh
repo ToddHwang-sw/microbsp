@@ -6,7 +6,6 @@ CFILE=1.conf
 
 DHCPFILE=dhcpd.conf
 LFILE=dhcpd.leases
-PFILE=dhcpd.pid
 
 ASK='xcfgcli.sh get '
 BRINTF=`$ASK lan/name`
@@ -85,8 +84,6 @@ case $1 in
 		ifconfig $BRINTF $APNET.$APNODE netmask $APMASK up
 		[ ! -f $APCONFDIR/$LFILE ] || \rm -rf $APCONFDIR/$LFILE
 		touch $APCONFDIR/$LFILE
-		dhcpd -4 -d -cf $APCONFDIR/$DHCPFILE -lf $APCONFDIR/$LFILE -pf $PIDDIR/$PFILE $BRINTF &
-		sleep 1
 
 		##
 		## tcpdump 
@@ -107,9 +104,6 @@ case $1 in
 
 		echo "[WLAN] Shutting down..."
 		pid=`cat $PIDDIR/hostapd.pid`
-		kill -9 $pid
-
-		pid=`cat $PIDDIR/$PFILE`
 		kill -9 $pid
 
 		ifconfig $BRINTF down 

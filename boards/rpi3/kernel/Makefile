@@ -2,7 +2,7 @@
 BRANCH=$(subst linux-,,$(KERNELVER))
 
 FILENM=$(BRANCH).zip
-LOC=https://github.com/raspberrypi/linux/archive/$(FILENM)
+LOC=https://github.com/raspberrypi/linux/archive/refs/heads/$(FILENM)
 
 export LINUXMAKE=$(KERNELMAKE) -j 4 -C .
 
@@ -82,7 +82,7 @@ prepare:
 		cd $(BUILDDIR)/$(KERNELVER);                               \
 		cat ../../../patch/patch-$(BRANCH) | patch -p 1;           \
 		cp ../../../patch/$(KERNELVER).config .config;             \
-		make ARCH=arm64 oldconfig )
+		make ARCH=arm64 olddefconfig )
 
 all:
 	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \

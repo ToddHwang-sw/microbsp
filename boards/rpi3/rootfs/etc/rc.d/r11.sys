@@ -5,104 +5,64 @@ ASK='xcfgcli.sh get '
 WAN=`$ASK wan/name`
 LAN=`$ASK lan/name`
 
-NFTCONF=/var/tmp/nft.conf
+# 10.5.5.1
+APIP=`$ASK lan/ip`
+
+# 255.255.255.0
+NETMASK=`$ASK lan/netmask`
+
+# 10.5.5
+APNET=${APIP%.*}
+
+# 1
+APNODE=${APIP##*.}
+
+APMASK=`$ASK lan/netmask`
+
+DHCPSTART=`$ASK lan/start`
+DHCPEND=`$ASK lan/end`
+
+IPTABLES=/sbin/iptables
+
+DNSMASQD=/var/tmp/dnsmasq
+DNSMASQ_CONF=dnsmasq.conf
+DNSMASQ_LEASE=dnsmasq.leases
+
+## Required by IP tables...
+[ -d /run      ] || mkdir -p /run
+[ -d $DNSMASQD ] || mkdir -p $DNSMASQD
 
 case $1 in
 	"start")
-		cat > $NFTCONF <<-EOF
-        flush ruleset 
-
-        table ip filter {
-            chain input {
-                type filter hook input priority 0; policy drop;
-
-                # allow established/related connections
-                ct state {established,related} accept
-
-                # early drop of invalid connections
-                ct state invalid drop
-
-                # allow from loopback
-                iifname lo accept
-
-                # Allow from internal network
-                iifname $LAN accept
-
-                # allow icmp
-                ip protocol icmp accept
-
-                # allow ssh
-                tcp dport 22 accept comment "SSH in"
-
-                reject
-            }
-
-            chain forward {
-                type filter hook forward priority 0;
-
-                # Allow outgoing via $WAN
-                oifname $WAN accept
-
-                # Allow incoming on $WAN for related and established connections
-                iifname $WAN ct state related, established accept
-
-                # Drop any other incoming traffic on $WAN
-                iifname $WAN drop
-            }
-
-            chain output {
-                type filter hook output priority 0;
-            }
-        }
-
-        table ip nat {
-            chain prerouting {
-                type nat hook prerouting priority 0;
-
-                # Forward traffic from $WAN to a LAN server
-                iifname $WAN tcp dport 80 dnat 192.167.0.101 comment "Port forwarding to web server"
-            }
-
-            chain postrouting {
-                type nat hook postrouting priority 0;
-
-                # Masquerade outgoing traffic
-                oifname $WAN masquerade
-            }
-        }
-
-        table ip6 filter {
-            chain input {
-                type filter hook input priority 0;
-                ct state established accept
-                ct state related accept
-                iif lo accept
-                ## tcp dport ssh counter accept
-                icmpv6 type { nd-neighbor-solicit, echo-request, nd-router-advert, nd-neighbor-advert } accept
-                ## counter log drop
-            }
-
-            chain output {
-                type filter hook output priority 0;
-                ct state established accept
-                ct state related accept
-                oif lo accept
-                ct state new counter accept
-            }
-        }
-		EOF
-
-		##
-		## NFTable setting....
-		nft -f $NFTCONF
+        $IPTABLES -P INPUT ACCEPT
+        $IPTABLES -F INPUT
+        $IPTABLES -P OUTPUT ACCEPT
+        $IPTABLES -F OUTPUT
+        $IPTABLES -P FORWARD ACCEPT
+        $IPTABLES -F FORWARD
+        $IPTABLES -t nat -F
+        $IPTABLES -t nat -A POSTROUTING -s $APNET.0/24 -o $WAN -j MASQUERADE
 
 		# IPv4 forwarding enable 
 		echo 1 > /proc/sys/net/ipv4/ip_forward
 		echo 1 > /proc/sys/net/ipv4/ip_dynaddr
 
+        # DNSMASQ configuration file ..
+		cat > $DNSMASQD/$DNSMASQ_CONF <<-EOF
+		server=8.8.8.8@$WAN
+		interface=$LAN
+		dhcp-range=$APNET.$DHCPSTART,$APNET.$DHCPEND,12h
+		dhcp-option=option:router,$APIP
+		dhcp-option=option:dns-server,$APIP
+		dhcp-option=option:ntp-server,$APIP
+		dhcp-option=option:netmask,$NETMASK
+		dhcp-leasefile=$DNSMASQD/$DNSMASQ_LEASE
+		dhcp-rapid-commit
+		EOF
+
+        /sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
 		;;
 	"stop")
-		nft flush ruleset
 		;;
 esac
 

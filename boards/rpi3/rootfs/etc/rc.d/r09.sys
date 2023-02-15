@@ -36,11 +36,9 @@ case $1 in
 		echo ""
 		cat /etc/resolv.conf
 		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		/etc/scripts/radvd.sh start $LAN
 		;;
 	"stop")
 		echo [IPV6] STOPPING.... 
-		/etc/scripts/radvd.sh stop $LAN
 		/etc/scripts/dhcpc6.sh stop $WAN
 		;;
 	"*")
