@@ -1,5 +1,5 @@
 DIR=rtl8192eu
-LOC=https://github.com/clnhub/rtl8192eu-linux.git
+LOC=-b 5.11.2.1 https://github.com/clnhub/rtl8192eu-linux.git
 
 RTLMAKE=$(LINUXMAKE) KSRC=$(KERNSRC) CROSS_COMPILE=$(CROSS_COMP_PREFIX) ARCH=arm64 
 KERNVER=`cat $(KERNSRC)/include/config/kernel.release`
@@ -9,9 +9,9 @@ prepare:
 		git clone $(LOC) $(DIR); \
 		cd $(DIR); \
 			sed -i "s/CONFIG_PLATFORM_ARM_AARCH64 = n/CONFIG_PLATFORM_ARM_AARCH64 = y/" Makefile ; \
+			sed -i "s/ONFIG_PLATFORM_I386_PC = y/ONFIG_PLATFORM_I386_PC = n/" Makefile ; \
 			sed -i "s/CONFIG_POWER_SAVING = y/CONFIG_POWER_SAVING = n/" Makefile ; \
 			sed -i "s/CONFIG_BT_COEXIST = y/CONFIG_BT_COEXIST = n/" Makefile ; \
-			sed -i "s/ONFIG_PLATFORM_I386_PC = y/ONFIG_PLATFORM_I386_PC = n/" Makefile ; \
 		[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
 
 all clean:
