@@ -18,7 +18,7 @@
 		5. [Bootable SD Card](#rpi3_sdcard)
 		6. [WLAN Configuration](#rpi3_wlan)
 		7. [Available Packages](#rpi3_packages)
-8. [QEMU VM](#qemu) 
+8. [MBSP VM](#qemu) 
 	1. [Testbed components](#qemu_component)
 	2. [Setup](#qemu_setup) 
 	3. [Booting Shot](#qemu_boot)
@@ -59,9 +59,9 @@
 
 ## MicroBSP  <a name="microbsp"></a>
 
-* I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **QEMU VM** - Yocto might be a big cat to come with for catching up these mices under coverage of my private preferences; just for build/compile/...
+* I want to set up simple Linux basis embedded board BSP for both **Raspberry PI 3** and **VM image (based on QEMU)M** - Yocto might be a big cat to come with for catching up these mices under coverage of my private preferences; just for build/compile/...
 
-* **Raspberry PI** is the cheapest embedded board I can purchase easily from Amazon in less than $40, and **QEMU VM** can be easily activated in Ubuntu Linux installed PC. -  For poor system programmer like me, Raspberry PI becomes the right answer.
+* **Raspberry PI** is the cheapest embedded board I can purchase easily from Amazon in less than $40, and **MBSP VM** can be easily activated in Ubuntu Linux installed PC. -  For poor system programmer like me, Raspberry PI becomes the right answer. **MBSP VM** is simply working with QEMulator.
 
 * I want the BSP to keep folder/source structure to be easily hacked/manipulated. 
 
@@ -117,12 +117,12 @@
 |   Perl     |  5.24.1  |
 |  Python    |  3.10.8  |
 
-* Linux kernels used for both raspberry pi and QEMU VM are as follows. 
+* Linux kernels used for both raspberry pi and MBSP VM are as follows. 
 
 |  Type            | Linux kernel version |
 |------------------|----------------------|
-| Raspberry PI     |  5.10.x              |
-| QEMU VM          |  5.17.7              |
+| Raspberry PI     |  5.15.x              |
+| MBSP VM          |  5.17.7              |
 
 * MicroBSP has **Overlay File System** basis booting policy. 
 * Total booting disk image has the following hierarchy. 
@@ -999,7 +999,7 @@ bash-5.1# reboot -f
 
 ```
 
-## Ubuntu QEMU  <a name="qemu"></a>
+## MBSP VM <a name="qemu"></a>
 
 ### Testbed components <a name="qemu_component"></a>
 
@@ -1828,7 +1828,7 @@ wlanap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 | Interface |  Device      |   Description                              |
 |-----------| -------------|------------------------------------------- |
 |  eth0     |  Laptop      | Built-in ethernet interface                |
-|  tap0     |  Ubuntu VM   | Virtual ethernet interface created by Ubuntu VM |
+|  tap0     |  MBSP VM     | Virtual ethernet interface created by MBSP VM |
 |  br0      |  Laptop      | Bridge interface to tie up network interfaces |
 |  wlan0    |  Realtek Dongle | 802.11a WLAN Client interface           |
 |  wlanap0  |  Realtek Dongle | 802.11a WLAN AP interface               |
