@@ -27,6 +27,9 @@ all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 	@[ "$@" != "install" ] || ( \
+		[ -f $(destination)/etc/pam.conf ] || \
+			cp -rf $(MICBSRC)/$(DIR)/conf/pam.conf $(destination)/etc/pam.conf \
+		&& \
 		[ -s $(destination)/include/security ] || ( \
 			cd $(destination)/include ; \
 			ln -s . security ) \

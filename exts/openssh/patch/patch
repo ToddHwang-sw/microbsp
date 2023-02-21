@@ -1,7 +1,7 @@
-diff -uNr openssh-portable-portable/Makefile.in openssh-portable/Makefile.in
---- openssh-portable-portable/Makefile.in	2022-10-15 07:18:22.031412029 -0700
-+++ openssh-portable/Makefile.in	2022-10-15 09:03:22.673046447 -0700
-@@ -377,7 +377,7 @@
+diff -uNr openssh-portable-original/Makefile.in openssh-portable/Makefile.in
+--- openssh-portable-original/Makefile.in	2023-02-20 15:28:36.713647536 -0800
++++ openssh-portable/Makefile.in	2023-02-20 15:30:25.381806819 -0800
+@@ -377,9 +377,10 @@
  	$(AUTORECONF)
  	-rm -rf autom4te.cache .depend.bak
  
@@ -9,20 +9,22 @@ diff -uNr openssh-portable-portable/Makefile.in openssh-portable/Makefile.in
 +install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key 
  install-nokeys: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf
  install-nosysconf: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files
++install-mbsp: $(CONFIGFILES) $(TARGETS) install-files
  
-@@ -419,6 +419,8 @@
+ check-config:
+ 	-$(DESTDIR)$(sbindir)/sshd -t -f $(DESTDIR)$(sysconfdir)/sshd_config
+@@ -419,6 +420,7 @@
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
-+	$(MKDIR_P) $(DESTDIR)/etc/sshd
-+	$(INSTALL) -m 644 $(abs_top_srcdir)/sshd_config.mbsp $(DESTDIR)/etc/sshd/sshd_config
++	$(INSTALL) -m 644 $(abs_top_srcdir)/sshd_config.mbsp $(DESTDIR)/etc/sshd_config
  
  install-sysconf:
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
-diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_config.mbsp
---- openssh-portable-portable/sshd_config.mbsp	1969-12-31 16:00:00.000000000 -0800
-+++ openssh-portable/sshd_config.mbsp	2022-10-15 07:22:24.184344014 -0700
-@@ -0,0 +1,119 @@
+diff -uNr openssh-portable-original/sshd_config.mbsp openssh-portable/sshd_config.mbsp
+--- openssh-portable-original/sshd_config.mbsp	1969-12-31 16:00:00.000000000 -0800
++++ openssh-portable/sshd_config.mbsp	2023-02-20 15:29:16.129705312 -0800
+@@ -0,0 +1,121 @@
 +#	$OpenBSD: sshd_config,v 1.104 2021/07/02 05:11:21 dtucker Exp $
 +
 +# This is the sshd server system-wide configuration file.  See
@@ -49,7 +51,7 @@ diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_confi
 +
 +# Logging
 +#SyslogFacility AUTH
-+#LogLevel INFO
++#LogLevel DEBUG3
 +
 +# Authentication:
 +
@@ -80,7 +82,7 @@ diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_confi
 +#IgnoreRhosts yes
 +
 +# To disable tunneled clear text passwords, change to no here!
-+#PasswordAuthentication yes
++PasswordAuthentication yes
 +#PermitEmptyPasswords no
 +PermitEmptyPasswords yes
 +
@@ -106,7 +108,9 @@ diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_confi
 +# If you just want the PAM account and session checks to run without
 +# PAM authentication, then enable this but set PasswordAuthentication
 +# and KbdInteractiveAuthentication to 'no'.
-+#UsePAM no
++#ChallengeResponseAuthentication no
++#UsePAM yes
++UsePAM no
 +
 +#AllowAgentForwarding yes
 +#AllowTcpForwarding yes
@@ -116,7 +120,7 @@ diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_confi
 +#X11DisplayOffset 10
 +#X11UseLocalhost yes
 +#PermitTTY yes
-+#PrintMotd yes
++PrintMotd yes
 +#PrintLastLog yes
 +#TCPKeepAlive yes
 +#PermitUserEnvironment no
@@ -134,7 +138,7 @@ diff -uNr openssh-portable-portable/sshd_config.mbsp openssh-portable/sshd_confi
 +#Banner none
 +
 +# override default of no subsystems
-+Subsystem	sftp	/usr/bin/sftp-server
++Subsystem	sftp	/libexec/sftp-server
 +
 +# Example of overriding settings on a per-user basis
 +#Match User anoncvs
