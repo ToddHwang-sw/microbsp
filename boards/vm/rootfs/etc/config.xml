@@ -1,12 +1,12 @@
 <?xml version="1.0.0.2" encoding="utf-8"?>
 <config>
-	<product>QEMUVM</product>
+	<product>MBSPVM</product>
 	<date>202210191600</date>
 	<model>QEMUVM</model>
 	<operation>
 		<mode>normal</mode>			<!-- operation mode -->
-		<passwd>0</passwd>		<!-- password -->
-		<webui>0</webui>		<!-- webui -->
+		<passwd>stepforward</passwd>		<!-- password -->
+		<webui>1</webui>		<!-- webui -->
 		<syslog>
 			<en>1</en>
 			<mode>local</mode>	<!-- local -> /var/log/messages, remote -> UDP -->
@@ -33,7 +33,7 @@
 		<u2>
 			<valid>0</valid>
 			<name>0</name>
-			<passwd></passwd>
+			<passwd>0</passwd>
 		</u2>          
 		<u3>
 			<valid>0</valid>

@@ -458,6 +458,9 @@ lib: checkfirst
 				$(CLEAN_LIBLA) ) \
 		done
 
+##
+## lib_prepare , lib_all , lib_install
+##
 lib_%: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
@@ -482,6 +485,9 @@ app: checkfirst
 				$(CLEAN_LIBLA) ) \
 		done
 
+##
+## app_prepare , app_all , app_install
+##
 app_%: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
@@ -506,6 +512,9 @@ ext: checkfirst
 				$(CLEAN_LIBLA) ) \
 		done
 
+##
+## ext_prepare , ext_all , ext_install
+##
 ext_%: checkfirst
 	@cd exts; \
 		for dir in $(SUBDIR); do         \
@@ -530,6 +539,9 @@ ui: checkfirst llvm_okay
 				$(CLEAN_LIBLA) ) \
 		done
 	
+##
+## ui_prepare , ui_all , ui_install
+##
 ui_%: checkfirst llvm_okay
 	@cd uix; \
 		for dir in $(SUBDIR); do         \
