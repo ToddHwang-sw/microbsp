@@ -1,6 +1,115 @@
+diff -uNr linux-pam-original/conf/pam.conf linux-pam/conf/pam.conf
+--- linux-pam-original/conf/pam.conf	2023-02-19 17:00:25.000842816 -0800
++++ linux-pam/conf/pam.conf	2023-02-20 15:57:42.941613838 -0800
+@@ -9,18 +9,6 @@
+ # name	type	   flag							     #
+ # ---------------------------------------------------------------------------#
+ #
+-# The PAM configuration file for the `chfn' service
+-#
+-chfn	auth       required   pam_unix.so
+-chfn	account    required   pam_unix.so
+-chfn	password   required   pam_unix.so shadow md5 use_authtok
+-#
+-# The PAM configuration file for the `chsh' service
+-#
+-chsh	auth       required   pam_unix.so
+-chsh	account    required   pam_unix.so
+-chsh	password   required   pam_unix.so shadow md5 use_authtok
+-#
+ # The PAM configuration file for the `ftp' service
+ #
+ ftp	auth       requisite  pam_listfile.so \
+@@ -29,48 +17,15 @@
+ ftp	auth       required   pam_unix.so
+ ftp	account    required   pam_unix.so
+ #
+-# The PAM configuration file for the `imap' service
+-#
+-imap	auth       required   pam_unix.so
+-imap	account    required   pam_unix.so
+-#
+-# The PAM configuration file for the `login' service
+-#
+-login	auth       requisite  pam_securetty.so
+-login	auth       required   pam_unix.so
+-login	auth       optional   pam_group.so
+-login	account    requisite  pam_time.so
+-login	account    required   pam_unix.so
+-login	password   required   pam_unix.so shadow md5 use_authtok
+-login	session    required   pam_unix.so
+-#
+-# The PAM configuration file for the `netatalk' service
+-#
+-netatalk	auth       required   pam_unix.so
+-netatalk	account    required   pam_unix.so
+-#
+-# The PAM configuration file for the `other' service
+-#
+-other	auth       required   pam_deny.so
+-other	auth       required   pam_warn.so
+-other	account    required   pam_deny.so
+-other	password   required   pam_deny.so
+-other	password   required   pam_warn.so
+-other	session    required   pam_deny.so
+-#
+-# The PAM configuration file for the `passwd' service
++# The PAM configuration file for the `sshd' service
+ #
+-passwd	password   required   pam_unix.so shadow md5 use_authtok
+-#
+-# The PAM configuration file for the `rexec' service
+-#
+-rexec	auth       requisite  pam_securetty.so
+-rexec	auth       requisite  pam_nologin.so
+-rexec	auth       sufficient pam_rhosts_auth.so
+-rexec	auth       required   pam_unix.so
+-rexec	account    required   pam_unix.so
+-rexec	session    required   pam_unix.so
+-rexec	session    required   pam_limits.so
++sshd	auth       requisite  pam_securetty.so
++sshd	auth       required   pam_unix.so
++sshd	auth       optional   pam_group.so
++sshd	account    requisite  pam_time.so
++sshd	account    required   pam_unix.so
++sshd	password   required   pam_unix.so shadow md5 use_authtok
++sshd	session    required   pam_unix.so
+ #
+ # The PAM configuration file for the `rlogin' service
+ # this application passes control to `login' if it fails
+@@ -92,29 +47,3 @@
+ rsh	account    required   pam_unix.so
+ rsh	session    required   pam_unix.so
+ rsh	session    required   pam_limits.so
+-#
+-# The PAM configuration file for the `samba' service
+-#
+-samba	auth       required   pam_unix.so
+-samba	account    required   pam_unix.so
+-#
+-# The PAM configuration file for the `su' service
+-#
+-su	auth       required   pam_wheel.so
+-su	auth       sufficient pam_rootok.so
+-su	auth       required   pam_unix.so
+-su	account    required   pam_unix.so
+-su	session    required   pam_unix.so
+-#
+-# The PAM configuration file for the `vlock' service
+-#
+-vlock	auth       required   pam_unix.so
+-#
+-# The PAM configuration file for the `xdm' service
+-#
+-xdm	auth       required   pam_unix.so
+-xdm	account    required   pam_unix.so
+-#
+-# The PAM configuration file for the `xlock' service
+-#
+-xlock	auth       required   pam_unix.so
 diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
---- linux-pam-original/configure.ac	2021-12-29 20:35:22.235798910 -0800
-+++ linux-pam/configure.ac	2021-12-29 20:37:12.913925536 -0800
+--- linux-pam-original/configure.ac	2023-02-19 17:00:25.004842822 -0800
++++ linux-pam/configure.ac	2023-02-19 19:46:37.264123694 -0800
 @@ -38,22 +38,14 @@
          then
                  sbindir="/sbin"
@@ -29,8 +138,8 @@ diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
  fi
  
 diff -uNr linux-pam-original/Makefile.am linux-pam/Makefile.am
---- linux-pam-original/Makefile.am	2021-12-29 20:35:22.235798910 -0800
-+++ linux-pam/Makefile.am	2021-12-29 20:36:29.866598713 -0800
+--- linux-pam-original/Makefile.am	2023-02-19 17:00:25.000842816 -0800
++++ linux-pam/Makefile.am	2023-02-19 19:46:37.268123696 -0800
 @@ -4,7 +4,8 @@
  
  AUTOMAKE_OPTIONS = 1.9 gnu dist-xz no-dist-gzip check-news

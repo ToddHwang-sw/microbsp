@@ -20,9 +20,6 @@ MICB_CONFIGURE_OPTS += \
 	--with-openssl=$(INSTALLDIR) \
 	--with-ensurepip=install
 
-##
-##	--with-ensurepip=install
-
 MICB_CONFIGURE_PRG = ./configure
 
 MICB_DEPENDS = expat openssl ncurses libffi

@@ -98,6 +98,9 @@ busywait 3
 ##
 ASK='xcfgcli.sh get'
 
+echo ""
+echo "DATE "
+echo ""
 DATEVAL="2022.10.30-12:00:00"
 date $DATEVAL
 
@@ -113,7 +116,7 @@ if [ "$SYSLOG" = "1" ]; then
         LOGSVRIP=`$ASK operation/syslog/ip`
         LOGSVRPORT=`$ASK operation/syslog/port`
         NETLOPT="-R $LOGSVRIP:$LOGSVRPORT"
-    fi  
+    fi
     syslogd $NETLOPT -s 10240 -b 0 -l 8 -O /var/log/messages
     klogd
 fi
@@ -124,22 +127,30 @@ echo "USER "
 echo ""
 cnt=0
 done=0
+grpnum=1002
 while [ "$done" = "0" ]
 do
     valid=`$ASK user/u$cnt/valid`
     if [ "$valid" = "error" ]; then
         done=1;
-    fi  
+    fi
     if [ "$valid" = "1" ]; then
         un=`$ASK user/u$cnt/name`
         pw=`$ASK user/u$cnt/passwd`
+
+        ## Update group file
+        echo "$un:x:$grpnum:"  >> /etc/group
+        adduser -h /home/$un -G $un -u $grpnum -s /bin/sh -D $un
+        echo "$un:$pw" | chpasswd
+        echo "User [ $un/$pw ] created"
+
         if [ ! -d /home/$un ]; then
             mkdir /home/$un
-            adduser -h /home/$un -G root -s /bin/sh -D $un 
-            echo "$un:$pw" | chpasswd
-            echo "User [ $un/$pw ] created"
+            #Update onwer
+            chown -R $un.$un /home/$un
         fi
-    fi  
+        grpnum=`expr $grpnum + 1`
+    fi
     cnt=`expr $cnt + 1`
 done
 
@@ -181,7 +192,7 @@ if [ "$SSHEN" = "1" ]; then
     echo ""
     echo "SSH daemon"
     echo ""
-    /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa
+    /sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa
 fi
 
 

@@ -41,7 +41,7 @@ export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local
 ##
 ## Export Path....
 ##
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 ## resolv.conf - name server
 touch /var/tmp/resolv.conf
@@ -64,7 +64,7 @@ touch /var/tmp/shadow
 ## issue file - telnetd
 touch /var/tmp/issue
 
-## group file for root 
+## group file for root
 echo "root:x:0:"          > /etc/group
 echo "sshd:x:1001:root"   >> /etc/group
 
@@ -88,13 +88,13 @@ XCFGDIR=/config
 [ -d $XCFGDIR ] || mkdir -p $XCFGDIR
 mount /dev/sdb $XCFGDIR
 /sbin/run_xcfgd.sh \
-    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s & 
+    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
 echo "Waiting it for getting ready to work.."
 busywait 3
 
 ##
-## Macros needed to access configuration 
+## Macros needed to access configuration
 ##
 ASK='xcfgcli.sh get'
 
@@ -103,6 +103,7 @@ echo "DATE "
 echo ""
 DATEVAL="2022.10.15-12:00:00"
 date $DATEVAL
+
 
 echo ""
 echo "Logging daemon"
@@ -126,6 +127,7 @@ echo "USER "
 echo ""
 cnt=0
 done=0
+grpnum=1002
 while [ "$done" = "0" ]
 do
     valid=`$ASK user/u$cnt/valid`
@@ -135,12 +137,19 @@ do
     if [ "$valid" = "1" ]; then
         un=`$ASK user/u$cnt/name`
         pw=`$ASK user/u$cnt/passwd`
+
+        ## Update group file
+        echo "$un:x:$grpnum:"  >> /etc/group
+        adduser -h /home/$un -G $un -u $grpnum -s /bin/sh -D $un
+        echo "$un:$pw" | chpasswd
+        echo "User [ $un/$pw ] created"
+
         if [ ! -d /home/$un ]; then
             mkdir /home/$un
-            adduser -h /home/$un -G root -s /bin/sh -D $un
-            echo "$un:$pw" | chpasswd
-            echo "User [ $un/$pw ] created"
+            #Update onwer
+            chown -R $un.$un /home/$un
         fi
+        grpnum=`expr $grpnum + 1`
     fi
     cnt=`expr $cnt + 1`
 done
@@ -150,6 +159,7 @@ echo ""
 echo "GIT "
 echo ""
 [ ! -f /bin/git ] || git config --global http.sslVerify false
+[ ! -f /bin/git ] || git config --global core.pager 'more'
 
 echo ""
 echo "PYTHON  "
@@ -200,7 +210,7 @@ if [ "$SSHEN" = "1" ]; then
     echo ""
     echo "SSH daemon"
     echo ""
-    /sbin/sshd -f /etc/sshd/sshd_config -h $SSHDIR/id_rsa 
+    /sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa 
 fi
 
 echo ""
@@ -231,6 +241,7 @@ if [ "$WEBUIEN" = "1" ]; then
 fi
 
 echo ""
-echo "Shell"
+echo "SHELL"
+echo ""
 /bin/bash 
 

@@ -1,6 +1,6 @@
 diff -uNr gcc-11.2.0-original/gcc/gcc.c gcc-11.2.0/gcc/gcc.c
 --- gcc-11.2.0-original/gcc/gcc.c	2021-07-27 23:55:07.296287468 -0700
-+++ gcc-11.2.0/gcc/gcc.c	2022-10-01 20:57:50.687023436 -0700
++++ gcc-11.2.0/gcc/gcc.c	2023-02-24 22:12:35.891017690 -0800
 @@ -1592,6 +1592,12 @@
  #define STANDARD_STARTFILE_PREFIX_2 "/usr/lib/"
  #endif
@@ -14,9 +14,29 @@ diff -uNr gcc-11.2.0-original/gcc/gcc.c gcc-11.2.0/gcc/gcc.c
  #ifdef CROSS_DIRECTORY_STRUCTURE  /* Don't use these prefixes for a cross compiler.  */
  #undef MD_EXEC_PREFIX
  #undef MD_STARTFILE_PREFIX
+diff -uNr gcc-11.2.0-original/libgcc/config/aarch64/lse-init.c gcc-11.2.0/libgcc/config/aarch64/lse-init.c
+--- gcc-11.2.0-original/libgcc/config/aarch64/lse-init.c	2021-07-27 23:55:08.752307785 -0700
++++ gcc-11.2.0/libgcc/config/aarch64/lse-init.c	2023-02-24 22:16:43.731732477 -0800
+@@ -38,11 +38,14 @@
+ 
+ unsigned long int __getauxval (unsigned long int);
+ 
+-static void __attribute__((constructor))
++static void __attribute__((constructor (90)))
+ init_have_lse_atomics (void)
+ {
+-  unsigned long hwcap = __getauxval (AT_HWCAP);
++  /*
++   * unsigned long hwcap = __getauxval (AT_HWCAP);
+   __aarch64_have_lse_atomics = (hwcap & HWCAP_ATOMICS) != 0;
++  */
++  __aarch64_have_lse_atomics = 0;
+ }
+ 
+ #endif /* __gnu_linux__  */
 diff -uNr gcc-11.2.0-original/libstdc++-v3/Makefile.am gcc-11.2.0/libstdc++-v3/Makefile.am
 --- gcc-11.2.0-original/libstdc++-v3/Makefile.am	2021-07-27 23:55:09.208314147 -0700
-+++ gcc-11.2.0/libstdc++-v3/Makefile.am	2022-10-01 20:59:19.051047671 -0700
++++ gcc-11.2.0/libstdc++-v3/Makefile.am	2023-02-24 22:12:35.895017702 -0800
 @@ -24,7 +24,9 @@
  
  if GLIBCXX_HOSTED
@@ -30,7 +50,7 @@ diff -uNr gcc-11.2.0-original/libstdc++-v3/Makefile.am gcc-11.2.0/libstdc++-v3/M
  ## Keep this list sync'd with acinclude.m4:GLIBCXX_CONFIGURE.
 diff -uNr gcc-11.2.0-original/libstdc++-v3/Makefile.in gcc-11.2.0/libstdc++-v3/Makefile.in
 --- gcc-11.2.0-original/libstdc++-v3/Makefile.in	2021-07-27 23:55:09.208314147 -0700
-+++ gcc-11.2.0/libstdc++-v3/Makefile.in	2022-10-01 21:00:11.579073993 -0700
++++ gcc-11.2.0/libstdc++-v3/Makefile.in	2023-02-24 22:12:35.895017702 -0800
 @@ -180,7 +180,9 @@
  ETAGS = etags
  CTAGS = ctags
@@ -55,7 +75,7 @@ diff -uNr gcc-11.2.0-original/libstdc++-v3/Makefile.in gcc-11.2.0/libstdc++-v3/M
  @BUILD_XML_FALSE@STAMP_XML = 
 diff -uNr gcc-11.2.0-original/PATCHED gcc-11.2.0/PATCHED
 --- gcc-11.2.0-original/PATCHED	1969-12-31 16:00:00.000000000 -0800
-+++ gcc-11.2.0/PATCHED	2022-10-01 20:58:20.779028658 -0700
++++ gcc-11.2.0/PATCHED	2023-02-24 22:12:35.895017702 -0800
 @@ -0,0 +1,3 @@
 +
 +

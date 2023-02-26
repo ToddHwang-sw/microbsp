@@ -5,7 +5,7 @@
 	<model>RPICPE</model>
 	<operation>
 		<mode>normal</mode>			<!-- operation mode -->
-		<passwd>0</passwd>		<!-- password -->
+		<passwd>stepforward</passwd>		<!-- password -->
 		<webui>0</webui>		<!-- webui -->
 		<syslog>
 			<en>1</en>
@@ -33,7 +33,7 @@
 		<u2>
 			<valid>0</valid>
 			<name>0</name>
-			<passwd></passwd>
+			<passwd>0</passwd>
 		</u2>          
 		<u3>
 			<valid>0</valid>
@@ -60,11 +60,11 @@
             <wlan0>wlan1</wlan0>
             <eth0>eth0</eth0>
         </interfaces>
-        <ip>10.5.5.1</ip>
+        <ip>100.5.5.1</ip>
         <start>50</start>
         <end>240</end>
 		<netmask>255.255.255.0</netmask>
-		<gateway>10.5.5.1</gateway>
+		<gateway>100.5.5.1</gateway>
 		<dns>8.8.8.8</dns>
 		<ipv6>
 			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
@@ -75,7 +75,7 @@
 		</ipv6>
         <ssid>rpiwifi</ssid>
         <password>12345678</password>
-        <capture>1</capture>
+        <capture>0</capture>
 	</lan>
 	<wan>
         <mode>dhcp</mode>          <!-- static, dhcp, none -->
@@ -94,7 +94,7 @@
 		</ipv6>
         <ssid>myhomeap</ssid>
         <password>12345678</password>
-        <capture>1</capture>
+        <capture>0</capture>
 	</wan>
 	<xcfgd>
 		<httpport>8082</httpport>  <!-- HTTP service port -->

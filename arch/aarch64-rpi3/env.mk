@@ -1,5 +1,5 @@
 export CROSS_COMP_PREFIX=$(PLATFORM)-
-export CROSS_COMP_FLAGS=-mlittle-endian -mabi=lp64 -mpc-relative-literal-loads -march=armv8-a -mtune=cortex-a53
+export CROSS_COMP_FLAGS=-mlittle-endian -mabi=lp64 -mpc-relative-literal-loads -march=armv8-a -mtune=cortex-a53 -mno-outline-atomics
 
 CC=$(CROSS_COMP_PREFIX)gcc
 CXX=$(CROSS_COMP_PREFIX)g++
