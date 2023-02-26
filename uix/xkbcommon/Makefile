@@ -1,5 +1,5 @@
-DIR=libxkbcommon
-LOC=https://github.com/xkbcommon
+DIR=libxkbcommon-1.5.0
+LOC=https://xkbcommon.org/download/
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -13,7 +13,7 @@ MICB_DEPENDS = libxml-2.0 libffi xcb-xkb xcb-x11
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)

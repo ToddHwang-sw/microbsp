@@ -1,5 +1,5 @@
 DIR=zstd
-LOC=-b fix2966_part1 https://github.com/facebook
+LOC=-b dev https://github.com/facebook
 
 include $(TOPDIR)/scripts/env.mk
 

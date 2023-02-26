@@ -1,8 +1,7 @@
-diff --git a/meson.build b/meson.build
-index fb77185..11398b4 100644
---- a/meson.build
-+++ b/meson.build
-@@ -477,13 +477,13 @@ if build_tools
+diff -uNr libxkbcommon-1.5.0-original/meson.build libxkbcommon-1.5.0/meson.build
+--- libxkbcommon-1.5.0-original/meson.build	2023-01-02 11:23:30.000000000 -0800
++++ libxkbcommon-1.5.0/meson.build	2023-02-22 07:28:39.172349615 -0800
+@@ -476,13 +476,13 @@
      if get_option('enable-wayland')
          wayland_client_dep = dependency('wayland-client', version: '>=1.2.0', required: false)
          wayland_protocols_dep = dependency('wayland-protocols', version: '>=1.12', required: false)
@@ -13,31 +12,30 @@ index fb77185..11398b4 100644
  You can disable the Wayland xkbcli programs with -Denable-wayland=false.''')
          endif
  
--        wayland_scanner = find_program(wayland_scanner_dep.get_pkgconfig_variable('wayland_scanner'))
-+        wayland_scanner = find_program(wayland_scanner_dep.get_pkgconfig_variable('wayland_scanner_host'))
+-        wayland_scanner = find_program(wayland_scanner_dep.get_variable(pkgconfig: 'wayland_scanner'))
++        wayland_scanner = find_program(wayland_scanner_dep.get_variable(pkgconfig: 'wayland_scanner_host'))
          wayland_scanner_code_gen = generator(
              wayland_scanner,
              output: '@BASENAME@-protocol.c',
-@@ -495,7 +495,7 @@ You can disable the Wayland xkbcli programs with -Denable-wayland=false.''')
+@@ -494,7 +494,7 @@
              arguments: ['client-header', '@INPUT@', '@OUTPUT@'],
          )
-         wayland_protocols_datadir = wayland_protocols_dep.get_pkgconfig_variable('pkgdatadir')
+         wayland_protocols_datadir = wayland_protocols_dep.get_variable(pkgconfig: 'pkgdatadir')
 -        xdg_shell_xml = wayland_protocols_datadir/'stable/xdg-shell/xdg-shell.xml'
 +        xdg_shell_xml = get_option('base-install') + wayland_protocols_datadir/'stable/xdg-shell/xdg-shell.xml'
          xdg_shell_sources = [
              wayland_scanner_code_gen.process(xdg_shell_xml),
              wayland_scanner_client_header_gen.process(xdg_shell_xml),
-diff --git a/meson_options.txt b/meson_options.txt
-index 69850b8..c2fa34b 100644
---- a/meson_options.txt
-+++ b/meson_options.txt
-@@ -73,3 +73,9 @@ option(
+diff -uNr libxkbcommon-1.5.0-original/meson_options.txt libxkbcommon-1.5.0/meson_options.txt
+--- libxkbcommon-1.5.0-original/meson_options.txt	2023-01-02 11:23:30.000000000 -0800
++++ libxkbcommon-1.5.0/meson_options.txt	2023-02-22 07:28:23.796373397 -0800
+@@ -73,3 +73,9 @@
      value: true,
      description: 'Enable building libxkbregistry',
  )
 +option(
-+  'base-install',
-+  type : 'string',
-+  value : '',
-+  description : 'Location of system installation'
++    'base-install',
++    type : 'string',
++    value : '',
++    description : 'Location of system installation'
 +)
