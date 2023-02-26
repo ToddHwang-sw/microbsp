@@ -163,8 +163,12 @@ void os_sig_delete( os_sig_t * sig )
 		DBG(" DELETE SIG ( %s )\n",sig->name);
 		// TODO
 		// Just giving a process to arrange resources before os_free()..
-		//usleep(300*1000);
+		usleep(300*1000);
 	}
+
+	pthread_mutex_destroy( &(sig->mut) );
+	pthread_cond_destroy( &(sig->cond) );
+
 	os_free( sig );	// may cause memory fault...
 }
 
@@ -181,8 +185,8 @@ os_evt_t * os_event_init( char *name )
 	if (!temp)
 		return NULL;
 
-	temp->mut = os_sig_init( name );
-	if (!temp->mut) {
+	temp->sig = os_sig_init( name );
+	if (!temp->sig) {
 		os_free( temp );
 		return NULL;
 	}
@@ -205,10 +209,11 @@ int os_event_receive( os_evt_t * evt , int val , int maxcnt )
 	while ( !bit_includes(evt->val,val) && (cnt <= _mxcnt)) {
 		if (maxcnt > 0) 
 			++cnt;
-		ret = os_sig_wait( evt->mut , OS_USEC(100) );
+		ret = os_sig_wait( evt->sig, OS_USEC(100) );
 		if (ret != ETIMEDOUT)
 			break;
-		os_sig_unlock( evt->mut );
+
+		os_sig_unlock( evt->sig );
 	}
 
 	return evt->val;
@@ -224,14 +229,14 @@ int os_event_send( os_evt_t *evt , int val )
 	//
 	// Though lock is not obained, event will be signalled !!
 	//
-	ret = os_sig_trylock( evt->mut );
+	ret = os_sig_trylock( evt->sig );
 	//
 	// Too noisy...
 	//
 	//if (ret)
 	//	ERR("EVENT LOCK FAILED\n");
 	bit_adds( evt->val, val );
-	os_sig_wakeup( evt->mut , ret );
+	os_sig_wakeup( evt->sig , ret );
 	return 0;
 }
 
@@ -240,7 +245,7 @@ int os_event_delete( os_evt_t *evt )
 	if (!evt)
 		return -1;
 
-	os_free( evt->mut ); /* ??? */
+	os_sig_delete( evt->sig );
 	os_free( evt );
 
 	return 0;
@@ -266,7 +271,7 @@ int os_run_command( char *cmd, char *res, int sz )
 	/* good .. */
 
 exit_OS_RUN_COMMAND:
-	fclose(fp);
+	pclose(fp);
 	return ret;
 }
 

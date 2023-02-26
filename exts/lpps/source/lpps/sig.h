@@ -50,7 +50,7 @@ extern int os_sig_onwait( os_sig_t *sig );
 
 typedef struct {
 	os_rwlock_t lock;
-	os_sig_t *mut;
+	os_sig_t *sig;
 	int val;
 	#define EVT_ALLBIT ((int)(~0x0))
 }__attribute__((aligned)) os_evt_t;
