@@ -11,7 +11,7 @@ struct memlist;
 struct memlist {
 	struct memlist * next;
 	struct memlist * prev;
-}__attribute__((packed));
+}__attribute__((aligned));
 #endif
 
 /* root configuration */
@@ -42,7 +42,7 @@ struct memheader {
 	int line;
 	struct memlist list;
 #endif
-} __attribute__((packed));
+} __attribute__((aligned));
 #define mem_size(blk)   (((struct memheader *)((char *)(blk) - sizeof(struct memheader)))->sz)
 
 #include <syslog.h>

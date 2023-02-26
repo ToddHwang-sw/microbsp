@@ -784,7 +784,7 @@ struct mallinfo {
   MALLINFO_FIELD_TYPE uordblks; /* total allocated space */
   MALLINFO_FIELD_TYPE fordblks; /* total free space */
   MALLINFO_FIELD_TYPE keepcost; /* releasable (via malloc_trim) space */
-};
+}__attribute__((aligned));
 #endif /* STRUCT_MALLINFO_DECLARED */
 #endif /* HAVE_USR_INCLUDE_MALLOC_H */
 #endif /* NO_MALLINFO */
@@ -1925,7 +1925,7 @@ struct malloc_recursive_lock {
   int sl;
   unsigned int c;
   THREAD_ID_T threadid;
-};
+}__attribute__((aligned));
 
 #define MLOCK_T  struct malloc_recursive_lock
 static MLOCK_T malloc_global_mutex = { 0, 0, (THREAD_ID_T)0};
@@ -2198,7 +2198,7 @@ struct malloc_chunk {
   size_t               head;       /* Size and inuse bits. */
   struct malloc_chunk* fd;         /* double links -- used only if free. */
   struct malloc_chunk* bk;
-};
+}__attribute__((aligned));
 
 typedef struct malloc_chunk  mchunk;
 typedef struct malloc_chunk* mchunkptr;
@@ -2412,7 +2412,7 @@ struct malloc_tree_chunk {
   struct malloc_tree_chunk* child[2];
   struct malloc_tree_chunk* parent;
   bindex_t                  index;
-};
+}__attribute__((aligned));
 
 typedef struct malloc_tree_chunk  tchunk;
 typedef struct malloc_tree_chunk* tchunkptr;
@@ -2483,7 +2483,7 @@ struct malloc_segment {
   size_t       size;             /* allocated size */
   struct malloc_segment* next;   /* ptr to next segment */
   flag_t       sflags;           /* mmap and extern flag */
-};
+}__attribute__((aligned));
 
 #define is_mmapped_segment(S)  ((S)->sflags & USE_MMAP_BIT)
 #define is_extern_segment(S)   ((S)->sflags & EXTERN_BIT)
@@ -2611,7 +2611,7 @@ struct malloc_state {
   msegment   seg;
   void*      extp;      /* Unused but available for extensions */
   size_t     exts;
-};
+}__attribute__((aligned));
 
 typedef struct malloc_state*    mstate;
 
@@ -2631,7 +2631,7 @@ struct malloc_params {
   size_t mmap_threshold;
   size_t trim_threshold;
   flag_t default_mflags;
-};
+}__attribute__((aligned));
 
 static struct malloc_params mparams;
 
@@ -6357,8 +6357,8 @@ static struct memspace * mem_init(size_t sz)
 
 #ifdef MEMORY_TRACK
 	/* list init - memheader start/end */
-        mblk->list.prev =
-        mblk->list.next = NULL;  /* prev = start , next = end */
+	mblk->list.prev =
+	mblk->list.next = NULL;  /* prev = start , next = end */
 #endif
 	return mblk;
 }
@@ -6419,7 +6419,7 @@ static void * mem_alloc(struct memspace *mblk, size_t sz)
 		cur->next = NULL;
 		cur->prev = t;
 		list->next = cur;
-        }
+	}
 #endif
 
 	p = (char *)((char *)nb+sizeof(struct memheader));

@@ -7,7 +7,10 @@ LFDM = lpps
 NETM = lppsnm
 
 CXXDEBUG = -g -O0
-##CXXDEBUG += -DUSE_GLIBC_MALLOC
+
+##
+## This option is required only for aarch64 platform (raspberry pi)
+CXXDEBUG += -DUSE_GLIBC_MALLOC
 
 CXXFLAGS += \
    $(CXXDEBUG) \
@@ -26,12 +29,13 @@ CXXFLAGS += \
    -pthread \
    -DEXTRA_WORKAROUND \
    -DMEMORY_TRACK \
-   -D_QNXAPP_ \
    -D_FILE_OFFSET_BITS=64 \
    -DFUSE_USE_VERSION=31 \
    -DFUSERMOUNT_DIR=\".\" \
    -DFUSERMOUNT_PROG=\"$(LFMT)\" \
    -DFUSE_CONF=\"$(LFDIR)/inc\"
+
+##CXXFLAGS += -D_QNXAPP_ 
 
 CXXFLAGS += -D_DEBUG_
 CFLAGS   += $(CXXFLAGS)
