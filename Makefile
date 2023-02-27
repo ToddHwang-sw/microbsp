@@ -56,7 +56,7 @@ define PERFORM_EXCLUSIVELY
 	$(eval DEPTH  := `echo $$2 | sed "s/\//-/g"`)       \
 	$(eval LOCKFN := $(BUILD_LOCK_FOLDER)/microbsp-$1-) \
 	[ -f $(LOCKFN)$(DEPTH).$(3) ] || touch $(LOCKFN)$(DEPTH).$(3)  && \
-	flock $(LOCKFN)$(DEPTH).$(3) $(4)                 && \
+	flock $(LOCKFN)$(DEPTH).$(3) $(4)
 endef
 
 ## ISO image name...
