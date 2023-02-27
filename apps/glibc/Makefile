@@ -8,6 +8,11 @@ CROSS_USER_LFLAGS=
 GLIBCDIR=$(TOPDIR)/gnu/glibc/$(GLIBC)
 
 ##
+## "scp" command support ...
+##
+LIBSSP_SO=libssp.so
+
+##
 ## LOCALE installation flag : It will take very long time. 
 ##
 LOCALE_FLAG=0
@@ -40,7 +45,11 @@ install:
 			make install_root=`pwd`/../target install;  \
 			[ "$(LOCALE_FLAG)" = "0" ] || make install_root=`pwd`/../target localedata/install-locales; \
 			cd ../target; \
-			tar zcvf ../$(GLIBC_TARGET_FILE) * > /dev/null ) \
+			[ -h lib/$(LIBSSP_SO) ] || (    \
+				cd lib                ;     \
+				ln -s /lib64/$(LIBSSP_SO).0 $(LIBSSP_SO).0 ;  \
+				ln -s $(LIBSSP_SO).0 $(LIBSSP_SO) ) ;         \
+			tar zcvf ../$(GLIBC_TARGET_FILE) * > /dev/null )  \
 	)
 
 ##

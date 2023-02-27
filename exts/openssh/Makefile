@@ -5,11 +5,6 @@ include $(TOPDIR)/scripts/extenv.mk
 
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16
 
-##
-## To support "scp" ...
-##
-EXTLIB=libssp.so
-
 MICB_CONFIGURE_OPTS += --disable-strip --with-pam
 
 MICB_CONFIGURE_RUNENV += \
@@ -32,11 +27,7 @@ all install uninstall clean:
 	@[ "$@" != "install" ] || ( \
 		[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); \
-				make $(MICB_CONFIGURE_MAKEOPTS) install-mbsp ) && \
-		[ -h $(destination)/lib/$(EXTLIB) ] || (    \
-			cd $(destination)/lib                ;  \
-			ln -s /lib64/$(EXTLIB).0 $(EXTLIB).0 ;  \
-			ln -s $(EXTLIB).0 $(EXTLIB) )           \
+				make $(MICB_CONFIGURE_MAKEOPTS) install-mbsp ) \
     )
 
 
