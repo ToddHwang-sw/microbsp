@@ -57,7 +57,6 @@ define PERFORM_EXCLUSIVELY
 	$(eval LOCKFN := $(BUILD_LOCK_FOLDER)/microbsp-$1-) \
 	[ -f $(LOCKFN)$(DEPTH).$(3) ] || touch $(LOCKFN)$(DEPTH).$(3)  && \
 	flock $(LOCKFN)$(DEPTH).$(3) $(4)                 && \
-	\rm -rf $(LOCKFN)$(DEPTH).$(3)
 endef
 
 ## ISO image name...
