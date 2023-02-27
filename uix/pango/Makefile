@@ -1,6 +1,5 @@
-PANGOVER=1.50
-DIR=pango-$(PANGOVER).11
-LOC=https://download.gnome.org/sources/pango/$(PANGOVER)
+DIR=pango
+LOC=https://github.com/GNOME
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -14,7 +13,7 @@ CROSS_USER_LFLAGS += -lglapi
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
