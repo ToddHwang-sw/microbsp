@@ -43,6 +43,23 @@ define SETUP_BUILDOUT
 	[ -f $(1)/$(BUILDOUT) ] || touch $(1)/$(BUILDOUT) 
 endef
 
+##
+## Build lock folder
+##
+export BUILD_FOLDER=/var/tmp/microbsp
+export BUILD_LOCK_FOLDER=$(BUILD_FOLDER)/lock
+
+##
+## exclusive execution of command
+##
+define PERFORM_EXCLUSIVELY
+	$(eval DEPTH  := `echo $$2 | sed "s/\//-/g"`)       \
+	$(eval LOCKFN := $(BUILD_LOCK_FOLDER)/microbsp-$1-) \
+	[ -f $(LOCKFN)$(DEPTH).$(3) ] || touch $(LOCKFN)$(DEPTH).$(3)  && \
+	flock $(LOCKFN)$(DEPTH).$(3) $(4)                 && \
+	\rm -rf $(LOCKFN)$(DEPTH).$(3)
+endef
+
 ## ISO image name...
 export IMAGENAME=output.iso
 
@@ -442,6 +459,8 @@ checkfirst:
 			mkdir -p $$libdir$$subdir ;	 		\
 		done ;							\
 	done
+	@[ -d $(BUILD_FOLDER)      ] || mkdir -p $(BUILD_FOLDER)
+	@[ -d $(BUILD_LOCK_FOLDER) ] || mkdir -p $(BUILD_LOCK_FOLDER)
 
 ##
 ## libs
@@ -451,7 +470,9 @@ lib: checkfirst
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
+				$(call PERFORM_EXCLUSIVELY,lib,$$dir,prepare,\
+						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				$(CLEAN_LIBLA) ) \
@@ -465,7 +486,13 @@ lib_%: checkfirst
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(INSTALLDIR) $(subst lib_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
+				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
+					$(call PERFORM_EXCLUSIVELY,lib,$$dir,prepare,\
+						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						) ; \
+				else  \
+					make -C $$dir destination=$(INSTALLDIR) $(subst lib_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+				fi && \
 				[ "$(subst lib_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
@@ -478,7 +505,9 @@ app: checkfirst
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
+				$(call PERFORM_EXCLUSIVELY,app,$$dir,prepare,\
+					make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+					) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				$(CLEAN_LIBLA) ) \
@@ -492,7 +521,13 @@ app_%: checkfirst
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(INSTALLDIR) $(subst app_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
+				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
+					$(call PERFORM_EXCLUSIVELY,app,$$dir,prepare,\
+						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						) ; \
+				else  \
+					make -C $$dir destination=$(INSTALLDIR) $(subst app_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+				fi && \
 				[ "$(subst app_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
@@ -505,7 +540,9 @@ ext: checkfirst
 		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
+				$(call PERFORM_EXCLUSIVELY,ext,$$dir,prepare,\
+					make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+					) && \
 				make -C $$dir destination=$(EXTINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(EXTINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				$(CLEAN_LIBLA) ) \
@@ -519,7 +556,13 @@ ext_%: checkfirst
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(EXTINSTDIR) $(subst ext_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
+				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
+					$(call PERFORM_EXCLUSIVELY,ext,$$dir,prepare,\
+						make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						) ; \
+				else  \
+					make -C $$dir destination=$(EXTINSTDIR) $(subst ext_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+				fi && \
 				[ "$(subst ext_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
@@ -532,7 +575,9 @@ ui: checkfirst llvm_okay
 		for dir in $(SUBDIR); do    \
 			[ ! -d $$dir ] || ( \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(UIXINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT) && \
+				$(call PERFORM_EXCLUSIVELY,ui,$$dir,prepare,\
+					make -C $$dir destination=$(UIXNSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+					) && \
 				make -C $$dir destination=$(UIXINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(UIXINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				$(CLEAN_LIBLA) ) \
@@ -546,7 +591,13 @@ ui_%: checkfirst llvm_okay
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] ||  (     \
 				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				make -C $$dir destination=$(UIXINSTDIR) $(subst ui_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) && \
+				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
+					$(call PERFORM_EXCLUSIVELY,ui,$$dir,prepare,\
+						make -C $$dir destination=$(UIXINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						) ; \
+				else  \
+					make -C $$dir destination=$(UIXINSTDIR) $(subst ui_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+				fi && \
 				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
