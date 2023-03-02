@@ -26,7 +26,8 @@ BTRFS_TAILOR_DELETE=m4/ax_gcc_builtin.m4
 MICB_DEPENDS = lzo2 uuid blkid libzstd
 
 prepare:
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || \rm -rf $(BUILDDIR)/$(DIR)
+	@mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
 	@cd $(BUILDDIR)/$(DIR); \
