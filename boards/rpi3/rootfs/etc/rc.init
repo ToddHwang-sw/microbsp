@@ -195,6 +195,10 @@ if [ "$SSHEN" = "1" ]; then
     /sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa
 fi
 
+echo ""
+echo "RASPBERRY PI SPECIFIC INIT"
+echo ""
+echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 
 echo ""
 echo "INIT FILE STARTS ..."

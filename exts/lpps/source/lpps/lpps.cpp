@@ -1070,7 +1070,6 @@ static void lpps_list_print( lpps_inode_t **root )
 	}
 	printf("]\n");
 }
-#endif 
 
 static __inline__ char * build_acctrace_filename( char * path )
 {
@@ -1090,6 +1089,7 @@ static __inline__ char * build_acctrace_filename( char * path )
 
 	return fn;
 }
+#endif 
 
 static void lpps_list_push( lpps_inode_t **root, lpps_inode_t *elem )
 {
@@ -1434,6 +1434,55 @@ static void lpps_log(enum fuse_log_level level, char *fn, const char *fmt, va_li
 
 //
 //
+// T O O L K I T    F U N C T I O N S 
+//
+//
+//
+static int lpps_create_internal(const char *apath, mode_t mode)
+{
+	static lpps_inode_t * fl;
+	char * path = lpps_path_option( (char *)apath, NULL );
+
+	PATH_CHECK(path)
+
+	DBG(" %s %x \n", path, mode );
+
+	fl = create_inode( (char *)path );
+	if (!fl) {
+		ERR("create_internal( %s )::failed\n",path);
+		return RET_EPERM;
+	}
+
+	fl->type = LPPS_FILE;
+	fl->mode = S_IFREG | mode;  // file flag 
+	#ifdef _QNXAPP_
+	//
+	// QNX/Linux difference 
+	//
+	fl->mode &= ~0x800;
+	fl->mode |= 0x4;
+	#endif
+	fl->nlink = 1;
+	fl->blksize = BLKSIZE;
+
+	{
+		char *p = strrchr((char *)path,'/');
+		fl->fline = (char *)os_malloc( strlen(p)+4 );
+		if (!fl->fline) {
+			ERR("os_malloc( %s+4 )::failed\n",p);
+			return RET_EMEM;
+		}
+		memset( fl->fline, 0, strlen(p)+4 );
+		sprintf( fl->fline, print_fmt_fn, p+1 );
+	}
+
+	lpps_list_push( &(lpps.root) , fl );
+
+	return 0;
+}
+
+//
+//
 // C A L L B A C K   F U N C T I O N S 
 //
 //
@@ -1481,7 +1530,6 @@ static void *lpps_init(struct fuse_conn_info *conn, struct fuse_config *cfg)
 
 	return NULL;
 }
-
 
 // G E T A T T R 
 static int lpps_getattr(const char *apath, struct stat *stbuf, struct fuse_file_info *fi)
@@ -1671,7 +1719,6 @@ static ppriv * lpps_mkdir_internal(const char *apath, mode_t mode, int *ret)
 	lpps_list_push( &(lpps.root) , fl );
 
 	*ret = 0;
-
 	return priv;
 }
 
@@ -1690,51 +1737,6 @@ static int lpps_mkdir(const char *apath, mode_t mode)
 	return ret;
 }
 
-/*
- * toolkit function 
- */
-static int lpps_create_internal(const char *apath, mode_t mode)
-{
-	static lpps_inode_t * fl;
-	char * path = lpps_path_option( (char *)apath, NULL );
-
-	PATH_CHECK(path)
-
-	DBG(" %s %x \n", path, mode );
-
-	fl = create_inode( (char *)path );
-	if (!fl) {
-		ERR("create_internal( %s )::failed\n",path);
-		return RET_EPERM;
-	}
-
-	fl->type = LPPS_FILE;
-    	fl->mode = S_IFREG | mode;  // file flag 
-	#ifdef _QNXAPP_
-	//
-	// QNX/Linux difference 
-	//
-    	fl->mode &= ~0x800;
-    	fl->mode |= 0x4;
-	#endif
-	fl->nlink = 1;
-	fl->blksize = BLKSIZE;
-
-	{
-		char *p = strrchr((char *)path,'/');
-		fl->fline = (char *)os_malloc( strlen(p)+4 );
-		if (!fl->fline) {
-			ERR("os_malloc( %s+4 )::failed\n",p);
-			return RET_EMEM;
-		}
-		memset( fl->fline, 0, strlen(p)+4 );
-		sprintf( fl->fline, print_fmt_fn, p+1 );
-	}
-
-	lpps_list_push( &(lpps.root) , fl );
-
-	return 0;
-}
 
 // C R E A T E 
 static int lpps_create(const char *apath, mode_t mode, struct fuse_file_info *fi)
@@ -2810,17 +2812,9 @@ static int lpps_read(const char *apath, char *rbuf, size_t size, off_t offset, s
 						memset(rbuf,0,(strlen(path)+10)>size?size:strlen(path)+10);
 						snprintf(rbuf,size,fmt,path);
 
-						DBG(" MESSAGE=[ %s ]\n",rbuf);
-						/* {
-							char *xbuf = (char *)os_strdup(rbuf);
-							if (xbuf) {
-								xbuf[ strlen(xbuf) - 1 ] = 0; // \n -> 0x0 
-								PRT(" MESSAGE=[ %s ] %s \n",xbuf,blk->path);
-								os_free( xbuf );
-							}
-						} */
+						DBG(" MESSAGE=[%s]\n",rbuf);
 
-						// result length 	
+						// result length 
 						dumpamt = strlen(rbuf);
 
 						remove_hist_block( blk );

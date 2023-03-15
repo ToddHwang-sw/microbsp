@@ -161,11 +161,6 @@ echo ""
 [ ! -f /bin/git ] || git config --global http.sslVerify false
 [ ! -f /bin/git ] || git config --global core.pager 'more'
 
-echo ""
-echo "PYTHON  "
-echo ""
-[ ! -f /bin/python_env.sh ] || /bin/python_env.sh / 
-
 ## eth0 interface
 echo ""
 echo "Network - VMware should use Host-only interface for this OS"
@@ -231,6 +226,11 @@ if [ "$NTPEN" = "1" ]; then
     CTIME=`echo $CTIME | xargs`
     date -R -s "$CTIME"
 fi
+
+echo ""
+echo "PYTHON  "
+echo ""
+[ ! -f /bin/python_env.sh ] || source /bin/python_env.sh / 
 
 echo ""
 echo "WEBUI "

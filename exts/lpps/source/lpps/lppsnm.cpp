@@ -1,19 +1,22 @@
-#include <stdio.h>
+#include <cstdio>
+#include <fcntl.h>
 #include <getopt.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <syslog.h>
 #include <pthread.h>
 #include <dirent.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 #include "transport.h"
 
 int sys_daemon = 0;
 int sys_debug = 0;
 int use_syslog = 0;
 
-char *mpnt; // mount point 
+char mpnt[1024]; // mount point 
 
 /*
  *
@@ -39,6 +42,10 @@ char *mpnt; // mount point
 		fprintf(stderr,"LNM:@:%-20s:%-4d: " fmt,(char *)__func__,(int)__LINE__,##args); \
 	}
 
+static int start_watcher( int isdir , char * path );
+static void scan_folder(const char * folder);
+
+#if 0
 //
 //
 // base list structure...
@@ -53,21 +60,37 @@ typedef struct __list {
                         const typeof( ((type *)0)->member ) *__mptr = (ptr); \
                         (type *)( (char *)__mptr - offsetof(type,member) );})
 
+#endif
+
 typedef struct {
 	pthread_t watcher;
 	char * path;
 	char * cmd;
-	FILE * fp;
 	int isdir; /* dir or file */
-	list_t l;
-}__attribute__((aligned)) job_list_t;
+	int fd;
+	//list_t l;
+}__attribute__((aligned)) job_t;
+
+/* Queue structuture.. */
+typedef struct {
+	#define MAXQ 128
+	pthread_mutex_t mut;
+	pthread_cond_t  cond;
+	int head;
+	int tail;
+
+	#define TRANS_NEWDIR  0x0001
+	#define TRANS_DELFILE 0x0002
+	int  type[ MAXQ ];
+	char *trans[ MAXQ ];
+}__attribute__((aligned)) trans_queue_t;
+
+static trans_queue_t transq; /* new directory queue */
 
 //
 // Job list root 
-static list_t * job_root = NULL;
-static pthread_mutex_t job_mut = PTHREAD_MUTEX_INITIALIZER;
-
-static int msec_delay = 0 /*300*/; /* processing delay - just for simulating purposes... */
+//static list_t * job_root = NULL;
+//static pthread_mutex_t job_mut = PTHREAD_MUTEX_INITIALIZER;
 
 // special files 
 #define MAXSPC 8
@@ -76,14 +99,15 @@ static char * spcf[ MAXSPC ] = {NULL,};
 //
 //  L I S T   A P I s
 //
-
+#if 0
 // A D D 
 static inline void list_add(list_t **r, list_t *item)
 {
-	list_t *eol;
+	//list_t *eol;
 
 	pthread_mutex_lock( &job_mut );
 
+#if 0
 	if (!(*r) ) {
 		(*r) = item;
 		item->next = item;
@@ -95,6 +119,7 @@ static inline void list_add(list_t **r, list_t *item)
 		item->prev = eol;
 		eol->next = item;
 	}
+#endif
 
 	pthread_mutex_unlock( &job_mut );
 }
@@ -102,13 +127,14 @@ static inline void list_add(list_t **r, list_t *item)
 // D E L 
 static inline void list_del(list_t **r, list_t *item)
 {
-	list_t *p;
+	//list_t *p;
 
 	if (!item)
 		return ;
 
 	pthread_mutex_lock( &job_mut );
 
+#if 0
 	// chaining 
 	p = item->prev;
 	p->next = item->next;
@@ -126,10 +152,12 @@ static inline void list_del(list_t **r, list_t *item)
 	// exception case 
 	if ( ((*r)->prev == NULL) && ((*r)->next == NULL) )
 		(*r) = NULL;
+#endif
 
 	pthread_mutex_unlock( &job_mut );
 
 }
+#endif
 
 // 
 // Parameters for reference  (public usage)
@@ -200,6 +228,126 @@ static int special_file( char * path )
 	return 0;
 }
 
+static void create_special_file(char *dname)
+{
+	char *cmd;
+	int fd;
+
+	#define EXTRA 64
+
+	/* Creating special file */
+	cmd = (char *)malloc( strlen(dname)+EXTRA );
+	if (!cmd) {
+		ERR("malloc( strlen(%s)+%d ) - failed\n",dname,EXTRA);
+		return ;
+	}
+	memset(cmd, 0, strlen(dname)+EXTRA );
+	snprintf(cmd, strlen(dname)+(EXTRA-1), "%s/%s", dname,spcf[0]);
+
+	if ((fd = open(cmd,O_RDWR)) < 0) {
+		/* create a special file */
+		memset(cmd, 0, strlen(dname)+EXTRA );
+		snprintf(cmd, strlen(dname)+(EXTRA-1), "touch %s/%s", dname,spcf[0]);
+		system(cmd);
+	} else {
+		/* already exists */
+		close(fd);
+	}
+
+	free(cmd);
+}
+
+//
+// New Dir Manager 
+//
+static void * trans_manager( void * queue )
+{
+	trans_queue_t *tq = (trans_queue_t *)queue;
+	int rc;
+	int h;
+	char *dname;
+	job_t *job;
+
+	if (!tq)
+		return 0;
+
+	while ( 1 ) {
+		rc = pthread_cond_wait( &(tq->cond), &(tq->mut) );
+	  	if (rc < 0) {
+			ERR("pthread_cond_wait - failed\n");
+			continue;
+		}
+
+		while ( tq->head != tq->tail ) {
+			h = tq->head ;
+
+			switch (tq->type[ h ]) {
+			case TRANS_NEWDIR:
+				dname = tq->trans[ h ];
+				if (dname) {
+					dname[ strlen(dname)-1 ] = 0x0; /* eliminating \n */
+
+					DBG("NEWDIR(%s) PROC DONE\n",dname);
+
+					/* if possbile - create a special file */
+					create_special_file( dname );
+					/* Spawn thread */
+					if (!start_watcher( 1 , dname ))
+						scan_folder( dname );
+					free( dname );
+				}
+				break;
+			case TRANS_DELFILE:
+				job = (job_t *)tq->trans[ h ];
+				if (job) {
+					DBG("DELFILE(%s) PROC DONE\n",job->cmd);
+
+					if (job->fd != -1)
+						close(job->fd);
+
+					free(job->cmd);
+					free(job->path);
+					free(job);
+				}
+				break;
+			default:
+				break;
+			}
+
+			tq->type[ h ] = -1;
+			tq->trans[ h ] = NULL;
+
+			h += 1;
+			if (h >= MAXQ)
+				h = 0;
+			tq->head = h;
+		}
+
+		pthread_mutex_unlock( &(tq->mut) );
+	}
+}
+
+static void trans_request( void *q, int type, char *data )
+{
+	trans_queue_t *tq = (trans_queue_t *)q;
+	int t;
+
+	pthread_mutex_lock( &(tq->mut) );
+
+	t = tq->tail;
+
+	transq.type[ t ] = type;
+	transq.trans[ t ] = data;
+
+	t += 1;
+	if (t >= MAXQ)
+		t = 0;
+	tq->tail = t;
+
+	pthread_cond_signal( &(tq->cond) );
+	pthread_mutex_unlock( &(tq->mut) );
+}
+
 //
 // Transport reader task...
 //
@@ -219,162 +367,175 @@ static void * transport_reader( void * unused )
 static void * watch_func( void * param ); // right below...
 
 // run command 
-static int run_command( int isdir , char * path ) 
+static int start_watcher( int isdir , char * path ) 
 {
 	int ret;
-	job_list_t *jl;
+	job_t *job;
 	int len;
 
-	if (!isdir && special_file( path ))
-		return 0;
-
 	// job list node 
-	jl = (job_list_t *)malloc(sizeof(job_list_t));
-	if (!jl) {
-		ERR("malloc(sizeof(job_list_t)) failed\n");
+	job = (job_t *)malloc(sizeof(job_t));
+	if (!job) {
+		ERR("malloc(sizeof(job_t)) failed\n");
 		return -1;
 	}
 
 	// path ...
-	jl->path = strdup(path);
-	if (!jl->path) {
+	job->path = strdup(path);
+	if (!job->path) {
 		ERR("strdup(%s) failed\n",path);
-		free(jl);
+		free(job);
 		return -1;
 	}
 
-	len = strlen(jl->path)*2 + 32; // touch %s/.all ; cat %s/.all ...
+	len = strlen(job->path)*2+32; // touch %s/.all ; cat %s/.all ...
 
-	jl->cmd = (char *)malloc( len );
-	if (!jl->cmd) {
-		ERR("malloc( %s ) - failed\n",jl->path);
-		free(jl->path);
-		free(jl);
+	job->cmd = (char *)malloc( len );
+	if (!job->cmd) {
+		ERR("malloc( %s ) - failed\n",job->path);
+		free(job->path);
+		free(job);
 		return -1;
 	}
 
-	memset(jl->cmd,0,len);
+	memset(job->cmd,0,len);
+	memcpy(job->cmd,job->path,strlen(job->path));
+
 	if (isdir) {
-		snprintf(jl->cmd, len, "touch %s/.all", jl->path);
-		system(jl->cmd);
-		memset(jl->cmd,0,len);
-		snprintf(jl->cmd,len, "cat %s/.all?deltadir,wait" , jl->path);
+		strcat( job->cmd, "/" );
+		strcat( job->cmd, spcf[0] );
+		strcat( job->cmd, "?deltadir,wait" );
 	} else {
-		snprintf(jl->cmd,len, "cat %s?delta,wait", jl->path );
+		strcat( job->cmd, "?delta,wait" );
 	}
 
-	jl->isdir = isdir;
+	job->isdir = isdir;
+
+#if 0
+	/* list init .. */
+	job->l.next = 
+	job->l.prev = &(job->l);
+#endif
+
+	//list_add( &job_root, &job->l ); // add to list 
 
 	// create watcher thread 
-	ret = pthread_create( &jl->watcher , NULL , watch_func , (void *)jl );
+	ret = pthread_create( &job->watcher , NULL , watch_func , (void *)job );
 	if (ret) {
 		ERR("pthread_create() - failed\n");
-		free(jl->cmd);
-		free(jl->path);
-		free(jl);
+		//list_del( &job_root, &job->l ); // add to list 
+		free(job->cmd);
+		free(job->path);
+		free(job);
 		return -1;
 	}
-	if (pthread_detach( jl->watcher ))
+
+	// detaching thread - resource maintained in...
+	if (pthread_detach( job->watcher ))
 		ERR("pthread_detach() - failed\n");
 
-	list_add( &job_root, &jl->l ); // add to list 
-
-	// success !!
-	return 0;
+	return isdir ? 0 : -1;
 }
-
-static void setup_watcher(const char * folder);
 
 // watch function 
 static void * watch_func( void * param )
 {
-	job_list_t *job = (job_list_t *)param;
-	#define LINE 1024
-	static char buff[LINE];
+	int rc, done;
+	job_t *job = (job_t *)param;
+	#define LINE 2048
+	char *buff;
+	fd_set rfds;
 
 	if (!job)
 		goto __exit_watch_func;
 
-	//printf( "[ %08x ] cmd=%s !!\n",(int)job->watcher,job->cmd);
-
-	// watch ... 
-	job->fp = popen(job->cmd,"r");
-	if (!job->fp) {
-		ERR("popen( %s )- failed\n",job->cmd);
+	// buffer .. 
+	buff = (char *)malloc( LINE );
+	if (!buff) {
+		ERR("malloc( %d )- failed\n",LINE);
 		goto __exit_watch_func;
 	}
 
-	while (1) {
+	// transaction open ... 
+	job->fd = open(job->cmd,O_RDONLY);
+	if (job->fd < 0) {
+		ERR("open( %s )- failed\n",job->cmd);
+		goto __exit_watch_func;
+	}
+
+	DBG("THREAD [ %s %d ] \n", job->cmd, job->fd );
+
+	done = 0;
+
+	while (!done) {
 		memset(buff,0,LINE);
-		if (!fgets(buff,LINE,job->fp)) { // getting a result !!
-			//
-			// When LPPS_HIST_NULL message arrives, 
-			// the control will fall into here...
-			//
+
+		FD_ZERO(&rfds);
+		FD_SET(job->fd,&rfds);
+
+		rc = select(job->fd+1,&rfds,NULL,NULL,NULL);
+		if (rc <= 0) {
+			ERR("FD error %s\n",job->cmd);
+			break;
+		} 
+
+		// read string...
+		rc = read(job->fd, buff, LINE-1);
+		if (rc <= 0) {
+			ERR("read break %s \n",job->cmd);
 			break;
 		}
 
-		// null terminating....
-		buff[ strlen(buff)-1 ] = 0x0;
+		if (buff[ 0 ] == 0x0) {
+			ERR("invalid data %s \n",job->cmd);
+			break;
+		}
 
-		//printf( "[ %08x ] INPUT %s !!\n",(int)job->watcher,buff);
-
-		if (buff[ 0 ] == '@' || buff[0] == 0x0) {
-			memset(buff,0,LINE);
-			if (!fgets(buff,LINE,job->fp))  // getting a result !!
-				break;
-
-			printf( "[ %08x ] UPD FIL %s|%s \n", (int)job->watcher, job->path, buff);
-			if (msec_delay)
-				usleep(msec_delay*1000);
+		if (buff[ 0 ] == '@') {
+			DBG( "UPD FIL %s/%s \n", job->path, buff);
 		} else 
-		if (buff[ strlen(buff)-1 ] == '/') {
+		if (buff[ strlen(buff)-2 ] == '/') {
 			/* DIRECTORY CREATION/DELETION */
-
-			if (*buff == '+') {
+			switch ( *buff ) { 
+			case '+':
 				int len;
 				char *dname;
 
-				printf( "[ %08x ] NEW DIR %s|%s \n", 
-						(int)job->watcher, job->path, buff+2 /* skipping "+@" */ );
-				if (msec_delay)
-					usleep(msec_delay*1000);
+				DBG( "NEW DIR %s/%s \n", job->path, buff+2);
 
 				// build up full path 
-				len = strlen(job->path)+8+strlen(buff+2);
+				len = strlen(job->path)+32+strlen(buff+2);
 				dname = (char *)malloc(len);
 				if (!dname)
 					continue;
 				snprintf(dname,len,"%s/%s",job->path,buff+2);
 
-				// creating one more...
-				run_command( 1 , dname );
+				/*
+				 *  THIS IS INSIDE OF CRITICAL SECTION !! 
+				 *  NEVER DO THIS HERE !
+				 *	(1) CREATE A FOLDER
+				 *	(2) CREATE A FILE 
+				 *	THESE TWO THINGS SHOULD BE DONE IN DIFFERENT THREAD
+				 */
 
-				// WHY ???? Hmm...
-				// scan below ...
-				setup_watcher( dname );
-
-				free( dname );
-			} else 
-			if (*buff == '-') {
+				trans_request( &transq, TRANS_NEWDIR, (char *)dname );
+				break;
+			case '-':
 				// TODO - removing thread ...
-				printf( "[ %08x ] DEL DIR %s|%s \n", 
-						(int)job->watcher, job->path, buff+2 /* skipping "-@" */ );
-				if (msec_delay)
-					usleep(msec_delay*1000);
-			} else {
+				DBG( "DEL DIR %s/%s (%s)\n", 
+							job->path, buff+2 /* skipping "-@" */ , job->cmd );
+				break;
+			default:
+				break;
 			}
 		} else {
 			/* FILE CREATION/DELETION */
-
-			if (*buff == '+') {
+			switch ( *buff ) {
+			case '+':
 				int len;
 				char *fname;
 
-				printf( "[ %08x ] NEW FIL %s|%s \n", 
-						(int)job->watcher, job->path, buff+2 /* skipping "+@" */ );
-				if (msec_delay)
-					usleep(msec_delay*1000);
+				DBG( "NEW FIL %s/%s \n", job->path, buff+2 /* skipping "+@" */ );
 
 				// build up full path 
 				len = strlen(job->path)+8+strlen(buff+2);
@@ -383,32 +544,29 @@ static void * watch_func( void * param )
 					continue;
 				snprintf(fname,len,"%s/%s",job->path,buff+2);
 
+				fname[ strlen(fname)-1 ] = 0x0; /* eliminating \n */
+
 				// creating one more...
-				run_command( 0 , fname );
+				start_watcher( 0 , fname );
 
 				free( fname );
-			} else 
-			if (*buff == '-') {
+				break;
+			case '-':
 				// TODO - removing thread ...
-				printf( "[ %08x ] DEL FIL %s|%s \n", 
-						(int)job->watcher, job->path, buff+2 /* skipping "-@" */ );
-				if (msec_delay)
-					usleep(msec_delay*1000);
-			} else {
+				DBG( "DEL FIL %s/%s \n", job->path, buff+2 /* skipping "-@" */ );
+				//trans_request( &transq, TRANS_DELFILE, (char *)job );
+				break;
 			}
 		} // if( buff[ strlen(buff) - 1 ] == '/' ) 
-
-		fflush( job->fp );
-	}
+	} // while (1) .. 
+	DBG("WATCH THREAD %s DONE!!\n", job->cmd);
 
 __exit_watch_func:
-	list_del( &job_root, &job->l ); // delete from list 
 
-	fclose(job->fp);
+	//list_del( &job_root, &job->l ); // delete from list 
 
-	free(job->cmd);
-	free(job->path);
-	free(job);
+	if (buff)
+		free(buff);
 
 	//
 	// thread is not joined - pthread_exit() will clean up resources. 	
@@ -417,7 +575,7 @@ __exit_watch_func:
 	return NULL;
 }
 
-static void setup_watcher(const char * folder)
+static void scan_folder(const char * folder)
 {
 	DIR *dp;
 	struct dirent *entry;
@@ -425,64 +583,56 @@ static void setup_watcher(const char * folder)
 	char *fname;
 	int len;
 
-	if ((dp = opendir(folder)) == NULL) {
-		ERR("%s open error\n",folder);
-		return ;
-	}
 
-	if (chdir(folder)) {
-		closedir(dp);
-		ERR("chdir( %s ) failed\n",folder);
+	if ((dp = opendir(folder)) == NULL) {
+		ERR("%s opendir error\n",folder);
 		return ;
 	}
 
 	while ( (entry = readdir(dp)) != NULL ) {
-		lstat(entry->d_name,&st);
+		len = strlen(folder)+32+strlen(entry->d_name);
+		fname = (char *)malloc(len);
+		if (!fname) {
+			ERR("malloc( %s + %s + 32 ) - failed\n",folder, entry->d_name);
+			break;
+		}
+		memset(fname, 0, len);
+		snprintf(fname,len,"%s/%s",folder,entry->d_name);
+		
+		stat(fname,&st);
 		if (S_ISDIR(st.st_mode)) {
 			if (!strcmp(entry->d_name,".") ||
-					!strcmp(entry->d_name,".."))
+					!strcmp(entry->d_name,"..")) {
+				free( fname );
 				continue;
+			}
 
 			// build up full path 
-			len = strlen(folder)+8+strlen(entry->d_name);
-			fname = (char *)malloc(len);
-			if (!fname)
-				goto __exit_setup_watcher;
+			DBG( "NEW DIR %s \n", fname);
 
-			snprintf(fname,len,"%s/%s",folder,entry->d_name);
+			create_special_file( fname );
 
-			printf( "[ %08x ] NEW DIR %s|%s \n", (int)0, folder, entry->d_name );
+			if (!start_watcher( 1 , fname ))
+				scan_folder( fname );
 
-			run_command( 1 , fname );
-
-			setup_watcher( fname );
-
-			free( fname );
 		} else {
+
 			// build up full path 
-	
-			if (special_file( entry->d_name ))
+			if (special_file( entry->d_name )) {
+				free( fname );
 				continue;
+			}
 
-			len = strlen(folder)+8+strlen(entry->d_name);
-			fname = (char *)malloc(len);
-			if (!fname)
-				goto __exit_setup_watcher;
-			snprintf(fname,len,"%s/%s",folder,entry->d_name);
+			DBG( "NEW FIL %s|%s \n", folder, entry->d_name);
 
-			printf( "[ %08x ] NEW FIL %s|%s \n", (int)0, folder, entry->d_name);
-
-			run_command( 0 , fname );
-
-			free( fname );
+			start_watcher( 0 , fname );
 		}
+
+		free( fname );
 	}
-  __exit_setup_watcher:
-	if (chdir(".."))
-		ERR("chdir(..) failed\n");
+
 	closedir(dp);
 }
-
 
 static int done = 0; // flag
 
@@ -491,7 +641,11 @@ int main(int argc,char *argv[])
 	int c, option_index;
 	int ret;
 	pthread_t reader;
+	pthread_t dirman;
+
 	/* lpps_pkt_t msg; */
+
+	memset(mpnt,0,1024); // mount point...
 
 	optind = 0;
 	while (1) {
@@ -553,7 +707,8 @@ int main(int argc,char *argv[])
 			use_syslog = atoi( optarg);
 			break;
 		case 'm':
-			mpnt = strdup( optarg );
+			strcpy(mpnt,optarg);
+			strcat(mpnt,"/");
 			break;
 		}
 	}
@@ -593,9 +748,30 @@ int main(int argc,char *argv[])
 		goto __exit;
 	}
 
+	/* Queue initializer */
+	transq.head = 0;
+	transq.tail = 0;
+	pthread_mutex_init( &transq.mut , NULL );
+	pthread_cond_init( &transq.cond , NULL );
+	for (int i = 0; i < MAXQ; i++ ) {
+		transq.type[ i ]  = -1;
+		transq.trans[ i ] = NULL;
+	}
+
+	// 
+	// create directory handler 
+	ret = pthread_create( &dirman, NULL, trans_manager, (void *)&transq );
+	if (ret) {
+		ERR("pthread_create(,,,() - trans manager fork error\n");
+		goto __exit;
+	}
+
+	// if not create a special file ... 
+	create_special_file( mpnt );
+
 	//prepare for threads to watch over /pps mount 
-	run_command( 1 , mpnt );
-	setup_watcher( mpnt );
+	if (!start_watcher( 1 , mpnt ))
+		scan_folder( mpnt );
 
 	while (!done)
 		sleep(1);
