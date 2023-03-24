@@ -7,8 +7,6 @@ MICB_CONFIGURE_RUNENV += PKG_CONFIG=""
 
 MICB_CONFIGURE_PRG = ./configure
 
-MICB_CONFIGURE_MAKEOPTS += V=1
-
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )

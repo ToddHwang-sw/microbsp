@@ -8,8 +8,7 @@ MICB_CONFIGURE_RUNENV += \
 
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_CONFIGURE_MAKEOPTS = \
-	prefix=$(destination) 
+MICB_CONFIGURE_MAKEOPTS = prefix=$(destination) 
 
 MICB_DEPENDS = libfl
 

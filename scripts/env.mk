@@ -70,7 +70,7 @@ export MICB_DUP_SOURCES=[ ! -d $(MICBSRC)/$(DIR) ] || ( \
 				rsync -r --exclude=".git*" $(MICBSRC)/$(DIR) $(BUILDDIR) )
 
 ## /usr/bin/pkg-config search path 
-export MICB_PKGCONFIG_PATH=$(INSTALLDIR)/lib/pkgconfig:$(INSTALLDIR)/usr/local/lib/pkgconfig
+export MICB_PKGCONFIG_PATH=$(INSTALLDIR)/lib/pkgconfig:$(INSTALLDIR)/usr/lib/pkgconfig:$(INSTALLDIR)/usr/local/lib/pkgconfig
 
 ## system architecture option selection 
 ifeq ($(_CORE_),x86_64)
@@ -87,6 +87,25 @@ export UNCOMPRESS=$(TOPDIR)/scripts/setupsrcs.sh $(MICBSRC)/$(DIR)
 export MICB_CONFIGURE_PLATFORM=$(PLATFORM)
 
 ##
+##   P R E F I X
+##
+
+## prefix= for meson build...
+export MICB_MESON_PREFIX=
+
+## prefix= for cmake
+export MICB_CMAKE_PREFIX=
+
+## prefix= for cmake
+export MICB_CONFIGURE_PREFIX=
+
+## ninja command install option 
+##
+## DESTDIR=xxxx option argument 
+##
+export MICB_INSTALL_PLACE = $(destination)
+
+##
 ##
 ##  C O N F I G U R E 
 ##
@@ -101,10 +120,9 @@ export MICB_CONFIGURE_RUNENV=\
 export MICB_CONFIGURE_LIBOPTS=--enable-shared --disable-static
 export MICB_CONFIGURE_OPTS=$(MICB_CONFIGURE_LIBOPTS)
 export MICB_CONFIGURE_PRG=../../../$(MICBSRC)/$(DIR)/configure
-export MICB_CONFIGURE_CMD=$(MICB_CONFIGURE_RUNENV) $(MICB_CONFIGURE_PRG) --prefix= --program-prefix= --program-transform-name= \
+export MICB_CONFIGURE_CMD=$(MICB_CONFIGURE_RUNENV) $(MICB_CONFIGURE_PRG) --prefix=$(MICB_CONFIGURE_PREFIX) --program-prefix= --program-transform-name= \
 		--target=$(MICB_CONFIGURE_PLATFORM) --build=i686-linux --host=$(MICB_CONFIGURE_PLATFORM) 
-export MICB_CONFIGURE_MAKEOPTS=\
-		V=1 DESTDIR=$(destination)
+export MICB_CONFIGURE_MAKEOPTS= V=1 DESTDIR=$(MICB_INSTALL_PLACE)
 
 ##
 ##
@@ -112,6 +130,9 @@ export MICB_CONFIGURE_MAKEOPTS=\
 ##
 ##
 export MICB_MESON_CROSSBUILD_FN=cross_build.txt
+
+##export MICB_MESON_PKG_CONFIG="PKGCFGPATH=$(MICB_PKGCONFIG_PATH) $(TOPDIR)/scripts/pkg-config"
+export MICB_MESON_PKG_CONFIG="$(TOPDIR)/scripts/pkg-config"
 
 export MICB_MESON_CROSSBUILD_FILE=\
 	echo ""                                                        >  $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
@@ -133,7 +154,7 @@ export MICB_MESON_CROSSBUILD_FILE=\
 	echo "ar    = '$(CROSS_COMP_PREFIX)ar'"                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "ranlib= '$(CROSS_COMP_PREFIX)ranlib'"                    >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "strip = '$(CROSS_COMP_PREFIX)strip'"                     >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
-	echo "pkgconfig = '/usr/bin/pkg-config'"                       >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
+	echo "pkgconfig = '$(MICB_MESON_PKG_CONFIG)'"                  >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo ""                                                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "[properties]"                                            >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "needs_exe_wrapper = 'true'"                              >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
@@ -145,7 +166,8 @@ export MICB_MESON_COMMON_OPTS=\
 	-D cpp_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)"        				\
 	-D c_link_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)"     	\
 	-D cpp_link_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)"   	\
-	-D pkg_config_path="$(MICB_PKGCONFIG_PATH)" 
+	-D pkg_config_path="$(MICB_PKGCONFIG_PATH)"  \
+	-D prefix=$(MICB_MESON_PREFIX)
 
 export MICB_MESON_RUNENV=
 
@@ -155,7 +177,7 @@ export MICB_MESON_OPTS=$(MICB_MESON_COMMON_OPTS)
 export MICB_MESON_CMD=$(MICB_MESON_RUNENV) meson . ../../../$(MICBSRC)/$(DIR) --cross-file ../$(MICB_MESON_CROSSBUILD_FN)
 
 ## Ninja command
-export NINJA_MAKE=DESTDIR=$(destination) ninja -v 
+export NINJA_MAKE=DESTDIR=$(MICB_INSTALL_PLACE) ninja -v
 
 ##
 ##
@@ -169,17 +191,10 @@ export MICB_CMAKE_RUNENV += \
 
 export MICB_CMAKE_COMMON_OPTS=\
 	-D CMAKE_BUILD_TYPE="Release"                                        \
-	-D CMAKE_INSTALL_PREFIX=""                                           \
+	-D CMAKE_INSTALL_PREFIX="$(MICB_CMAKE_PREFIX)"                       \
 	-D CMAKE_CROSSCOMPILING=True                                         \
 	-D CMAKE_C_COMPILER="$(CROSS_COMP_PREFIX)gcc"                        \
 	-D CMAKE_SYSROOT="$(MICB_CMAKE_SYSROOT)"                             \
 	-D CMAKE_C_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS) $(CROSS_LFLAG_EXTRA)"          \
 	-D CMAKE_EXE_LINKER_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)" 
-
-
-##
-## build up process ~  - used inside of each individual Makefile ...
-##
-prepare_prepare:
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 

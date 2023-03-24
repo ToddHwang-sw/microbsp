@@ -1,7 +1,7 @@
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-export X11INSTDIR=$(UIXINSTDIR)/usr/local
+export X11INSTDIR=$(UIXINSTDIR)/local
 
 export MICB_CONFIGURE_OPTS += \
 	--disable-specs \
@@ -22,8 +22,17 @@ export MICB_CONFIGURE_AUTOCONF_CMD=\
 
 export MICB_CONFIGURE_PRG=../../../$(MICBSRC)/$(DIR)/configure
 
-export MICB_CONFIGURE_MAKEOPTS=\
-		V=1 DESTDIR=$(X11INSTDIR)
+## prefix= for meson build...
+export MICB_MESON_PREFIX=
+
+## prefix= for cmake 
+export MICB_CMAKE_PREFIX=
+
+## prefix= for cmake 
+export MICB_CONFIGURE_PREFIX=
+
+## option..
+export MICB_CONFIGURE_MAKEOPTS= V=1 DESTDIR=$(X11INSTDIR)
 
 
 ## Just simply 

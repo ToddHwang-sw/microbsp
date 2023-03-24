@@ -17,8 +17,7 @@ export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 ##
 ## folders to be included
 ##
-export extra_SUBDIR=\
-		lpps
+export extra_SUBDIR=
 
 ##
 ## external disk volume name 

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+##
+## This is called from meson !! 
+## 
+## Example) 
+## 
+## --modversion   :  `/usr/bin/pkg-config --modversion glib-2.0`
+## --cflags       :  `/usr/bin/pkg-config --cflags glib-2.0` 
+## --libs         :  `/usr/bin/pkg-config --libs glib-2.0` 
+##
+
+NATIVE_PKG_CONFIG=/usr/bin/pkg-config
+
+curpwd=$PWD
+
+## objects 
+
+obj=$2
+
+case "$1" in
+	"--modversion")
+		echo `$NATIVE_PKG_CONFIG --modversion $obj`
+		;;
+	"--cflags")
+		##
+		## We do not processing .pc file. This process was already done. 
+		## We can simply print out include CFLAGS file..
+		##
+		echo `cat $curpwd/../flags.incs | xargs -n 1 | sort -u | xargs`
+		;;
+	"--libs")
+		##
+		## We do not processing .pc file. This process was already done. 
+		## We can simply print out library CFLAGS file..
+		##
+		echo `cat $curpwd/../flags.libs | xargs -n 1 | sort -u | xargs`
+		;;
+	*)
+		$NATIVE_PKG_CONFIG $@
+		;;
+esac 
+
+return 0

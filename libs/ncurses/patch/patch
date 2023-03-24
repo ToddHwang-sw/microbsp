@@ -1,6 +1,15 @@
-diff -uNr ncurses-6.3-original/misc/gen-pkgconfig.in ncurses-6.3/misc/gen-pkgconfig.in
---- ncurses-6.3-original/misc/gen-pkgconfig.in	2021-08-07 14:36:33.000000000 -0700
-+++ ncurses-6.3/misc/gen-pkgconfig.in	2022-11-06 19:47:07.730754806 -0800
+diff -uNr ncurses-6.3-orig/misc/gen-pkgconfig.in ncurses-6.3/misc/gen-pkgconfig.in
+--- ncurses-6.3-orig/misc/gen-pkgconfig.in	2023-03-18 22:11:33.649254663 -0700
++++ ncurses-6.3/misc/gen-pkgconfig.in	2023-03-18 22:11:32.785250337 -0700
+@@ -52,7 +52,7 @@
+ suffix=@PC_MODULE_SUFFIX@
+ prefix="@prefix@"
+ exec_prefix="@exec_prefix@"
+-includedir="@includedir@@includesubdir@"
++includedir="@includedir@"
+ libdir="@libdir@"
+
+ RPATH_LIST=@RPATH_LIST@
 @@ -235,7 +235,7 @@
  Version: \${version}
  ${USEURL}URL: https://invisible-island.net/ncurses
@@ -10,9 +19,9 @@ diff -uNr ncurses-6.3-original/misc/gen-pkgconfig.in ncurses-6.3/misc/gen-pkgcon
  Libs.private: @LIBS@ $main_libs
  Cflags: $CFLAGS
  EOF
-diff -uNr ncurses-6.3-original/misc/Makefile.in ncurses-6.3/misc/Makefile.in
---- ncurses-6.3-original/misc/Makefile.in	2021-07-03 12:07:50.000000000 -0700
-+++ ncurses-6.3/misc/Makefile.in	2022-11-06 19:45:40.262435478 -0800
+diff -uNr ncurses-6.3-orig/misc/Makefile.in ncurses-6.3/misc/Makefile.in
+--- ncurses-6.3-orig/misc/Makefile.in	2021-07-03 12:07:50.000000000 -0700
++++ ncurses-6.3/misc/Makefile.in	2023-03-18 22:06:59.747874491 -0700
 @@ -154,7 +154,8 @@
  @MAKE_PC_FILES@				test -f $$name || continue; \
  @MAKE_PC_FILES@				echo installing $$name; \
@@ -33,9 +42,9 @@ diff -uNr ncurses-6.3-original/misc/Makefile.in ncurses-6.3/misc/Makefile.in
  @MAKE_PC_FILES@		;; \
  @MAKE_PC_FILES@	esac'
  
-diff -uNr ncurses-6.3-original/misc/ncurses.pc ncurses-6.3/misc/ncurses.pc
---- ncurses-6.3-original/misc/ncurses.pc	1969-12-31 16:00:00.000000000 -0800
-+++ ncurses-6.3/misc/ncurses.pc	2022-11-06 19:45:40.262435478 -0800
+diff -uNr ncurses-6.3-orig/misc/ncurses.pc ncurses-6.3/misc/ncurses.pc
+--- ncurses-6.3-orig/misc/ncurses.pc	1969-12-31 16:00:00.000000000 -0800
++++ ncurses-6.3/misc/ncurses.pc	2023-03-18 22:06:59.747874491 -0700
 @@ -0,0 +1,14 @@
 +prefix=
 +exec_prefix=${prefix}

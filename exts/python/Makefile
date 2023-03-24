@@ -2,7 +2,7 @@ PYTHONVER=3.10.8
 DIR=Python-$(PYTHONVER)
 LOC=https://www.python.org/ftp/python/$(PYTHONVER)
 FILENM=$(DIR).tar.xz
-SAMPLEENVFILE=bin/python_env.sh
+SAMPLEENVFILE=./usr/bin/python_env.sh
 PYTHON_PKG=python$(PYTHONVER)_package.tar.bz2
 PYTHONTINSTD=__install__
 
@@ -59,7 +59,7 @@ install:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		[ -d $(destination) ] || mkdir -p $(destination);  \
 		cd $(BUILDDIR)/$(DIR)/$(PYTHONTINSTD);             \
-		tar jxvf $(PYTHON_PKG) -C $(destination);          \
+		tar jxvf $(PYTHON_PKG) -C $(MICB_INSTALL_PLACE);   \
 	)
 
 clean:

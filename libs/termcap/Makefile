@@ -8,7 +8,7 @@ endif
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_MAKEOPTS=prefix=${destination}
+MICB_CONFIGURE_MAKEOPTS= prefix=$(MICB_INSTALL_PLACE)
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

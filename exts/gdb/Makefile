@@ -1,7 +1,7 @@
 DIR=gdb-11.2
 LOC=ftp://ftp.gnu.org/pub/gnu/gdb
 
-include $(TOPDIR)/scripts/env.mk
+include $(TOPDIR)/scripts/extenv.mk
 
 CROSS_USER_CFLAGS+=\
 		-DMB_LEN_MAX=16

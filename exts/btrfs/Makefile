@@ -15,8 +15,6 @@ MICB_CONFIGURE_OPTS += \
 	--disable-documentation --enable-programs --enable-largefile --disable-backtrace \
 	--disable-python --disable-libudev --with-convert=ext2 
 
-MICB_CONFIGURE_MAKEOPTS += V=1 
-
 ##
 ## Originally, btrfs searches SSE feature, but it cannot go with AARCH64 platform. 
 ## This file will be deleted. 

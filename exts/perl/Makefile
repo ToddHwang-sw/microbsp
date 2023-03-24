@@ -4,6 +4,10 @@ FILENM=$(DIR).tar.gz
 CROSS_PATCH_LOC=https://github.com/arsv/perl-cross/releases/download/1.1.3
 CROSS_PATCH=perl-cross-1.1.3.tar.gz
 
+##
+## NOTICE scripts/extenv.mk is not used !! 
+##
+
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -f $(MICBSRC)/$(FILENM) ] || wget -P $(MICBSRC) $(LOC)/$(FILENM)
@@ -26,5 +30,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); make DESTDIR=$(destination)/ $@ )
+		cd $(BUILDDIR)/$(DIR); make V=1 DESTDIR=$(destination)/.. $@ )
 

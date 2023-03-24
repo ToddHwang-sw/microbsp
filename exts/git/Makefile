@@ -17,8 +17,6 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_CONFIGURE_MAKEOPTS += "V=1"
-
 MICB_DEPENDS = openssl libssh2 nettle zlib expat iconv libcurl
 
 prepare:
