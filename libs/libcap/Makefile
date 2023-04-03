@@ -7,7 +7,14 @@ MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) BUILD_CC=gcc LD="$(CROSS_COMP_PREFIX)gcc
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(DIR).git )
+	@[ -d $(BUILDDIR)/$(DIR)/.git ] || (              \
+			cd $(BUILDDIR) ;                          \
+			git clone $(LOC)/$(DIR).git ;             \
+			[ ! -f ../../patch/patch ] || (           \
+				cd $(DIR) ;                           \
+				cat ../../../patch/patch | patch -p 1 \
+				)                                     \
+		)
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

@@ -12,33 +12,49 @@
 
 NATIVE_PKG_CONFIG=/usr/bin/pkg-config
 
+## current folder 
 curpwd=$PWD
 
 ## objects 
-
 obj=$2
+
+## check this is found from installed packages...
+found="`find $INSTALLDIR $EXTINSTDIR $UIXINSTDIR -name \"$obj*.pc\"`"
+
+rc=0
 
 case "$1" in
 	"--modversion")
 		echo `$NATIVE_PKG_CONFIG --modversion $obj`
 		;;
 	"--cflags")
-		##
-		## We do not processing .pc file. This process was already done. 
-		## We can simply print out include CFLAGS file..
-		##
-		echo `cat $curpwd/../flags.incs | xargs -n 1 | sort -u | xargs`
+		if [ -z "$found" ]; then 
+			$NATIVE_PKG_CONFIG --cflags $obj
+			rc=$?
+		else
+			##
+			## We do not processing .pc file. This process was already done. 
+			## We can simply print out include CFLAGS file..
+			##
+			echo `cat $curpwd/../flags.incs | xargs -n 1 | sort -u | xargs`
+		fi
 		;;
 	"--libs")
-		##
-		## We do not processing .pc file. This process was already done. 
-		## We can simply print out library CFLAGS file..
-		##
-		echo `cat $curpwd/../flags.libs | xargs -n 1 | sort -u | xargs`
+		if [ -z "$found" ]; then 
+			$NATIVE_PKG_CONFIG --libs $obj
+			rc=$?
+		else
+			##
+			## We do not processing .pc file. This process was already done. 
+			## We can simply print out library CFLAGS file..
+			##
+			echo `cat $curpwd/../flags.libs | xargs -n 1 | sort -u | xargs`
+		fi
 		;;
 	*)
 		$NATIVE_PKG_CONFIG $@
+		rc=$?
 		;;
 esac 
 
-return 0
+return $rc

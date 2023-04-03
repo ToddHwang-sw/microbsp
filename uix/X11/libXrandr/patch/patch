@@ -1,0 +1,23 @@
+diff -uNr libxrandr-master-original/configure.ac libxrandr-master/configure.ac
+--- libxrandr-master-original/configure.ac	2023-03-07 09:49:14.000000000 -0800
++++ libxrandr-master/configure.ac	2023-04-01 16:55:22.824525150 -0700
+@@ -34,7 +34,7 @@
+         [libXrandr])
+ AC_CONFIG_SRCDIR([Makefile.am])
+ AC_CONFIG_HEADERS([config.h])
+-AC_CONFIG_MACRO_DIRS([m4])
++##AC_CONFIG_MACRO_DIRS([m4])
+ 
+ # Initialize Automake
+ AM_INIT_AUTOMAKE([foreign dist-xz])
+@@ -43,8 +43,8 @@
+ LT_INIT
+ 
+ # Require X.Org macros 1.8 or later for MAN_SUBSTS set by XORG_MANPAGE_SECTIONS
+-m4_ifndef([XORG_MACROS_VERSION],
+-          [m4_fatal([must install xorg-macros 1.8 or later before running autoconf/autogen])])
++##m4_ifndef([XORG_MACROS_VERSION],
++##          [m4_fatal([must install xorg-macros 1.8 or later before running autoconf/autogen])])
+ XORG_MACROS_VERSION(1.8)
+ XORG_DEFAULT_OPTIONS
+ XORG_CHECK_MALLOC_ZERO

@@ -47,7 +47,7 @@ install:
 			cd ../target; \
 			[ -h lib/$(LIBSSP_SO) ] || (    \
 				cd lib                ;     \
-				ln -s /lib64/$(LIBSSP_SO).0 $(LIBSSP_SO).0 ;  \
+				ln -s /usr/lib64/$(LIBSSP_SO).0 $(LIBSSP_SO).0 ;  \
 				ln -s $(LIBSSP_SO).0 $(LIBSSP_SO) ) ;         \
 			tar zcvf ../$(GLIBC_TARGET_FILE) * > /dev/null )  \
 	)

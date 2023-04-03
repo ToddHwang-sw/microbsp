@@ -1,8 +1,7 @@
-diff --git a/egl/meson.build b/egl/meson.build
-index b3cbdf3..5e354a5 100644
---- a/egl/meson.build
-+++ b/egl/meson.build
-@@ -11,17 +11,6 @@ wayland_egl = library(
+diff -uNr wayland-orig/egl/meson.build wayland/egl/meson.build
+--- wayland-orig/egl/meson.build	2023-03-25 15:40:00.939683213 -0700
++++ wayland/egl/meson.build	2023-03-25 15:41:02.139900976 -0700
+@@ -11,17 +11,6 @@
  
  executable('wayland-egl-abi-check', 'wayland-egl-abi-check.c')
  
@@ -20,24 +19,22 @@ index b3cbdf3..5e354a5 100644
  install_headers([
  	'wayland-egl.h',
  	'wayland-egl-core.h',
-diff --git a/meson.build b/meson.build
-index e7fc3ee..3802bf5 100644
---- a/meson.build
-+++ b/meson.build
-@@ -2,7 +2,7 @@ project(
+diff -uNr wayland-orig/meson.build wayland/meson.build
+--- wayland-orig/meson.build	2023-03-25 15:40:00.939683213 -0700
++++ wayland/meson.build	2023-03-25 15:41:21.059968115 -0700
+@@ -2,7 +2,7 @@
  	'wayland', 'c',
- 	version: '1.21.90',
+ 	version: '1.21.92',
  	license: 'MIT',
 -	meson_version: '>= 0.56.0',
 +	meson_version: '>= 0.50.0',
  	default_options: [
  		'warning_level=2',
  		'buildtype=debugoptimized',
-diff --git a/src/meson.build b/src/meson.build
-index 266c8b1..2654349 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -78,8 +78,8 @@ if get_option('scanner')
+diff -uNr wayland-orig/src/meson.build wayland/src/meson.build
+--- wayland-orig/src/meson.build	2023-03-25 15:40:00.943683227 -0700
++++ wayland/src/meson.build	2023-03-25 15:42:39.980247330 -0700
+@@ -78,8 +78,8 @@
  endif
  
  if meson.is_cross_build() or not get_option('scanner')
@@ -48,16 +45,15 @@ index 266c8b1..2654349 100644
  else
  	wayland_scanner_for_build = wayland_scanner
  endif
-diff --git a/wayland-scanner.m4 b/wayland-scanner.m4
-index 2b222e8..0c6d8fd 100644
---- a/wayland-scanner.m4
-+++ b/wayland-scanner.m4
+diff -uNr wayland-orig/wayland-scanner.m4 wayland/wayland-scanner.m4
+--- wayland-orig/wayland-scanner.m4	2023-03-25 15:40:00.955683270 -0700
++++ wayland/wayland-scanner.m4	2023-03-25 15:43:17.764380570 -0700
 @@ -1,7 +1,7 @@
  AC_DEFUN([WAYLAND_SCANNER_RULES], [
      PKG_PROG_PKG_CONFIG
  
 -    PKG_CHECK_MODULES([WAYLAND_SCANNER], [wayland-scanner >= 1.14.0])
-+    ## PKG_CHECK_MODULES([WAYLAND_SCANNER], [wayland-scanner >= 1.14.0])
++    ##PKG_CHECK_MODULES([WAYLAND_SCANNER], [wayland-scanner >= 1.14.0])
  
      wayland_scanner=`$PKG_CONFIG --variable=wayland_scanner wayland-scanner`
      AC_SUBST([wayland_scanner])

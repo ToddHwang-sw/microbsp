@@ -1,5 +1,5 @@
 DIR=wayland-protocols
-LOC=-b master https://github.com/wayland-project
+LOC=https://gitlab.freedesktop.org/wayland
 
 include $(TOPDIR)/scripts/uixenv.mk
 

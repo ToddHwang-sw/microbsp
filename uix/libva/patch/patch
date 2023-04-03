@@ -1,0 +1,40 @@
+diff -uNr libva-origin/pkgconfig/libva-drm.pc.in libva/pkgconfig/libva-drm.pc.in
+--- libva-origin/pkgconfig/libva-drm.pc.in	2023-04-02 10:44:36.041232552 -0700
++++ libva/pkgconfig/libva-drm.pc.in	2023-04-02 10:45:13.165401173 -0700
+@@ -8,5 +8,5 @@
+ Description: Userspace Video Acceleration (VA) ${display} interface
+ Requires: libva
+ Version: @VA_API_VERSION@
+-Libs: -L${libdir} -lva-${display}
++Libs: -L${libdir} -lva-drm
+ Cflags: -I${includedir}
+diff -uNr libva-origin/pkgconfig/libva-glx.pc.in libva/pkgconfig/libva-glx.pc.in
+--- libva-origin/pkgconfig/libva-glx.pc.in	2023-04-02 10:44:36.041232552 -0700
++++ libva/pkgconfig/libva-glx.pc.in	2023-04-02 10:45:26.149459135 -0700
+@@ -8,5 +8,5 @@
+ Description: Userspace Video Acceleration (VA) ${display} interface
+ Requires: libva
+ Version: @VA_API_VERSION@
+-Libs: -L${libdir} -lva-${display}
++Libs: -L${libdir} -lva-glx
+ Cflags: -I${includedir}
+diff -uNr libva-origin/pkgconfig/libva-wayland.pc.in libva/pkgconfig/libva-wayland.pc.in
+--- libva-origin/pkgconfig/libva-wayland.pc.in	2023-04-02 10:44:36.041232552 -0700
++++ libva/pkgconfig/libva-wayland.pc.in	2023-04-02 10:45:39.417517842 -0700
+@@ -8,5 +8,5 @@
+ Description: Userspace Video Acceleration (VA) ${display} interface
+ Requires: libva wayland-client
+ Version: @VA_API_VERSION@
+-Libs: -L${libdir} -lva-${display}
++Libs: -L${libdir} -lva-wayland
+ Cflags: -I${includedir}
+diff -uNr libva-origin/pkgconfig/libva-x11.pc.in libva/pkgconfig/libva-x11.pc.in
+--- libva-origin/pkgconfig/libva-x11.pc.in	2023-04-02 10:44:36.041232552 -0700
++++ libva/pkgconfig/libva-x11.pc.in	2023-04-02 10:45:50.397566036 -0700
+@@ -8,5 +8,5 @@
+ Description: Userspace Video Acceleration (VA) ${display} interface
+ Requires: libva
+ Version: @VA_API_VERSION@
+-Libs: -L${libdir} -lva-${display}
++Libs: -L${libdir} -lva-x11
+ Cflags: -I${includedir}

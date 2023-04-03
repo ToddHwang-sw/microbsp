@@ -29,11 +29,9 @@ export extra_SUBDIR=\
 		iptables \
 		dhcp \
 		radvd \
-		npd6 \
 		dnsmasq \
 		i2ctool \
-		gpio \
-		lpps
+		gpio
 
 ##
 ## external disk volume name 

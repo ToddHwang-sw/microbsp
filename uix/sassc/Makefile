@@ -13,7 +13,7 @@ SASS_PATHENV=\
 	SASS_SPEC_PATH=$(SRCPATH)/$(DIR)/$(SDIR) \
 	BUILD=shared 
 
-MICB_CONFIGURE_MAKEOPTS = DESTDIR=$(destination) -C ../../../$(MICBSRC)/$(DIR)
+MICB_CONFIGURE_MAKEOPTS += -C ../../../$(MICBSRC)/$(DIR)
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

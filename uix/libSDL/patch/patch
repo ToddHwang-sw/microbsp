@@ -1,0 +1,12 @@
+diff -uNr SDL-orig/src/video/x11/SDL_x11dyn.h SDL/src/video/x11/SDL_x11dyn.h
+--- SDL-orig/src/video/x11/SDL_x11dyn.h	2023-04-02 11:11:36.922744868 -0700
++++ SDL/src/video/x11/SDL_x11dyn.h	2023-04-02 11:14:11.551065845 -0700
+@@ -52,7 +52,7 @@
+ #if SDL_VIDEO_DRIVER_X11_XDBE
+ #include <X11/extensions/Xdbe.h>
+ #endif
+-#if SDL_VIDEO_DRIVER_X11_XINPUT2
++#if SDL_VIDEO_DRIVER_X11_XINPUT2 || SDL_VIDEO_DRIVER_X11_XFIXES
+ #include <X11/extensions/XInput2.h>
+ #endif
+ #if SDL_VIDEO_DRIVER_X11_XFIXES
