@@ -29,6 +29,6 @@ all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); $(SASS_PATHENV) $(COMP_CMDS) make $(MICB_CONFIGURE_MAKEOPTS) $@ ; \
 		[ "$@" != "install" ] || \
-			cp -rf $(SRCPATH)/$(DIR)/$(LDIR)/src/support/$(LDIR).pc.in $(destination)/usr/local/lib/pkgconfig/$(LDIR).pc  )
+			cp -rf $(SRCPATH)/$(DIR)/$(LDIR)/src/support/$(LDIR).pc.in $(MICB_INSTALL_PLACE)/usr/local/lib/pkgconfig/$(LDIR).pc  )
 
 

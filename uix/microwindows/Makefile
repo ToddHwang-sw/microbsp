@@ -5,7 +5,6 @@ LOC=https://github.com/ghaerr
 ## Sample image file & Image viewer 
 ##
 SAMPLEIMAGE=patch/karma.jpg
-##IMAGEVIEW=src/demos/nanox/nxview
 IMAGEVIEW=src/bin/nxview
 
 include $(TOPDIR)/scripts/uixenv.mk
@@ -41,6 +40,7 @@ install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR)/src ] || ( \
                 cd $(BUILDDIR)/$(DIR)/src ; make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 	@[ "$@" != "install" ] || ( \
-		[ ! -f $(BUILDDIR)/$(DIR)/$(IMAGEVIEW) ] || ( cp $(BUILDDIR)/$(DIR)/$(IMAGEVIEW) $(destination)/root ) ;  \
-		[ ! -f $(SAMPLEIMAGE) ] || ( cp $(SAMPLEIMAGE) $(destination)/root ) )
+		[ -d $(MICB_INSTALL_PLACE)/root ] || mkdir -p $(MICB_INSTALL_PLACE)/root ;                                      \
+		[ ! -f $(BUILDDIR)/$(DIR)/$(IMAGEVIEW) ] || ( cp $(BUILDDIR)/$(DIR)/$(IMAGEVIEW) $(MICB_INSTALL_PLACE)/root ) ; \
+		[ ! -f $(SAMPLEIMAGE) ] || ( cp $(SAMPLEIMAGE) $(MICB_INSTALL_PLACE)/root ) )
 

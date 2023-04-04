@@ -135,7 +135,7 @@ all:
 install:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || (    \
 		cd $(BUILDDIR)/$(DIR) ;          \
-		make $(MULTI) V=1 INSTALL_ROOT=$(destination) $@ )
+		make $(MULTI) V=1 INSTALL_ROOT=$(MICB_INSTALL_PLACE) $@ )
 
 clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || \rm -rf $(BUILDDIR)/$(DIR)
