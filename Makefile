@@ -222,6 +222,7 @@ SUBDIR+=$(APPDIR)
 
 # External disk 
 EXTDIR=\
+	cpu \
 	btrfs \
 	binutils \
 	libbind \
@@ -707,7 +708,7 @@ extdisk_clean:
 ##
 uidisk:
 	@[ "$(UIDISK)" = "" ] || \
-		$(TOPDIR)/scripts/setupdisk.sh build $(UIXINSTDIR) $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)
+		$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)
 
 uidisk_clean:
 	@[ "$(UIDISK)" = "" ] || \
