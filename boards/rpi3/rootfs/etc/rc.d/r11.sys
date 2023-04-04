@@ -22,7 +22,7 @@ APMASK=`$ASK lan/netmask`
 DHCPSTART=`$ASK lan/start`
 DHCPEND=`$ASK lan/end`
 
-IPTABLES=/sbin/iptables
+IPTABLES=/usr/sbin/iptables
 
 DNSMASQD=/var/tmp/dnsmasq
 DNSMASQ_CONF=dnsmasq.conf
@@ -33,7 +33,7 @@ DNSMASQ_LEASE=dnsmasq.leases
 [ -d $DNSMASQD ] || mkdir -p $DNSMASQD
 
 case $1 in
-	"start")
+    "start")
         $IPTABLES -P INPUT ACCEPT
         $IPTABLES -F INPUT
         $IPTABLES -P OUTPUT ACCEPT
@@ -43,26 +43,26 @@ case $1 in
         $IPTABLES -t nat -F
         $IPTABLES -t nat -A POSTROUTING -s $APNET.0/24 -o $WAN -j MASQUERADE
 
-		# IPv4 forwarding enable 
-		echo 1 > /proc/sys/net/ipv4/ip_forward
-		echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+        # IPv4 forwarding enable 
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+        echo 1 > /proc/sys/net/ipv4/ip_dynaddr
 
         # DNSMASQ configuration file ..
-		cat > $DNSMASQD/$DNSMASQ_CONF <<-EOF
-		server=8.8.8.8@$WAN
-		interface=$LAN
-		dhcp-range=$APNET.$DHCPSTART,$APNET.$DHCPEND,12h
-		dhcp-option=option:router,$APIP
-		dhcp-option=option:dns-server,$APIP
-		dhcp-option=option:ntp-server,$APIP
-		dhcp-option=option:netmask,$NETMASK
-		dhcp-leasefile=$DNSMASQD/$DNSMASQ_LEASE
-		dhcp-rapid-commit
-		EOF
+        cat > $DNSMASQD/$DNSMASQ_CONF <<-EOF
+        server=8.8.8.8@$WAN
+        interface=$LAN
+        dhcp-range=$APNET.$DHCPSTART,$APNET.$DHCPEND,12h
+        dhcp-option=option:router,$APIP
+        dhcp-option=option:dns-server,$APIP
+        dhcp-option=option:ntp-server,$APIP
+        dhcp-option=option:netmask,$NETMASK
+        dhcp-leasefile=$DNSMASQD/$DNSMASQ_LEASE
+        dhcp-rapid-commit
+        EOF
 
-        /sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
-		;;
-	"stop")
-		;;
+        /usr/sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
+        ;;
+    "stop")
+        ;;
 esac
 
