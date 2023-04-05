@@ -233,6 +233,13 @@ echo ""
 [ ! -f /bin/python_env.sh ] || source /bin/python_env.sh / 
 
 echo ""
+echo "LPPS "
+echo ""
+LPPSDIR=/var/tmp/lpps
+[ -d $LPPSDIR ] || mkdir -p $LPPSDIR
+/usr/bin/lpps --syslog=1 --daemon=1 $LPPSDIR
+
+echo ""
 echo "WEBUI "
 echo ""
 WEBUIEN=`$ASK http/en`

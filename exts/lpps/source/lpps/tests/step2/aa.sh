@@ -1,10 +1,18 @@
 #!/bin/sh
 
 
+echo "DIR A----------------------------"
 mkdir -p A/1/2/3/4/5/6/7/8/9/0/1/2/3/4/5/6/7/8/9/0
+sleep 15
+echo "DIR B----------------------------"
 mkdir -p B/1/2/3/4/5/6/7/8/9/0/1/2/3/4/5/6/7/8/9/0
+sleep 15
+echo "DIR C----------------------------"
 mkdir -p C/1/2/3/4/5/6/7/8/9/0/1/2/3/4/5/6/7/8/9/0
+sleep 15
+echo "DIR D----------------------------"
 mkdir -p D/1/2/3/4/5/6/7/8/9/0/1/2/3/4/5/6/7/8/9/0
+sleep 15
 echo "CREATE DIR !!!"
 sleep 3
 
@@ -51,7 +59,7 @@ touch D/1/hello
 echo "CREATE FIL !!!"
 sync
 sync
-sleep 3
+sleep 5
 
 \rm -rf A B C D 
 echo "DELETE !!!!"

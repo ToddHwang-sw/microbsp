@@ -200,6 +200,15 @@ echo "RASPBERRY PI SPECIFIC INIT"
 echo ""
 echo 0 > /proc/sys/kernel/hung_task_timeout_secs
 
+
+echo ""
+echo "LPPS "
+echo ""
+LPPSDIR=/var/tmp/lpps
+[ -d $LPPSDIR ] || mkdir -p $LPPSDIR
+/usr/bin/lpps --syslog=1 --daemon=1 $LPPSDIR
+
+
 echo ""
 echo "INIT FILE STARTS ..."
 echo ""

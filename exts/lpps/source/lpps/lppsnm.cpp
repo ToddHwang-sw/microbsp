@@ -18,9 +18,6 @@ int use_syslog = 0;
 
 char mpnt[1024]; // mount point 
 
-/*
- *
- */
 #ifdef ERR
 	#undef ERR
 #endif
@@ -45,30 +42,12 @@ char mpnt[1024]; // mount point
 static int start_watcher( int isdir , char * path );
 static void scan_folder(const char * folder);
 
-#if 0
-//
-//
-// base list structure...
-typedef struct __list {
-        struct __list *next;
-        struct __list *prev;
-}__attribute__((aligned)) list_t;
-
-//
-// bucket_of ..
-#define bucket_of(ptr, type, member) ({                              \
-                        const typeof( ((type *)0)->member ) *__mptr = (ptr); \
-                        (type *)( (char *)__mptr - offsetof(type,member) );})
-
-#endif
-
 typedef struct {
 	pthread_t watcher;
 	char * path;
 	char * cmd;
 	int isdir; /* dir or file */
 	int fd;
-	//list_t l;
 }__attribute__((aligned)) job_t;
 
 /* Queue structuture.. */
@@ -87,77 +66,9 @@ typedef struct {
 
 static trans_queue_t transq; /* new directory queue */
 
-//
-// Job list root 
-//static list_t * job_root = NULL;
-//static pthread_mutex_t job_mut = PTHREAD_MUTEX_INITIALIZER;
-
 // special files 
 #define MAXSPC 8
 static char * spcf[ MAXSPC ] = {NULL,};
-
-//
-//  L I S T   A P I s
-//
-#if 0
-// A D D 
-static inline void list_add(list_t **r, list_t *item)
-{
-	//list_t *eol;
-
-	pthread_mutex_lock( &job_mut );
-
-#if 0
-	if (!(*r) ) {
-		(*r) = item;
-		item->next = item;
-		item->prev = item;
-	} else {
-		eol = (*r)->prev;
-		(*r)->prev = item;
-		item->next = (*r);
-		item->prev = eol;
-		eol->next = item;
-	}
-#endif
-
-	pthread_mutex_unlock( &job_mut );
-}
-
-// D E L 
-static inline void list_del(list_t **r, list_t *item)
-{
-	//list_t *p;
-
-	if (!item)
-		return ;
-
-	pthread_mutex_lock( &job_mut );
-
-#if 0
-	// chaining 
-	p = item->prev;
-	p->next = item->next;
-
-	p = item->next;
-	p->prev = item->prev;
-
-	if (item == (*r))
-		(*r) = item->next; // next ? prev ?
-
-	// orphanage
-	item->prev = 
-	item->next = NULL;
-
-	// exception case 
-	if ( ((*r)->prev == NULL) && ((*r)->next == NULL) )
-		(*r) = NULL;
-#endif
-
-	pthread_mutex_unlock( &job_mut );
-
-}
-#endif
 
 // 
 // Parameters for reference  (public usage)
@@ -406,24 +317,15 @@ static int start_watcher( int isdir , char * path )
 		strcat( job->cmd, spcf[0] );
 		strcat( job->cmd, "?deltadir,wait" );
 	} else {
-		strcat( job->cmd, "?delta,wait" );
+		strcat( job->cmd, "?delta,json,wait" );
 	}
 
 	job->isdir = isdir;
-
-#if 0
-	/* list init .. */
-	job->l.next = 
-	job->l.prev = &(job->l);
-#endif
-
-	//list_add( &job_root, &job->l ); // add to list 
 
 	// create watcher thread 
 	ret = pthread_create( &job->watcher , NULL , watch_func , (void *)job );
 	if (ret) {
 		ERR("pthread_create() - failed\n");
-		//list_del( &job_root, &job->l ); // add to list 
 		free(job->cmd);
 		free(job->path);
 		free(job);
@@ -554,7 +456,6 @@ static void * watch_func( void * param )
 			case '-':
 				// TODO - removing thread ...
 				DBG( "DEL FIL %s/%s \n", job->path, buff+2 /* skipping "-@" */ );
-				//trans_request( &transq, TRANS_DELFILE, (char *)job );
 				break;
 			}
 		} // if( buff[ strlen(buff) - 1 ] == '/' ) 
@@ -562,8 +463,6 @@ static void * watch_func( void * param )
 	DBG("WATCH THREAD %s DONE!!\n", job->cmd);
 
 __exit_watch_func:
-
-	//list_del( &job_root, &job->l ); // delete from list 
 
 	if (buff)
 		free(buff);
@@ -642,8 +541,6 @@ int main(int argc,char *argv[])
 	int ret;
 	pthread_t reader;
 	pthread_t dirman;
-
-	/* lpps_pkt_t msg; */
 
 	memset(mpnt,0,1024); // mount point...
 
