@@ -58,7 +58,7 @@ case $1 in
         dhcp-option=option:netmask,$NETMASK
         dhcp-leasefile=$DNSMASQD/$DNSMASQ_LEASE
         dhcp-rapid-commit
-        EOF
+		EOF
 
         /usr/sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
         ;;

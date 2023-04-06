@@ -43,6 +43,8 @@ case $1 in
 		channel=1
 		ieee80211d=1
 		ieee80211h=1
+		ieee80211n=1
+		require_ht=1
 		wmm_enabled=1
 		country_code=US
 		hw_mode=g
