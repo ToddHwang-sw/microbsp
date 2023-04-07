@@ -40,22 +40,22 @@ case $1 in
 		}
 		EOF
 
-		echo "[WLAN] Running WPA Suppplicant !!"
-		[ -d $PIDDIR ] || mkdir -p $PIDDIR
-		wpa_supplicant -B -D wext -i $STAINT -c $WPACONFDIR/$CFILE -P $PIDDIR/wpa.pid
-		cnt=0
-		while [ $cnt -lt 3 ];  do
-			echo "Waiting Connect .. $cnt"
-			sleep 1
-			cnt=`expr $cnt + 1`
-		done
-
         ## eth0 MAC address
         ETHMAC=`$ASK wan/mac`
         if [ "$ETHMAC" = "random" ]; then
             ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
         fi
         ifconfig $STAINT hw ether $ETHMAC
+
+		echo "[WLAN] Running WPA Suppplicant !!"
+		[ -d $PIDDIR ] || mkdir -p $PIDDIR
+		wpa_supplicant -B -D wext -i $STAINT -c $WPACONFDIR/$CFILE -P $PIDDIR/wpa.pid
+		cnt=0
+		while [ $cnt -lt 8 ];  do
+			echo "Waiting Connect .. $cnt"
+			sleep 1
+			cnt=`expr $cnt + 1`
+		done
 
         NETMODE=`$ASK wan/mode`
         if [ "$NETMODE" = "dhcp" ]; then

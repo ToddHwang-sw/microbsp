@@ -228,6 +228,26 @@ echo ""
 export COLUMNS=160
 export TERM=linux
 
+
+echo ""
+echo "NTP " 
+echo ""
+NTPEN=`$ASK ntp/en`
+if [ "$NTPEN" = "1" ]; then 
+    apptime=("`ntpclient`")
+    skip=1
+    cnt=0
+    CTIME=
+    for d in ${apptime[@]}; do
+        if [ "$cnt" -gt "$skip" ] ; then
+                CTIME=$CTIME"$d "
+        fi
+        cnt=`expr $cnt + 1`
+    done
+    CTIME=`echo $CTIME | xargs`
+    date -R -s "$CTIME"
+fi
+
 sleep 1
 
 cat /etc/motd
