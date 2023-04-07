@@ -5,11 +5,11 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS +=\
 	-D enable-docs=false \
-	-D base-install=$(UIXINSTDIR)
+	-D base-install=$(UIXINSTDIR)/..
 
 CROSS_USER_CFLAGS += -DLONG_BIT=32
 
-MICB_DEPENDS = libxml-2.0 libffi xcb-xkb xcb-x11
+MICB_DEPENDS = libxml-2.0 libffi xcb-xkb xcb-x11 wayland-client wayland-protocols
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)

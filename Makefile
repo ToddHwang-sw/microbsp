@@ -80,34 +80,42 @@ export TOOLCHAIN_ROOT=$(TOPDIR)/gnu/toolchain/$(_ARCH_)
 ## Kernel folder ...
 export KERNDIR=$(BDDIR)/kernel/build/$(_ARCH_)
 
+export USRNODE=/usr
+
 ## final stage dir 
 ##
 STAGEDIR:=$(BDDIR)/_stagedir
-EXTINSTDIR:=$(STAGEDIR)/usr
+EXTINSTDIR:=$(STAGEDIR)/usr$(USRNODE)
 export STAGEDIR
 export EXTINSTDIR
 TEMPFN=/var/tmp/____temporary_Merge_File______
 
 ##
 ## /uix compiled folders...
-UIXINSTDIR:=$(BDDIR)/_uidir
+UIXINSTDIR:=$(BDDIR)/_uidir$(USRNODE)
 export UIXINSTDIR
 
 ##
 ## for processing Library
 export LIBPATHFILE=libs.info
 
+##
+## This is very important list of path to search *.pc file.
+##
+## [INSTALLDIR | EXTINSTDIR | UIXINSTDR ] + [ /lib, /lib64, /usr/lib .. ] =
+##    Final Paths to look for *.pc file
+##
 export LIBSSUBDIR=\
-	/lib /lib64 \
-	/usr/lib  /usr/lib64 \
-	/usr/local/lib  /usr/local/lib64 
+	/lib  /lib64          \
+	/usr/lib   /usr/lib64 \
+	/local/lib  /local/lib64 /local/share
 
 CLEAN_LIBLA=\
-	for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 				\
-		for subdir in $(LIBSSUBDIR) ; do 						\
-    			[ ! -d $$libdir$$subdir ] || 						\
-				find $$libdir$$subdir -name "*.la" -exec \rm -rf {} \; ; 	\
-		done ;										\
+	for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do            \
+		for subdir in $(LIBSSUBDIR) ; do                                    \
+				[ ! -d $$libdir$$subdir ] ||                                \
+				find $$libdir$$subdir -name "*.la" -exec \rm -rf {} \; ;    \
+		done ;                                                              \
 	done
 
 	
@@ -214,6 +222,7 @@ SUBDIR+=$(APPDIR)
 
 # External disk 
 EXTDIR=\
+	cpu \
 	btrfs \
 	binutils \
 	libbind \
@@ -255,7 +264,8 @@ EXTDIR=\
 	jq \
 	texinfo \
 	help2man  \
-	mtdev 
+	mtdev \
+	lpps
 SUBDIR+=$(EXTDIR)
 
 ## required library application folders
@@ -301,6 +311,8 @@ UIDIR=\
 	X11/xorg-libxtst       \
 	X11/xshmfence          \
 	X11/libXxf86vm         \
+	X11/libXrandr          \
+	libseccomp             \
 	systemd                \
 	libevdev               \
 	wayland-host           \
@@ -433,22 +445,21 @@ checkfirst:
 	fi
 	@[ -d $(STAGEDIR) ] || ( \
 		mkdir -p $(STAGEDIR); \
-		mkdir -p $(STAGEDIR)/up    \
-		mkdir -p $(STAGEDIR)/work  \
+		mkdir -p $(STAGEDIR)/up;   \
+		mkdir -p $(STAGEDIR)/work; \
+		mkdir -p $(STAGEDIR)/usr/root; \
+		mkdir -p $(STAGEDIR)/usr/home; \
 		mkdir -p $(EXTINSTDIR); \
-		mkdir -p $(EXTINSTDIR)/root; \
-		mkdir -p $(EXTINSTDIR)/home; \
 	)
 	@[ -d $(UIXINSTDIR) ] || ( \
 		mkdir -p $(UIXINSTDIR); \
-		mkdir -p $(UIXINSTDIR)/root; \
-		mkdir -p $(UIXINSTDIR)/home; \
 		mkdir -p $(UIXINSTDIR)/include; \
 		mkdir -p $(UIXINSTDIR)/lib; \
-		mkdir -p $(UIXINSTDIR)/usr/local/include; \
-		mkdir -p $(UIXINSTDIR)/usr/local/lib; \
-		mkdir -p $(UIXINSTDIR)/usr/local/share; \
-		mkdir -p $(UIXINSTDIR)/usr/local/share/aclocal; \
+		mkdir -p $(UIXINSTDIR)/share ; \
+		mkdir -p $(UIXINSTDIR)/local/include; \
+		mkdir -p $(UIXINSTDIR)/local/lib; \
+		mkdir -p $(UIXINSTDIR)/local/share; \
+		mkdir -p $(UIXINSTDIR)/local/share/aclocal; \
 	)
 	@[ ! -f $(BDDIR)/$(LIBPATHFILE) ] || \rm -rf $(BDDIR)/$(LIBPATHFILE)  
 	@touch $(BDDIR)/$(LIBPATHFILE) 
@@ -697,7 +708,7 @@ extdisk_clean:
 ##
 uidisk:
 	@[ "$(UIDISK)" = "" ] || \
-		$(TOPDIR)/scripts/setupdisk.sh build $(UIXINSTDIR) $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)
+		$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)
 
 uidisk_clean:
 	@[ "$(UIDISK)" = "" ] || \

@@ -7,7 +7,7 @@ MICB_MESON_OPTS +=\
         -D docs=false \
         -D tests=false
 
-MICB_DEPENDS = x11 gl 
+MICB_DEPENDS = x11 gl egl
 
 CROSS_USER_LFLAGS += -lglapi
 

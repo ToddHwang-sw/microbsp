@@ -1,5 +1,5 @@
 DIR=wayland
-LOC=https://github.com/wayland-project
+LOC=https://gitlab.freedesktop.org/wayland
 
 include $(TOPDIR)/scripts/uixenv.mk
 

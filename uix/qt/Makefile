@@ -16,9 +16,9 @@ MICB_DEPENDS=\
 		dbus-1 iconv intl libdrm libxml-2.0		\
 		gio-2.0 gthread-2.0 libzstd  			\
 		sndfile json-c							\
-		freetype2 fontconfig libpng libpng16 libjpeg libpulse 			\
-		x11 xcb xshmfence xcb-present xfixies xcb-dri3 xkbcommon-x11	\
-		pygobject 										\
+		freetype2 fontconfig libpng libpng16 libjpeg libpulse libgcrypt libcrypto \
+		x11 x11-xcb xcb xshmfence xcb-present xfixies xcb-dri2 xcb-dri3 xkbcommon-x11	  \
+		pygobject gbm			     					\
 		libpcre2-posix libpcre2-16 libpcre2-32			\
 		gstreamer-plugins-base-1.0						\
 		gstreamer-gl-wayland-1.0  gstreamer-gl-egl-1.0	\
@@ -135,7 +135,7 @@ all:
 install:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || (    \
 		cd $(BUILDDIR)/$(DIR) ;          \
-		make $(MULTI) V=1 INSTALL_ROOT=$(destination) $@ )
+		make $(MULTI) V=1 INSTALL_ROOT=$(MICB_INSTALL_PLACE) $@ )
 
 clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || \rm -rf $(BUILDDIR)/$(DIR)

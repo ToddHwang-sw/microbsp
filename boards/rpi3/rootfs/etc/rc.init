@@ -87,8 +87,8 @@ echo ""
 XCFGDIR=/config
 [ -d $XCFGDIR ] || mkdir -p $XCFGDIR
 mount /dev/mmcblk0p6 $XCFGDIR
-/sbin/run_xcfgd.sh \
-    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
+/usr/sbin/run_xcfgd.sh \
+    /usr/bin/xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
 echo "Waiting it for getting ready to work.."
 busywait 3
@@ -101,7 +101,7 @@ ASK='xcfgcli.sh get'
 echo ""
 echo "DATE "
 echo ""
-DATEVAL="2022.10.30-12:00:00"
+DATEVAL="2023.03.01-12:00:00"
 date $DATEVAL
 
 
@@ -158,14 +158,14 @@ done
 echo ""
 echo "GIT "
 echo ""
-[ ! -f /bin/git ] || git config --global http.sslVerify false
-[ ! -f /bin/git ] || git config --global core.pager 'more'
+[ ! -f /usr/bin/git ] || git config --global http.sslVerify false
+[ ! -f /usr/bin/git ] || git config --global core.pager 'more'
 
 
 echo ""
 echo "PYTHON  "
 echo ""
-[ ! -f /bin/python_env.sh ] || source /bin/python_env.sh / 
+[ ! -f /usr/bin/python_env.sh ] || source /usr/bin/python_env.sh / 
 
 
 echo ""
@@ -187,13 +187,26 @@ if [ "$SSHEN" = "1" ]; then
     echo ""
     [ -d $SSHDIR ] || mkdir -p $SSHDIR
     [ -f $SSHDIR/id_rsa ] || ( \
-        ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+        /usr/bin/ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
 
     echo ""
     echo "SSH daemon"
     echo ""
-    /sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa
+    /usr/sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa
 fi
+
+echo ""
+echo "RASPBERRY PI SPECIFIC INIT"
+echo ""
+echo 0 > /proc/sys/kernel/hung_task_timeout_secs
+
+
+echo ""
+echo "LPPS "
+echo ""
+LPPSDIR=/var/tmp/lpps
+[ -d $LPPSDIR ] || mkdir -p $LPPSDIR
+/usr/bin/lpps --syslog=1 --daemon=1 $LPPSDIR
 
 
 echo ""
@@ -214,6 +227,26 @@ echo "Linux Terminal ..."
 echo ""
 export COLUMNS=160
 export TERM=linux
+
+
+echo ""
+echo "NTP " 
+echo ""
+NTPEN=`$ASK ntp/en`
+if [ "$NTPEN" = "1" ]; then 
+    apptime=("`ntpclient`")
+    skip=1
+    cnt=0
+    CTIME=
+    for d in ${apptime[@]}; do
+        if [ "$cnt" -gt "$skip" ] ; then
+                CTIME=$CTIME"$d "
+        fi
+        cnt=`expr $cnt + 1`
+    done
+    CTIME=`echo $CTIME | xargs`
+    date -R -s "$CTIME"
+fi
 
 sleep 1
 

@@ -1,0 +1,12 @@
+diff -uNr libcap-orig/libcap/libcap.pc.in libcap/libcap/libcap.pc.in
+--- libcap-orig/libcap/libcap.pc.in	2023-04-02 14:20:49.190891390 -0700
++++ libcap/libcap/libcap.pc.in	2023-04-02 14:22:26.667191742 -0700
+@@ -6,6 +6,6 @@
+ Name: libcap
+ Description: libcap - linux capabilities library
+ Version: @VERSION@
+-Libs: -L${libdir} -lcap
++Libs: -L${prefix}/lib64 -lcap
+ Libs.private: @deps@
+-Cflags: -I${includedir}
++Cflags: -I${prefix}/usr/include

@@ -13,7 +13,7 @@ SASS_PATHENV=\
 	SASS_SPEC_PATH=$(SRCPATH)/$(DIR)/$(SDIR) \
 	BUILD=shared 
 
-MICB_CONFIGURE_MAKEOPTS = DESTDIR=$(destination) -C ../../../$(MICBSRC)/$(DIR)
+MICB_CONFIGURE_MAKEOPTS += -C ../../../$(MICBSRC)/$(DIR)
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -29,6 +29,6 @@ all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); $(SASS_PATHENV) $(COMP_CMDS) make $(MICB_CONFIGURE_MAKEOPTS) $@ ; \
 		[ "$@" != "install" ] || \
-			cp -rf $(SRCPATH)/$(DIR)/$(LDIR)/src/support/$(LDIR).pc.in $(destination)/usr/local/lib/pkgconfig/$(LDIR).pc  )
+			cp -rf $(SRCPATH)/$(DIR)/$(LDIR)/src/support/$(LDIR).pc.in $(MICB_INSTALL_PLACE)/usr/local/lib/pkgconfig/$(LDIR).pc  )
 
 

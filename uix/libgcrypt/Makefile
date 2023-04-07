@@ -10,8 +10,6 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_AUTOCONF_CMD = ./autogen.sh
 
-MICB_CONFIGURE_MAKEOPTS += V=1 
-
 MICB_DEPENDS = gpg-error
 
 prepare:

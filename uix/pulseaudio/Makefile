@@ -11,12 +11,18 @@ MICB_MESON_OPTS+=\
 	 -D bluez5=false  \
 	 -D gstreamer=enabled 
 
-MICB_DEPENDS = dbus-1 sndfile gstreamer-1.0 x11-xcb x11 xcb xau \
-	       libsystemd  gtk4-wayland ncurses libjpeg cairo-script libcap \
-	       liblzma liblz4 libzstd
+MICB_DEPENDS = dbus-1 alsa sndfile x11-xcb x11 xcb xau libudev uuid   \
+		libsystemd  gtk4-wayland ncursesw libjpeg cairo-script libcap \
+		liblzma liblz4 libzstd libgcrypt libcrypto wayland-cursor     \
+		sm xtst \
+		gstreamer-1.0       \
+		gstreamer-base-1.0  \
+		gstreamer-plugins-base-1.0 \
+		gstreamer-audio-1.0        \
+		gstreamer-bad-audio-1.0 
 
 CROSS_USER_LFLAGS += -lcairo-script-interpreter
-CROSS_USER_LFLAGS += -lglapi
+CROSS_USER_LFLAGS += -lglapi 
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)

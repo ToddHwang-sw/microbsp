@@ -6,8 +6,6 @@ include $(TOPDIR)/scripts/extenv.mk
 MICB_CONFIGURE_RUNENV += \
 	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
 
-MICB_CONFIGURE_MAKEOPTS += V=1
-
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

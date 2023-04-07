@@ -25,24 +25,27 @@ DHCPEND=`$ASK lan/end`
 tcpdump_CMD="tcpdump -i $BRINTF"
 tcpdump_PID=`ps -aef | grep -e "$tcpdump_CMD" | head -n 1 | awk '{print $1}'`
 
-case $1 in
-	"start")
-		echo "[WLAN] Building up $APCONFDIR/$CFILE"
-		[ -d $APCONFDIR ] || mkdir -p $APCONFDIR
-		[ -d $PIDDIR ] || mkdir -p $PIDDIR
+add_ap() {
+		APINTF=`$ASK lan/interfaces/wlan$1`
+
+		[ "$APINTF" != "0" ] || return 0
+
+		NAPSSID=$APSSID"-$1"
 
 		##
 		## AP hostapd ...
 		##
-		cat > $APCONFDIR/$CFILE  <<-EOF
+		cat > $APCONFDIR/$1.conf  <<-EOF
 		interface=$APINTF
 		ctrl_interface=$APCONFDIR/ctrl
 		bridge=$BRINTF
 		driver=nl80211
-		ssid=$APSSID
+		ssid=$NAPSSID
 		channel=1
 		ieee80211d=1
 		ieee80211h=1
+		ieee80211n=1
+		require_ht=1
 		wmm_enabled=1
 		country_code=US
 		hw_mode=g
@@ -56,17 +59,35 @@ case $1 in
 		rsn_pairwise=CCMP
 		EOF
 
-		echo "[WLAN] Running AP Suppplicant !!"
-		/usr/local/bin/hostapd -dd -B -P $PIDDIR/hostapd.pid $APCONFDIR/$CFILE &
+		echo "[WLAN] Running AP Suppplicant for $APINTF"
+		/usr/local/bin/hostapd -dd -B -P $PIDDIR/$1.pid $APCONFDIR/$1.conf &
 		sleep 1
 
-		echo "[ETH] Ethernet"
-        ifconfig $ETHINTF up
+		echo "[BRIDGE] Bridge adding $APINTF"
+		brctl addif $BRINTF $APINTF
 
-		echo "[BRIDGE] Bridge creation...."
+		return 1
+}
+
+case $1 in
+	"start")
+		echo "[WLAN] Building up $APCONFDIR/$CFILE"
+		[ -d $APCONFDIR ] || mkdir -p $APCONFDIR
+		[ -d $PIDDIR ] || mkdir -p $PIDDIR
+
+		echo "[ETH] Ethernet and Bridge"
+        ifconfig $ETHINTF up
 		brctl addbr $BRINTF
 		brctl addif $BRINTF $ETHINTF
-		brctl addif $BRINTF $APINTF
+
+		echo "[AP] Adding APs..."
+		cnt=0
+		rc=1
+		while [ $rc == 1 ]; do 
+			add_ap $cnt
+			rc=$?
+			cnt=`expr $cnt + 1`
+		done
 
 		##
 		## IPv4 DHCP server ...

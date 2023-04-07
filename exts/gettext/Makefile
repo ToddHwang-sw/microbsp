@@ -13,12 +13,7 @@ MICB_CONFIGURE_OPTS += \
 	--with-bzip2  \
 	--with-libxml2-prefix=$(INSTALLDIR) \
 	--with-libncurses-prefix=$(INSTALLDIR) \
-	--with-libiconv-prefix=$(EXTINSTDIR) \
-	--without-libtextstyle 
-
-##
-## DESTDIR will screw all up. 
-MICB_CONFIGURE_MAKEOPTS = V=1 prefix=$(destination) 
+	--with-libiconv-prefix=$(EXTINSTDIR)
 
 MICB_DEPENDS = intl zlib liblzma ncurses
 
@@ -28,7 +23,10 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
-all install uninstall clean:
+all clean:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+                cd $(BUILDDIR)/$(DIR); make V=1 $@ )
+
+install uninstall:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
-

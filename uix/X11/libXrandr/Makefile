@@ -3,6 +3,8 @@ LOC=https://gitlab.freedesktop.org/xorg/lib/libxrandr/-/archive/master
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_DEPENDS=x11 xext xrender
+
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )

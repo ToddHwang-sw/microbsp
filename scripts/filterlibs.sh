@@ -22,13 +22,13 @@ single_trace() {
 
 	## applying prefix .... 
 	local adjpath=`echo $3 | sed -e "s/\//\\\\\\\\\//g"`
-	echo $libopt | \
+	echo "-L\${libdir} $libopt" | \
 			sed -e "s/\(\${libdir}\)/$libpath/g" | \
 			sed -e "s/\(\${sharedlibdir}\)/$libpath/g" | \
 			sed -e "s/\(\${prefix}\)/$adjpath/g" | \
 			sed -e "s/\(\${exec_prefix}\)/$adjpath/g" | \
-			sed -e "s/\#.*//g" | sed -e "s/\@.*//g"  
-	
+			sed -e "s/\#.*//g" | sed -e "s/\@.*//g"
+
 	libopt=""
 	libpath=""
 	adjpath=""

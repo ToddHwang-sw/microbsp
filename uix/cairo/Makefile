@@ -6,8 +6,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_CONFIGURE_AUTOCONF_CMD=NOCONFIGURE=0 ./autogen.sh
 
 MICB_DEPENDS = expat gio-2.0 iconv intl json-c lzo2 gl glesv2 libdrm libpng libpng16 \
-	       x11-xcb xcb-dri3 xcb-present xshmfence pixman-1 freetype2 fontconfig libudev \
-	       wayland-client wayland-server blkid
+	       gbm x11-xcb xcb-dri2 xcb-dri3 xcb-present xshmfence pixman-1 freetype2 fontconfig libudev \
+	       wayland-client wayland-server blkid ncursesw
 
 MICB_CONFIGURE_OPTS += \
 	--disable-gtk-doc \

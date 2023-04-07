@@ -3,7 +3,7 @@ LOC=https://www.thekelleys.org.uk/dnsmasq
 
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=
+MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=$(USRNODE)
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)

@@ -1,5 +1,5 @@
-DIR=weston
-LOC=-b master https://github.com/wayland-project
+DIR=wayland-weston
+LOC=-b master https://github.com/freedesktop
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -10,11 +10,12 @@ MICB_MESON_OPTS +=\
 	-D color-management-lcms=false \
 	-D color-management-colord=false \
 	-D pipewire=false \
-	-D base-install=$(UIXINSTDIR)
+	-D base-install=$(UIXINSTDIR)/..
 
 MICB_DEPENDS = libmount bkid iconv intl pam glib-2.0 libffi libdrm expat libxml-2.0 libjpeg  \
 	       libudev libevdev libsystemd dbus-1 liblz4 libcap mtdev \
-	       pango pangocairo pixman-1 gtk4-wayland cairo-script libinput ncurses libzstd
+	       pango pangocairo pixman-1 gtk4-wayland cairo-script libinput ncurses libzstd pam \
+		   wayland-cursor xcursor xcb-xkb libva libva-drm xcb-composite 
 
 CROSS_USER_LFLAGS += -lcairo-script-interpreter
 CROSS_USER_LFLAGS += -lglapi -lrt

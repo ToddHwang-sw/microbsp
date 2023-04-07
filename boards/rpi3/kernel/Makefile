@@ -35,15 +35,18 @@ EXTMDIRS=rtl8192eu
 ## Broadcom WiFi FWs required.... 
 ##
 ##    https://www.linuxquestions.org/questions/slackware-arm-108/raspberry-pi-3-b-wifi-nic-not-found-4175627137/
-      ##
-BRCMFWFN=firmware-brcm80211_20161130-3+rpt3_all.deb
+##
+BRCMFWFN=firmware-brcm80211_20210315-3+rpt7_all.deb
 BRCMFWLOC=https://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/$(BRCMFWFN)
 BRCMFWS=\
 	brcm/bcm43xx-0.fw \
 	brcm/bcm43xx_hdr-0.fw \
 	brcm/brcmfmac43455-sdio.bin \
 	brcm/brcmfmac43455-sdio.txt \
-	brcm/brcmfmac43455-sdio.clm_blob
+	brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt \
+	brcm/brcmfmac43455-sdio.clm_blob \
+	cypress/cyfmac43455-sdio-standard.bin \
+	cypress/cyfmac43455-sdio.clm_blob
 BRCMFWTMPDIR=\
 	/tmp/___rpi_linuxswtree_linux-broadcom_firmware___
 
@@ -126,7 +129,9 @@ dnfw:
 		) ; \
 	done
 	@\rm -rf $(RTLFWTMPDIR)
-	@[ -d $(BDDIR)/rootfs/lib/firmware/brcm ] || mkdir -p $(BDDIR)/rootfs/lib/firmware/brcm 
+	@[ -d $(BDDIR)/rootfs/lib/firmware/brcm ] || ( \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/brcm ; \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/cypress )
 	@for f in $(BRCMFWS); do \
 		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
 			[ -d $(BRCMFWTMPDIR) ] || ( \
@@ -140,9 +145,14 @@ dnfw:
 				tar xvf data.tar.xz ;                    \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
-			cp -rf $(BRCMFWTMPDIR)/lib/firmware/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
+			cp -rf $(BRCMFWTMPDIR)/lib/firmware/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} ; \
 		) ; \
 	done
+	@echo ""
+	@echo "Moving cypress binary file "
+	@echo ""
+	@mv $(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio-standard.bin \
+		$(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio.bin
 	@\rm -rf $(BRCMFWTMPDIR)
 	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
 	@for f in $(CRDAFW0S); do \

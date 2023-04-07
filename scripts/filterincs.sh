@@ -31,7 +31,9 @@ single_trace() {
 
 	## applying prefix .... 
 	adjpath=`echo $2 | sed -e "s/\//\\\\\\\\\//g"`
-	echo $incopt | sed -e "s/\(\${includedir}\)/$incpath/g" | \
+	echo "-I\${includedir} $incopt"  | \
+			sed -e "s/\(\${includedir}\)/$incpath/g" | \
+			sed -e "s/\(\${headersdir}\)/$incpath/g" | \
 			sed -e "s/\(\${libdir}\)/$libpath/g" | \
 			sed -e "s/\(\${prefix}\)/$adjpath/g" | \
 			sed -e "s/\(\${exec_prefix}\)/$adjpath/g"

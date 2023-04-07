@@ -3,8 +3,6 @@ LOC=https://sourceforge.net/projects/freetype/files/freetype2/2.11.0
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-MICB_CONFIGURE_MAKEOPTS += V=1 
-
 MICB_DEPENDS = zlib libpng libpng16
 
 prepare:

@@ -3,7 +3,7 @@ DIR=$(GCC)
 GCCDIR=$(TOPDIR)/gnu/sources/
 GCC_TARGET_FILE=$(DIR)-$(PLATFORM).tar.gz
 
-include $(TOPDIR)/scripts/env.mk
+include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_OPTS += \
 	--disable-compressed-debug-sections \
@@ -42,8 +42,7 @@ install:
 			cd ../target; \
 			tar zcvf ../$(GCC_TARGET_FILE) * > /dev/null ) \
 	)
-	@[ -d $(destination) ] || mkdir -p $(destination)
-	@tar zxvf $(BUILDDIR)/$(GCC_TARGET_FILE) -C $(destination)
+	@tar zxvf $(BUILDDIR)/$(GCC_TARGET_FILE) -C $(MICB_INSTALL_PLACE)
 
 uninstall:
 

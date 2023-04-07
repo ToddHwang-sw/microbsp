@@ -1,7 +1,7 @@
 DIR=help2man-1.48.2
 LOC=https://ftp.gnu.org/gnu/help2man
 
-include $(TOPDIR)/scripts/env.mk
+include $(TOPDIR)/scripts/extenv.mk
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

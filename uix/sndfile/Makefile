@@ -6,8 +6,6 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_CONFIGURE_AUTOCONF_CMD = \
     aclocal ; autoreconf --install -v
 
-MICB_CONFIGURE_MAKEOPTS += V=1
-
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

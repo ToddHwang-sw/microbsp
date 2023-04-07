@@ -1,21 +1,19 @@
-diff --git a/meson.build b/meson.build
-index e7fc3ee..3802bf5 100644
---- a/meson.build
-+++ b/meson.build
-@@ -2,7 +2,7 @@ project(
+diff -uNr wayland-orig/meson.build wayland/meson.build
+--- wayland-orig/meson.build	2023-03-25 15:33:42.282308339 -0700
++++ wayland/meson.build	2023-03-25 15:34:04.558390937 -0700
+@@ -2,7 +2,7 @@
  	'wayland', 'c',
- 	version: '1.21.90',
+ 	version: '1.21.92',
  	license: 'MIT',
 -	meson_version: '>= 0.56.0',
 +	meson_version: '>= 0.50.0',
  	default_options: [
  		'warning_level=2',
  		'buildtype=debugoptimized',
-diff --git a/src/meson.build b/src/meson.build
-index ae8f387..36902c6 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -67,9 +67,9 @@ if get_option('scanner')
+diff -uNr wayland-orig/src/meson.build wayland/src/meson.build
+--- wayland-orig/src/meson.build	2023-03-25 15:33:42.286308355 -0700
++++ wayland/src/meson.build	2023-03-25 15:35:46.718766536 -0700
+@@ -67,9 +67,9 @@
  			'datarootdir=' + join_paths('${prefix}', get_option('datadir')),
  			'pkgdatadir=' + join_paths('${datarootdir}', meson.project_name()),
  			'bindir=' + join_paths('${prefix}', get_option('bindir')),
@@ -25,5 +23,5 @@ index ae8f387..36902c6 100644
 -		filebase: 'wayland-scanner'
 +		filebase: 'wayland-scanner-host'
  	)
- endif
-
+ 
+ 	if meson.can_run_host_binaries()

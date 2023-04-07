@@ -3,8 +3,7 @@ LOC=-b dev https://github.com/facebook
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_MAKEOPTS += \
-	  VERBOSE=1 $(COMP_CMDS) OS=linux
+MICB_CONFIGURE_MAKEOPTS += VERBOSE=1 $(COMP_CMDS) OS=linux prefix=/usr
 
 MICB_DEPENDS = zlib
 

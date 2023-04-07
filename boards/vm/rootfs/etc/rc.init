@@ -72,10 +72,10 @@ echo "sshd:x:1001:root"   >> /etc/group
 echo "root:x:0:0:root:/root:/bin/sh"                       > /etc/passwd
 echo "sshd:x:1001:1001:SSH,,,:/var/tmp/sshd:/sbin/nologin" >> /etc/passwd
 
-## shadow file for password 
+## shadow file for password
 echo "root:*:16897:0:99999:7:::" > /etc/shadow
 
-## password 
+## password
 echo "root:" | chpasswd
 
 ## lo interface - Needed for xcfgd.cfg 
@@ -87,8 +87,8 @@ echo ""
 XCFGDIR=/config
 [ -d $XCFGDIR ] || mkdir -p $XCFGDIR
 mount /dev/sdb $XCFGDIR
-/sbin/run_xcfgd.sh \
-    xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
+/usr/sbin/run_xcfgd.sh \
+    /usr/bin/xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
 echo "Waiting it for getting ready to work.."
 busywait 3
@@ -101,7 +101,7 @@ ASK='xcfgcli.sh get'
 echo ""
 echo "DATE "
 echo ""
-DATEVAL="2022.10.15-12:00:00"
+DATEVAL="2023.03.01-12:00:00"
 date $DATEVAL
 
 
@@ -158,13 +158,8 @@ done
 echo ""
 echo "GIT "
 echo ""
-[ ! -f /bin/git ] || git config --global http.sslVerify false
-[ ! -f /bin/git ] || git config --global core.pager 'more'
-
-echo ""
-echo "PYTHON  "
-echo ""
-[ ! -f /bin/python_env.sh ] || /bin/python_env.sh / 
+[ ! -f /usr/bin/git ] || git config --global http.sslVerify false
+[ ! -f /usr/bin/git ] || git config --global core.pager 'more'
 
 ## eth0 interface
 echo ""
@@ -205,12 +200,12 @@ if [ "$SSHEN" = "1" ]; then
     echo ""
     [ -d $SSHDIR ] || mkdir -p $SSHDIR
     [ -f $SSHDIR/id_rsa ] || ( \
-        ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+        /usr/bin/ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
 
     echo ""
     echo "SSH daemon"
     echo ""
-    /sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa 
+    /usr/sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa 
 fi
 
 echo ""
@@ -231,6 +226,18 @@ if [ "$NTPEN" = "1" ]; then
     CTIME=`echo $CTIME | xargs`
     date -R -s "$CTIME"
 fi
+
+echo ""
+echo "PYTHON  "
+echo ""
+[ ! -f /bin/python_env.sh ] || source /bin/python_env.sh / 
+
+echo ""
+echo "LPPS "
+echo ""
+LPPSDIR=/var/tmp/lpps
+[ -d $LPPSDIR ] || mkdir -p $LPPSDIR
+/usr/bin/lpps --syslog=1 --daemon=1 $LPPSDIR
 
 echo ""
 echo "WEBUI "

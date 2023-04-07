@@ -1,7 +1,7 @@
 DIR=texinfo-6.8
 LOC=https://ftp.gnu.org/gnu/texinfo
 
-include $(TOPDIR)/scripts/env.mk
+include $(TOPDIR)/scripts/extenv.mk
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

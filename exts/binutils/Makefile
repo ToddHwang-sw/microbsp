@@ -31,6 +31,6 @@ install:
 			cd ../target; 						\
 			tar zcvf ../$(BINUTILS_TARGET_FILE) * > /dev/null ) 	\
 	)
-	@tar zxvf $(BUILDDIR)/$(BINUTILS_TARGET_FILE) -C $(destination)
+	@tar zxvf $(BUILDDIR)/$(BINUTILS_TARGET_FILE) -C $(MICB_INSTALL_PLACE)
 
 uninstall:

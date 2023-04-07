@@ -1,7 +1,7 @@
 DIR=rtl8192eu
 LOC=-b 5.11.2.1 https://github.com/clnhub/rtl8192eu-linux.git
 
-RTLMAKE=$(LINUXMAKE) KSRC=$(KERNSRC) CROSS_COMPILE=$(CROSS_COMP_PREFIX) ARCH=arm64 
+RTLMAKE=$(LINUXMAKE) KSRC=$(KERNSRC) CROSS_COMPILE=$(CROSS_COMP_PREFIX) ARCH=arm64 V=1
 KERNVER=`cat $(KERNSRC)/include/config/kernel.release`
 
 prepare:

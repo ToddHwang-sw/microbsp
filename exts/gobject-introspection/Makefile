@@ -9,7 +9,7 @@ MICB_MESON_OPTS += \
 	-D doctool=disabled	\
 	-D build_introspection_data=false
 
-MICB_DEPENDS=gio-2.0 gio-unix-2.0 python-3.8-embed iconv intl ncurses
+MICB_DEPENDS=glib-2.0 gio-2.0 gio-unix-2.0 python-3.10-embed iconv intl ncurses
 
 CROSS_USER_LFLAGS += -lresolv
 
@@ -20,7 +20,7 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 
-all install uninstall clean:
+all clean install uninstall:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )
 

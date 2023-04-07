@@ -1,9 +1,4 @@
 
-##
-## TO BE FIXED !!
-CROSS_USER_CFLAGS += \
-	-I$(UIXINSTDIR)/usr/local/lib/gstreamer-1.0/include
-
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)         ] || mkdir -p $(MICBSRC)
@@ -12,11 +7,5 @@ prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS) $(GSTREAMER_OPTS)
 
-all:
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); DESTDIR=$(destination) ninja -v $@ )
-
-install uninstall clean:
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); DESTDIR=$(destination) ninja -v $@ )
-
+all install uninstall clean:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )

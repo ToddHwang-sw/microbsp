@@ -1,18 +1,16 @@
-DIR=libelf
-LOC=https://github.com/WolfgangSt
+DIR=libseccomp
+LOC=https://github.com/seccomp
 
-include $(TOPDIR)/scripts/env.mk
-
-MICB_DEPENDS = 
+include $(TOPDIR)/scripts/uixenv.mk
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make instroot=$(destination) $(MICB_CONFIGURE_MAKEOPTS) $@ )
-
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 

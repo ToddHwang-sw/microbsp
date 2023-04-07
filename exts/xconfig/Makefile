@@ -1,6 +1,6 @@
 DIR=xconfig
 
-include $(TOPDIR)/scripts/env.mk
+include $(TOPDIR)/scripts/extenv.mk
 
 ## 2 GBytes 
 CROSS_USER_CFLAGS += \

@@ -7,8 +7,6 @@ MICB_CONFIGURE_RUNENV += \
 	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
 	ac_cv_func_memcmp_working=yes
 
-MICB_CONFIGURE_MAKEOPTS += V=1
-
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )

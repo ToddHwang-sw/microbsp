@@ -87,8 +87,8 @@ xcfgd_SOURCES = \
 xcrc_SOURCES = \
 	crc/crc32.cpp
 
-DESTCLI=$(DESTDIR)/sbin/xcfgcli.sh
-DESTCONT=$(DESTDIR)/sbin/run_xcfgd.sh
+DESTCLI=$(DESTDIR)/$(prefix)/sbin/xcfgcli.sh
+DESTCONT=$(DESTDIR)/$(prefix)/sbin/run_xcfgd.sh
 
 install-exec-hook:
 	@(cd $(DESTDIR)$(bindir); ([ -f xcfgd.fact ] || $(LN_S) xcfgd xcfgd.fact))

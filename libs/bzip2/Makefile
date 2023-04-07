@@ -5,9 +5,7 @@ include $(TOPDIR)/scripts/env.mk
 
 CROSS_USER_CFLAGS += -fPIC
 
-MICB_CONFIGURE_MAKEOPTS += \
-	PREFIX=$(destination) \
-	$(COMP_CMDS) \
+MICB_CONFIGURE_MAKEOPTS += PREFIX=$(MICB_INSTALL_PLACE) $(COMP_CMDS)
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

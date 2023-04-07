@@ -3,7 +3,11 @@ LOC=https://gitlab.freedesktop.org/mesa/
 
 include $(TOPDIR)/scripts/extenv.mk
 
-MICB_MESON_OPTS+=-D wrap_mode=nodownload
+MICB_MESON_OPTS+=\
+		-D wrap_mode=nodownload \
+		-D valgrind=disabled    \
+		-D cairo-tests=disabled \
+		-D man-pages=disabled
 
 ifeq ($(_CORE_),x86_64)
 	MICB_DEPENDS = pciaccess

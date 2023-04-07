@@ -12,7 +12,7 @@ export PLATFORM=$(_CORE_)-any-linux-gnu
 export KERNELVER=linux-rpi-5.15.y
 
 ## Linux Kernel compile
-export KERNELMAKE=make ARCH=arm64 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"
+export KERNELMAKE=make ARCH=arm64 V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"
 
 ##
 ## folders to be included
@@ -29,11 +29,9 @@ export extra_SUBDIR=\
 		iptables \
 		dhcp \
 		radvd \
-		npd6 \
 		dnsmasq \
 		i2ctool \
-		gpio \
-		lpps
+		gpio
 
 ##
 ## external disk volume name 
