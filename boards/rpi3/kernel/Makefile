@@ -29,7 +29,9 @@ KERNEL_FILES=vmlinuz System.map config
 ##
 ## External modules
 ##
-EXTMDIRS=rtl8192eu
+EXTMDIRS=\
+		rtl8192eu  \
+		rtl88x2bu
 
 ##
 ## Broadcom WiFi FWs required.... 

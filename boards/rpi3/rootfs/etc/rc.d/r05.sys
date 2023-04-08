@@ -1,19 +1,19 @@
 #!/bin/sh
 
-RTKDRV=8192eu
-
 case $1 in
 	"start")
-		echo "[WLAN] RTK Loading modules..."
-		modprobe $RTKDRV
+		echo "[WLAN] Loading all WLAN modules..."
+		modprobe 8192eu
+		modprobe 88x2bu
 
 		/etc/scripts/wlan_sta.sh start
 		;;
 	"stop")
-		echo "[WLAN] RTK Unloading modules..."
+		echo "[WLAN] Unloading all WLAN modules..."
 		/etc/scripts/wlan_sta.sh stop
 
-		rmmod $RTKDRV
+		rmmod 88x2bu
+		rmmod 8192eu
 		;;
 	"*")
 		;;
