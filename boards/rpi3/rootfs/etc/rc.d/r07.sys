@@ -1,2 +1,22 @@
 #!/bin/sh
 
+ASK='xcfgcli.sh get '
+EN=`$ASK mon/en`
+INTF=`$ASK mon/intf`
+
+case $1 in
+	"start")
+		echo "[WLAN] WiFi Monitoring Start"
+
+		if [ "$EN" != "0" ]; then
+			ifconfig $INTF up
+			iwconfig $INTF mode monitor
+			tcpdump -i $INTF -c 99999 -w /var/tmp/$INTF_mon.pcap &
+		fi
+		;;
+	"stop")
+		echo "[WLAN] WiFi Monitoring Stop"
+		;;
+	"*")
+		;;
+esac
