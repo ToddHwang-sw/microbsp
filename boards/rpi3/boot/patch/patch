@@ -1,0 +1,17 @@
+diff -uNr u-boot-v2022.10-rc3-orig/board/raspberrypi/rpi/rpi.c u-boot-v2022.10-rc3/board/raspberrypi/rpi/rpi.c
+--- u-boot-v2022.10-rc3-orig/board/raspberrypi/rpi/rpi.c	2022-08-22 15:54:48.000000000 -0700
++++ u-boot-v2022.10-rc3/board/raspberrypi/rpi/rpi.c	2023-04-11 12:41:40.225767490 -0700
+@@ -506,11 +506,13 @@
+ 
+ int ft_board_setup(void *blob, struct bd_info *bd)
+ {
++#ifdef CONFIG_DM_VIDEO
+ 	int node;
+ 
+ 	node = fdt_node_offset_by_compatible(blob, -1, "simple-framebuffer");
+ 	if (node < 0)
+ 		fdt_simplefb_add_node(blob);
++#endif
+ 
+ #ifdef CONFIG_EFI_LOADER
+ 	/* Reserve the spin table */

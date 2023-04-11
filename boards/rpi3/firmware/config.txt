@@ -12,12 +12,14 @@ enable_uart=1
 uart_2ndstage=1
 
 ##
+## Default baudrate 
+##
+init_uart_baud=921600
+
+##
 ## Device tree - 
 ##
-## Raspberry PI model 3 B      : bcm2710-rpi-3-b.dts
 ## Raspberry PI model 3 B Plus : bcm2710-rpi-3-b-plus.dts
-##
-## device_tree=broadcom/bcm2710-rpi-3-b.dtb
 ##
 device_tree=broadcom/bcm2710-rpi-3-b-plus.dtb
 
@@ -37,6 +39,10 @@ arm_64bit=1
 start_file=start.elf
 
 ## KERNEL 
-##kernel=u-boot.bin
-kernel=vmlinuz
+kernel=u-boot.bin
+## kernel=vmlinuz
 
+##
+## OVERLAY DTB
+##
+dtoverlay=vc4-kms-v3d

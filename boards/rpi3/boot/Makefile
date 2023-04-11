@@ -1,7 +1,6 @@
 UBOOTVER=v2022.10-rc3
 DIR=u-boot-$(UBOOTVER)
 LOC=https://gitlab.denx.de/u-boot/u-boot/-/archive/$(UBOOTVER)
-DEFCONFIG=rpi_3_b_plus_defconfig
 UBOOTMAKE=make ARCH=arm -C . CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 SRC=source
 
@@ -10,10 +9,11 @@ prepare:
 	@[ -f $(BUILDDIR)/$(DIR)/Makefile ] || (  \
 		[ -f $(SRC)/$(DIR).tar.bz2 ] || wget -P $(SRC) $(LOC)/$(DIR).tar.bz2; \
 		tar jxvf $(SRC)/$(DIR).tar.bz2 -C $(BUILDDIR) > /dev/null ; \
-		[ ! -f patch/patch        ] || (cd $(BUILDDIR); cat ../../patch/patch | patch -p 1) ;    \
-		[ ! -f patch/uboot.config ] || (cp patch/uboot.config $(BUILDDIR)/$(DIR)/.config ) ;  \
+		[ ! -f patch/patch        ] || (cd $(BUILDDIR)/$(DIR); cat ../../../patch/patch | patch -p 1) ;  \
+		[ ! -f patch/uboot.config ] || (cp patch/uboot.config $(BUILDDIR)/$(DIR)/.config) ;          \
+		[ ! -f patch/rpi.h        ] || (cp patch/rpi.h        $(BUILDDIR)/$(DIR)/include/configs) ;  \
+		[ ! -d $(BUILDDIR)/$(DIR) ] || (cd $(BUILDDIR)/$(DIR); $(UBOOTMAKE) olddefconfig) ;          \
 	)
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR)/$(DIR); $(UBOOTMAKE) olddefconfig )
 
 config:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR)/$(DIR); $(UBOOTMAKE) menuconfig )
