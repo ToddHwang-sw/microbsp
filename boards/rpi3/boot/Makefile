@@ -12,6 +12,7 @@ prepare:
 		[ ! -f patch/patch        ] || (cd $(BUILDDIR)/$(DIR); cat ../../../patch/patch | patch -p 1) ;  \
 		[ ! -f patch/uboot.config ] || (cp patch/uboot.config $(BUILDDIR)/$(DIR)/.config) ;          \
 		[ ! -f patch/rpi.h        ] || (cp patch/rpi.h        $(BUILDDIR)/$(DIR)/include/configs) ;  \
+		[ ! -f patch/xconfig.c    ] || (cp patch/xconfig.c    $(BUILDDIR)/$(DIR)/cmd) ;              \
 		[ ! -d $(BUILDDIR)/$(DIR) ] || (cd $(BUILDDIR)/$(DIR); $(UBOOTMAKE) olddefconfig) ;          \
 	)
 

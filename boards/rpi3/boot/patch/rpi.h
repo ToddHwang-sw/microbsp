@@ -114,9 +114,16 @@
 	"fdt_addr_r=0x02600000\0" \
 	"ramdisk_addr_r=0x02700000\0"
 
+#define ENV_XCONFIG \
+	"cfgmaster=xconfig" "\0" \
+	"xcfgparam=0" "\0" \
+	"xcfgval=0" "\0" 
+
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	ENV_DEVICE_SETTINGS \
 	ENV_MEM_LAYOUT_SETTINGS \
+	ENV_XCONFIG \
 	"bootargs=" BOOTARGS "\0" \
 	"loadkernel=mmc dev 0; fatload mmc 0:1 ${kernel_addr_r} vmlinuz; fatload mmc 0:1 ${fdt_addr_r} " FDTFILE "\0" \
 	"jmpkernel=booti ${kernel_addr_r} - ${fdt_addr_r}" "\0" \

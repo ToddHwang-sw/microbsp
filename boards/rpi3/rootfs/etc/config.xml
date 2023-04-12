@@ -73,6 +73,7 @@
         <end>240</end>
 		<netmask>255.255.255.0</netmask>
 		<gateway>100.5.5.1</gateway>
+		<tftpserver>100.5.5.10</tftpserver>
 		<dns>8.8.8.8</dns>
 		<ipv6>
 			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
