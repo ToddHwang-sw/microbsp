@@ -62,7 +62,14 @@
 		"video=HDMI-A-1:640x480M@60D vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  " \
 		"dwg_otg.lpm_enable=0 8250.nr_uarts=1 console=ttyS0,921600 root=/dev/mmcblk0p2 rootfstype=squashfs rootwait"
 
+/* FDT File */
 #define FDTFILE   "broadcom/bcm2710-rpi-3-b-plus.dtb"
+
+/* /dev/mmc0p1 */
+#define BOOTPART  "0:1"
+
+/* /dev/mmc0p6 */
+#define CFGPART   "0:6"
 
 /*
  * Memory layout for where various images get loaded by boot scripts:
@@ -114,19 +121,25 @@
 	"fdt_addr_r=0x02600000\0" \
 	"ramdisk_addr_r=0x02700000\0"
 
+/*
+ * cfg_addr_r <--> cfg_set_addr_r --> all +4Mbytes 
+ */
 #define ENV_XCONFIG \
 	"cfgmaster=xconfig" "\0" \
 	"xcfgparam=0" "\0" \
-	"xcfgval=0" "\0" 
-
+	"xcfgval=0" "\0"   \
+	"cfg_addr_r=0x600000" "\0" \
+	"cfg_set_addr_r=0xc00000" "\0" \
+	"cfgfn=db\0"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	ENV_DEVICE_SETTINGS \
 	ENV_MEM_LAYOUT_SETTINGS \
 	ENV_XCONFIG \
 	"bootargs=" BOOTARGS "\0" \
-	"loadkernel=mmc dev 0; fatload mmc 0:1 ${kernel_addr_r} vmlinuz; fatload mmc 0:1 ${fdt_addr_r} " FDTFILE "\0" \
+	"loadkernel=mmc dev 0; fatload mmc " BOOTPART " ${kernel_addr_r} vmlinuz; fatload mmc 0:1 ${fdt_addr_r} " FDTFILE "\0" \
 	"jmpkernel=booti ${kernel_addr_r} - ${fdt_addr_r}" "\0" \
+	"loadcfg=mmc dev 0; ext4load mmc " CFGPART " ${cfg_addr_r} ${cfgfn}; xconfig probe ${cfg_addr_r}; xconfig info" "\0" \
 	"bootcmd_mbsp=run loadkernel; run jmpkernel" "\0"
 
 #endif

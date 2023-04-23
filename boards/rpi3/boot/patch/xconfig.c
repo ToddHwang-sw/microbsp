@@ -591,14 +591,11 @@ static struct pe_update {
 				{ "serverip"	, "lan/tftpserver" }
 			};
 
-#if 0
 /* defined in cmd/nvedit.c */
 extern int xenv_set(const char *varname, const char *varvalue);
-#endif
 
 static void xml_env_update(struct XmlData *xml, struct pe_update *pe)
 {
-#if 0
 	struct XmlData *p = xml;
 
 	while( p ) {
@@ -608,7 +605,6 @@ static void xml_env_update(struct XmlData *xml, struct pe_update *pe)
 		}
 		p = p->next;
 	}
-#endif
 }
 
 /*
@@ -860,15 +856,6 @@ static int do_xconfig(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 	__xconfig_set_failed:
 		return CMD_RET_SUCCESS; /* ?? */
 	} else
-	if (!strcmp(argv[1],"xset")) {
-		if (argc < 3)
-			return CMD_RET_USAGE;
-
-		env_set("xcfgparam",argv[2]);
-		env_set("xcfgval",argv[3]);
-
-		run_command("run updatexcfg",0);
-	} else
 	if (!strcmp(argv[1],"info")) {
 
 		if (!xcfg.xml) {
@@ -905,8 +892,7 @@ __xconfig_ok:
 U_BOOT_CMD(
 	xconfig, 5, 1, do_xconfig,
 	"XML configuration parser>> ",
-	        "probe [addr]  - probing XML block\n"
-	"xconfig info          - print XML information\n"
+	"probe [addr]          - probing XML block\n"
+	"xconfig info [path]   - print XML information\n"
 	"xconfig set  [addr] [path] [value] - Change the value\n"
-	"xconfig xset [param] [value]       - Setting node value\n"
 );

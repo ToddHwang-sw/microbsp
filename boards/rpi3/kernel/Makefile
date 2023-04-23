@@ -91,17 +91,22 @@ prepare:
 
 all:
 	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \
-		cd $(BUILDDIR)/$(KERNELVER); \
-		$(LINUXMAKE) Image.gz ; \
-		$(LINUXMAKE) modules ; \
-		$(LINUXMAKE) dtbs ;    \
-		$(LINUXMAKE) INSTALL_MOD_PATH=$(destination) modules_install )
+		cd $(BUILDDIR)/$(KERNELVER) && \
+		[ ! -f ../build.log ] || rm ../build.log && \
+		touch ../build.log && \
+		$(LINUXMAKE) Image.gz     2>&1  | tee -a ../build.log  &&    \
+		$(LINUXMAKE) modules      2>&1  | tee -a ../build.log  &&    \
+		$(LINUXMAKE) dtbs         2>&1  | tee -a ../build.log  &&    \
+		$(LINUXMAKE) INSTALL_MOD_PATH=$(destination) modules_install 2>&1  | tee -a ../build.log \
+	)
 	@find $(destination)/lib/ -type f -name "*.ko" -print | \
 		sh $(TOPDIR)/scripts/modules-alias.sh $(destination)/etc/modules.conf
 
 extmod:
 	@for dir in $(EXTMDIRS); do \
-		make KERNSRC=$(KERNDIR)/$(KERNELVER) -C modules/$$dir prepare all install; \
+		[ ! -f modules/$$dir/build.log ] || rm modules/$$dir/build.log && \
+		touch modules/$$dir/build.log  && \
+		make KERNSRC=$(KERNDIR)/$(KERNELVER) -C modules/$$dir prepare all install  2>&1  | tee -a modules/$$dir/build.log ; \
 	done
 
 clean:

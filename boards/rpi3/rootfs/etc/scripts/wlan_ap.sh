@@ -62,6 +62,10 @@ add_ap() {
 		/usr/local/bin/hostapd -dd -B -P $PIDDIR/$1.pid $APCONFDIR/$1.conf &
 		sleep 1
 
+		##
+		## NATBYP setting 
+		[ ! -f /proc/natbyp ] || echo "dev $APINTF lan" > /proc/natbyp
+
 		echo "[BRIDGE] Bridge adding $APINTF"
 		brctl addif $BRINTF $APINTF
 
