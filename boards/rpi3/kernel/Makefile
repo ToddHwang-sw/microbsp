@@ -85,7 +85,8 @@ prepare:
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		unzip source/$(FILENM) -d $(BUILDDIR) ;                    \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
-		cat ../../../patch/patch-$(BRANCH) | patch -p 1;           \
+		cat ../../../patch/patch-$(BRANCH)  | patch -p 1;          \
+		cat ../../../patch/natbyp-$(BRANCH) | patch -p 1;          \
 		cp ../../../patch/$(KERNELVER).config .config;             \
 		make ARCH=arm64 olddefconfig )
 
