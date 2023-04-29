@@ -7,7 +7,8 @@ MICB_MESON_OPTS +=\
         -D introspection=disabled \
         -D install-tests=false 
 
-MICB_DEPENDS = harfbuzz-gobject libmount blkid fribidi freetype2 libdrm cairo-ft cairo
+MICB_DEPENDS = glib-2.0 gobject-2.0 gio-2.0 \
+		harfbuzz-gobject libmount blkid fribidi freetype2 libdrm cairo-ft cairo
 
 CROSS_USER_LFLAGS += -lglapi
 

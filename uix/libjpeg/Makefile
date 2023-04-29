@@ -1,18 +1,25 @@
-DIR=jpegsrc.v9d
-LOC=http://www.ijg.org/files
-REALDIR=jpeg-9d
+DIR=libjpeg-turbo
+LOC=https://github.com/libjpeg-turbo
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CMAKE_COMMON_OPTS +=             \
+	-D ENABLE_SHARED=TRUE             \
+	-D ENABLE_STATIC=TRUE
+
+MICB_DEPENDS = openssl zlib
+
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
-	@[ -d $(MICBSRC)/$(DIR) ] || mv $(MICBSRC)/$(REALDIR) $(MICBSRC)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
-		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
-
-all install uninstall clean:
+		$(MICB_CMAKE_RUNENV) cmake $(MICB_CMAKE_COMMON_OPTS) ../../../$(MICBSRC)/$(DIR) 
+		
+all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) VERBOSE=1 )
 
+install uninstall clean:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) VERBOSE=1 $@ )
 

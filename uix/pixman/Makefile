@@ -1,5 +1,5 @@
 DIR=pixman
-LOC=https://github.com/freedesktop
+LOC=https://gitlab.freedesktop.org/pixman
 
 include $(TOPDIR)/scripts/uixenv.mk
 

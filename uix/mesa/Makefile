@@ -1,33 +1,33 @@
-DIR=mesa-20.0.2
-MESAVER=20.0.2
+DIR=mesa-21.2.2
 LOC=https://mesa.freedesktop.org/archive/
 
 include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_MESON_OPTS +=\
-	-D wrap_mode=nodownload   \
-	-D glx=disabled           \
-	-D platforms=x11,drm,wayland  \
-	-D build-tests=false      \
-	-D llvm=false             \
-	-D libunwind=false        \
-	-D valgrind=false         \
-	-D egl=true               \
-	-D vulkan-drivers=''      \
-	-D dri-drivers=''         \
-	-D gallium-drivers=vc4,v3d,kmsro  \
-	-D glx-direct=true        \
+	-D wrap_mode=nodownload    \
+	-D platforms=x11,wayland   \
+	-D build-tests=false       \
+	-D llvm=disabled           \
+	-D libunwind=disabled      \
+	-D valgrind=disabled       \
+	-D egl=enabled             \
+	-D gles1=enabled           \
+	-D gles2=enabled           \
+	-D opengl=true             \
+	-D glx=disabled            \
+	-D dri3=enabled            \
+	-D vulkan-drivers=broadcom      \
+	-D gallium-drivers=vc4,v3d,kmsro\
+	-D glx-direct=true         \
 	-D base-install=$(UIXINSTDIR)/..
 
 
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-
-MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-server libzstd expat \
+MICB_DEPENDS = libdrm libzstd expat zlib \
 		x11 x11-xcb xcb xcb-glx xcb-present xcb-randr xcb-dri2 xcb-dri3 xcb-shm xcb-xf86dri xcb-xfixies \
 		xext xextproto xshmfence xrandr \
-		wayland-egl wayland-client wayland-protocols 
-
+		wayland-egl wayland-client wayland-protocols wayland-scanner wayland-server
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

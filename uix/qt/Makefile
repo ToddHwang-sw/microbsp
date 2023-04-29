@@ -13,12 +13,11 @@ MULTI=-j$(shell cat /proc/cpuinfo | grep processor | wc -l)
 include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_DEPENDS=\
-		dbus-1 iconv intl libdrm libxml-2.0		\
-		gio-2.0 gthread-2.0 libzstd  			\
-		sndfile json-c							\
-		freetype2 fontconfig libpng libpng16 libjpeg libpulse libgcrypt libcrypto \
-		x11 x11-xcb xcb xshmfence xcb-present xfixies xcb-dri2 xcb-dri3 xkbcommon-x11	  \
-		pygobject gbm			     					\
+		dbus-1 iconv intl libdrm libdrm_freedreno libdrm_nouveau 	\
+		libxml-2.0 gio-2.0 gthread-2.0 libzstd sndfile json-c uuid lzo2	\
+		freetype2 fontconfig libpng libpng16 libturbojpeg libpulse libgcrypt libcrypto 		\
+		x11 x11-xcb xcb xshmfence xcb-xinput xcb-present xfixies xcb-dri2 xcb-dri3 xkbcommon-x11	  	\
+		pygobject gbm sdl2 								\
 		libpcre2-posix libpcre2-16 libpcre2-32			\
 		gstreamer-plugins-base-1.0						\
 		gstreamer-gl-wayland-1.0  gstreamer-gl-egl-1.0	\
@@ -50,7 +49,7 @@ QT_CFLAGS += $(UBUNTU_FLAGS)
 
 python_req:
 	@[ -f /usr/local/bin/python ] || ( \
-		echo "Python executor '/usr/local/bin/python' is required !! " ; exit 1 )
+		echo "Python '/usr/local/bin/python' is required through \"sudo ln -s /usr/bin/python3 /usr/local/bin/python\"." ; exit 1 )
 
 prepare: python_req
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
@@ -101,7 +100,7 @@ prepare: python_req
 		echo "QMAKE_STRIP   = $(STRIP)"                                >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "QMAKE_WAYLAND_SCANNER = $(WAYLAND_BINARIES)/wayland-scanner "  >>  $(QTPLATFORM)/qmake.conf ; \
 		echo ""                                                        >>  $(QTPLATFORM)/qmake.conf ; \
-		echo "PKG_CONFIG_EXECUTABLE = pkg-config "                     >>  $(QTPLATFORM)/qmake.conf ; \
+		echo "PKG_CONFIG_EXECUTABLE = $(MICB_MESON_PKG_CONFIG) "       >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "PKG_CONFIG_LIBDIR = $(MICB_PKGCONFIG_PATH)"              >>  $(QTPLATFORM)/qmake.conf ; \
 		echo ""                                                        >>  $(QTPLATFORM)/qmake.conf ; \
 		echo "EXTRA_LIBDIR        = $(EXTRA_LIBDIRS) "                 >>  $(QTPLATFORM)/qmake.conf ; \
@@ -127,7 +126,7 @@ prepare: python_req
 			-xplatform $(QTPLATFORM)        \
 		)
 
-all:
+all: python_req
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || (    \
 		cd $(BUILDDIR)/$(DIR) ;          \
 		make $(MULTI) V=1 )

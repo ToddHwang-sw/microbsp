@@ -1,35 +1,28 @@
 DIR=cairo
-LOC=https://github.com/freedesktop
+LOC=https://gitlab.freedesktop.org/cairo
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-MICB_CONFIGURE_AUTOCONF_CMD=NOCONFIGURE=0 ./autogen.sh
+MICB_MESON_OPTS +=\
+	-D tests=disabled             \
+	-D gtk_doc=false              \
+	-D dwrite=disabled            \
+	-D xlib=disabled              \
+	-D gtk2-utils=disabled        \
+	-D spectre=disabled
 
-MICB_DEPENDS = expat gio-2.0 iconv intl json-c lzo2 gl glesv2 libdrm libpng libpng16 \
-	       gbm x11-xcb xcb-dri2 xcb-dri3 xcb-present xshmfence pixman-1 freetype2 fontconfig libudev \
-	       wayland-client wayland-server blkid ncursesw
+CROSS_USER_CFLAGS += -DCAIRO_NO_MUTEX=1 -DHAVE_CTIME_R
 
-MICB_CONFIGURE_OPTS += \
-	--disable-gtk-doc \
-	--enable-test-surfaces=no \
-	--disable-full-testing \
-	--enable-glesv2 \
-	--enable-xml \
-	--enable-xlib-xcb \
-	--enable-interpreter
-
-CROSS_USER_CFLAGS += -DCAIRO_NO_MUTEX=1
-CROSS_USER_LFLAGS += -lglapi -lpthread
+MICB_DEPENDS = fontconfig freetype2 libpng libpng16 xcb zlib pixman-1 xcb-shm xcb-render glib-2.0 gobject-2.0 lzo2
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	@$(MICB_CONFIGURE_AUTOCONF)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
-		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
+		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
-
+		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )
 

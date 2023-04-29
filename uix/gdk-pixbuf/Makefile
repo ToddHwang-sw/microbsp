@@ -10,7 +10,7 @@ MICB_MESON_OPTS +=\
 	-D installed_tests=false \
 	-D introspection=disabled 
 
-MICB_DEPENDS = libpng libpng16 libjpeg iconv intl mount blkid gobject-2.0 glib-2.0 gio-2.0
+MICB_DEPENDS = libpng libpng16 libturbojpeg iconv intl mount blkid gobject-2.0 glib-2.0 gio-2.0
 
 CROSS_USER_LFLAGS += -lm
 

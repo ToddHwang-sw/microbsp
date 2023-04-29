@@ -1,5 +1,5 @@
-DIR=wayland-libinput
-LOC=https://github.com/freedesktop/
+DIR=libinput
+LOC=https://gitlab.freedesktop.org/libinput
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -11,7 +11,7 @@ MICB_MESON_OPTS +=\
 
 MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-MICB_DEPENDS = iconv intl glib-2.0 libffi libjpeg cairo-script \
+MICB_DEPENDS = iconv intl glib-2.0 libffi libturbojpeg cairo-script \
 	       		liblzma libxml-2.0 libudev libevdev gl mtdev
 
 CROSS_USER_LFLAGS += -lcairo-script-interpreter

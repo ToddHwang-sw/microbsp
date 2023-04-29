@@ -1,27 +1,26 @@
-diff --git a/meson.build b/meson.build
-index c48945b..bf7cf6c 100644
---- a/meson.build
-+++ b/meson.build
-@@ -158,7 +158,7 @@ with_dri_r200 = dri_drivers.contains('r200')
+diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
+--- mesa-21.2.2-orig/meson.build	2021-09-21 09:54:05.946658600 -0700
++++ mesa-21.2.2/meson.build	2023-04-28 07:00:24.192994573 -0700
+@@ -195,7 +195,7 @@
+ with_dri_r200 = dri_drivers.contains('r200')
  with_dri_nouveau = dri_drivers.contains('nouveau')
- with_dri_swrast = dri_drivers.contains('swrast')
  
--with_dri = dri_drivers.length() != 0 and dri_drivers != ['']
-+with_dri = get_option('dri') or (dri_drivers.length() != 0 and dri_drivers != [''])
+-with_dri = dri_drivers.length() != 0
++with_dri = get_option('dri') or (dri_drivers.length() != 0)
  
  gallium_drivers = get_option('gallium-drivers')
  if gallium_drivers.contains('auto')
-@@ -171,8 +171,7 @@ if gallium_drivers.contains('auto')
+@@ -208,8 +208,7 @@
        ]
      elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
        gallium_drivers = [
--        'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
+-        'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau',
 -        'tegra', 'virgl', 'lima', 'panfrost', 'swrast'
-+        'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'swrast' 
++        'kmsro', 'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'swrast'
        ]
-     else
-       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
-@@ -1550,22 +1549,22 @@ endif
+     elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
+       gallium_drivers = [
+@@ -1897,21 +1896,21 @@
  # TODO: symbol mangling
  
  if with_platform_wayland
@@ -35,46 +34,47 @@ index c48945b..bf7cf6c 100644
      wl_scanner_arg = 'code'
    endif
 -  dep_wl_protocols = dependency('wayland-protocols', version : '>= 1.8')
--  dep_wayland_client = dependency('wayland-client', version : '>=1.11')
--  dep_wayland_server = dependency('wayland-server', version : '>=1.11')
+-  dep_wayland_client = dependency('wayland-client', version : '>=1.18')
+-  dep_wayland_server = dependency('wayland-server', version : '>=1.18')
 +  dep_wl_protocols = dependency('wayland-protocols')
 +  dep_wayland_client = dependency('wayland-client')
 +  dep_wayland_server = dependency('wayland-server')
    if with_egl
 -    dep_wayland_egl = dependency('wayland-egl-backend', version : '>= 3')
 +    dep_wayland_egl = dependency('wayland-egl-backend')
-     dep_wayland_egl_headers = declare_dependency(
-       compile_args : run_command(prog_pkgconfig, ['wayland-egl-backend', '--cflags']).stdout().split())
+     dep_wayland_egl_headers = dep_wayland_egl.partial_dependency(compile_args : true)
    endif
 -  wayland_dmabuf_xml = join_paths(
 +  wayland_dmabuf_xml = get_option('base-install') + join_paths(
      dep_wl_protocols.get_pkgconfig_variable('pkgdatadir'), 'unstable',
      'linux-dmabuf', 'linux-dmabuf-unstable-v1.xml'
    )
-diff --git a/meson_options.txt b/meson_options.txt
-index 1a2dd8e..7b6fa9a 100644
---- a/meson_options.txt
-+++ b/meson_options.txt
-@@ -28,6 +28,12 @@ option(
-   ],
-   description : 'window systems to support. If this is set to `auto`, all platforms applicable will be enabled.'
+diff -uNr mesa-21.2.2-orig/meson_options.txt mesa-21.2.2/meson_options.txt
+--- mesa-21.2.2-orig/meson_options.txt	2021-09-21 09:54:05.946658600 -0700
++++ mesa-21.2.2/meson_options.txt	2023-04-28 07:00:24.196994595 -0700
+@@ -45,6 +45,13 @@
  )
-+option(
+ 
+ option(
 +  'dri',
 +  type : 'boolean',
 +  value : false,
 +  description : 'enable support for dri'
 +)
- option(
++
++option(
    'dri3',
    type : 'combo',
-@@ -386,3 +392,9 @@ option(
    value : 'auto',
-   description : 'Use ZSTD instead of ZLIB in some cases.'
+@@ -524,3 +531,11 @@
+   value : '',
+   description : 'Enable a custom shader replacement mechanism. Note that enabling this option requires adding/generating a shader_replacement.h file that can be included (see shaderapi.c).'
  )
++
 +option(
 +  'base-install',
 +  type : 'string',
 +  value : '',
 +  description : 'Location of system installation'
 +)
++
