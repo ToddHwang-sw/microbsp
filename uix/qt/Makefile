@@ -49,7 +49,9 @@ QT_CFLAGS += $(UBUNTU_FLAGS)
 
 python_req:
 	@[ -f /usr/local/bin/python ] || ( \
-		echo "Python '/usr/local/bin/python' is required through \"sudo ln -s /usr/bin/python3 /usr/local/bin/python\"." ; exit 1 )
+		echo "Python '/usr/local/bin/python' is required through \"sudo ln -s /usr/bin/python3 /usr/local/bin/python\"." ; \
+		echo "This python tool is essential to QT compilayion." ; \
+		exit 1 )
 
 prepare: python_req
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
