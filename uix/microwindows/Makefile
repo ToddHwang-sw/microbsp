@@ -9,7 +9,7 @@ IMAGEVIEW=src/bin/nxview
 
 include $(TOPDIR)/scripts/uixenv.mk
 
-MICB_DEPENDS = freetype2 libpng libpng16 libturbojpeg zlib
+MICB_DEPENDS = freetype2 libpng libpng16 libjpeg zlib
 
 MICB_CONFIGURE_MAKEOPTS += \
 	VERBOSE=Y \

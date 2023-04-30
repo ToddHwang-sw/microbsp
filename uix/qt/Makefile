@@ -13,9 +13,9 @@ MULTI=-j$(shell cat /proc/cpuinfo | grep processor | wc -l)
 include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_DEPENDS=\
-		dbus-1 iconv intl libdrm libdrm_freedreno libdrm_nouveau 	\
-		libxml-2.0 gio-2.0 gthread-2.0 libzstd sndfile json-c uuid lzo2	\
-		freetype2 fontconfig libpng libpng16 libturbojpeg libpulse libgcrypt libcrypto 		\
+		dbus-1 iconv intl libdrm libdrm_freedreno libdrm_nouveau 	                    \
+		libxml-2.0 gio-2.0 gthread-2.0 libzstd sndfile json-c uuid lzo2	                \
+		freetype2 fontconfig libpng libpng16 libjpeg libpulse libgcrypt libcrypto 		\
 		x11 x11-xcb xcb xshmfence xcb-xinput xcb-present xfixies xcb-dri2 xcb-dri3 xkbcommon-x11	  	\
 		pygobject gbm sdl2 								\
 		libpcre2-posix libpcre2-16 libpcre2-32			\

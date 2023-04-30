@@ -13,7 +13,7 @@ GSTREAMER_OPTS += \
 	-D xshm=disabled \
 	-D base-install=$(UIXINSTDIR)/.. 
 
-MICB_DEPENDS = intl iconv gio-unix-2.0 x11 alsa libturbojpeg \
+MICB_DEPENDS = intl iconv gio-unix-2.0 x11 alsa libjpeg \
 	       graphene-1.0 pango pangocairo egl            \
 		   xcb x11-xcb xshmfence xcb-shm                \
 		   wayland-egl wayland-cursor wayland-client    \
