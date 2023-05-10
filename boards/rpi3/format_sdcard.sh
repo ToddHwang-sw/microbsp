@@ -42,14 +42,17 @@ if [ "$whoami" != "root" ]; then
        exit
 fi
 
+if [ $# -lt  1 ]; then
+	echo "disk device ? sde/sdd??? "
+	exit 1
+fi
+
 ## which drive....
 DRIVE=$1
-[ "$DRIVE" != "" ] || DRIVE=sdc
 
-check=`lsblk | grep $DRIVE | wc -l`
-if [ "$check" = "0" ]; then
-	echo "/dev/$DRIVE is not found !! "
-	exit
+if [ `mount | grep /dev/$DRIVE | wc -l` -eq 0 ]; then
+	echo "disk /dev/$DRIVE was not mounted."
+	exit 1
 fi
 
 read -p "Please enter 'yes' if you want to keep going on with /dev/$DRIVE disk : " answer

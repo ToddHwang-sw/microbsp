@@ -1856,7 +1856,7 @@ wlanap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 |  tap0     |  MBSP VM     | Virtual ethernet interface created by MBSP VM |
 |  br0      |  Laptop      | Bridge interface to tie up network interfaces |
 |  wlan0    |  Realtek Dongle | 802.11a WLAN Client interface           |
-|  wlanap0  |  Realtek Dongle | 802.11a WLAN AP interface               |
+|  wlanap0  |  Realtek Dongle | 802.11g/n WLAN AP interface             |
 |  wlan240  |  Laptop(PCI) | 802.11g WLAN AP interface - Atheros PCI card |
 
 
