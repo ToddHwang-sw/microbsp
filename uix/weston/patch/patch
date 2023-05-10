@@ -1,57 +1,47 @@
-diff -uNr wayland-weston-original/libweston/meson.build wayland-weston/libweston/meson.build
---- wayland-weston-original/libweston/meson.build	2023-04-02 08:44:06.807545124 -0700
-+++ wayland-weston/libweston/meson.build	2023-04-02 08:45:31.447693815 -0700
-@@ -226,11 +226,7 @@
+diff -uNr weston-original/meson.build weston/meson.build
+--- weston-original/meson.build	2023-04-28 15:21:42.034276469 -0700
++++ weston/meson.build	2023-04-28 15:22:10.050460789 -0700
+@@ -6,7 +6,7 @@
+ 		'c_std=gnu99',
+ 		'b_lundef=true',
+ 	],
+-	meson_version: '>= 0.63.0',
++	meson_version: '>= 0.13.0',
+ 	license: 'MIT/Expat',
  )
  
- if get_option('weston-launch')
--	dep_pam = cc.find_library('pam')
--
--	if not cc.has_function('pam_open_session', dependencies: dep_pam)
--		error('pam_open_session not found for weston-launch')
--	endif
-+	dep_pam = dependency('pam')
- 
- 	executable(
- 		'weston-launch',
-diff -uNr wayland-weston-original/meson.build wayland-weston/meson.build
---- wayland-weston-original/meson.build	2023-04-02 08:44:06.815545138 -0700
-+++ wayland-weston/meson.build	2023-04-02 08:44:50.127621016 -0700
-@@ -165,7 +165,7 @@
+@@ -163,7 +163,6 @@
  subdir('fullscreen-shell')
  subdir('ivi-shell')
  subdir('kiosk-shell')
 -subdir('remoting')
-+## subdir('remoting')
  subdir('pipewire')
  subdir('clients')
  subdir('wcap')
-diff -uNr wayland-weston-original/meson_options.txt wayland-weston/meson_options.txt
---- wayland-weston-original/meson_options.txt	2023-04-02 08:44:06.815545138 -0700
-+++ wayland-weston/meson_options.txt	2023-04-02 08:44:50.127621016 -0700
-@@ -235,3 +235,10 @@
+diff -uNr weston-original/meson_options.txt weston/meson_options.txt
+--- weston-original/meson_options.txt	2023-04-28 15:21:42.034276469 -0700
++++ weston/meson_options.txt	2023-04-28 15:20:31.757807943 -0700
+@@ -234,3 +234,7 @@
  	value: false,
  	description: 'Generate documentation'
  )
-+
-+##Todd
 +option('base-install',
 +    type : 'string',
 +    value : '',
 +    description : 'Location of system installation')
-+
-diff -uNr wayland-weston-original/protocol/meson.build wayland-weston/protocol/meson.build
---- wayland-weston-original/protocol/meson.build	2023-04-02 08:44:06.815545138 -0700
-+++ wayland-weston/protocol/meson.build	2023-04-02 08:44:50.127621016 -0700
-@@ -1,8 +1,8 @@
+diff -uNr weston-original/protocol/meson.build weston/protocol/meson.build
+--- weston-original/protocol/meson.build	2023-04-28 15:21:42.034276469 -0700
++++ weston/protocol/meson.build	2023-04-28 15:20:31.757807943 -0700
+@@ -1,9 +1,9 @@
 -dep_scanner = dependency('wayland-scanner', native: true)
--prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
+-prog_scanner = find_program(dep_scanner.get_variable(pkgconfig: 'wayland_scanner'))
 +dep_scanner = dependency('wayland-scanner-host')
-+prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner_host'))
++prog_scanner = find_program(dep_scanner.get_variable(pkgconfig: 'wayland_scanner_host'))
  
- dep_wp = dependency('wayland-protocols', version: '>= 1.18')
--dir_wp_base = dep_wp.get_pkgconfig_variable('pkgdatadir')
-+dir_wp_base = get_option('base-install') + dep_wp.get_pkgconfig_variable('pkgdatadir')
+ dep_wp = dependency('wayland-protocols', version: '>= 1.31',
+ 	fallback: ['wayland-protocols', 'wayland_protocols'])
+-dir_wp_base = dep_wp.get_variable(pkgconfig: 'pkgdatadir', internal: 'pkgdatadir')
++dir_wp_base = get_option('base-install') + dep_wp.get_variable(pkgconfig: 'pkgdatadir', internal: 'pkgdatadir')
  
  install_data(
  	[

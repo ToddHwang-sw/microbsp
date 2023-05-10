@@ -12,9 +12,11 @@ MICB_MESON_OPTS+=\
 	 -D gstreamer=enabled 
 
 MICB_DEPENDS = dbus-1 alsa sndfile x11-xcb x11 xcb xau libudev uuid   \
-		libsystemd  gtk4-wayland ncursesw libjpeg cairo-script libcap \
+		libsystemd ncursesw libjpeg cairo-script libcap               \
 		liblzma liblz4 libzstd libgcrypt libcrypto wayland-cursor     \
-		sm xtst \
+		json-c egl wayland-egl lzo2 formw menuw panelw sm xtst  \
+		wayland-server xcb-dri2 xcb-dri3 xcb-present xcb-xfixes \
+		gbm xcb-sync xshmfence \
 		gstreamer-1.0       \
 		gstreamer-base-1.0  \
 		gstreamer-plugins-base-1.0 \

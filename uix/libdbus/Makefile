@@ -1,5 +1,5 @@
 DIR=dbus
-LOC=-b dbus-1.12 https://github.com/freedesktop
+LOC=-b dbus-1.12 https://gitlab.freedesktop.org/dbus
 
 include $(TOPDIR)/scripts/uixenv.mk
 

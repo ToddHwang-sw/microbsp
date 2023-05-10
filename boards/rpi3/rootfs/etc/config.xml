@@ -52,13 +52,17 @@
     <ntp>
         <en>1</en>
     </ntp>
+	<mon>
+        <en>0</en>          <!-- wifi monitor -->
+        <intf>wlan1</intf>
+	</mon>
 	<lan>
         <mode>dhcp</mode>          <!-- static, dhcp, none -->
         <mac>random</mac>
         <name>br0</name>
         <interfaces>
-            <wlan0>wlan1</wlan0>
-            <wlan1>wlan2</wlan1>
+            <wlan0>wlan2</wlan0>
+            <wlan1>wlan1</wlan1>
             <wlan2>0</wlan2>
             <wlan3>0</wlan3>
             <wlan4>0</wlan4>
@@ -69,6 +73,7 @@
         <end>240</end>
 		<netmask>255.255.255.0</netmask>
 		<gateway>100.5.5.1</gateway>
+		<tftpserver>100.5.5.10</tftpserver>
 		<dns>8.8.8.8</dns>
 		<ipv6>
 			<mode>dhcp</mode>     <!-- IPv6 DHCP -->

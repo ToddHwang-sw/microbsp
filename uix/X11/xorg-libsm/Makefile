@@ -1,13 +1,14 @@
-DIR=xorg-libSM
-LOC=https://github.com/freedesktop
+DIR=libsm
+LOC=https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
-MICB_DEPENDS = uuid ice
+MICB_DEPENDS = uuid ice xproto xtrans
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)/m4  ] || ( mkdir -p $(MICBSRC)/$(DIR)/m4 )
 	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

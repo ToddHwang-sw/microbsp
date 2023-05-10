@@ -1,5 +1,5 @@
-DIR=wayland-libinput
-LOC=https://github.com/freedesktop/
+DIR=libinput
+LOC=https://gitlab.freedesktop.org/libinput
 
 include $(TOPDIR)/scripts/uixenv.mk
 

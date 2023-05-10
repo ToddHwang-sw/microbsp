@@ -1,5 +1,5 @@
 DIR=xorg-sgml-doctools
-LOC=https://github.com/freedesktop
+LOC=https://gitlab.freedesktop.org/xorg/doc
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 

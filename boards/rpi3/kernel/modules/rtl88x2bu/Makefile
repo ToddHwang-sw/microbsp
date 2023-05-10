@@ -1,14 +1,14 @@
-DIR=rtl8192eu
-LOC=-b 5.11.2.1 https://github.com/clnhub/rtl8192eu-linux.git
+DIR=88x2bu-20210702
+LOC=https://github.com/morrownr
 
 RTLMAKE=$(LINUXMAKE) KSRC=$(KERNSRC) CROSS_COMPILE=$(CROSS_COMP_PREFIX) ARCH=arm64 V=1
 KERNVER=`cat $(KERNSRC)/include/config/kernel.release`
 
 prepare:
 	@[ -d $(DIR) ] || ( \
-		git clone $(LOC) $(DIR); \
+		git clone $(LOC)/$(DIR); \
 		cd $(DIR); \
-			[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
+		[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
 
 all clean:
 	@[ ! -d $(DIR) ] || \
@@ -24,4 +24,3 @@ install:
 			modules_install ;  \
 		find $(INSTALLDIR)/lib/ -type f -name "*.ko" -print | \
 			sh $(TOPDIR)/scripts/modules-alias.sh $(INSTALLDIR)/etc/modules.conf )
-

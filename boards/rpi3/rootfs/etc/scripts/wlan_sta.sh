@@ -57,6 +57,10 @@ case $1 in
 			cnt=`expr $cnt + 1`
 		done
 
+		##
+		## NATBYP setting 
+		[ ! -f /proc/natbyp ] || echo "dev $STAINT wan" > /proc/natbyp
+
         NETMODE=`$ASK wan/mode`
         if [ "$NETMODE" = "dhcp" ]; then
             echo "IPv4 DHCP ..."

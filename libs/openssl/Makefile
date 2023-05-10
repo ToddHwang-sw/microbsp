@@ -1,5 +1,5 @@
-DIR=openssl-1.1.1c
-LOC=https://www.openssl.org/source/
+DIR=openssl
+LOC=-b openssl-3.1 https://github.com/openssl
 
 include $(TOPDIR)/scripts/env.mk
 
@@ -9,7 +9,7 @@ MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS)
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

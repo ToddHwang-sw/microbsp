@@ -27,7 +27,7 @@ MICB_CONFIGURE_OPTS = \
 	--extra-cflags="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 	--extra-ldflags="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAGS_EXTRA)" \
 	--cross-prefix=$(CROSS_COMP_PREFIX) \
-	--pkg-config=/usr/bin/pkg-config \
+	--pkg-config=$(MICB_MESON_PKG_CONFIG) \
 	--enable-gpl \
 	--enable-nonfree
 

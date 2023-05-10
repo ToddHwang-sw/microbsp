@@ -94,6 +94,11 @@ echo "Waiting it for getting ready to work.."
 busywait 3
 
 ##
+## NAT Bypass 
+##
+[ ! -f /proc/natbyp ] || echo en > /proc/natbyp
+
+##
 ## Macros needed to access configuration
 ##
 ASK='xcfgcli.sh get'

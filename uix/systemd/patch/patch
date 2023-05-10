@@ -1,31 +1,37 @@
-diff -uNr systemd-stable/meson.build systemd-stable-XX/meson.build
---- systemd-stable/meson.build	2023-04-02 07:15:23.872571999 -0700
-+++ systemd-stable-XX/meson.build	2023-04-02 07:13:39.012423761 -0700
-@@ -518,8 +518,8 @@
+diff -uNr systemd-stable-original/meson.build systemd-stable/meson.build
+--- systemd-stable-original/meson.build	2023-04-23 20:15:28.112340743 -0700
++++ systemd-stable/meson.build	2023-04-23 20:17:33.254694312 -0700
+@@ -518,11 +518,12 @@
          conf.set10('HAVE_' + decl.underscorify().to_upper(), have)
  endforeach
  
 -conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
 -conf.set10('WANT_LINUX_FS_H', want_linux_fs_h)
-+conf.set10('WANT_LINUX_STAT_H', true )
-+conf.set10('WANT_LINUX_FS_H', false )
++## Todd
++conf.set10('WANT_LINUX_STAT_H', true)
++conf.set10('WANT_LINUX_FS_H', false)
  
  foreach ident : ['secure_getenv', '__secure_getenv']
-         conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
-@@ -582,6 +582,12 @@
+-        conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
++        conf.set10('HAVE_' + ident.to_upper(), true)
+ endforeach
+ 
+ foreach ident : [
+@@ -582,6 +583,13 @@
          conf.set10('HAVE_' + ident[0].to_upper(), have)
  endforeach
  
-+## Todd 
-+conf.set10('HAVE_STATX', true )
-+conf.set10('HAVE_STRUCT_MOUNT_ATTR', true )
-+conf.set10('HAVE_STRUCT_STATX', true )
-+
++## Todd
++conf.set10('HAVE_STATX', true)
++conf.set10('HAVE_STRUCT_MOUNT_ATTR', true)
++conf.set10('HAVE_STRUCT_STATX', true)
++conf.set10('HAVE_REALLOCARRAY', true)
++conf.set10('HAVE_NAME_TO_HANDLE_AT', true)
 +
  if cc.has_function('getrandom', prefix : '''#include <sys/random.h>''', args : '-D_GNU_SOURCE')
          conf.set10('USE_SYS_RANDOM_H', true)
          conf.set10('HAVE_GETRANDOM', true)
-@@ -666,7 +672,7 @@
+@@ -666,7 +674,7 @@
  
  ############################################################
  
@@ -34,7 +40,7 @@ diff -uNr systemd-stable/meson.build systemd-stable-XX/meson.build
          error('python3 jinja2 missing')
  endif
  
-@@ -1075,9 +1081,7 @@
+@@ -1075,9 +1083,7 @@
  
  want_seccomp = get_option('seccomp')
  if want_seccomp != 'false' and not skip_deps
@@ -45,7 +51,7 @@ diff -uNr systemd-stable/meson.build systemd-stable-XX/meson.build
          have = libseccomp.found()
  else
          have = false
-@@ -1459,7 +1463,7 @@
+@@ -1459,7 +1465,7 @@
          have = false
          libxkbcommon = []
  endif
@@ -54,121 +60,4 @@ diff -uNr systemd-stable/meson.build systemd-stable-XX/meson.build
  
  want_pcre2 = get_option('pcre2')
  if want_pcre2 != 'false'
-diff: systemd-stable/test/testdata: recursive directory loop
-diff -uNr systemd-stable/tools/catalog-report.py systemd-stable-XX/tools/catalog-report.py
---- systemd-stable/tools/catalog-report.py	2023-04-02 07:15:24.392572738 -0700
-+++ systemd-stable-XX/tools/catalog-report.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: MIT
- #
- # This file is distributed under the MIT license, see below.
-diff -uNr systemd-stable/tools/chromiumos/gen_autosuspend_rules.py systemd-stable-XX/tools/chromiumos/gen_autosuspend_rules.py
---- systemd-stable/tools/chromiumos/gen_autosuspend_rules.py	2023-04-02 07:15:24.392572738 -0700
-+++ systemd-stable-XX/tools/chromiumos/gen_autosuspend_rules.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: BSD-3-Clause
- # -*- coding: utf-8 -*-
- 
-diff -uNr systemd-stable/tools/dbus_exporter.py systemd-stable-XX/tools/dbus_exporter.py
---- systemd-stable/tools/dbus_exporter.py	2023-04-02 07:15:24.392572738 -0700
-+++ systemd-stable-XX/tools/dbus_exporter.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- from argparse import ArgumentParser
- from pathlib import Path
-diff -uNr systemd-stable/tools/gdb-sd_dump_hashmaps.py systemd-stable-XX/tools/gdb-sd_dump_hashmaps.py
---- systemd-stable/tools/gdb-sd_dump_hashmaps.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/gdb-sd_dump_hashmaps.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import gdb
-diff -uNr systemd-stable/tools/generate-gperfs.py systemd-stable-XX/tools/generate-gperfs.py
---- systemd-stable/tools/generate-gperfs.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/generate-gperfs.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- """
-diff -uNr systemd-stable/tools/list-discoverable-partitions.py systemd-stable-XX/tools/list-discoverable-partitions.py
---- systemd-stable/tools/list-discoverable-partitions.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/list-discoverable-partitions.py	2023-04-02 07:04:35.323698236 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import re
-diff -uNr systemd-stable/tools/make-autosuspend-rules.py systemd-stable-XX/tools/make-autosuspend-rules.py
---- systemd-stable/tools/make-autosuspend-rules.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/make-autosuspend-rules.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- # Generate autosuspend rules for devices that have been tested to work properly
-diff -uNr systemd-stable/tools/make-directive-index.py systemd-stable-XX/tools/make-directive-index.py
---- systemd-stable/tools/make-directive-index.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/make-directive-index.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import sys
-diff -uNr systemd-stable/tools/make-man-index.py systemd-stable-XX/tools/make-man-index.py
---- systemd-stable/tools/make-man-index.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/make-man-index.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import collections
-diff -uNr systemd-stable/tools/meson-render-jinja2.py systemd-stable-XX/tools/meson-render-jinja2.py
---- systemd-stable/tools/meson-render-jinja2.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/meson-render-jinja2.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import ast
-diff -uNr systemd-stable/tools/update-dbus-docs.py systemd-stable-XX/tools/update-dbus-docs.py
---- systemd-stable/tools/update-dbus-docs.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/update-dbus-docs.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- import argparse
-diff -uNr systemd-stable/tools/update-man-rules.py systemd-stable-XX/tools/update-man-rules.py
---- systemd-stable/tools/update-man-rules.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/update-man-rules.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- from __future__ import print_function
-diff -uNr systemd-stable/tools/xml_helper.py systemd-stable-XX/tools/xml_helper.py
---- systemd-stable/tools/xml_helper.py	2023-04-02 07:15:24.396572743 -0700
-+++ systemd-stable-XX/tools/xml_helper.py	2023-04-02 07:04:35.327698241 -0700
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python3
-+#!/usr/bin/python3
- # SPDX-License-Identifier: LGPL-2.1-or-later
- 
- from lxml import etree as tree
+diff: systemd-stable-original/test/testdata: recursive directory loop

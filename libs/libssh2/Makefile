@@ -1,22 +1,28 @@
 DIR=libssh2
-LOC=https://github.com/$(DIR)
+LOC=https://github.com/libssh2
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_OPTS +=\
-	--with-crypto=openssl
+MICB_CMAKE_COMMON_OPTS +=             \
+	-D OPENSSL_ROOT_DIR=$(INSTALLDIR) \
+	-D ZLIB_LIBRARY=$(INSTALLDIR)     \
+	-D BUILD_SHARED_LIBS=ON           \
+	-D BUILD_EXAMPLES=OFF             \
+	-D BUILD_TESTING=OFF
 
-MICB_DEPENDS = openssl 
+MICB_DEPENDS = openssl zlib
 
-prepare: 
+prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	@$(MICB_CONFIGURE_AUTOCONF) 
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@cd $(BUILDDIR)/$(DIR); \
-		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
-
-all install uninstall clean:
+		$(MICB_CMAKE_RUNENV) cmake $(MICB_CMAKE_COMMON_OPTS) ../../../$(MICBSRC)/$(DIR) 
+		
+all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) VERBOSE=1 )
 
+install uninstall clean:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) VERBOSE=1 $@ )
 

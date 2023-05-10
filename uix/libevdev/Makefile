@@ -1,5 +1,5 @@
 DIR=libevdev
-LOC=https://github.com/freedesktop
+LOC=https://gitlab.freedesktop.org/libevdev
 
 include $(TOPDIR)/scripts/uixenv.mk
 

@@ -377,7 +377,7 @@ installcomps:
 	@echo ""
 	@sudo apt --fix-broken install 
 	@sudo apt update 
-	@sudo apt install \
+	@sudo apt install -y \
 		build-essential     cmake                 automake        autoconf          \
 		m4                  autopoint             unzip           p7zip-full        \
 		autoconf-archive    autogen               texlive         flex              \
@@ -390,7 +390,8 @@ installcomps:
 	  	meson               qemu-system-x86       libxml2-dev     libffi-dev        \
 	  	help2man            valgrind              gperf           libglib2.0-dev-bin\
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
-		gtk-doc-tools       uml-utilities         bridge-utils 
+		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
+		python3-xcbgen      python2
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
 	@sudo pip install pkgconfig mako Jinja2

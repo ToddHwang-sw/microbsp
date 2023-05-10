@@ -12,7 +12,7 @@ MICB_MESON_OPTS +=\
         -D icu=disabled \
         -D icu_builtin=false
 
-MICB_DEPENDS = glib-2.0 freetype2 cairo-ft
+MICB_DEPENDS = glib-2.0 gobject-2.0 freetype2 cairo-ft
 
 CROSS_USER_LFLAGS += -lglapi
 

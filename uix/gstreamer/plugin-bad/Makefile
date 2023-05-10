@@ -7,11 +7,13 @@ GSTREAMER_OPTS += \
 	-D doc=disabled \
 	-D examples=disabled \
 	-D tests=disabled \
+	-D wayland=enabled \
+	-D x11=enabled \
 	-D base-install=$(UIXINSTDIR)/..
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 x11 alsa \
 		   cairo cairo-gobject gdk-pixbuf-2.0 sndfile \
-		   wayland-protocols   \
+		   wayland-protocols wayland-client  wayland-egl \
 	       pango pangocairo    \
 		   xfixes xdamage      \
 		   libdrm libxml-2.0 libcurl  \

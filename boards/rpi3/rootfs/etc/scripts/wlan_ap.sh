@@ -45,7 +45,6 @@ add_ap() {
 		ieee80211d=1
 		ieee80211h=1
 		ieee80211n=1
-		require_ht=1
 		wmm_enabled=1
 		country_code=US
 		hw_mode=g
@@ -62,6 +61,10 @@ add_ap() {
 		echo "[WLAN] Running AP Suppplicant for $APINTF"
 		/usr/local/bin/hostapd -dd -B -P $PIDDIR/$1.pid $APCONFDIR/$1.conf &
 		sleep 1
+
+		##
+		## NATBYP setting 
+		[ ! -f /proc/natbyp ] || echo "dev $APINTF lan" > /proc/natbyp
 
 		echo "[BRIDGE] Bridge adding $APINTF"
 		brctl addif $BRINTF $APINTF

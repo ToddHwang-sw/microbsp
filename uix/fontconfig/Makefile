@@ -1,5 +1,5 @@
 DIR=fontconfig
-LOC=https://github.com/freedesktop
+LOC=https://gitlab.freedesktop.org/fontconfig
 
 include $(TOPDIR)/scripts/uixenv.mk
 

@@ -7,6 +7,11 @@
 HOSTAP_N_CONF=./hostapd.conf
 HOSTAP_G_CONF=./hostapd_g.conf
 
+##
+## Hostapd ctrl interface
+[ -d /var/tmp/hostapd/ctrl  ] || mkdir -p /var/tmp/hostapd/ctrl
+[ -d /var/tmp/hostapd2/ctrl ] || mkdir -p /var/tmp/hostapd2/ctrl
+
 ## Fake job
 sudo ufw disable
 sudo ufw enable 
@@ -15,6 +20,7 @@ sudo iptables -t nat -L -v
 sleep 1
 
 sudo brctl addbr br0
+sudo brctl addif br0 eth0
 
 \rm -rf ./hostap*.log
 

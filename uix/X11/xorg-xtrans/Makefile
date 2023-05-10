@@ -1,5 +1,5 @@
-DIR=xorg-libxtrans
-LOC=https://github.com/freedesktop
+DIR=libxtrans
+LOC=https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 

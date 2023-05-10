@@ -1,22 +1,22 @@
 #!/bin/sh
 
 busywait() {
-    cnt=$1
-    while [ "$cnt" != "0" ]
-    do
-        sleep 1
-        echo "$cnt"
-        cnt=`expr $cnt - 1`
-    done
-    echo ""
+	cnt=$1
+	while [ "$cnt" != "0" ]
+	do
+		sleep 1
+		echo "$cnt"
+		cnt=`expr $cnt - 1`
+	done
+	echo ""
 }
 
 cat /etc/motd
 
 ## mount file systems 
-mount -t proc     proc   /proc
-mount -t tmpfs    ram    /var  -o size=32m
-mount -t sysfs    sys    /sys
+mount -t proc	 proc   /proc
+mount -t tmpfs	ram	/var  -o size=32m
+mount -t sysfs	sys	/sys
 mount -t devtmpfs devfs /dev 
 
 ## basic..
@@ -65,11 +65,11 @@ touch /var/tmp/shadow
 touch /var/tmp/issue
 
 ## group file for root
-echo "root:x:0:"          > /etc/group
+echo "root:x:0:"		  > /etc/group
 echo "sshd:x:1001:root"   >> /etc/group
 
 ## register root user
-echo "root:x:0:0:root:/root:/bin/sh"                       > /etc/passwd
+echo "root:x:0:0:root:/root:/bin/sh"					   > /etc/passwd
 echo "sshd:x:1001:1001:SSH,,,:/var/tmp/sshd:/sbin/nologin" >> /etc/passwd
 
 ## shadow file for password
@@ -88,7 +88,7 @@ XCFGDIR=/config
 [ -d $XCFGDIR ] || mkdir -p $XCFGDIR
 mount /dev/sdb $XCFGDIR
 /usr/sbin/run_xcfgd.sh \
-    /usr/bin/xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
+	/usr/bin/xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
 echo "Waiting it for getting ready to work.."
 busywait 3
@@ -110,15 +110,15 @@ echo "Logging daemon"
 echo ""
 SYSLOG=`$ASK operation/syslog/en`
 if [ "$SYSLOG" = "1" ]; then 
-    NETLOT=""
-    NETSYSL=`$ASK operation/syslog/mode`
-    if [ "$NETSYSL" = "remote" ]; then
-        LOGSVRIP=`$ASK operation/syslog/ip`
-        LOGSVRPORT=`$ASK operation/syslog/port`
-        NETLOPT="-R $LOGSVRIP:$LOGSVRPORT"
-    fi
-    syslogd $NETLOPT -s 10240 -b 0 -l 8 -O /var/log/messages
-    klogd
+	NETLOT=""
+	NETSYSL=`$ASK operation/syslog/mode`
+	if [ "$NETSYSL" = "remote" ]; then
+		LOGSVRIP=`$ASK operation/syslog/ip`
+		LOGSVRPORT=`$ASK operation/syslog/port`
+		NETLOPT="-R $LOGSVRIP:$LOGSVRPORT"
+	fi
+	syslogd $NETLOPT -s 10240 -b 0 -l 8 -O /var/log/messages
+	klogd
 fi
 
 
@@ -130,28 +130,28 @@ done=0
 grpnum=1002
 while [ "$done" = "0" ]
 do
-    valid=`$ASK user/u$cnt/valid`
-    if [ "$valid" = "error" ]; then
-        done=1;
-    fi
-    if [ "$valid" = "1" ]; then
-        un=`$ASK user/u$cnt/name`
-        pw=`$ASK user/u$cnt/passwd`
+	valid=`$ASK user/u$cnt/valid`
+	if [ "$valid" = "error" ]; then
+		done=1;
+	fi
+	if [ "$valid" = "1" ]; then
+		un=`$ASK user/u$cnt/name`
+		pw=`$ASK user/u$cnt/passwd`
 
-        ## Update group file
-        echo "$un:x:$grpnum:"  >> /etc/group
-        adduser -h /home/$un -G $un -u $grpnum -s /bin/sh -D $un
-        echo "$un:$pw" | chpasswd
-        echo "User [ $un/$pw ] created"
+		## Update group file
+		echo "$un:x:$grpnum:"  >> /etc/group
+		adduser -h /home/$un -G $un -u $grpnum -s /bin/sh -D $un
+		echo "$un:$pw" | chpasswd
+		echo "User [ $un/$pw ] created"
 
-        if [ ! -d /home/$un ]; then
-            mkdir /home/$un
-            #Update onwer
-            chown -R $un.$un /home/$un
-        fi
-        grpnum=`expr $grpnum + 1`
-    fi
-    cnt=`expr $cnt + 1`
+		if [ ! -d /home/$un ]; then
+			mkdir /home/$un
+			#Update onwer
+			chown -R $un.$un /home/$un
+		fi
+		grpnum=`expr $grpnum + 1`
+	fi
+	cnt=`expr $cnt + 1`
 done
 
 
@@ -170,17 +170,17 @@ modprobe e1000
 ## eth0 MAC address 
 ETHMAC=`$ASK lan0/mac`
 if [ "$ETHMAC" = "random" ]; then
-    ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
+	ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
 fi
 ifconfig eth0 hw ether $ETHMAC 
 
 NETMODE=`$ASK lan0/mode`
 if [ "$NETMODE" = "dhcp" ]; then
-    udhcpc -x lease:120 -i eth0 
+	udhcpc -x lease:120 -i eth0 
 else
-    IP=`$ASK lan0/ip`
-    NETMASK=`$ASK lan0/netmask`
-    ifconfig eth0 $IP netmask $NETMASK up
+	IP=`$ASK lan0/ip`
+	NETMASK=`$ASK lan0/netmask`
+	ifconfig eth0 $IP netmask $NETMASK up
 fi
 
 echo ""
@@ -188,24 +188,24 @@ echo "Network - Interface Capture"
 echo ""
 CAPTURE=`$ASK lan0/capture`
 if [ "$CAPTURE" = "1" ]; then 
-    tcpdump -c 1000000 -w /var/tmp/eth0.pcap -i eth0  &
+	tcpdump -c 1000000 -w /var/tmp/eth0.pcap -i eth0  &
 fi
 
 SSHDIR=/root/.ssh
 
 SSHEN=`$ASK ssh/en`
 if [ "$SSHEN" = "1" ]; then 
-    echo ""
-    echo "SSH key setup in $SSHDIR "
-    echo ""
-    [ -d $SSHDIR ] || mkdir -p $SSHDIR
-    [ -f $SSHDIR/id_rsa ] || ( \
-        /usr/bin/ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
+	echo ""
+	echo "SSH key setup in $SSHDIR "
+	echo ""
+	[ -d $SSHDIR ] || mkdir -p $SSHDIR
+	[ -f $SSHDIR/id_rsa ] || ( \
+		/usr/bin/ssh-keygen -q -t rsa -N '' -f $SSHDIR/id_rsa <<<y >/dev/null 2>&1 )
 
-    echo ""
-    echo "SSH daemon"
-    echo ""
-    /usr/sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa 
+	echo ""
+	echo "SSH daemon"
+	echo ""
+	/usr/sbin/sshd -f /etc/sshd_config -h $SSHDIR/id_rsa 
 fi
 
 echo ""
@@ -213,18 +213,18 @@ echo "NTP "
 echo ""
 NTPEN=`$ASK ntp/en`
 if [ "$NTPEN" = "1" ]; then 
-    apptime=("`ntpclient`")
-    skip=1
-    cnt=0
-    CTIME=
-    for d in ${apptime[@]}; do
-        if [ "$cnt" -gt "$skip" ] ; then
-                CTIME=$CTIME"$d "
-        fi
-        cnt=`expr $cnt + 1`
-    done
-    CTIME=`echo $CTIME | xargs`
-    date -R -s "$CTIME"
+	apptime=("`ntpclient`")
+	skip=1
+	cnt=0
+	CTIME=
+	for d in ${apptime[@]}; do
+		if [ "$cnt" -gt "$skip" ] ; then
+				CTIME=$CTIME"$d "
+		fi
+		cnt=`expr $cnt + 1`
+	done
+	CTIME=`echo $CTIME | xargs`
+	date -R -s "$CTIME"
 fi
 
 echo ""
@@ -244,7 +244,7 @@ echo "WEBUI "
 echo ""
 WEBUIEN=`$ASK http/en`
 if [ "$WEBUIEN" = "1" ]; then 
-    [ ! -f /etc/httpd/etc/run.sh ] || /etc/httpd/etc/run.sh 
+	[ ! -f /etc/httpd/etc/run.sh ] || /etc/httpd/etc/run.sh 
 fi
 
 echo ""

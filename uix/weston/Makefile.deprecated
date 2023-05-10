@@ -1,0 +1,41 @@
+DIR=weston
+LOC=https://gitlab.freedesktop.org/wayland
+
+include $(TOPDIR)/scripts/uixenv.mk
+
+MICB_MESON_OPTS +=\
+	-D doc=false \
+	-D image-webp=false \
+	-D backend-rdp=false \
+	-D backend-wayland=true \
+	-D backend-x11=true \
+	-D backend-pipewire=false \
+	-D pipewire=false \
+	-D color-management-lcms=false \
+	-D deprecated-launcher-logind=true \
+	-D launcher-libseat=false \
+	-D pipewire=false \
+	-D base-install=$(UIXINSTDIR)/..
+
+MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
+
+MICB_DEPENDS = libmount bkid iconv intl pam glib-2.0 libffi libdrm expat libxml-2.0 libjpeg  lzo2 libgcrypt zlib json-c \
+	       libudev libevdev libsystemd dbus-1 liblz4 libcap mtdev \
+	       pango pangocairo pixman-1 cairo-script libinput ncurses libzstd pam \
+		   wayland-cursor wayland-scanner xcb xcursor xcb-xkb libva libva-drm xcb-composite 
+
+CROSS_USER_LFLAGS += -lcairo-script-interpreter
+CROSS_USER_LFLAGS += -lglapi -lrt
+
+prepare:
+	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
+	@cd $(BUILDDIR)/$(DIR); \
+		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
+
+all install uninstall clean:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+		cd $(BUILDDIR)/$(DIR); $(NINJA_MAKE) $@ )
+
+

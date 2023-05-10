@@ -1,11 +1,12 @@
-DIR=util-macros-1.19.3
-LOC=https://www.x.org/archive/individual/util
+DIR=macros
+LOC=https://gitlab.freedesktop.org/xorg/util
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

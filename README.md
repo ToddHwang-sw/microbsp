@@ -228,11 +228,33 @@ The following shows the structure of root file system constructed by overlay fil
 ### Booting Shot <a name="rpi3_boot"></a>
 
   ```
+
+U-Boot 2022.10-rc3 (Apr 11 2023 - 21:14:47 -0700)
+
+DRAM:  948 MiB
+RPI 3 Model B+ (0xa020d3)
+Core:  63 devices, 13 uclasses, devicetree: embed
+MMC:   mmc@7e202000: 0, mmc@7e300000: 1
+Loading Environment from FAT... OK
+In:    serial
+Out:   serial
+Err:   serial
+Net:   No ethernet found.
+Hit any key to stop autoboot:  0 
+switch to partitions #0, OK
+mmc0 is current device
+26828808 bytes read in 1114 ms (23 MiB/s)
+32529 bytes read in 4 ms (7.8 MiB/s)
+Moving Image from 0x80000 to 0x200000, end=1c90000
+## Flattened Device Tree blob at 02600000
+   Booting using the fdt blob at 0x2600000
+   Using Device Tree in place at 0000000002600000, end 000000000260af10
+
+Starting kernel ...
+
 [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
-[    0.000000] Linux version 5.15.92-v8 (todd@vostro) (aarch64-any-linux-gnu-gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.38) #4 SMP PREEMPT Sat Feb 25 15:33:54 PST 2023
-[    0.000000] random: crng init done
-[    0.000000] Machine model: Raspberry Pi 3 Model B Plus Rev 1.3
-[    0.000000] efi: UEFI not found.
+[    0.000000] Linux version 5.15.92-v8 (todd@vostro) (aarch64-any-linux-gnu-gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.38) #6 SMP PREEMPT Mon Apr 10 12:59:19 PDT 2023
+[    0.000000] Machine model: Raspberry Pi 3 Model B+
 [    0.000000] Reserved memory: created CMA memory pool at 0x0000000037400000, size 64 MiB
 [    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
 [    0.000000] Zone ranges:
@@ -244,26 +266,20 @@ The following shows the structure of root file system constructed by overlay fil
 [    0.000000]   node   0: [mem 0x0000000000000000-0x000000003b3fffff]
 [    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000003b3fffff]
 [    0.000000] On node 0, zone DMA: 19456 pages in unavailable ranges
-[    0.000000] percpu: Embedded 27 pages/cpu s73176 r8192 d29224 u110592
+[    0.000000] percpu: Embedded 27 pages/cpu s72600 r8192 d29800 u110592
 [    0.000000] Detected VIPT I-cache on CPU0
-[    0.000000] CPU features: kernel page table isolation forced ON by KASLR
-[    0.000000] CPU features: detected: Kernel page table isolation (KPTI)
 [    0.000000] CPU features: detected: ARM erratum 843419
 [    0.000000] CPU features: detected: ARM erratum 845719
 [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 238896
-[    0.000000] Kernel command line: coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 bcm2708_fb.fbwidth=640 bcm2708_fb.fbheight=480 b
-cm2708_fb.fbswap=1 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwg_otg.lpm_enable=0 console=ttyS0,921600 earlyprintk root=/dev/mmcblk0p2 rootfstype=squashfs rootwait
- elevator=deadline
-[    0.000000] Kernel parameter elevator= does not have any effect anymore.
-[    0.000000] Please use sysfs to set IO scheduler for individual devices.
-[    0.000000] Unknown kernel command line parameters "earlyprintk", will be passed to user space.
+[    0.000000] Kernel command line: coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 video=HDMI-A-1:640x480M@60D vc_mem.mem_base=0x3ec00000 vc_
+mem.mem_size=0x40000000  dwg_otg.lpm_enable=0 8250.nr_uarts=1 console=ttyS0,921600 root=/dev/mmcblk0p2 rootfstype=squashfs rootwait
 [    0.000000] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
 [    0.000000] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
 [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
-[    0.000000] Memory: 857432K/970752K available (13056K kernel code, 2078K rwdata, 4124K rodata, 6976K init, 938K bss, 47784K reserved, 65536K cma-reserved)
+[    0.000000] Memory: 857568K/970752K available (13056K kernel code, 2072K rwdata, 4104K rodata, 6848K init, 939K bss, 47648K reserved, 65536K cma-reserved)
 [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
-[    0.000000] ftrace: allocating 41493 entries in 163 pages
-[    0.000000] ftrace: allocated 163 pages with 4 groups
+[    0.000000] ftrace: allocating 41322 entries in 162 pages
+[    0.000000] ftrace: allocated 162 pages with 3 groups
 [    0.000000] trace event string verifier disabled
 [    0.000000] rcu: Preemptible hierarchical RCU implementation.
 [    0.000000] rcu:     RCU event tracing is enabled.
@@ -276,260 +292,259 @@ cm2708_fb.fbswap=1 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwg_ot
 [    0.000000] arch_timer: cp15 timer(s) running at 19.20MHz (phys).
 [    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x46d987e47, max_idle_ns: 440795202767 ns
 [    0.000001] sched_clock: 56 bits at 19MHz, resolution 52ns, wraps every 4398046511078ns
-[    0.000368] Console: colour dummy device 80x25
-[    0.000449] Calibrating delay loop (skipped), value calculated using timer frequency.. 38.40 BogoMIPS (lpj=19200)
-[    0.000489] pid_max: default: 32768 minimum: 301
-[    0.000654] LSM: Security Framework initializing
-[    0.000942] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.000988] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.002515] cgroup: Disabling memory control group subsystem
-[    0.006096] rcu: Hierarchical SRCU implementation.
-[    0.007308] EFI services will not be available.
-[    0.007975] smp: Bringing up secondary CPUs ...
-[    0.009383] Detected VIPT I-cache on CPU1
-[    0.009463] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
-[    0.010956] Detected VIPT I-cache on CPU2
-[    0.011011] CPU2: Booted secondary processor 0x0000000002 [0x410fd034]
-[    0.012484] Detected VIPT I-cache on CPU3
-[    0.012534] CPU3: Booted secondary processor 0x0000000003 [0x410fd034]
-[    0.012715] smp: Brought up 1 node, 4 CPUs
-[    0.012777] SMP: Total of 4 processors activated.
-[    0.012798] CPU features: detected: 32-bit EL0 Support
-[    0.012818] CPU features: detected: CRC32 instructions
-[    0.013617] CPU: All CPU(s) started at EL2
-[    0.013692] alternatives: patching kernel code
-[    0.015169] devtmpfs: initialized
-[    0.034240] Enabled cp15_barrier support
-[    0.034294] Enabled setend support
-[    0.034325] KASLR enabled
-[    0.034605] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
-[    0.034649] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
-[    0.037785] pinctrl core: initialized pinctrl subsystem
-[    0.038860] DMI not present or invalid.
-[    0.039467] NET: Registered PF_NETLINK/PF_ROUTE protocol family
-[    0.049695] DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
-[    0.050274] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
-[    0.051609] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
-[    0.051776] audit: initializing netlink subsys (disabled)
-[    0.052172] audit: type=2000 audit(0.051:1): state=initialized audit_enabled=0 res=1
-[    0.052944] thermal_sys: Registered thermal governor 'step_wise'
-[    0.053244] cpuidle: using governor menu
-[    0.053566] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
-[    0.053829] ASID allocator initialised with 32768 entries
-[    0.054048] Serial: AMBA PL011 UART driver
-[    0.063685] bcm2835-mbox 3f00b880.mailbox: mailbox enabled
-[    0.079047] raspberrypi-firmware soc:firmware: Attached to firmware from 2023-01-05T10:48:31, variant start
-[    0.080059] raspberrypi-firmware soc:firmware: Firmware hash is 8ba17717fbcedd4c3b6d4bce7e50c7af4155cba9
-[    0.138015] bcm2835-dma 3f007000.dma: DMA legacy API manager, dmachans=0x1
-[    0.143055] SCSI subsystem initialized
-[    0.143376] usbcore: registered new interface driver usbfs
-[    0.143456] usbcore: registered new interface driver hub
-[    0.143563] usbcore: registered new device driver usb
-[    0.143991] usb_phy_generic phy: supply vcc not found, using dummy regulator
-[    0.144279] usb_phy_generic phy: dummy supplies not allowed for exclusive requests
-[    0.144613] pps_core: LinuxPPS API ver. 1 registered
-[    0.144635] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-[    0.144687] PTP clock support registered
-[    0.146973] clocksource: Switched to clocksource arch_sys_counter
-[    0.265565] VFS: Disk quotas dquot_6.6.0
-[    0.265695] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[    0.265916] FS-Cache: Loaded
-[    0.266230] CacheFiles: Loaded
-[    0.279941] NET: Registered PF_INET protocol family
-[    0.280298] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
-[    0.281792] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
-[    0.281850] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
-[    0.281886] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
-[    0.282156] TCP bind hash table entries: 8192 (order: 5, 131072 bytes, linear)
-[    0.282365] TCP: Hash tables configured (established 8192 bind 8192)
-[    0.282632] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.282699] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.283055] NET: Registered PF_UNIX/PF_LOCAL protocol family
-[    0.284670] RPC: Registered named UNIX socket transport module.
-[    0.284696] RPC: Registered udp transport module.
-[    0.284716] RPC: Registered tcp transport module.
-[    0.284735] RPC: Registered tcp NFSv4.1 backchannel transport module.
-[    0.288040] hw perfevents: enabled with armv8_cortex_a53 PMU driver, 7 counters available
-[    1.615497] Initialise system trusted keyrings
-[    1.615999] workingset: timestamp_bits=46 max_order=18 bucket_order=0
-[    1.626402] zbud: loaded
-[    1.628763] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[    1.629403] FS-Cache: Netfs 'nfs' registered for caching
-[    1.630366] NFS: Registering the id_resolver key type
-[    1.630439] Key type id_resolver registered
-[    1.630460] Key type id_legacy registered
-[    1.630615] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
-[    1.630640] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
-[    1.630701] ntfs: driver 2.1.32 [Flags: R/W].
-[    1.631016] ntfs3: Max link count 4000
-[    1.631431] fuse: init (API version 7.34)
-[    1.703863] Key type asymmetric registered
-[    1.703890] Asymmetric key parser 'x509' registered
-[    1.704061] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 247)
-[    1.704087] io scheduler mq-deadline registered
-[    1.704109] io scheduler kyber registered
-[    1.705331] crc32: CRC_LE_BITS = 64, CRC_BE BITS = 64
-[    1.705355] crc32: self tests passed, processed 225944 bytes in 552552 nsec
-[    1.705508] crc32c: CRC_LE_BITS = 64
-[    1.705527] crc32c: self tests passed, processed 225944 bytes in 64531 nsec
-[    1.742043] crc32_combine: 8373 self tests passed
-[    1.778589] crc32c_combine: 8373 self tests passed
-[    1.784577] bcm2708_fb soc:fb: FB found 1 display(s)
-[    1.802613] Console: switching to colour frame buffer device 80x30
-[    1.808016] bcm2708_fb soc:fb: Registered framebuffer for display 0, size 640x480
-[    1.897545] Serial: 8250/16550 driver, 1 ports, IRQ sharing enabled
-[    1.900349] bcm2835-rng 3f104000.rng: hwrng registered
-[    1.901074] vc-mem: phys_addr:0x00000000 mem_base=0x3ec00000 mem_size:0x40000000(1024 MiB)
-[    1.902637] gpiomem-bcm2835 3f200000.gpiomem: Initialised: Registers at 0x3f200000
-[    1.920253] brd: module loaded
-[    1.933451] loop: module loaded
-[    1.975681] Loading iSCSI transport class v2.0-870.
-[    1.978895] usbcore: registered new interface driver lan78xx
-[    1.979020] usbcore: registered new interface driver smsc95xx
-[    1.979053] dwc_otg: version 3.00a 10-AUG-2012 (platform bus)
-[    2.707515] Core Release: 2.80a
-[    2.707557] Setting default values for core params
-[    2.707595] Finished setting default values for core params
-[    2.908081] Using Buffer DMA mode
-[    2.908102] Periodic Transfer Interrupt Enhancement - disabled
-[    2.908122] Multiprocessor Interrupt Enhancement - disabled
-[    2.908141] OTG VER PARAM: 0, OTG VER FLAG: 0
-[    2.908167] Dedicated Tx FIFOs mode
-[    2.908896] 
-[    2.908910] WARN::dwc_otg_hcd_init:1072: FIQ DMA bounce buffers: virt = ffffffc008471000 dma = 0x00000000f7810000 len=9024
-[    2.908987] FIQ FSM acceleration enabled for :
-[    2.908987] Non-periodic Split Transactions
-[    2.908987] Periodic Split Transactions
-[    2.908987] High-Speed Isochronous Endpoints
-[    2.908987] Interrupt/Control Split Transaction hack enabled
-[    2.909066] 
-[    2.909077] WARN::hcd_init_fiq:496: MPHI regs_base at ffffffc00805d000
-[    2.909136] dwc_otg 3f980000.usb: DWC OTG Controller
-[    2.909182] dwc_otg 3f980000.usb: new USB bus registered, assigned bus number 1
-[    2.909257] dwc_otg 3f980000.usb: irq 74, io mem 0x00000000
-[    2.909323] Init: Port Power? op_state=1
-[    2.909342] Init: Power Port (0)
-[    2.909791] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 5.15
-[    2.909823] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
-[    2.909850] usb usb1: Product: DWC OTG Controller
-[    2.909874] usb usb1: Manufacturer: Linux 5.15.92-v8 dwc_otg_hcd
-[    2.909897] usb usb1: SerialNumber: 3f980000.usb
-[    2.910829] hub 1-0:1.0: USB hub found
-[    2.910917] hub 1-0:1.0: 1 port detected
-[    2.913066] usbcore: registered new interface driver usb-storage
-[    2.913100] i2c_dev: i2c /dev entries driver
-[    2.917701] sdhci: Secure Digital Host Controller Interface driver
-[    2.917729] sdhci: Copyright(c) Pierre Ossman
-[    2.918322] sdhci-pltfm: SDHCI platform and OF driver helper
-[    2.921291] ledtrig-cpu: registered to indicate activity on CPUs
-[    2.922109] hid: raw HID events driver (C) Jiri Kosina
-[    2.922356] usbcore: registered new interface driver usbhid
-[    2.922380] usbhid: USB HID core driver
-[    2.922825] ashmem: initialized
-[    2.931083] xt_time: kernel timezone is -0000
-[    2.931285] ipip: IPv4 and MPLS over IPv4 tunneling driver
-[    2.932098] gre: GRE over IPv4 demultiplexor driver
-[    2.932260] ipt_CLUSTERIP: ClusterIP Version 0.8 loaded successfully
-[    2.932324] Initializing XFRM netlink socket
-[    2.933218] NET: Registered PF_INET6 protocol family
-[    2.935311] Segment Routing with IPv6
-[    2.935373] In-situ OAM (IOAM) with IPv6
-[    2.936606] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
-[    2.938238] ip6_gre: GRE over IPv6 tunneling driver
-[    2.954155] bpfilter: Loaded bpfilter_umh pid 125
-[    2.955228] NET: Registered PF_PACKET protocol family
-[    2.955319] NET: Registered PF_KEY protocol family
-[    2.955471] Bridge firewalling registered
-[    2.955610] 8021q: 802.1Q VLAN Support v1.8
-[    2.955706] Key type dns_resolver registered
-[    2.955756] Key type ceph registered
-[    2.956452] libceph: loaded (mon/osd proto 15/24)
-[    2.956478] mctp: management component transport protocol core
-[    2.956498] NET: Registered PF_MCTP protocol family
-[    2.958095] registered taskstats version 1
-[    2.958137] Loading compiled-in X.509 certificates
-[    2.958829] Key type .fscrypt registered
-[    2.958852] Key type fscrypt-provisioning registered
-[    2.975344] uart-pl011 3f201000.serial: cts_event_workaround enabled
-[    2.975561] 3f201000.serial: ttyAMA0 at MMIO 0x3f201000 (irq = 99, base_baud = 0) is a PL011 rev2
-[    2.979760] bcm2835-aux-uart 3f215040.serial: there is not valid maps for state default
-[    2.982206] printk: console [ttyS0] disabled
-[    2.982370] 3f215040.serial: ttyS0 at MMIO 0x3f215040 (irq = 71, base_baud = 31250000) is a 16550
-[    3.017179] Indeed it is in host mode hprt0 = 00021501
-[    3.017635] printk: console [ttyS0] enabled
-[    3.156439] bcm2835-wdt bcm2835-wdt: Broadcom BCM2835 watchdog timer
-[    3.157888] bcm2835-power bcm2835-power: Broadcom BCM2835 power domains driver
-[    3.161217] mmc-bcm2835 3f300000.mmcnr: mmc_debug:0 mmc_debug2:0
-[    3.162050] mmc-bcm2835 3f300000.mmcnr: DMA channel allocated
-[    3.189628] sdhost: log_buf @ 0000000026930c4f (c3f78000)
-[    3.191025] usb 1-1: new high-speed USB device number 2 using dwc_otg
-[    3.192111] Indeed it is in host mode hprt0 = 00001101
-[    3.253050] mmc0: sdhost-bcm2835 loaded - DMA enabled (>1)
-[    3.257765] of_cfs_init
-[    3.258274] of_cfs_init: OK
-[    3.258978] cfg80211: Loading compiled-in X.509 certificates for regulatory database
-[    3.263843] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-[    3.265404] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
-[    3.266641] cfg80211: failed to load regulatory.db
-[    3.272771] Waiting for root device /dev/mmcblk0p2...
-[    3.302497] mmc0: host does not support reading read-only switch, assuming write-enable
-[    3.307160] mmc0: new high speed SDXC card at address 0001
-[    3.309780] mmcblk0: mmc0:0001 GC2QT 59.6 GiB 
-[    3.313896] mmc1: new high speed SDIO card at address 0001
-[    3.318371]  mmcblk0: p1 p2 p3 p4 < p5 p6 >
-[    3.320934] mmcblk0: mmc0:0001 GC2QT 59.6 GiB
-[    3.330089] VFS: Mounted root (squashfs filesystem) readonly on device 179:2.
-[    3.335060] devtmpfs: mounted
-[    3.352994] Freeing unused kernel memory: 6976K
-[    3.353802] Run /sbin/init as init process
-[    3.378562] usb 1-1: New USB device found, idVendor=0424, idProduct=2514, bcdDevice= b.b3
-[    3.379725] usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-[    3.381833] hub 1-1:1.0: USB hub found
-[    3.382571] hub 1-1:1.0: 4 ports detected
-[    3.669023] usb 1-1.1: new high-speed USB device number 3 using dwc_otg
-[    3.758612] usb 1-1.1: New USB device found, idVendor=0424, idProduct=2514, bcdDevice= b.b3
-[    3.759791] usb 1-1.1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-[    3.761853] hub 1-1.1:1.0: USB hub found
-[    3.762579] hub 1-1.1:1.0: 3 ports detected
-[    3.841029] usb 1-1.3: new high-speed USB device number 4 using dwc_otg
-[    3.931534] usb 1-1.3: New USB device found, idVendor=2357, idProduct=0109, bcdDevice= 2.00
-[    3.932783] usb 1-1.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-[    3.933801] usb 1-1.3: Product: 802.11n NIC 
-[    3.934418] usb 1-1.3: Manufacturer: Realtek 
-[    3.935048] usb 1-1.3: SerialNumber: 00e04c000001
-[    4.036172] EXT4-fs (mmcblk0p3): recovery complete
-[    4.039097] EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
-[    4.089304] EXT4-fs (mmcblk0p5): recovery complete
-[    4.100156] EXT4-fs (mmcblk0p5): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
+[    0.000357] Console: colour dummy device 80x25
+[    0.000438] Calibrating delay loop (skipped), value calculated using timer frequency.. 38.40 BogoMIPS (lpj=19200)
+[    0.000476] pid_max: default: 32768 minimum: 301
+[    0.000636] LSM: Security Framework initializing
+[    0.000929] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.000975] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.002516] cgroup: Disabling memory control group subsystem
+[    0.006290] rcu: Hierarchical SRCU implementation.
+[    0.008230] smp: Bringing up secondary CPUs ...
+[    0.009700] Detected VIPT I-cache on CPU1
+[    0.009781] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
+[    0.011362] Detected VIPT I-cache on CPU2
+[    0.011417] CPU2: Booted secondary processor 0x0000000002 [0x410fd034]
+[    0.012956] Detected VIPT I-cache on CPU3
+[    0.013006] CPU3: Booted secondary processor 0x0000000003 [0x410fd034]
+[    0.013202] smp: Brought up 1 node, 4 CPUs
+[    0.013263] SMP: Total of 4 processors activated.
+[    0.013284] CPU features: detected: 32-bit EL0 Support
+[    0.013303] CPU features: detected: CRC32 instructions
+[    0.013857] CPU: All CPU(s) started at EL2
+[    0.013931] alternatives: patching kernel code
+[    0.015426] devtmpfs: initialized
+[    0.034702] Enabled cp15_barrier support
+[    0.034758] Enabled setend support
+[    0.034789] KASLR disabled due to lack of seed
+[    0.035044] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.035088] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.038244] pinctrl core: initialized pinctrl subsystem
+[    0.040325] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.050312] DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
+[    0.050893] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.052246] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.052480] audit: initializing netlink subsys (disabled)
+[    0.052933] audit: type=2000 audit(0.052:1): state=initialized audit_enabled=0 res=1
+[    0.053707] thermal_sys: Registered thermal governor 'step_wise'
+[    0.053983] cpuidle: using governor menu
+[    0.054307] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.054561] ASID allocator initialised with 65536 entries
+[    0.054770] Serial: AMBA PL011 UART driver
+[    0.064335] bcm2835-mbox 3f00b880.mailbox: mailbox enabled
+[    0.079953] raspberrypi-firmware soc:firmware: Attached to firmware from 2023-03-17T10:52:42, variant start
+[    0.080965] raspberrypi-firmware soc:firmware: Firmware hash is 82f3750a65fadae9a38077e3c2e217ad158c8d54
+[    0.138723] bcm2835-dma 3f007000.dma: DMA legacy API manager, dmachans=0x1
+[    0.143700] SCSI subsystem initialized
+[    0.144010] usbcore: registered new interface driver usbfs
+[    0.144091] usbcore: registered new interface driver hub
+[    0.144197] usbcore: registered new device driver usb
+[    0.144594] usb_phy_generic phy: supply vcc not found, using dummy regulator
+[    0.144898] usb_phy_generic phy: dummy supplies not allowed for exclusive requests
+[    0.145238] pps_core: LinuxPPS API ver. 1 registered
+[    0.145259] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.145296] PTP clock support registered
+[    0.147549] clocksource: Switched to clocksource arch_sys_counter
+[    0.269262] VFS: Disk quotas dquot_6.6.0
+[    0.269388] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.269639] FS-Cache: Loaded
+[    0.269947] CacheFiles: Loaded
+[    0.283446] NET: Registered PF_INET protocol family
+[    0.283851] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.285369] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    0.285427] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.285461] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.285728] TCP bind hash table entries: 8192 (order: 5, 131072 bytes, linear)
+[    0.285939] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.286210] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.286277] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.286664] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.287838] RPC: Registered named UNIX socket transport module.
+[    0.287863] RPC: Registered udp transport module.
+[    0.287882] RPC: Registered tcp transport module.
+[    0.287900] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.291483] hw perfevents: enabled with armv8_cortex_a53 PMU driver, 7 counters available
+[    1.627895] Initialise system trusted keyrings
+[    1.628341] workingset: timestamp_bits=46 max_order=18 bucket_order=0
+[    1.638279] zbud: loaded
+[    1.640645] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.641210] FS-Cache: Netfs 'nfs' registered for caching
+[    1.642121] NFS: Registering the id_resolver key type
+[    1.642182] Key type id_resolver registered
+[    1.642202] Key type id_legacy registered
+[    1.642351] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    1.642376] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    1.642446] ntfs: driver 2.1.32 [Flags: R/W].
+[    1.642774] ntfs3: Max link count 4000
+[    1.643188] fuse: init (API version 7.34)
+[    1.718211] Key type asymmetric registered
+[    1.718237] Asymmetric key parser 'x509' registered
+[    1.718348] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 247)
+[    1.718373] io scheduler mq-deadline registered
+[    1.718395] io scheduler kyber registered
+[    1.719645] crc32: CRC_LE_BITS = 64, CRC_BE BITS = 64
+[    1.719668] crc32: self tests passed, processed 225944 bytes in 552656 nsec
+[    1.719820] crc32c: CRC_LE_BITS = 64
+[    1.719838] crc32c: self tests passed, processed 225944 bytes in 64531 nsec
+[    1.756342] crc32_combine: 8373 self tests passed
+[    1.792920] crc32c_combine: 8373 self tests passed
+[    1.798944] bcm2708_fb soc:fb: FB found 1 display(s)
+[    1.812757] Console: switching to colour frame buffer device 80x30
+[    1.817998] bcm2708_fb soc:fb: Registered framebuffer for display 0, size 640x480
+[    1.905692] Serial: 8250/16550 driver, 1 ports, IRQ sharing enabled
+[    1.908391] bcm2835-rng 3f104000.rng: hwrng registered
+[    1.909117] vc-mem: phys_addr:0x00000000 mem_base=0x3ec00000 mem_size:0x40000000(1024 MiB)
+[    1.910717] gpiomem-bcm2835 3f200000.gpiomem: Initialised: Registers at 0x3f200000
+[    1.927875] brd: module loaded
+[    1.941096] loop: module loaded
+[    1.983870] Loading iSCSI transport class v2.0-870.
+[    1.987079] usbcore: registered new interface driver lan78xx
+[    1.987171] usbcore: registered new interface driver smsc95xx
+[    1.987211] dwc_otg: version 3.00a 10-AUG-2012 (platform bus)
+[    2.188058] Core Release: 2.80a
+[    2.188087] Setting default values for core params
+[    2.188124] Finished setting default values for core params
+[    2.388559] Using Buffer DMA mode
+[    2.388580] Periodic Transfer Interrupt Enhancement - disabled
+[    2.388600] Multiprocessor Interrupt Enhancement - disabled
+[    2.388618] OTG VER PARAM: 0, OTG VER FLAG: 0
+[    2.388643] Dedicated Tx FIFOs mode
+[    2.389437] 
+[    2.389451] WARN::dwc_otg_hcd_init:1072: FIQ DMA bounce buffers: virt = ffffffc009ef9000 dma = 0x00000000f7810000 len=9024
+[    2.389504] FIQ FSM acceleration enabled for :
+[    2.389504] Non-periodic Split Transactions
+[    2.389504] Periodic Split Transactions
+[    2.389504] High-Speed Isochronous Endpoints
+[    2.389504] Interrupt/Control Split Transaction hack enabled
+[    2.389615] 
+[    2.389627] WARN::hcd_init_fiq:496: MPHI regs_base at ffffffc009acd000
+[    2.389684] dwc_otg 3f980000.usb: DWC OTG Controller
+[    2.389740] dwc_otg 3f980000.usb: new USB bus registered, assigned bus number 1
+[    2.389802] dwc_otg 3f980000.usb: irq 74, io mem 0x00000000
+[    2.389865] Init: Port Power? op_state=1
+[    2.389883] Init: Power Port (0)
+[    2.390362] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 5.15
+[    2.390393] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    2.390419] usb usb1: Product: DWC OTG Controller
+[    2.390441] usb usb1: Manufacturer: Linux 5.15.92-v8 dwc_otg_hcd
+[    2.390464] usb usb1: SerialNumber: 3f980000.usb
+[    2.391406] hub 1-0:1.0: USB hub found
+[    2.391504] hub 1-0:1.0: 1 port detected
+[    2.393640] usbcore: registered new interface driver usb-storage
+[    2.393673] i2c_dev: i2c /dev entries driver
+[    2.398261] sdhci: Secure Digital Host Controller Interface driver
+[    2.398286] sdhci: Copyright(c) Pierre Ossman
+[    2.398867] sdhci-pltfm: SDHCI platform and OF driver helper
+[    2.401818] ledtrig-cpu: registered to indicate activity on CPUs
+[    2.402355] hid: raw HID events driver (C) Jiri Kosina
+[    2.402591] usbcore: registered new interface driver usbhid
+[    2.402615] usbhid: USB HID core driver
+[    2.403034] ashmem: initialized
+[    2.411131] xt_time: kernel timezone is -0000
+[    2.411342] ipip: IPv4 and MPLS over IPv4 tunneling driver
+[    2.412093] gre: GRE over IPv4 demultiplexor driver
+[    2.412234] ipt_CLUSTERIP: ClusterIP Version 0.8 loaded successfully
+[    2.412299] Initializing XFRM netlink socket
+[    2.413112] NET: Registered PF_INET6 protocol family
+[    2.415341] Segment Routing with IPv6
+[    2.415428] In-situ OAM (IOAM) with IPv6
+[    2.416736] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.418240] ip6_gre: GRE over IPv6 tunneling driver
+[    2.434291] bpfilter: Loaded bpfilter_umh pid 126
+[    2.435384] NET: Registered PF_PACKET protocol family
+[    2.435490] NET: Registered PF_KEY protocol family
+[    2.435660] Bridge firewalling registered
+[    2.435800] 8021q: 802.1Q VLAN Support v1.8
+[    2.435921] Key type dns_resolver registered
+[    2.435971] Key type ceph registered
+[    2.436685] libceph: loaded (mon/osd proto 15/24)
+[    2.436710] mctp: management component transport protocol core
+[    2.436729] NET: Registered PF_MCTP protocol family
+[    2.438421] registered taskstats version 1
+[    2.438480] Loading compiled-in X.509 certificates
+[    2.439242] Key type .fscrypt registered
+[    2.439265] Key type fscrypt-provisioning registered
+[    2.455853] uart-pl011 3f201000.serial: cts_event_workaround enabled
+[    2.456116] 3f201000.serial: ttyAMA0 at MMIO 0x3f201000 (irq = 99, base_baud = 0) is a PL011 rev2
+[    2.460361] bcm2835-aux-uart 3f215040.serial: there is not valid maps for state default
+[    2.462810] printk: console [ttyS0] disabled
+[    2.462967] 3f215040.serial: ttyS0 at MMIO 0x3f215040 (irq = 71, base_baud = 31250000) is a 16550
+[    2.497756] Indeed it is in host mode hprt0 = 00021501
+[    2.498335] printk: console [ttyS0] enabled
+[    2.629648] bcm2835-wdt bcm2835-wdt: Broadcom BCM2835 watchdog timer
+[    2.631164] bcm2835-power bcm2835-power: Broadcom BCM2835 power domains driver
+[    2.634446] mmc-bcm2835 3f300000.mmcnr: mmc_debug:0 mmc_debug2:0
+[    2.635281] mmc-bcm2835 3f300000.mmcnr: DMA channel allocated
+[    2.662852] sdhost: log_buf @ (____ptrval____) (c4352000)
+[    2.672595] usb 1-1: new high-speed USB device number 2 using dwc_otg
+[    2.673764] Indeed it is in host mode hprt0 = 00001101
+[    2.734746] mmc0: sdhost-bcm2835 loaded - DMA enabled (>1)
+[    2.740031] of_cfs_init
+[    2.740609] of_cfs_init: OK
+[    2.741397] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    2.746752] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    2.747951] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+[    2.749188] cfg80211: failed to load regulatory.db
+[    2.753174] Waiting for root device /dev/mmcblk0p2...
+[    2.775050] mmc0: host does not support reading read-only switch, assuming write-enable
+[    2.779714] mmc0: new high speed SDXC card at address 0001
+[    2.782114] mmcblk0: mmc0:0001 GC2QT 59.6 GiB 
+[    2.788567] mmc1: new high speed SDIO card at address 0001
+[    2.789256]  mmcblk0: p1 p2 p3 p4 < p5 p6 >
+[    2.791753] mmcblk0: mmc0:0001 GC2QT 59.6 GiB
+[    2.802834] VFS: Mounted root (squashfs filesystem) readonly on device 179:2.
+[    2.807448] devtmpfs: mounted
+[    2.825429] Freeing unused kernel memory: 6848K
+[    2.826258] Run /sbin/init as init process
+[    2.861160] usb 1-1: New USB device found, idVendor=0424, idProduct=2514, bcdDevice= b.b3
+[    2.862328] usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    2.864404] hub 1-1:1.0: USB hub found
+[    2.865123] hub 1-1:1.0: 4 ports detected
+[    3.149606] usb 1-1.1: new high-speed USB device number 3 using dwc_otg
+[    3.239137] usb 1-1.1: New USB device found, idVendor=0424, idProduct=2514, bcdDevice= b.b3
+[    3.240313] usb 1-1.1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    3.242341] hub 1-1.1:1.0: USB hub found
+[    3.243078] hub 1-1.1:1.0: 3 ports detected
+[    3.321706] usb 1-1.2: new high-speed USB device number 4 using dwc_otg
+[    3.407024] EXT4-fs (mmcblk0p3): recovery complete
+[    3.409361] EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
+[    3.413151] usb 1-1.2: New USB device found, idVendor=2357, idProduct=0109, bcdDevice= 2.00
+[    3.414345] usb 1-1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    3.415359] usb 1-1.2: Product: 802.11n NIC 
+[    3.415975] usb 1-1.2: Manufacturer: Realtek 
+[    3.416593] usb 1-1.2: SerialNumber: 00e04c000001
+[    3.454984] EXT4-fs (mmcblk0p5): recovery complete
+[    3.457313] EXT4-fs (mmcblk0p5): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
 Mounting...
-[    4.128231] overlayfs: "xino" feature enabled using 32 upper inode bits.
+[    3.476349] overlayfs: "xino" feature enabled using 32 upper inode bits.
 Device file system
 Change root !!
-[    4.565036] usb 1-1.1.1: new high-speed USB device number 5 using dwc_otg
-[    4.654907] usb 1-1.1.1: New USB device found, idVendor=0424, idProduct=7800, bcdDevice= 3.00
-[    4.656296] usb 1-1.1.1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    4.046600] usb 1-1.1.1: new high-speed USB device number 5 using dwc_otg
 mount: mounting devfs on /dev failed: Device or resource busy
-[    4.925504] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): No External EEPROM. Setting MAC Speed
-[    4.977676] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): int urb period 64
+[    4.136417] usb 1-1.1.1: New USB device found, idVendor=0424, idProduct=7800, bcdDevice= 3.00
+[    4.137630] usb 1-1.1.1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
 chpasswd: password for 'root' changed
+[    4.272683] random: crng init done
 
 XCFGD Configurator - wait 5
 
-[    5.091245] EXT4-fs (mmcblk0p6): recovery complete
-[    5.093508] EXT4-fs (mmcblk0p6): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
+[    4.330871] EXT4-fs (mmcblk0p6): recovery complete
+[    4.332913] EXT4-fs (mmcblk0p6): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
 Waiting it for getting ready to work..
 Daemon Running...
-DBG:main                :649  TEMPORARY FILE - SYNC : /var/tmp/xcfgXr4AoZk
+[    4.406886] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): No External EEPROM. Setting MAC Speed
+[    4.457862] lan78xx 1-1.1.1:1.0 (unnamed net_device) (uninitialized): int urb period 64
+DBG:main                :649  TEMPORARY FILE - SYNC : /var/tmp/xcfgXeb6ytm
 DBG:main                :673  XML1 : /etc/config.xml
 DBG:main                :669  DEV : /config/db
 DBG:main                :665  STANDADLONE MODE
-DBG:main                :752  TEMPORARY DIRECTORY = (/var/tmp/186)
+DBG:main                :752  TEMPORARY DIRECTORY = (/var/tmp/184)
 MSG:xml_storage_open    :1222 /config/db Physical Information = ( 4 x 128 Kbytes + 2 x 1024 Kbytes ) 4 
 DBG:xml_storage_open    :1253 /config/db has been opened
 MSG:xml_storage_open    :1262 FILE /config/db SIZE=2621440 
-DBG:xml_storage_open    :1306 HEADER[ 0 ] FLAGS=0 DIRTY=0 
+DBG:xml_storage_open    :1306 HEADER[ 0 ] FLAGS=0 DIRTY=1 
 DBG:xml_storage_open    :1306 HEADER[ 1 ] FLAGS=0 DIRTY=0 
-DBG:xml_storage_open    :1306 HEADER[ 2 ] FLAGS=0 DIRTY=1 
+DBG:xml_storage_open    :1306 HEADER[ 2 ] FLAGS=0 DIRTY=0 
 DBG:xml_storage_open    :1306 HEADER[ 3 ] FLAGS=0 DIRTY=0 
 MSG:xml_storage_open    :1312 xml_storage_open : HEADER ANALSYS [4/4] 
 MSG:xml_storage_open    :1320 xml_storage_open : HEADER LOCATION = ( 00000000 00020000 00040000 00060000 )
@@ -538,49 +553,49 @@ MSG:xml_storage_open    :1351 DATA[ 1 ] has 8 blocks
 MSG:xml_storage_open    :1364 xml_storage_open : DATA LOCATION = ( 00080000 00180000 )
 DBG:xml_storage_open    :1386 /config/db configured and prepared before 
 DBG:_xml_storage_header_print:862  [[DUMP]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
 DBG:_xml_storage_header_print:862  [[BROKEN FIXUP]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
 DBG:_xml_storage_header_print:862  [[DIRTY+ONDIRTY CHECK]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
 DBG:_xml_storage_header_print:862  [[RECOVER BLOCK PROCESS]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
 DBG:_xml_storage_header_print:862  [[DIRTY BLOCK PROCESS]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
 DBG:_xml_storage_header_print:862  [[FINALLY WRITTEN]]
-DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=e90 size=b8b 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=24a3 size=885 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=c2ea size=888 
-DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=8fe2 size=936 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=8e23 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=7833 size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=f19a size=933 
 DBG:_xml_storage_header_print:870  ===========
-DBG:_xml_storage_header_fetch:767  DIRTY HEADER[ 2  ] START = 0x60000 / DATA OFFSET = 524288 FLAG=0000 
-MSG:xml_storage_validate:1440 HEADER[2 ]::MAGIC=OK 
-MSG:xml_storage_validate:1441 HEADER[2 ]::RSIZE=2184 
-MSG:xml_storage_validate:1442 HEADER[2 ]::START=80000 
-MSG:xml_storage_validate:1443 HEADER[2 ]::CRC  =c2ea 
-MSG:xml_storage_validate:1493 Temporary XML file name : (/var/tmp/186/config.xml) 
-DBG:xml_storage_validate:1507 /etc/config.xml write 2184/2184 
-MSG:xml_storage_validate:1519 STORAGE VALIDATED [2] 
+DBG:_xml_storage_header_fetch:767  DIRTY HEADER[ 0  ] START = 0x20000 / DATA OFFSET = 524288 FLAG=0000 
+MSG:xml_storage_validate:1440 HEADER[0 ]::MAGIC=OK 
+MSG:xml_storage_validate:1441 HEADER[0 ]::RSIZE=2358 
+MSG:xml_storage_validate:1442 HEADER[0 ]::START=80000 
+MSG:xml_storage_validate:1443 HEADER[0 ]::CRC  =8fe2 
+MSG:xml_storage_validate:1493 Temporary XML file name : (/var/tmp/184/config.xml) 
+DBG:xml_storage_validate:1507 /etc/config.xml write 2358/2358 
+MSG:xml_storage_validate:1519 STORAGE VALIDATED [0] 
 DBG:config_xml_merge    :401  VERSION (1.0.0.1 vs 1.0.0.1) 
 DBG:config_xml_merge    :404  CURRENTLY LATEST VERSION
 3
@@ -590,7 +605,7 @@ DBG:config_xml_merge    :404  CURRENTLY LATEST VERSION
 
 DATE 
 
-Sun Oct 30 12:00:00 UTC 2022
+Wed Mar  1 12:00:00 UTC 2023
 
 Logging daemon
 
@@ -618,68 +633,62 @@ SSH key setup in /root/.ssh
 SSH daemon
 
 
+RASPBERRY PI SPECIFIC INIT
+
+
+LPPS 
+
+
 INIT FILE STARTS ...
 
 640x480x32bpp pitch 2560 type 0 visual 2 colors 16777216 pixtype 8
-[WLAN] RTK Loading modules...
-[   11.407708] 8192eu: loading out-of-tree module taints kernel.
-[   11.639100] usbcore: registered new interface driver rtl8192eu
+[WLAN] Loading all WLAN modules...
+[   10.672143] 8192eu: loading out-of-tree module taints kernel.
+[   10.906227] usbcore: registered new interface driver rtl8192eu
+[   11.388502] RTW: module init start
+[   11.389024] RTW: rtl88x2bu v5.13.1-20-gbd7c7eb9d.20210702_COEX20210316-18317b7b
+[   11.390043] RTW: rtl88x2bu BT-Coex version = COEX20210316-18317b7b
+[   11.391098] usbcore: registered new interface driver rtl88x2bu
+[   11.391917] RTW: module init ret=0
 [WLAN] Building up /var/tmp/wpa_supplicant/1.conf
+ifconfig: SIOCSIFHWADDR: Operation not permitted
 [WLAN] Running WPA Suppplicant !!
 Successfully initialized wpa_supplicant
 ioctl[SIOCSIWAP]: Operation not permitted
 Waiting Connect .. 0
 Waiting Connect .. 1
 Waiting Connect .. 2
-ifconfig: SIOCSIFHWADDR: Operation not permitted
+Waiting Connect .. 3
+Waiting Connect .. 4
+Waiting Connect .. 5
+Waiting Connect .. 6
+Waiting Connect .. 7
 IPv4 DHCP ...
 Waiting IP .. 0
 Waiting IP .. 1
 Waiting IP .. 2
+[   24.641110] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
 Waiting IP .. 3
 Waiting IP .. 4
 [WLAN] BRCM Loading modules...
-[   23.087385] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
-[   23.089453] usbcore: registered new interface driver brcmfmac
-[   23.095574] brcmfmac mmc1:0001:1: Direct firmware load for brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.bin failed with error -2
-[   23.300018] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
-[   23.301454] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
-[   23.318573] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6 wl0: Feb 27 2018 03:15:32 version 7.45.154 (r684107 CY) FWID 01-4fbe0b04
-[   24.655761] ------------[ cut here ]------------
-[   24.656417] WARNING: CPU: 2 PID: 9 at net/wireless/sme.c:756 __cfg80211_connect_result+0x3a4/0x3e0
-[   24.657638] Modules linked in: brcmfmac brcmutil 8192eu(O)
-[   24.658398] CPU: 2 PID: 9 Comm: kworker/u8:0 Tainted: G           O      5.15.92-v8 #4
-[   24.659452] Hardware name: Raspberry Pi 3 Model B Plus Rev 1.3 (DT)
-[   24.660288] Workqueue: cfg80211 cfg80211_event_work
-[   24.660958] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   24.661890] pc : __cfg80211_connect_result+0x3a4/0x3e0
-[   24.662585] lr : __cfg80211_connect_result+0x310/0x3e0
-[   24.663277] sp : ffffffc008063cd0
-[   24.663720] x29: ffffffc008063cd0 x28: 0000000000000000 x27: 0000000000000000
-[   24.664683] x26: ffffffe120dbc640 x25: dead000000000100 x24: dead000000000122
-[   24.665647] x23: ffffff8003de98d8 x22: ffffffc008063d08 x21: ffffff80037ce000
-[   24.666609] x20: ffffff8003de9800 x19: ffffff8007790818 x18: 0000000000000000
-[   24.667571] x17: 0000000e48078689 x16: 0000000000000016 x15: ffffffe1200db498
-[   24.668534] x14: 0000000000000068 x13: 0000000000000000 x12: b5815ab402600001
-[   24.669497] x11: fffffffe001de200 x10: 0000000000000000 x9 : ffffffe11f440bf4
-[   24.670460] x8 : ffffffc008063bc0 x7 : 0000000000000000 x6 : ffffffe120bba000
-[   24.671423] x5 : ffffffe120bba5c8 x4 : ffffffc008063bc0 x3 : 0000000000000000
-[   24.672386] x2 : 0000000000000000 x1 : 0000000100000000 x0 : 0000000000000000
-[   24.673348] Call trace:
-[   24.673681]  __cfg80211_connect_result+0x3a4/0x3e0
-[   24.674332]  cfg80211_process_wdev_events+0x120/0x190
-[   24.675017]  cfg80211_process_rdev_events+0x30/0x50
-[   24.675676]  cfg80211_event_work+0x2c/0x40
-[   24.676230]  process_one_work+0x1d8/0x460
-[   24.676775]  worker_thread+0x154/0x460
-[   24.677283]  kthread+0x140/0x160
-[   24.677721]  ret_from_fork+0x10/0x20
-[   24.678209] ---[ end trace 416db1d7ac1025e7 ]---
-[   24.694236] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+[   28.029417] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[   28.031416] usbcore: registered new interface driver brcmfmac
+[   28.037468] brcmfmac mmc1:0001:1: Direct firmware load for brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.bin failed with error -2
+[   28.254108] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[   28.255579] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[   28.262019] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6 wl0: Nov  1 2021 00:37:25 version 7.45.241 (1a2f2fa CY) FWID 01-703fd60
 [WLAN] Building up /var/tmp/hostapd/1.conf
-[WLAN] Running AP Suppplicant !!
+[ETH] Ethernet and Bridge
+[   29.622757] lan78xx 1-1.1.1:1.0 eth0: kevent 4 may have been dropped
+[   29.627293] 8021q: adding VLAN 0 to HW filter on device eth0
+[   29.636030] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   29.662683] br0: port 1(eth0) entered blocking state
+[   29.663456] br0: port 1(eth0) entered disabled state
+[   29.664788] device eth0 entered promiscuous mode
+[AP] Adding APs...
+[WLAN] Running AP Suppplicant for wlan2
 random: Trying to read entropy from /dev/random
-Configuration file: /var/tmp/hostapd/1.conf
+Configuration file: /var/tmp/hostapd/0.conf
 nl80211: Using driver-based roaming
 nl80211: TDLS supported
 nl80211: Supported cipher 00-0f-ac:1
@@ -692,137 +701,146 @@ nl80211: Supported vendor command: vendor_id=0x1018 subcmd=1
 nl80211: Use separate P2P group interface (driver advertised support)
 nl80211: Enable multi-channel concurrent (driver advertised support)
 nl80211: use P2P_DEVICE support
-nl80211: interface wlan1 in phy phy1
-nl80211: Set mode ifindex 9 iftype 3 (AP)
-nl80211: Setup AP(wlan1) - device_ap_sme=1 use_monitor=0
-nl80211: Subscribe to mgmt frames with AP handle 0x11568d80 (device SME)
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=04
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=0501
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=0503
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=0504
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=06
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=08
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=09
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=0a
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=11
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=12
-nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x11568d80 match=7f
-nl80211: Register frame type=0xb0 (WLAN_FC_STYPE_AUTH) nl_handle=0x11568d80 match=
-nl80211: Enable Probe Request reporting nl_preq=0x11568970
-nl80211: Register frame type=0x40 (WLAN_FC_STYPE_PROBE_REQ) nl_handle=0x11568970 match=
+nl80211: interface wlan2 in phy phy1
+nl80211: Set mode ifindex 10 iftype 3 (AP)
+nl80211: Setup AP(wlan2) - device_ap_sme=1 use_monitor=0
+nl80211: Subscribe to mgmt frames with AP handle 0x1b463d70 (device SME)
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=04
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=0501
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=0503
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=0504
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=06
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=08
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=09
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=0a
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=11
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=12
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x1b463d70 match=7f
+nl80211: Register frame type=0xb0 (WLAN_FC_STYPE_AUTH) nl_handle=0x1b463d70 match=
+nl80211: Enable Probe Request reporting nl_preq=0x1b463960
+nl80211: Register frame type=0x40 (WLAN_FC_STYPE_PROBE_REQ) nl_handle=0x1b463960 match=
 rfkill: initial event: idx=1 type=1 op=0 soft=0 hard=0
-nl80211: Add own interface ifindex 9 (ifidx_reason -1)
-nl80211: if_indices[16]: 9(-1)
-nl80211: Add own interface ifindex 10 (i[   24.971755] br0: port 1(wlan1) entered blocking state
-fidx_rea[   24.972516] br0: port 1(wlan1) entered disabled state
-son 9)
-nl80211: if_indices[16]: 9(-1) 10(9)
-nl80211: A[   24.973824] device wlan1 entered promiscuous mode
-dding interface wlan1 into bridge br0
+nl80211: Add own interface ifindex 11 (ifidx_reason 10)
+nl80211[   29.993298] br0: port 2(wlan2) entered blocking state
+: if_indices[16]: 11(10)[   29.994223] br0: port 2(wlan2) entered disabled state
+
+nl80211: Add own interface ifindex 10 (ifidx_reason -1)
+nl80211: if_indices[16]: 11(10) 10(-1[   29.995990] device wlan2 entered promiscuous mode
+)
+nl80211: Adding interface wlan2 into bridge br0
 phy: phy1
 BSS count 1, BSSID mask 00:00:00:00:00:00 (0 bits)
+wlan2: interface state UNINITIALIZED->COUNTRY_UPDATE
+Previous country code 00, new country code US 
+Continue interface setup after channel list update
+ctrl_iface not configured!
+[BRIDGE] Bridge adding wlan2
+brctl: bridge br0: Device or resource busy
+[WLAN] Running AP Suppplicant for wlan1
+random: Trying to read entropy from /dev/random
+Configuration file: /var/tmp/hostapd/1.conf
+nl80211: Supported cipher 00-0f-ac:1
+nl80211: Supported cipher 00-0f-ac:5
+nl80211: Supported cipher 00-0f-ac:2
+nl80211: Supported cipher 00-0f-ac:4
+nl80211: Supported cipher 00-0f-ac:6
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4106
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4107
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: interface wlan1 in phy phy0
+nl80211: Set mode ifindex 9 iftype 3 (AP)
+nl80211: Setup AP(wlan1) - device_ap_sme=1 use_monitor=0
+nl80211: Subscribe to mgmt frames with AP handle 0x3f2ddd70 (device SME)
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=04
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=0501
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=0503
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=0504
+...
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=11
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=12
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x3f2ddd70 match=7f
+nl80211: Register frame type=0xb0 (WLAN_FC_STYPE_AUTH) nl_handle=0x3f2ddd70 match=
+nl80211: Enable Probe Request reporting nl_preq=0x3f2dd960
+nl80211: Register frame type=0x40 (WLAN_FC_STYPE_PROBE_REQ) nl_handle=0x3f2dd960 match=
+rfkill: initial event: idx=0 type=1 op=0 soft=0 hard=0
+nl80211: Add own interface ifindex 11 (ifidx_reason 9)
+nl80211: if_indices[16]: 11(9)
+nl80211: Add own interface ifindex 9 (ifidx_reason -1)
+nl80211: if_indices[16]: 11(9) 9(-1)
+nl80211: Adding interface wlan1 into bridge br0
+phy: phy0
+BSS count 1, BSSID mask 00:00:00:00:00:00 (0 bits)
+Using existing control interface directory.
 wlan1: interface state UNINITIALIZED->COUNTRY_UPDATE
 Previous country code 00, new country code US 
 Continue interface setup after channel list update
 ctrl_iface not configured!
-[ETH] Ethernet
-[   25.807380] 8021q: adding VLAN 0 to HW filter on device eth0
-[BRIDGE] Bridge creation....
-brctl: bridge br0: File exists
-[   25.840779] br0: port 2(eth0) entered blocking state
-[   25.841566] br0: port 2(eth0) entered disabled state
-[   25.842871] device eth0 entered promiscuous mode
+[BRIDGE] Bridge adding wlan1
 brctl: bridge br0: Device or resource busy
+[   32.230610] br0: port 1(eth0) entered blocking state
+[   32.231330] br0: port 1(eth0) entered forwarding state
+[   32.233086] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
+[WLAN] WiFi Monitoring Start
 [IPV6] START .....
 Waiting for My IP6...
 Waiting 0
 ip: either "dev" is duplicate, or "permanent" is garbage
+[   33.249633] cam-dummy-reg: disabling
 Waiting 1
 Waiting 2
+[   35.183937] IPv6: ADDRCONF(NETDEV_CHANGE): wlan2: link becomes ready
+[   35.185128] br0: port 2(wlan2) entered blocking state
+[   35.185855] br0: port 2(wlan2) entered forwarding state
 Waiting 3
-[   30.204926] IPv6: ADDRCONF(NETDEV_CHANGE): wlan1: link becomes ready
-[   30.206128] br0: port 1(wlan1) entered blocking state
-[   30.206831] br0: port 1(wlan1) entered forwarding state
-[   30.207938] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
+[   36.177226] IPv6: ADDRCONF(NETDEV_CHANGE): wlan1: link becomes ready
+[   36.178456] br0: port 3(wlan1) entered blocking state
+[   36.179217] br0: port 3(wlan1) entered forwarding state
 Waiting 4
 Waiting 5
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
-br0       Link encap:Ethernet  HWaddr B8:27:EB:XX:XX:XX
+br0       Link encap:Ethernet  HWaddr B8:27:EB:AA:C5:B5  
           inet addr:100.5.5.1  Bcast:100.5.5.255  Mask:255.255.255.0
           inet6 addr: fe80::ba27:ebff:feaa:c5b5/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:6 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:3 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:9 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:596 (596.0 B)
+          RX bytes:318 (318.0 B)  TX bytes:774 (774.0 B)
 
-eth0      Link encap:Ethernet  HWaddr B8:27:EB:XX:XX:XX
-          UP BROADCAST MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+eth0      Link encap:Ethernet  HWaddr B8:27:EB:FF:90:E0  
+          inet6 addr: fe80::ba27:ebff:feff:90e0/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:5 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:16 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          RX bytes:772 (772.0 B)  TX bytes:1360 (1.3 KiB)
 
-ip6_vti0  Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
-          NOARP  MTU:1332  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+...
 
-ip6gre0   Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
-          NOARP  MTU:1448  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-ip6tnl0   Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
-          NOARP  MTU:1452  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-lo        Link encap:Local Loopback  
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          inet6 addr: ::1/128 Scope:Host
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:360 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:360 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:26356 (25.7 KiB)  TX bytes:26356 (25.7 KiB)
-
-sit0      Link encap:IPv6-in-IPv4  
-          NOARP  MTU:1480  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-tunl0     Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-48-00-00-00-00-00-00-00-00-00  
-          NOARP  MTU:1480  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-wlan0     Link encap:Ethernet  HWaddr D4:6E:0E:XX:XX:XX
+wlan0     Link encap:Ethernet  HWaddr D4:6E:0E:13:B9:8C  
           inet addr:10.5.5.36  Bcast:10.5.5.255  Mask:255.255.255.0
           inet6 addr: fe80::d66e:eff:fe13:b98c/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:5 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:14 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:22 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:15 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:1327 (1.2 KiB)  TX bytes:2278 (2.2 KiB)
+          RX bytes:3170 (3.0 KiB)  TX bytes:2380 (2.3 KiB)
 
-wlan1     Link encap:Ethernet  HWaddr B8:27:EB:XX:XX:XX
+wlan1     Link encap:Ethernet  HWaddr D6:6E:0E:13:B9:8C  
+          inet6 addr: fe80::d46e:eff:fe13:b98c/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:8 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan2     Link encap:Ethernet  HWaddr B8:27:EB:AA:C5:B5  
           inet6 addr: fe80::ba27:ebff:feaa:c5b5/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:12 errors:0 dropped:0 overruns:0 carrier:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:1112 (1.0 KiB)
+          RX bytes:0 (0.0 B)  TX bytes:706 (706.0 B)
 
 
 
@@ -830,10 +848,13 @@ nameserver 127.0.0.1
 nameserver 10.5.5.1
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 QT initialization
-[   33.761112] cam-dummy-reg: disabling
 
 Linux Terminal ...
 
+
+NTP 
+
+Wed, 12 Apr 2023 04:34:52 +0000
  
 
 _____                 _                              _____ _____ 
@@ -847,6 +868,7 @@ _____                 _                              _____ _____
 
 
 
+bash-5.1# 
 bash-5.1# 
 bash-5.1# 
 
@@ -1834,7 +1856,7 @@ wlanap0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 |  tap0     |  MBSP VM     | Virtual ethernet interface created by MBSP VM |
 |  br0      |  Laptop      | Bridge interface to tie up network interfaces |
 |  wlan0    |  Realtek Dongle | 802.11a WLAN Client interface           |
-|  wlanap0  |  Realtek Dongle | 802.11a WLAN AP interface               |
+|  wlanap0  |  Realtek Dongle | 802.11g/n WLAN AP interface             |
 |  wlan240  |  Laptop(PCI) | 802.11g WLAN AP interface - Atheros PCI card |
 
 

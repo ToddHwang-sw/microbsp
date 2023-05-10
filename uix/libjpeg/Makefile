@@ -1,6 +1,6 @@
-DIR=jpegsrc.v9d
+DIR=jpegsrc.v9e
 LOC=http://www.ijg.org/files
-REALDIR=jpeg-9d
+REALDIR=jpeg-9e
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -14,5 +14,3 @@ prepare:
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
-
-

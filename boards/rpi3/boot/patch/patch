@@ -1,0 +1,70 @@
+diff -uNr u-boot-v2022.10-rc3-orig/board/raspberrypi/rpi/rpi.c u-boot-v2022.10-rc3/board/raspberrypi/rpi/rpi.c
+--- u-boot-v2022.10-rc3-orig/board/raspberrypi/rpi/rpi.c	2022-08-22 15:54:48.000000000 -0700
++++ u-boot-v2022.10-rc3/board/raspberrypi/rpi/rpi.c	2023-04-12 12:13:09.084913279 -0700
+@@ -506,11 +506,13 @@
+ 
+ int ft_board_setup(void *blob, struct bd_info *bd)
+ {
++#ifdef CONFIG_DM_VIDEO
+ 	int node;
+ 
+ 	node = fdt_node_offset_by_compatible(blob, -1, "simple-framebuffer");
+ 	if (node < 0)
+ 		fdt_simplefb_add_node(blob);
++#endif
+ 
+ #ifdef CONFIG_EFI_LOADER
+ 	/* Reserve the spin table */
+diff -uNr u-boot-v2022.10-rc3-orig/cmd/Kconfig u-boot-v2022.10-rc3/cmd/Kconfig
+--- u-boot-v2022.10-rc3-orig/cmd/Kconfig	2022-08-22 15:54:48.000000000 -0700
++++ u-boot-v2022.10-rc3/cmd/Kconfig	2023-04-12 12:13:09.088913290 -0700
+@@ -146,6 +146,14 @@
+ 	  command.  This provides information of which options are enabled on
+ 	  the running U-Boot.
+ 
++config CMD_XCONFIG
++	bool "xcfg"
++	default n
++	help
++	  Micro BSP specific configuration block parser
++	  It will be refered ahead of the choice of kernel to boot up. 
++	  CRC check will be performed 
++
+ config CMD_CONSOLE
+ 	bool "coninfo"
+ 	default y
+diff -uNr u-boot-v2022.10-rc3-orig/cmd/Makefile u-boot-v2022.10-rc3/cmd/Makefile
+--- u-boot-v2022.10-rc3-orig/cmd/Makefile	2022-08-22 15:54:48.000000000 -0700
++++ u-boot-v2022.10-rc3/cmd/Makefile	2023-04-12 12:13:09.088913290 -0700
+@@ -43,6 +43,7 @@
+ obj-$(CONFIG_CMD_CLK) += clk.o
+ obj-$(CONFIG_CMD_CLS) += cls.o
+ obj-$(CONFIG_CMD_CONFIG) += config.o
++obj-$(CONFIG_CMD_XCONFIG) += xconfig.o
+ obj-$(CONFIG_CMD_CONITRACE) += conitrace.o
+ obj-$(CONFIG_CMD_CONSOLE) += console.o
+ obj-$(CONFIG_CMD_CPU) += cpu.o
+diff -uNr u-boot-v2022.10-rc3-orig/cmd/nvedit.c u-boot-v2022.10-rc3/cmd/nvedit.c
+--- u-boot-v2022.10-rc3-orig/cmd/nvedit.c	2022-08-22 15:54:48.000000000 -0700
++++ u-boot-v2022.10-rc3/cmd/nvedit.c	2023-04-12 12:14:14.505094763 -0700
+@@ -318,6 +318,20 @@
+ 		return _do_env_set(0, 3, (char * const *)argv, H_PROGRAMMATIC);
+ }
+ 
++/*
++ * MBSP - This function is totally different from env_set in that it incurs
++ * callback fucntion. The callback function only responds to a flag "H_INTERACTIVE".
++ */
++int xenv_set(const char *varname, const char *varvalue)
++{
++    const char * const argv[4] = { "setenv", varname, varvalue, NULL };
++
++    if (varvalue == NULL || varvalue[0] == '\0')
++        return 1;
++
++    return _do_env_set(0, 3, (char * const *)argv, H_INTERACTIVE);
++}
++
+ #ifndef CONFIG_SPL_BUILD
+ static int do_env_set(struct cmd_tbl *cmdtp, int flag, int argc,
+ 		      char *const argv[])
