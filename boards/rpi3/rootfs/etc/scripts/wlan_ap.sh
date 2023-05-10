@@ -83,6 +83,8 @@ case $1 in
 		brctl addbr $BRINTF
 		brctl addif $BRINTF $ETHINTF
 
+		[ ! -f /proc/natbyp ] || echo "dev $ETHINTF lan" > /proc/natbyp
+
 		echo "[AP] Adding APs..."
 		cnt=0
 		rc=1
