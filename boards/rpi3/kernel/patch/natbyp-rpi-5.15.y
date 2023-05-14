@@ -1,6 +1,6 @@
-diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
---- linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-09 23:10:58.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
+--- linux-rpi-5.15.y-orig/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-14 14:17:07.297109859 -0700
 @@ -29,6 +29,9 @@
  #include <linux/of_mdio.h>
  #include <linux/of_net.h>
@@ -37,9 +37,9 @@ diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/d
  	status = netif_rx(skb);
  	if (status != NET_RX_SUCCESS)
  		netif_dbg(dev, rx_err, dev->net,
-diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
---- linux-rpi-5.15.y-original/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-04-29 15:06:21.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
+--- linux-rpi-5.15.y-orig/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-14 14:17:07.297109859 -0700
 @@ -958,6 +958,16 @@
  	__u16			network_header;
  	__u16			mac_header;
@@ -57,9 +57,9 @@ diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/incl
  #ifdef CONFIG_KCOV
  	u64			kcov_handle;
  #endif
-diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
---- linux-rpi-5.15.y-original/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-09 09:31:31.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
+--- linux-rpi-5.15.y-orig/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
++++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-14 14:17:07.297109859 -0700
 @@ -0,0 +1,35 @@
 +#ifndef __NATBYP_HEADERS__
 +
@@ -96,18 +96,18 @@ diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/includ
 +extern void natbyp_fastev( int evt , void * param);
 +
 +#endif /* __NATBYP_HEADERS__ */
-diff -uNr linux-rpi-5.15.y-original/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
---- linux-rpi-5.15.y-original/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/Makefile	2023-04-29 15:06:21.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
+--- linux-rpi-5.15.y-orig/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/core/Makefile	2023-05-14 14:17:07.297109859 -0700
 @@ -37,3 +37,4 @@
  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
  obj-$(CONFIG_OF)	+= of_net.o
 +obj-$(CONFIG_NET_NATBYP)	+= natbyp.o
-diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
---- linux-rpi-5.15.y-original/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-10 10:15:28.000000000 -0700
-@@ -0,0 +1,2375 @@
+diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
+--- linux-rpi-5.15.y-orig/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
++++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-14 14:19:56.481976178 -0700
+@@ -0,0 +1,2345 @@
 +#if defined(CONFIG_NETFILTER)
 +#include <linux/module.h>
 +#include <linux/types.h>
@@ -124,6 +124,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +#include <linux/skbuff.h>
 +#include <linux/if_ether.h>
 +#include <linux/etherdevice.h>
++#include <linux/interrupt.h>
 +#include <linux/netdevice.h>
 +#include <linux/ip.h>
 +#include <linux/tcp.h>
@@ -148,7 +149,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +/*
 + * For stability reason, we replace list processing by simple iteration. 
 + */
-+#define NATBYP_VERSION	"ver 1.5.0 (2023.05)"
++#define NATBYP_VERSION	"ver 1.5.1 (2023.05)"
 +
 +/*
 + * NAT socket flag 
@@ -160,50 +161,66 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + * Log mode 
 + */
 +#define NATBYP_VERBOSE_NONE		0x0
-+#define NATBYP_VERBOSE_STATE	0x1
-+#define NATBYP_VERBOSE_PACKET	0x2
++#define NATBYP_VERBOSE_FLOW		0x1
++#define NATBYP_VERBOSE_STATE	0x2
++#define NATBYP_VERBOSE_PACKET	0x3
 +
 +/* verbose flag */
-+//static __u16 natbyp_verbose = NATBYP_VERBOSE_NONE;
-+static __u16 natbyp_verbose = NATBYP_VERBOSE_STATE;
++static u16 natbyp_verbose = NATBYP_VERBOSE_STATE;
 +
 +/* printk */
-+#define natbyp_print(fmt,args...)	\
++#define natbyp_print(level, fmt,args...)	\
 +		{ \
-+		if( natbyp_verbose > NATBYP_VERBOSE_NONE) \
-+			printk(KERN_INFO "[NATBYP :%-12.12s] I "fmt,__FUNCTION__,##args); \
++		if( natbyp_verbose >= NATBYP_VERBOSE_ ##level ) \
++			printk(KERN_INFO "[NATBYP : %-12.12s] I "fmt,__FUNCTION__,##args); \
 +		}
-+#define natbyp_errmsg(fmt,args...)	printk(KERN_INFO "[NATBYP :%-12.12s] E "fmt,__FUNCTION__,##args)
++#define natbyp_errmsg(fmt,args...)	printk(KERN_INFO "[NATBYP : %-12.12s] E "fmt,__FUNCTION__,##args)
 +
 +/* device table structure */
 +typedef struct {
-+	unsigned short used;
++	u8 used;
 +	struct net_device *dev;
-+}natbyp_dev_t;
++}__attribute__((aligned)) natbyp_dev_t;
++
++/* size of socket queue */
++#define MAX_SKB_QUEUE 			256
++
++/* queue structure to store socket buffer */
++typedef struct {
++
++	/*
++ 	* Socket buffers temporarily saved in this list to keep packet order. 
++ 	*/
++	u32 head;
++	u32 tail;
++	u32 occu;   /* occupancy */
++
++	struct sk_buff *skbs[ MAX_SKB_QUEUE ];
++}__attribute__((aligned)) skbq_t;
 +
 +/* NAT TCP flow container */
 +typedef struct {
-+
 +#define NATBYP_MAGIC_4BYTES		0xbabeface
-+	unsigned int magic;	/* magic data */
-+	unsigned short index;	/* index */
-+	unsigned short used;	/* used bit */
++	u32 magic;       /* magic data */
++	u8  used;        /* used bit */
++	u16 index;       /* index */
 +
 +	/* NAT information */
-+	unsigned int ip;	/* destination IP */
-+	unsigned short port;	/* destination Port */
++	u32 ip;          /* destination IP */
++	u16 port;        /* destination Port */
++	u32 sip;         /* source IP */
++	u16 sport;       /* source Port */
 +
-+	unsigned int sip;	/* source IP */
-+	unsigned short sport;	/* source Port */
-+	unsigned int dir;	/* flow direction - TOLAN ? FROMLAN ? */
++	u8  dir;	       /* flow direction - NATBYP_UL/NATBYP_DL */
 +
-+	unsigned int nated_ip;		/* NAT destination IP */
-+	unsigned short nated_port;	/* NAT destination Port */
-+	unsigned short nated_sport;	/* NAT source Port - only available in UL traffic */
-+	unsigned char nated_ethhdr[ETH_HLEN];	/* NAT ethernet header */
++	u32 nated_ip;		            /* NAT destination IP */
++	u16 nated_port;	            /* NAT destination Port */
++	u16 nated_sport;	            /* NAT source Port - only available in UL traffic */
++	u8  nated_ethhdr[ETH_HLEN];	/* NAT ethernet header */
++
 +	natbyp_dev_t *nated_dev; /* NAT device */
 +#define NATDEV(x)	(struct net_device *)(((x)->nated_dev)->dev)
-+	unsigned int mapped; 		/* NAT bypass mapped !! */
++	u8  mapped; 		/* NAT bypass mapped !! */
 +
 +	/* operation statistics */
 +	struct {
@@ -211,45 +228,32 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +#define NATBYP_SLOT_REMOVE			0x02
 +#define NATBYP_SLOT_BYPASS_READY	0x03
 +#define NATBYP_SLOT_BYPASS_ACT		0x04
-+		unsigned int mode;	/* mode */
++		u8 mode;	/* mode */
 +
 +		/* marking state */
 +#define NATBYP_BYPASS_MARK_INIT   	0x00
 +#define NATBYP_BYPASS_MARK_READY  	0x01
 +#define NATBYP_BYPASS_MARK_WAIT   	0x02
 +#define NATBYP_BYPASS_MARK_DONE   	0x03
-+		unsigned int mark_state;
++		u8 mark_state;
 +
 +		/*
 +		 * At least more subsequent transactions should happen at each stage. 
 +		 * With no extra transactions, the counter keeps descreasing and it 
 +		 * will free up corresponding flow resource. 
 +		 */
-+		int expiry_count;
++		s32 expiry_count;
 +	}op;
 +
-+	unsigned int count;	/* number of skbs */
-+	unsigned int dropnum;	/* packets dropped */
-+	unsigned int bytes;	/* packet bytes */
-+	unsigned int bw;	/* latest bandwidth */
++	u32 count;	    /* number of skbs */
++	u32 dropnum;   /* packets dropped */
++	u32 bytes;     /* packet bytes */
++	u32 bw;        /* latest bandwidth */
++	u8  ack;       /* Is this flow for ACK ? */
 +
-+	/*
-+ 	* Only ACK flow is detected
-+ 	*/
-+	unsigned int ack;	/* TCP ACK flow */
++	skbq_t skbq;  /* socket buffer queue */
 +
-+	spinlock_t lock;	/* flow lock */
-+
-+	/*
-+ 	* Socket buffers temporarily saved in this list 
-+ 	* 	to keep packet order. 
-+ 	*/
-+	struct {
-+		void * head;
-+		void * tail;
-+		int counter;
-+	} natbyp_wlist;
-+}__attribute__((aligned)) nat_flow_t;
++}__attribute__((aligned)) natbyp_flow_t;
 +
 +/*
 + * NATBYP_UL/NATBYP_DL  - include/net/natbyp.h 
@@ -269,8 +273,8 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +static struct net_device *wandev_db = NULL;
 +static struct net_device *landev_db[ MAX_LAN_DEV ]  = {0,};
 +
-+static char   wandev_name[ NAMELEN ] = {0,};
-+static char   landev_name[ MAX_LAN_DEV ][ NAMELEN ] = {{0,},};
++static u8   wandev_name[ NAMELEN ] = {0,};
++static u8   landev_name[ MAX_LAN_DEV ][ NAMELEN ] = {{0,},};
 +
 +/* NAT TCP flow information */
 +typedef struct {
@@ -282,40 +286,52 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +	/* 2 seconds */
 +	#define DEFAULT_NATBYP_SLOT_MAX_EXPIRY 4
-+	int expiry_max_count;
++	s32 expiry_max_count;
 +
 +	/* system drop number */
-+	unsigned int dev_drop[ NUM_FLOW_TYPE ];
-+
-+	/* flow wait queue */
-+	struct task_struct *flow_task[ NUM_FLOW_TYPE ];
-+	wait_queue_head_t flow_waitq[ NUM_FLOW_TYPE ];
-+	unsigned int flow_task_id[ NUM_FLOW_TYPE ]; /* thread parameter */
++	u32 pkt_drop[ NUM_FLOW_TYPE ];
 +
 +	/* Intentional ACK window update */
-+	unsigned int window_update;
++	u8  window_update;
 +
-+#define __MAX_WINDOW_SIZE__	32
-+#define __MIN_WINDOW_SIZE__	2
-+#define __MAX_WINDOW_LIMIT__	(0xfff0)
-+#define __DEFAULT_WINDOW_SIZE__	4
-+	unsigned int window_scale;
++#define MAX_WINDOW_SIZE	32
++#define MIN_WINDOW_SIZE	2
++#define MAX_WINDOW_LIMIT	(0xfff0)
++#define DEFAULT_WINDOW_SIZE	4
++	u32 window_scale;
 +
 +	/*
 + 	* NATBYP works for ACK packet ??
 + 	*/
-+	unsigned int ack_handle;
++	u8  ack_handle;
 +
-+	/* device forwarder tasks */
-+	struct task_struct *dev_task[ NUM_FLOW_TYPE ];
-+	wait_queue_head_t dev_waitq[ NUM_FLOW_TYPE ];
-+	unsigned int dev_task_id[ NUM_FLOW_TYPE ]; /* thread parameter */
++	/* 
++	 * flow forwarder
++	 *
++	 *
++	 * FLOW[0]   QUEUE  ----+
++	 * FLOW[1]   QUEUE  ---+|
++	 * FLOW[2]   QUEUE  -+ ||  +-->  FLOW TASK[ UL ] --> DEV QUEUE[ UL ]
++	 * FLOW[3]   QUEUE  -+-++--+ 
++	 * ...               | |   +-->  FLOW TASK[ DL ] --> DEV QUEUE[ DL ]
++	 * FLOW[N-1] QUEUE  -+ |
++	 * FLOW[N]   QUEUE  ---+
++	 *
++	 *
++	 */
++	struct task_struct *flow_task[ NUM_FLOW_TYPE ];
++	wait_queue_head_t flow_waitq[ NUM_FLOW_TYPE ];
++	u32 flow_task_id[ NUM_FLOW_TYPE ]; /* thread parameter */
++
++	/* Counter variables how many packets are processed */
++	u32 pkt_count[ NUM_FLOW_TYPE ];
 +
 +	/* Device array */
 +	natbyp_dev_t ndevs[ MAX_NATBYP_DEVS ];
-+}__attribute__((aligned)) nat_flow_info_t;
 +
-+static nat_flow_info_t nat_flow_info;
++}__attribute__((aligned)) natbyp_db_t;
++
++static natbyp_db_t * natbyp_db;
 +
 +// String operation .. 
 +static __inline__ int _strcmp(const char *a, const char *b) 
@@ -337,9 +353,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		return NULL;
 +
 +	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( nat_flow_info.ndevs[ index ].used &&
-+				nat_flow_info.ndevs[ index ].dev == netdev ) {
-+			return &nat_flow_info.ndevs[ index ];
++		if ( natbyp_db->ndevs[ index ].used &&
++				natbyp_db->ndevs[ index ].dev == netdev ) {
++			return &natbyp_db->ndevs[ index ];
 +		}
 +	}
 +	return NULL;
@@ -349,12 +365,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +static int natbyp_dev_insert( struct net_device *netdev )
 +{
 +	int index;
-+	//unsigned short attr;
 +
 +	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( !nat_flow_info.ndevs[ index ].used ) {
-+			nat_flow_info.ndevs[ index ].dev = netdev;
-+			nat_flow_info.ndevs[ index ].used = 1;
++		if ( !natbyp_db->ndevs[ index ].used ) {
++			natbyp_db->ndevs[ index ].dev = netdev;
++			natbyp_db->ndevs[ index ].used = 1;
 +			return index;
 +		}
 +	}
@@ -368,10 +383,10 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	int index;
 +
 +	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( nat_flow_info.ndevs[ index ].used &&
-+				(nat_flow_info.ndevs[ index ].dev == netdev) ) {
-+			nat_flow_info.ndevs[ index ].dev = NULL;
-+			nat_flow_info.ndevs[ index ].used = 0;
++		if ( natbyp_db->ndevs[ index ].used &&
++				(natbyp_db->ndevs[ index ].dev == netdev) ) {
++			natbyp_db->ndevs[ index ].dev = NULL;
++			natbyp_db->ndevs[ index ].used = 0;
 +			return index;
 +		}
 +	}
@@ -379,73 +394,83 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* RESET COUNTER */
-+static __inline__ void natbyp_flow_reset_counter( nat_flow_t * flow )
++static __inline__ void natbyp_reset_counter( natbyp_flow_t * flow )
 +{
-+	flow->op.expiry_count = nat_flow_info.expiry_max_count;
++	flow->op.expiry_count = natbyp_db->expiry_max_count;
 +}
 +
-+/* INIT */
-+static __inline__ void natbyp_flow_skb_init( nat_flow_t *flow )
++/* CREATE */
++static __inline__ int natbyp_skbq_init( skbq_t *queue )
 +{
-+	flow->natbyp_wlist.counter = 0;
-+	flow->natbyp_wlist.head = 
-+	flow->natbyp_wlist.tail = NULL;
++	queue->head = 0;
++	queue->tail = 0;
++	queue->occu = 0;
++
++	return 0;
 +}
 +
 +/* EMPTY */
-+static __inline__ int natbyp_flow_skb_empty( nat_flow_t *flow )
++static __inline__ int natbyp_skbq_empty( skbq_t *queue )
 +{
-+	/* empty ?? */
-+	return (flow->natbyp_wlist.head == NULL)? 1: 0;
++	return (queue->tail == queue->head)? 1 : 0;
 +}
 +
 +/* PUT */
-+static __inline__ void natbyp_queue_skb_put( nat_flow_t *flow , struct sk_buff *skb )
++static __inline__ int natbyp_skbq_put( skbq_t *queue, struct sk_buff *skb )
 +{
-+	if ( !flow || !skb ) 
-+		return ;
++	int ntail;
 +
-+	skb->natbyp_wlist = NULL; /* initialize */
++	if ( !queue || !skb ) 
++		return -1;
 +
-+	if ( !flow->natbyp_wlist.head ) {
-+		/* first list */
-+		flow->natbyp_wlist.head = 
-+		flow->natbyp_wlist.tail = skb;
-+	} else {
-+		struct sk_buff *pskb = flow->natbyp_wlist.head;
-+		pskb->natbyp_wlist = skb;
-+		flow->natbyp_wlist.head = skb;
-+	}
-+	++ flow->natbyp_wlist.counter; /* stat */
++	/* next tail */
++	ntail = queue->tail + 1;
++	if (ntail >= MAX_SKB_QUEUE) 
++		ntail = 0;
++
++	if (ntail == queue->head)
++		return -1; /* queue full */
++
++	queue->skbs[ queue->tail ] = skb;
++
++	/* update tail */
++	queue->tail = ntail;
++
++	++ (queue->occu);
++
++	return 0; /* success !! */
 +}
 +
 +/* GET */
-+static __inline__ struct sk_buff * natbyp_queue_skb_get( nat_flow_t *flow )
++static __inline__ struct sk_buff * natbyp_skbq_get( skbq_t *queue )
 +{
 +	struct sk_buff * pskb;
++	int nhead;
 +
-+	if ( !flow ) 
-+		return NULL ;
++	if ( !queue ) 
++		return NULL;
 +
-+	if ( !flow->natbyp_wlist.tail ) {
-+		pskb = NULL; /* empty list */
-+	} else {
-+		pskb = flow->natbyp_wlist.tail;
-+		flow->natbyp_wlist.tail = pskb->natbyp_wlist; /* next link */
-+		pskb->natbyp_wlist = NULL; /* orphanize current skb */
-+		/* end of list */
-+		if ( !flow->natbyp_wlist.tail ) {
-+			flow->natbyp_wlist.tail = 
-+			flow->natbyp_wlist.head = NULL;
-+		}
-+		-- flow->natbyp_wlist.counter; /* stat */
-+	}
++	/* empty queue ? */
++	if (queue->head == queue->tail)
++		return NULL;
 +
-+	return pskb;
++	/* next head */
++	nhead = queue->head + 1;
++	if (nhead >= MAX_SKB_QUEUE) 
++		nhead = 0;
++
++	pskb = queue->skbs[ queue->head ];
++
++	/* update head */
++	queue->head = nhead;
++
++	-- (queue->occu);
++
++	return pskb; /* success !! */
 +}
 +
 +/* test function  - check NAT information is changed !! */
-+static __inline__ int tcp_flow_changed( nat_flow_t * flow , struct iphdr *iph , struct tcphdr *tcph )
++static __inline__ int tcp_flow_changed( natbyp_flow_t * flow , struct iphdr *iph , struct tcphdr *tcph )
 +{
 +	int result = 1; /* changed by default */
 +
@@ -470,7 +495,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* printout function */
-+static void printout_natbyp_packet(const char *title, nat_flow_t * flow, struct sk_buff *skb, int off, int ack)
++static void printout_natbyp_packet(const char *title, natbyp_flow_t * flow, struct sk_buff *skb, int off, int ack)
 +{
 +	u32 saddr;
 +	u32 daddr;
@@ -517,7 +542,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		tag = '?';
 +	}
 +
-+	natbyp_print("[FLOW[%-2d] %3s %-3d %-8s [%-42s] %-4d %04x %04x %08x %08x %c\n",
++	natbyp_print(PACKET, "FLOW[%-2d] %3s %-3d %-8s [%-42s] %-4d %04x %04x %08x %08x %c\n",
 +		flow->index,
 +		title,
 +		flow->count,
@@ -538,7 +563,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + */
 +
 +/* nat flow status */
-+static char * nat_flow_status[5] = 
++static char * natbyp_flow_status[5] = 
 +			{ 
 +			"UNKNOWN" ,
 +			"TEST"    ,
@@ -551,20 +576,17 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +#define natbyp_flow_ok(f)	(((f)->magic) == NATBYP_MAGIC_4BYTES)
 +
 +/* 16 -- maximum NAT flow */
-+#define MAX_NAT_FLOW 	16
++#define MAX_NATBYP_FLOW 	16
 +
 +/* NAT TCP flow container */
-+static nat_flow_t nat_flow[ MAX_NAT_FLOW ] = { {0,}, };
-+
-+/* Device flow - Payload/ACK */
-+static nat_flow_t dev_queue[ NUM_FLOW_TYPE ] = {{0,}, };
++static natbyp_flow_t * natbyp_flow = NULL ;
 +
 +/* types for flow table - payload/ack */
 +/*  for better readability */
 +typedef struct {
-+	unsigned char name[12];
-+	nat_flow_t *q[2]; /* 0 -> HIGH / 1 -> LOW */
-+}nat_flow_table_t;
++	u8 name[12];
++	natbyp_flow_t *q[2]; /* 0 -> HIGH / 1 -> LOW */
++}natbyp_flow_table_t;
 +
 +/*
 + * Global flags 
@@ -693,23 +715,23 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +#ifdef DEBUG_TIME_ESTIMATE
 +/* obtaining current time */
-+static __u32 natbyp_current_time(void)
++static u32 natbyp_current_time(void)
 +{
 +	struct timeval tv;
 +
 +	do_gettimeofday(&tv);
-+	return (__u32)( ((__u32)tv.tv_sec * 1000000) + (__u32)tv.tv_usec );
++	return (u32)( ((u32)tv.tv_sec * 1000000) + (u32)tv.tv_usec );
 +}
 +#endif /* ..._TIME_ESTIMATE */
 +
 +/* zapping */
 +static void natbyp_squeeze( void )
 +{
-+	nat_flow_t * flow;
-+	int ix;
++	natbyp_flow_t * flow;
++	int index;
 +	
-+	for( ix = 0; ix < MAX_NAT_FLOW; ix++ ) {
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);	
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
 +
 +		/* check sanity !! */
 +		if ( !flow->used )
@@ -728,17 +750,17 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* defined below.. */
-+static int handle_single_packet( nat_flow_t * flow , struct sk_buff *skb );
++static int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb );
 +
 +/* this is the same function to natbyp_get for ACK packet */
-+static nat_flow_t * natbyp_ack_get( struct iphdr * iph , struct tcphdr *tcph )
++static natbyp_flow_t * natbyp_ack_get( struct iphdr * iph , struct tcphdr *tcph )
 +{
-+	nat_flow_t * flow;
-+	int ix;
++	natbyp_flow_t * flow;
++	int index;
 +	int matched;
 +
-+	for( ix = 0; ix < MAX_NAT_FLOW; ix++ ) {
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);	
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
 +	
 +		if ( !flow->used )
 +			continue;
@@ -757,15 +779,15 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	return NULL;
 +}
 +
-+/* return corresponding nat_flow container */
-+static nat_flow_t * natbyp_get( struct iphdr * iph , struct tcphdr *tcph , int dir )
++/* return corresponding natbyp_flow container */
++static natbyp_flow_t * natbyp_get( struct iphdr * iph , struct tcphdr *tcph , int dir )
 +{
-+	nat_flow_t * flow;
-+	int ix;
++	natbyp_flow_t * flow;
++	int index;
 +	int matched;
 +
-+	for( ix = 0; ix < MAX_NAT_FLOW; ix++ ) {
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);	
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
 +	
 +		if ( !flow->used )
 +			continue;
@@ -791,26 +813,26 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* allocate an empty queue */
-+static nat_flow_t * natbyp_allocate( struct iphdr * iph , struct tcphdr *tcph , int dir )
++static natbyp_flow_t * natbyp_allocate( struct iphdr * iph , struct tcphdr *tcph , int dir )
 +{
-+	int ix;
-+	nat_flow_t *flow;
++	int index;
++	natbyp_flow_t *flow;
 +	u32 saddr, daddr;
 +
 +	/* Search empty slot */
-+	for( ix = 0; ix < MAX_NAT_FLOW; ix++ ) {
-+		if ( !nat_flow[ ix ].used ) 
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
++		if ( !natbyp_flow[ index ].used ) 
 +			break;
 +	}
 +
 +	/* No empty flow */
-+	if ( ix == MAX_NAT_FLOW ) {
++	if ( index == MAX_NATBYP_FLOW ) {
 +
 +		u32 saddr = ntohl(iph->saddr);
 +		u32 daddr = ntohl(iph->daddr);
 +
 +		/* Overflow may happen !! */
-+		natbyp_print("ALLOC FAIL::OVERFLOW (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d)\n",
++		natbyp_errmsg("ALLOC FAIL::OVERFLOW (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d)\n",
 +			(saddr & 0xff000000) >> 24,
 +			(saddr & 0x00ff0000) >> 16,
 +			(saddr & 0x0000ff00) >> 8,
@@ -825,15 +847,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	}
 +
 +	/* find & fetch ... */
-+	flow = (nat_flow_t *)&(nat_flow[ ix ]);
++	flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
 +	if ( !flow ) {
 +		natbyp_errmsg("ALLOC FAIL::FREE NODE BROKEN!\n");
-+		return NULL;
-+	}
-+
-+	/* sanity check */
-+	if ( flow->used ) {
-+		natbyp_errmsg("ALLOC FAIL::FLOW USED BROKEN(%d) !\n",flow->index);
 +		return NULL;
 +	}
 +
@@ -865,10 +881,6 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +	/* flow direction */
 +	flow->dir  			= dir;
-+	flow->op.mode       = NATBYP_SLOT_TEST; /* Initial state */
-+	/* flow detection counter */
-+	natbyp_flow_reset_counter( flow );
-+	flow->op.mark_state = NATBYP_BYPASS_MARK_INIT;
 +	flow->dropnum       = 0;
 +	flow->count         = 0;
 +	flow->bytes         = 0;
@@ -880,9 +892,13 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	/* flow type */
 +	flow->ack           = 0; /* undetermined */
 +
-+	spin_lock_init( &(flow->lock) );
++	/* flow detection counter */
++	natbyp_reset_counter( flow );
++	flow->op.mode       = NATBYP_SLOT_TEST; /* Initial state */
++	flow->op.mark_state = NATBYP_BYPASS_MARK_INIT;
 +
-+	natbyp_flow_skb_init( flow );
++	/* queue init */
++	natbyp_skbq_init( &(flow->skbq) );
 +
 +	/* Now we use this */
 +	flow->used = 1;
@@ -891,7 +907,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	daddr = ntohl(iph->daddr);
 +
 +	/* Overflow may happen !! */
-+	natbyp_print("FLOW[%-2d] ALLOCED (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d) \n",
++	natbyp_print(STATE, "FLOW[%-2d] ALLOCED (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d) \n",
 +		flow->index,
 +		(saddr & 0xff000000) >> 24,
 +		(saddr & 0x00ff0000) >> 16,
@@ -905,16 +921,16 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		ntohs(tcph->dest)); 
 +
 +	/* start timer */
-+	if ( !timer_pending(&(nat_flow_info.timer)) ) {
-+		mod_timer( &(nat_flow_info.timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
-+		natbyp_print("FLOW TIMER START \n");
++	if ( !timer_pending(&(natbyp_db->timer)) ) {
++		mod_timer( &(natbyp_db->timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
++		natbyp_print(STATE, "FLOW TIMER START \n");
 +	}
 +
 +	return flow;
 +}
 +
 +/* insert a skb into queue */
-+static void natbyp_insert( nat_flow_t * flow, struct sk_buff * skb )
++static void natbyp_flow_map( natbyp_flow_t * flow, struct sk_buff * skb )
 +{
 +	if (!flow)
 +		return;
@@ -930,16 +946,17 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* delete a skb from queue */
-+static int natbyp_delete( struct sk_buff * skb )
++static int natbyp_flow_unmap( struct sk_buff * skb )
 +{
-+	nat_flow_t * flow;
++	natbyp_flow_t * flow;
 +
 +	if ( !skb->natbyp_flow ) {
++		natbyp_errmsg("SKB ALREADY UNMAPPED\n");
 +		return 1;
 +	}
 +
 +	/* flow */
-+	flow = (nat_flow_t *)(skb->natbyp_flow);
++	flow = (natbyp_flow_t *)(skb->natbyp_flow);
 +
 +	/* sanity check */
 +	if ( !natbyp_flow_ok( flow ) ) {
@@ -962,15 +979,15 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +}
 +
 +/* timer function */
-+static void nat_flow_mon( struct timer_list *unused )
++static void natbyp_flow_mon( struct timer_list *unused )
 +{
 +	int counter = 0;
-+	nat_flow_t *flow;
-+	int ix;
++	natbyp_flow_t *flow;
++	int index;
 +
-+	for(ix = 0;ix < MAX_NAT_FLOW;ix++ ) {
++	for(index = 0;index < MAX_NATBYP_FLOW;index++ ) {
 +
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
 +
 +		if( !flow ) {
 +			natbyp_errmsg("BROKEN LIST\n");
@@ -1002,10 +1019,10 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			/* Current slot is allocated and 
 + 				it is placed on a state monitoring any more next packets come in */
 +			if ( --flow->op.expiry_count <= 0 ) {
-+				/* This state is prevented by "natbyp_flow_reset_counter" call.  */
++				/* This state is prevented by "natbyp_reset_counter" call.  */
 +				flow->op.mode = NATBYP_SLOT_REMOVE;
 +				flow->mapped = 0;  /* unmapped !! */
-+				natbyp_print("FLOW[%-2d] REMOVE *SILENT FLOW* \n", flow->index);
++				natbyp_print(STATE, "FLOW[%-2d] REMOVE *SILENT FLOW* \n", flow->index);
 +			} else {
 +				/* state transition */
 +				switch( flow->op.mode ) {
@@ -1030,15 +1047,28 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +							flow->op.mark_state = NATBYP_BYPASS_MARK_READY;
 +							flow->op.mode = NATBYP_SLOT_BYPASS_ACT;
 +				
-+							natbyp_print("FLOW[%-2d] BYPASS_READY_ACT\n", flow->index );
++							natbyp_print(STATE, "FLOW[%-2d] BYPASS_READY_ACT\n", flow->index );
 +						} else {
 +							/* Not mapped !! */
 +							flow->op.mode = NATBYP_SLOT_REMOVE;
 +							flow->mapped = 0;
-+							natbyp_print("FLOW[%-2d] CANCELLED *NO EGRESS* \n", flow->index);
++							natbyp_print(STATE, "FLOW[%-2d] CANCELLED *NO EGRESS* \n", flow->index);
 +						}
 +					} else {
-+						natbyp_print("FLOW[%-2d] BYPASS_ACT\n", flow->index );
++						/* NATBYP_SLOT_BYPASS_ACT */
++
++						/* status of 3 queues - flow/dev[UL]/dev[DL] */
++						skbq_t *skbq  = &(flow->skbq);
++						natbyp_print(FLOW, "FLOW[%-2d] BYPASS_ACT %6u %6d %6d\n", 
++							flow->index, 
++						   	skbq->occu,
++							natbyp_db->pkt_count[ NATBYP_DL ],
++							natbyp_db->pkt_count[ NATBYP_UL ]);
++
++						/* clear counters */
++						natbyp_db->pkt_count[ NATBYP_UL ] = 0;
++						natbyp_db->pkt_count[ NATBYP_DL ] = 0;
++
 +					}
 +					break;
 +				}
@@ -1047,30 +1077,86 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +		case NATBYP_SLOT_REMOVE:
 +			flow->used = 0; /* free up */
-+			/* natbyp_print("FLOW[%-2d] FLUSHED \n", flow->index ); */
++			natbyp_print(STATE, "FLOW[%-2d] FLUSHED \n", flow->index );
 +			break;
 +
 +		default:
-+			natbyp_print("Unknown working mode [%d/%d] \n", flow->index , flow->op.mode );
++			natbyp_errmsg("Unknown working mode [%d/%d] \n", flow->index , flow->op.mode );
 +		}
 +	}
 +
 +	/* next timer setup if any flow is pending */
 +	if( counter ) {
 +		/* next timer wake up - 1 second later */
-+		mod_timer( &(nat_flow_info.timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
++		mod_timer( &(natbyp_db->timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
 +	}else{
 +		natbyp_squeeze(); /* 2012/02/13 */
-+		natbyp_print("FLOW TIMER STOP\n");
++		natbyp_print(STATE, "FLOW TIMER STOP\n");
 +	}
 +}
 +
++/* shoot skb to driver transmit function */
++static int natbyp_skb_send( struct sk_buff * skb , u32 dir )
++{
++	natbyp_flow_t *flow;
++	int rc;
++	natbyp_dev_t *ndev;
++
++	/* flow */
++	flow = (natbyp_flow_t *)(skb->natbyp_flow);
++	if( !flow ) {
++		natbyp_errmsg("SKB BROKEN\n");
++		skb->dev = NULL; /* unlink device ~ */
++		dev_kfree_skb( skb );
++		return -1;
++	}
++
++	/* not used flow */
++	if ( !flow->used ) {
++		natbyp_errmsg("FLOW[%-2d] UNUSED\n", flow->index);
++		skb->dev = NULL; /* unlink device ~ */
++		dev_kfree_skb( skb );
++		return -1;
++	}
++
++	/* make it single node */
++	/* very important !! - It prevents chained resource free at kfree_skb() */
++	skb_orphan(skb);
++
++	/* check device */
++	ndev = (natbyp_dev_t *)flow->nated_dev;
++	if ( !ndev->used ) {
++		natbyp_errmsg("FLOW[%-2d] DEVICE CRASH (len=%d)\n",flow->index,skb->len);
++		skb->dev = NULL; /* unlink device ~ */
++		dev_kfree_skb( skb );
++		return -1;
++	}
++
++	natbyp_reset_counter( flow ); /* update counter */
++
++	/* device queue transmit */
++	rc = dev_queue_xmit( skb );
++	switch (rc) {
++	case NETDEV_TX_OK:
++		break;
++	case NETDEV_TX_BUSY:
++		natbyp_errmsg("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname(dir));
++		++ natbyp_db->pkt_drop[ dir ];
++		break;
++	default:
++		natbyp_errmsg("FLOW[%-2d] DEV_TX_DROP[%s] %08x \n", flow->index, dirname(dir), rc);
++		++ natbyp_db->pkt_drop[ dir ];
++		break;
++	}
++
++	return 0;
++}
++
++
 +/* handle one packet */
-+static int handle_single_packet( nat_flow_t * flow , struct sk_buff *skb )
++static int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb )
 +{
 +	struct net_device * dev;
-+	unsigned long flags;
-+	nat_flow_t *dqueue;
 +
 +	if( !flow || !skb )
 +		return 0;
@@ -1078,7 +1164,13 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	/* output device */
 + 	dev = skb->dev;
 +	if ( !dev ) {
-+		natbyp_print("FLOW[%-2d] NULL DEV, SKB DELETED \n",flow->index);
++		natbyp_errmsg("FLOW[%-2d] NULL DEV, SKB DELETED \n",flow->index);
++		dev_kfree_skb( skb );
++		return 0;
++	}
++
++	if (!((flow->dir == NATBYP_UL) || (flow->dir == NATBYP_DL))) {
++		natbyp_errmsg("FLOW[%-2d] INVALID DIRECTION\n",flow->index);
 +		dev_kfree_skb( skb );
 +		return 0;
 +	}
@@ -1086,30 +1178,24 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + 	/* No need to checksum */ 
 +	skb->ip_summed = CHECKSUM_UNNECESSARY;
 +
-+	/*
-+ 	* Depending on type of packet (payload/ACK) 
-+ 	* 	flow is differentiated !!
-+ 	*/
-+	dqueue = &dev_queue[ flow->dir ];
-+
 +	/* update window size */
 +	/* only ACK frame is applied */
-+	if( nat_flow_info.window_update ) {
++	if( natbyp_db->window_update ) {
 +		struct iphdr *iph;
 +		struct tcphdr *tcph;
 +	
 +		/* IP header */
 +		iph = (struct iphdr *)(skb->data + sizeof(struct ethhdr));
 +		/* TCP header */
-+		tcph = (struct tcphdr *)( (char*)iph + sizeof(struct iphdr) );
++		tcph = (struct tcphdr *)((char*)iph + sizeof(struct iphdr));
 +
 +		if( NATBYP_IS_TCP_ACK(iph,tcph) ) {
 +			u16 newwin;
 +
 +			/* IP & TCP header */
-+			newwin = (u16)( tcph->window * nat_flow_info.window_scale ) ;
++			newwin = (u16)( tcph->window * natbyp_db->window_scale ) ;
 +
-+			if( (newwin < __MAX_WINDOW_LIMIT__) && 
++			if( (newwin < MAX_WINDOW_LIMIT) && 
 +					(newwin > tcph->window )) {
 +				/* boom up window size */
 +				tcph->window = newwin;
@@ -1117,15 +1203,16 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +				tcph->check = tcphdr_csum( tcph , iph );
 +			}
 +		}
-+	} /* if( nat_flow_info.window_update ) ... */
++	} /* if( natbyp_db->window_update ) ... */
 +
-+	/* insert into device queue queue */
-+	spin_lock_irqsave( &dqueue->lock , flags );
-+	natbyp_queue_skb_put( dqueue , skb );
-+	spin_unlock_irqrestore( &dqueue->lock , flags );
++	natbyp_reset_counter( flow ); /* update counter */
 +
-+	/* wake up process */
-+	wake_up_interruptible( &(nat_flow_info.dev_waitq[ flow->dir ]) );
++	if (natbyp_skb_send( skb, flow->dir )) {
++		natbyp_errmsg("FLOW[%-2d] OVERFLOW\n", flow->index);
++		/* definitely this will cause TCP traffic shutdown */
++		dev_kfree_skb( skb );
++		return 0;
++	}
 +
 +	return 1; /* 1 packet */
 +}
@@ -1133,165 +1220,64 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +/* actual packet handler ... */
 +static int handle_packets( int dir )
 +{
-+	int ix;
++	int index;
 +	int count;
-+	unsigned long flags;
-+	nat_flow_t *flow;
++	natbyp_flow_t *flow;
 +	struct sk_buff *skb;
 +	
 +	count = 0;
 +
 +	/* navigates outstanding flow in round-robin manner */		
-+	for(ix = 0; ix < MAX_NAT_FLOW; ix++) {
++	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
 +
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
 +
 +		/* Check 1 */
 +		if ( !flow->used )
 +			continue;
++
++		/* filtering matching flow type.  */
++		if ( flow->dir != dir )
++			continue; 
 +
 +		/* Check 2 */
 +		if ( !((flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
 +				(flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)) )
 +			continue;
 +
-+		/* BYPASS !! */
-+
-+		/* check empty list */
-+		if ( natbyp_flow_skb_empty( flow ) )
-+			continue;
-+
-+		/* filtering matching flow type.  */
-+		if ( flow->dir != dir )
-+			continue; 
-+
 +		/* processing packets */
-+		do {
-+			spin_lock_irqsave( &flow->lock , flags );
-+			skb = natbyp_queue_skb_get( flow );
-+			spin_unlock_irqrestore( &flow->lock , flags );
-+			if ( skb )
-+				count += handle_single_packet( flow , skb );
-+		} while( skb );
++		skb = natbyp_skbq_get( &(flow->skbq) );
++		if ( skb )
++			count += handle_single_packet( flow , skb );
 +
-+	} /* for( ix ... */
++	} /* for( index ... */
 +
 +	return count;
 +}
 +
-+/* Device forwarder */
-+static int dev_forwarder( void * arg )
-+{
-+	nat_flow_t *flow;
-+	struct sk_buff * skb;
-+	int rc;
-+	int count;
-+	nat_flow_t *q;
-+	natbyp_dev_t *ndev;
-+	unsigned long flags;
-+	int dir = *(u32 *)arg; /* flow type NATBYP_UL/NATBYP_DL */
-+
-+	/* current queue */
-+	q = (nat_flow_t *)&dev_queue[ dir ];
-+
-+	count = 0;
-+
-+	//while (!kthread_should_stop()) {
-+	while (1) {
-+		spin_lock_irqsave( &q->lock , flags );
-+		skb = natbyp_queue_skb_get( q );
-+		spin_unlock_irqrestore( &q->lock , flags );
-+		if (!skb) {
-+			set_current_state(TASK_INTERRUPTIBLE);
-+			#if 0
-+			if( natbyp_verbose == NATBYP_VERBOSE_PACKET ) {
-+				if (count > 0) 
-+					natbyp_print("[%s] %d PACKETS PROCESSED \n", dirname(dir), count);
-+			}
-+			#endif
-+			wait_event_interruptible(
-+				(nat_flow_info.dev_waitq[ dir ]) , !natbyp_flow_skb_empty( q ) );
-+				
-+			count = 0;
-+			__set_current_state(TASK_RUNNING);
-+			continue;
-+		}
-+
-+		/* flow */
-+		flow = (nat_flow_t *)(skb->natbyp_flow);
-+		if( !flow ) {
-+			natbyp_errmsg("SKB BROKEN\n");
-+			continue;
-+		}
-+
-+		/* not used flow */
-+		if ( !flow->used ) {
-+			natbyp_errmsg("FLOW[%-2d] UNUSED\n", flow->index);
-+			continue;
-+		}
-+
-+		/* make it single node */
-+		/* very important !! - It prevents chained resource free at kfree_skb() */
-+		skb_orphan(skb);
-+
-+		/* check device */
-+		ndev = (natbyp_dev_t *)flow->nated_dev;
-+		if ( !ndev->used ) {
-+			natbyp_errmsg("FLOW[%-2d] DEVICE CRASH (len=%d)\n",flow->index,skb->len);
-+			skb->dev = NULL; /* unlink device ~ */
-+			dev_kfree_skb( skb );
-+			continue;
-+		}
-+
-+		++count;
-+
-+		/* device queue transmit */
-+		rc = dev_queue_xmit( skb );
-+		switch (rc) {
-+		case NETDEV_TX_OK:
-+			natbyp_flow_reset_counter( flow ); /* update counter */
-+			break;
-+		case NETDEV_TX_BUSY:
-+			natbyp_errmsg("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname(dir));
-+			++ nat_flow_info.dev_drop[ dir ];
-+			break;
-+		default:
-+			natbyp_errmsg("FLOW[%-2d] DEV_TX_DROP[%s] %08x \n", flow->index, dirname(dir), rc);
-+			++ nat_flow_info.dev_drop[ dir ];
-+			break;
-+		}
-+	} /* while(1) */
-+
-+	natbyp_print("[%s] TERMINATED \n", dirname(dir));
-+	return 0;
-+}
-+
 +static bool natbyp_any_packets( int dir )
 +{
-+	int ix;
-+	nat_flow_t *flow;
++	int index;
++	natbyp_flow_t *flow;
 +	
 +	/* navigates outstanding flow in round-robin manner */		
-+	for(ix = 0; ix < MAX_NAT_FLOW; ix++) {
++	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
 +
-+		flow = (nat_flow_t *)&(nat_flow[ ix ]);
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
 +
 +		/* Check 1 */
 +		if ( !flow->used )
 +			continue;
 +
-+		/* check empty list */
-+		if ( natbyp_flow_skb_empty( flow ) )
-+			continue;
-+
 +		/* filtering matching flow type.  */
 +		if ( flow->dir != dir )
 +			continue; 
 +
-+		if ( !natbyp_flow_skb_empty( flow ) )
++		/* if any of packets */
++		if ( !natbyp_skbq_empty(&(flow->skbq)) )
 +			return true;
 +
-+	} /* for( ix ... */
++	} /* for( index ... */
 +
 +	return false;
 +}
@@ -1300,42 +1286,40 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + * Daemon process to directly push packet to destined device. 
 + *
 + */
-+static int flow_forwarder( void * arg )
++static int natbyp_forwarder( void * arg )
 +{
 +	int count, tot_count;
 +	int dir = *(u32 *)arg;
 +
 +	tot_count = count = 0;
 +
-+	//while(!kthread_should_stop()) { /* endless loop */
-+	while(1) { /* endless loop */
++	while(!kthread_should_stop()) { /* endless loop */
++	//while(1) { /* endless loop */
++
 +		/* total sum initialize */
 +		if (!count) {
++	
 +			set_current_state(TASK_INTERRUPTIBLE);
 +
-+			#if 0
-+			if( natbyp_verbose == NATBYP_VERBOSE_PACKET ) {
-+				if (tot_count)
-+					natbyp_print("[%s] %d PACKETS PROCESSED \n", dirname(dir), tot_count);
-+			}
-+			#endif
++			/* statistics */	
++			natbyp_db->pkt_count[ dir ] += tot_count;
 +
 +			wait_event_interruptible(
-+				(nat_flow_info.flow_waitq[ dir ]), (natbyp_any_packets( dir ) == true));
++				(natbyp_db->flow_waitq[ dir ]), (natbyp_any_packets( dir ) == true));
 +
 +			tot_count = 0;
++
 +			__set_current_state(TASK_RUNNING);
 +		}
 +
 +		/* handle packets */	
 +		count = handle_packets( dir );
-+		if (!count)
-+			continue;
 +
 +		tot_count += count;
++
 +	} /* while( 1 ) */
 +
-+	natbyp_print("[%s] TERMINATED \n", dirname(dir));
++	natbyp_print(STATE, "[%s] TERMINATED \n", dirname(dir));
 +	return 0;
 +}
 +
@@ -1351,7 +1335,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	int tolandir; /* direction */
 +	struct iphdr *iph;
 +	struct tcphdr *tcph;
-+	nat_flow_t *flow;
++	natbyp_flow_t *flow;
 +	int ret = NATBYP_INSERTED; /* default */
 +
 +	if ( !skb )
@@ -1381,7 +1365,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			u32 saddr = ntohl(iph->saddr);
 +			u32 daddr = ntohl(iph->daddr);
 +
-+			natbyp_print("ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
++			natbyp_print(STATE, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
 +					(saddr & 0xff000000) >> 24,
 +					(saddr & 0x00ff0000) >> 16,
 +					(saddr & 0x0000ff00) >> 8,
@@ -1403,9 +1387,8 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	tcph = (struct tcphdr *)((char *)iph + sizeof(struct iphdr));
 +
 +	/* TCP control packet check */
-+	if ( tcph->syn | tcph->rst | tcph->fin | tcph->ece | tcph->cwr ) {
++	if ( tcph->syn | tcph->rst | tcph->fin | tcph->ece | tcph->cwr )
 +		goto normal_traffic;
-+	}
 +
 +	/*
 +	 * ACK printout
@@ -1418,11 +1401,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		break;
 +	case NATBYP_UL:
 +		if ( NATBYP_IS_TCP_ACK( iph, tcph ) ) {
-+			nat_flow_t *flow = natbyp_ack_get( iph, tcph );
++			natbyp_flow_t *flow = natbyp_ack_get( iph, tcph );
 +			if (flow) {
 +	
 +				/* ACK packet is also another type of transaction */	
-+				natbyp_flow_reset_counter( flow ); 
++				natbyp_reset_counter( flow ); 
 +
 +				if (natbyp_verbose == NATBYP_VERBOSE_PACKET) {
 +					/*
@@ -1430,6 +1413,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +				 	*/
 +					printout_natbyp_packet("ACK", flow, skb, 0, 1);
 +				}
++			
++				/* TIP: ACK traffic --> push traffic */	
++				wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
 +			}
 +		} else {
 +			goto normal_traffic;
@@ -1438,7 +1424,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	}
 +
 +	/* TCP ACK packet - no TCP data payload */
-+	if ( !nat_flow_info.ack_handle ) {
++	if ( !natbyp_db->ack_handle ) {
 +		if ( NATBYP_IS_TCP_ACK( iph, tcph ) )
 +			goto normal_traffic;
 +	}
@@ -1458,46 +1444,26 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	skb->natbyp_etime = 0;
 +#endif
 +
-+	/* check flow sanity !! */
-+	if (!flow->used) {
-+		natbyp_print("FLOW[%-2d] UNUSED FLOW\n", flow->index);
++	if (flow->op.mode == NATBYP_SLOT_REMOVE)
++		/*
++ 		* NATBYP_SLOT_REMOVE 
++ 		* 	- Slot to be deleted ( no more packets can be queued in )
++ 		*/
 +		goto normal_traffic;
-+	}
 +
-+	/* check operation mode */
-+	/*
-+ 	* NATBYP_SLOT_REMOVE 
-+ 	* 	- Slot to be deleted ( no more packets can be queued in )
-+ 	*
-+ 	*/
-+	switch( flow->op.mode ) {
-+	case NATBYP_SLOT_TEST:
-+	case NATBYP_SLOT_BYPASS_READY:
-+	case NATBYP_SLOT_BYPASS_ACT:
-+		/* insert SKB into a queue */
-+		natbyp_insert( flow , skb );
-+	
-+		natbyp_flow_reset_counter(flow);
-+		break;
-+	
-+	case NATBYP_SLOT_REMOVE:
-+		/* Do not queue current skb into a queue !! */
-+		/* State is not changed to NATBYP_SLOT_TEST right now. */
-+		/* Such an update will be done in the next packet through natbyp_allocate function. */
-+		goto normal_traffic;
-+	}
++	/* mapping skb into flow */
++	natbyp_flow_map(flow, skb);
++
++	/* resetting counter */
++	natbyp_reset_counter(flow);
 +
 +	if ( flow->op.mode == NATBYP_SLOT_BYPASS_ACT ) {
 +
-+		__u32 addr, nataddr;
-+		__u16 natport, oldport;
-+		__u32 * paddr;
++		u32 addr, nataddr;
++		u16 natport, oldport;
++		u32 * paddr;
 +
 +		char *ethh;
-+
-+		/* check activated or not !! */
-+		if ( !natbyp_activated )
-+			goto normal_traffic;
 +
 +		/*
 + 		* marking a skb 
@@ -1513,7 +1479,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			}
 +
 +			/* initialize wait queue */
-+			natbyp_flow_skb_init( flow );
++			natbyp_skbq_init( &(flow->skbq) );
 +
 +			/* Marking an socket buffer */
 +			skb->natbyp_bypassed |= NATBYP_FLAG_MARKER;
@@ -1539,12 +1505,12 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		/* configure bypass flag */
 +		skb->natbyp_bypassed |= NATBYP_FLAG_BYPASSED;
 +		
-+		/* Todd 2013/02/14 -> PPP connection bug fix */
++		/* Todd 2013/02/14 -> PPP connection bug */
 +		/* prediction ... check validity */
 +		if (unlikely((skb->data-ETH_HLEN)<skb->head)) {
 +			/* simply skip this !! */
 +			/* I do not know what this is ... */
-+			natbyp_print("FLOW[%-2d] UNDER SKB SKIP\n",flow->index);
++			natbyp_print(STATE, "FLOW[%-2d] UNDER SKB SKIP\n",flow->index);
 +			skb->natbyp_bypassed &= ~NATBYP_FLAG_BYPASSED; /* clear flag */
 +			return ret; /* !BYPASSED */
 +		}
@@ -1559,7 +1525,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			oldport    = tcph->dest;
 +			tcph->dest = flow->nated_port;
 +			/* to be changed */
-+			paddr      = (__u32 *)&(iph->daddr);
++			paddr      = (u32 *)&(iph->daddr);
 +			break;
 +		case NATBYP_UL:
 +			addr        = iph->saddr;
@@ -1569,7 +1535,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			oldport      = tcph->source;
 +			tcph->source = flow->nated_sport;
 +			/* to be changed */
-+			paddr      = (__u32 *)&(iph->saddr);
++			paddr      = (u32 *)&(iph->saddr);
 +			break;
 +		}
 +
@@ -1613,9 +1579,6 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +	if ( ret == NATBYP_BYPASSED ) {
 +
-+		/* Update counter value */
-+		natbyp_flow_reset_counter( flow ); 
-+
 +		switch( flow->op.mark_state ) {
 +		case NATBYP_BYPASS_MARK_INIT:
 +		case NATBYP_BYPASS_MARK_READY:
@@ -1629,11 +1592,16 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			*
 +			* THIS IS INTERRUPT CONTEXT !!
 + 			*/
-+			natbyp_queue_skb_put( flow , skb );
++			if (natbyp_skbq_put( &(flow->skbq), skb ) < 0) {
++				natbyp_errmsg("FLOW[%-2d] ING FLOW OVERFLOW\n", flow->index);
++
++				/* definitely this will cause TCP traffic shutdown */
++				dev_kfree_skb( skb );
++			}
 +
 +			/* Wake up !! */
 +			if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)
-+				wake_up_interruptible( &(nat_flow_info.flow_waitq[ flow->dir ]) );
++				wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
 +			break;
 +		}
 +	} /* if (ret == NATBYP_BYPASSED) */
@@ -1650,7 +1618,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	struct ethhdr *ethh;
 +	struct iphdr *iph;
 +	struct tcphdr *tcph;
-+	nat_flow_t *flow;
++	natbyp_flow_t *flow;
 +
 +	/* ethernet header */
 +	ethh = (struct ethhdr *)skb->data;
@@ -1667,7 +1635,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			u32 saddr = ntohl(iph->saddr);
 +			u32 daddr = ntohl(iph->daddr);
 +
-+			natbyp_print("ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
++			natbyp_print(STATE, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
 +					(saddr & 0xff000000) >> 24,
 +					(saddr & 0x00ff0000) >> 16,
 +					(saddr & 0x0000ff00) >> 8,
@@ -1686,7 +1654,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		return 0;
 +
 +	/* parent flow structure */
-+	flow = (nat_flow_t *)skb->natbyp_flow;
++	flow = (natbyp_flow_t *)skb->natbyp_flow;
 +
 +	/* sanity check */
 +	if ( !natbyp_flow_ok(flow) ){
@@ -1695,10 +1663,10 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	}
 +
 +	/* check current flow again */
-+	if ( (flow->op.mode == NATBYP_SLOT_REMOVE) &&
-+			(flow->count <= 0) ) {
++	if ( (flow->op.mode == NATBYP_SLOT_REMOVE) && (flow->count <= 0) ) {
 +		flow->used = 0;
-+		natbyp_print("FLOW[DECODE][%d] REMOVED \n",flow->index);
++		natbyp_errmsg("FLOW[%-2d] >> FLOW REMOVED \n",flow->index);
++		return 0;
 +	}
 +
 +#ifdef DEBUG_TIME_ESTIMATE
@@ -1721,9 +1689,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		flow->op.mark_state = NATBYP_BYPASS_MARK_DONE;
 +
 +		/* reset counter */
-+		natbyp_flow_reset_counter( flow );
++		natbyp_reset_counter( flow );
 +
-+		wake_up_interruptible( &(nat_flow_info.flow_waitq[ flow->dir ]) );
++		wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
 +	}
 +
 +	/* NAT information fills in */
@@ -1764,7 +1732,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +			nated_ip = ntohl(flow->nated_ip);
 +
-+			natbyp_print("FLOW[%-2d] %d.%d.%d.%d:%d:%s MAPPED %s \n",
++			natbyp_print(STATE, "FLOW[%-2d] %d.%d.%d.%d:%d:%s MAPPED %s \n",
 +				flow->index , 
 +				(nated_ip & 0xff000000) >> 24 , 
 +				(nated_ip & 0x00ff0000) >> 16 , 
@@ -1785,8 +1753,8 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +				!(skb->natbyp_bypassed & NATBYP_FLAG_BYPASSED) ) {
 +
 +			u32 nated_ip, _ip;
-+			unsigned int ip = 0;
-+			unsigned short port = 0;
++			u32 ip = 0;
++			u16 port = 0;
 +			char title = 'X';
 +
 +			/* check */
@@ -1810,7 +1778,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			_ip = ntohl(ip);
 +
 +			/* NAT information differs */
-+			natbyp_print("FLOW[%-2d] -- NAT CHANGE(%d.%d.%d.%d:%d -> [%c]%d.%d.%d.%d:%d)[%s -> %s]\n",
++			natbyp_print(STATE, "FLOW[%-2d] -- NAT CHANGE(%d.%d.%d.%d:%d -> [%c]%d.%d.%d.%d:%d)[%s -> %s]\n",
 +				flow->index , 
 +				(nated_ip & 0xff000000) >> 24,
 +				(nated_ip & 0x00ff0000) >> 16,
@@ -1838,7 +1806,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		switch( flow->op.mode ){
 +		case NATBYP_SLOT_BYPASS_READY:
 +			flow->op.mode = NATBYP_SLOT_BYPASS_ACT;	
-+			natbyp_print("FLOW[%-2d] (%s) BYPASS_ACT \n",flow->index,(char *)(NATDEV(flow)->name));
++			natbyp_print(STATE, "FLOW[%-2d] (%s) BYPASS_ACT \n",flow->index,(char *)(NATDEV(flow)->name));
 +	
 +			/*
 + 			* TODO.
@@ -1852,7 +1820,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	}
 +
 +	/* deleting from flow */
-+	natbyp_delete(skb);
++	natbyp_flow_unmap(skb);
 +
 +	if( natbyp_verbose == NATBYP_VERBOSE_PACKET )
 +		printout_natbyp_packet("EGR", flow, skb, ETH_HLEN, 0);
@@ -1868,7 +1836,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		return ;
 +
 +	/* delete a skb */	
-+	natbyp_delete( skb );
++	natbyp_flow_unmap( skb );
 +}
 +EXPORT_SYMBOL(natbyp_destructor);
 +
@@ -1880,11 +1848,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	switch( evt ) {
 +	case NATBYP_EVT_DEVDEL:
 +		if (!param) {
-+			natbyp_print("DEVDEL : No Parameter\n");
++			natbyp_print(STATE, "DEVDEL : No Parameter\n");
 +			break;
 +		}
 +		ndev = (struct net_device *)param;
-+		natbyp_print("DEVICE(%s) - DELETED\n",ndev->name);
++		natbyp_print(STATE, "DEVICE(%s) - DELETED\n",ndev->name);
 +		natbyp_dev_delete( ndev );
 +		/*
 + 		* 2013/04/18 - 
@@ -1892,7 +1860,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + 		*/
 +		/* wake up device flow */
 +		for (index = 0; index < NUM_FLOW_TYPE; index++) 
-+			wake_up_interruptible( &(nat_flow_info.dev_waitq[ index ]) );
++			#if 0
++			wake_up_interruptible( &(natbyp_db->dev_waitq[ index ]) );
++			#else
++			wake_up_interruptible( &(natbyp_db->flow_waitq[ index ]) );
++			#endif
 +		msleep(	1000 ); /* long time sleep */
 +		break;
 +	default:
@@ -1941,10 +1913,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +static int proc_natbyp_show(struct seq_file *s, void *dummy)
 +{
 +	int index;
-+	nat_flow_t *flow;
-+	unsigned int bw_n=0 ,bw_d;
-+	unsigned int t_bw;
++	natbyp_flow_t *flow;
++	u32 bw_n=0 ,bw_d;
++	u32 t_bw;
 +	char bw_u;
++	char speed[24];
 +	struct net_device *dev;
 +
 +	/* check activated or not */
@@ -1958,8 +1931,8 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	/* Device list... */
 +	seq_printf(s,"Devs : ");
 +	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {
-+		if ( nat_flow_info.ndevs[ index ].used ) {
-+			dev = nat_flow_info.ndevs[ index ].dev;
++		if ( natbyp_db->ndevs[ index ].used ) {
++			dev = natbyp_db->ndevs[ index ].dev;
 +			seq_printf(s,"%s", dev? dev->name : "NULL" );
 +
 +			/* LAN ? WAN ? */
@@ -1984,16 +1957,16 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	seq_printf(s,"\n\n");
 +
 +	seq_printf(s,"Flows: \n");
-+	seq_printf(s,"NUM  TYPE     STATUS    PKT   DROP  TRAFFIC        NAT\n");
++	seq_printf(s,"NUM  TYPE     STATUS    PKT   DROP  TRAFFIC          NAT\n");
 +	seq_printf(s,"-----------------------------------------------------------------------------\n");
 +
 +	t_bw = 0; /* total bandwidth */
 +
-+	for(index = 0; index < MAX_NAT_FLOW; index++) {
-+		if ( !nat_flow[ index ].used ) 
++	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
++		if ( !natbyp_flow[ index ].used ) 
 +			continue;
 +
-+		flow = (nat_flow_t *)&(nat_flow[ index ]);
++		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
 +
 +		/* bandwidth calculation */
 +
@@ -2018,16 +1991,17 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +			bw_u = 'K';
 +		}
 +
-+		seq_printf(s,"%-3d  %-4s[%c]  %-8s  %-3d   %-3d   %d.%d%cbps    ",
++		memset(speed, 0, sizeof(speed));
++		snprintf(speed,sizeof(speed)-1,"%d.%d%cbps", bw_n, bw_d, bw_u);
++
++		seq_printf(s,"%-3d  %-4s[%c]  %-8s  %-3d   %-3d   %-13.13s    ",
 +			index ,
 +			dirname(flow->dir),
 +			flow->ack ? 'A':'D',
 +			((flow->op.mode >= NATBYP_SLOT_TEST) && 
 +					(flow->op.mode <= NATBYP_SLOT_BYPASS_ACT))? 
-+				nat_flow_status[ flow->op.mode ] : nat_flow_status[ 0 ],
-+			flow->count ,
-+			flow->dropnum , 
-+			bw_n , bw_d , bw_u );
++				natbyp_flow_status[ flow->op.mode ] : natbyp_flow_status[ 0 ],
++			flow->count , flow->dropnum , speed);
 +
 +		if( flow->mapped && 
 +				(flow->op.mode != NATBYP_SLOT_REMOVE) ) {
@@ -2082,9 +2056,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		seq_printf(s,"                                    %d.%d%cbps\n",t_bw , t_bw_d , t_bw_u );
 +	}
 +
-+	if ( nat_flow_info.dev_drop[ 0 ] || nat_flow_info.dev_drop[ 1 ] ) {
++	if ( natbyp_db->pkt_drop[ NATBYP_UL ] || natbyp_db->pkt_drop[ NATBYP_DL ] ) {
 +		seq_printf(s,"                               [UL:%-4d DL:%-4d] Packet drops\n",
-+				nat_flow_info.dev_drop[ 0 ] , nat_flow_info.dev_drop[ 1 ] );
++				natbyp_db->pkt_drop[ NATBYP_UL ] , natbyp_db->pkt_drop[ NATBYP_UL ] );
 +	}
 +
 +	return 0;
@@ -2105,9 +2079,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + */
 +static ssize_t proc_natbyp_write(struct file *file, const char __user *buffer, size_t count, loff_t *data)
 +{
-+	static unsigned char cmds[64];
++	static __u8 cmds[64];
 +#define MAX_ARGS	16
-+	unsigned char *args[MAX_ARGS];
++	__u8 *args[MAX_ARGS];
 +	int index,nth;
 +
 +	if (copy_from_user(cmds, buffer, (count>64)?64:count ))
@@ -2124,7 +2098,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		
 +		if ( index >= count ) break;
 +
-+		args[nth++] = (unsigned char *)&(cmds[index]);
++		args[nth++] = (__u8 *)&(cmds[index]);
 +		
 +		while(( (cmds[index] != ' ') &&
 +				(cmds[index] != '\n')) && (index < count) ) ++index;
@@ -2147,8 +2121,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +	if( !_strcmp(args[0],"log") ){
 +		if( nth < 2 )
 +			return count;
-+		if( !_strcmp(args[1],"dis") ){
++		if( !_strcmp(args[1],"none") ){
 +			natbyp_verbose = NATBYP_VERBOSE_NONE;
++		}else
++		if( !_strcmp(args[1],"flow") ){
++			natbyp_verbose = NATBYP_VERBOSE_FLOW;
 +		}else
 +		if( !_strcmp(args[1],"state") ){
 +			natbyp_verbose = NATBYP_VERBOSE_STATE;
@@ -2161,10 +2138,10 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		if( nth < 2 )
 +			return count;
 +		if( !_strcmp(args[1],"dis") ){
-+			nat_flow_info.window_update = 0;
++			natbyp_db->window_update = 0;
 +		}else
 +		if( !_strcmp(args[1],"en") ){
-+			nat_flow_info.window_update = 1;
++			natbyp_db->window_update = 1;
 +		}else{
 +			int newval = 
 +				simple_strtoul( args[1] , (char **)&(args[1]) , 10 );
@@ -2172,27 +2149,25 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + 			* MIN : 1536
 + 			* MAX : 8192
 + 			*/
-+			if( !( (newval > __MIN_WINDOW_SIZE__) && 
-+					(newval <= __MAX_WINDOW_SIZE__) ) )
++			if( !( (newval > MIN_WINDOW_SIZE) && (newval <= MAX_WINDOW_SIZE) ) )
 +				return count;
 +
 +			/* new window size */
-+			nat_flow_info.window_scale = newval;
++			natbyp_db->window_scale = newval;
 +		}
 +	} else
 +	if( !_strcmp(args[0],"ack") ){
 +		if( nth < 2 )
 +			return count;
 +		if( !_strcmp(args[1],"dis") ){
-+			nat_flow_info.ack_handle = 0;
++			natbyp_db->ack_handle = 0;
 +		}else
 +		if( !_strcmp(args[1],"en") ){
-+			nat_flow_info.ack_handle = 1;
++			natbyp_db->ack_handle = 1;
 +		}
 +	} else
 +	if( !_strcmp(args[0],"dev") ){
 +		char * devname;
-+		//unsigned short attr;
 +
 +		/* 2013/02/28 */
 +		/* device selective control */
@@ -2238,19 +2213,12 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		if( !((newval >= 1) && (newval <= 20)) )
 +			return count;
 +
-+		nat_flow_info.expiry_max_count = newval;
++		natbyp_db->expiry_max_count = newval;
 +	} else
 +	if( !_strcmp(args[0],"show") ){
 +
 +		int msglen = 0;
-+		u8 * msg;
-+
-+		/* allocate memory */
-+		msg = (u8 *)kmalloc( 256 , GFP_KERNEL );
-+		if(!msg) {
-+			natbyp_errmsg("MALLOC( 256 ) - FAILED\n");
-+			return count;
-+		}
++		u8 msg[ 256 ];
 +
 +		/* zeroing */
 +		memset( msg , 0 , 256 );
@@ -2270,26 +2238,23 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		default: msglen += sprintf( msg+msglen , "UNKONWN\n"); break;
 +		}
 +
-+		msglen += sprintf(msg+msglen , "\tCOUNTER=%d\n", nat_flow_info.expiry_max_count);
++		msglen += sprintf(msg+msglen , "\tCOUNTER=%d\n", natbyp_db->expiry_max_count);
 +
 +		/* Window */
 +		msglen += sprintf(msg+msglen , "\tWINDOW=");
-+		if( nat_flow_info.window_update ) {
-+			msglen += sprintf(msg+msglen , "%d \n", nat_flow_info.window_scale );
++		if( natbyp_db->window_update ) {
++			msglen += sprintf(msg+msglen , "%d \n", natbyp_db->window_scale );
 +		} else {
 +			msglen += sprintf(msg+msglen , "NONE \n");
 +		}
 +
 +		/* ACK */
-+		msglen += sprintf(msg+msglen , "\tACK=%s\n",nat_flow_info.ack_handle ? "YES" : "NO" );
++		msglen += sprintf(msg+msglen , "\tACK=%s\n",natbyp_db->ack_handle ? "YES" : "NO" );
 +
 +	_natbyp_write_epilogue:
 +
 +		/* console print */
 +		printk(KERN_INFO "%s \n", msg);
-+
-+		/* freeing memory */
-+		kfree( msg );
 +	}
 +		
 +
@@ -2318,7 +2283,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		/* TODO */
 +		if (!_strcmp( netdev->name, wandev_name )) {
 +			/* WAN */
-+			natbyp_print("DEVICE(%s) UP >> WAN\n",netdev->name);
++			natbyp_print(STATE, "DEVICE(%s) UP >> WAN\n",netdev->name);
 +			wandev_db = netdev;
 +		} else {
 +			/* LAN */
@@ -2326,7 +2291,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +			for (index = 0; index < MAX_LAN_DEV; index++) {
 +				if (!_strcmp( netdev->name, landev_name[ index ] )) {
-+					natbyp_print("DEVICE(%s) UP >> LAN\n",netdev->name);
++					natbyp_print(STATE, "DEVICE(%s) UP >> LAN\n",netdev->name);
 +					landev_db[ index ] = netdev;
 +					break;
 +				}
@@ -2342,7 +2307,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +		/* TODO */
 +		if (!_strcmp( netdev->name, wandev_name )) {
 +			/* WAN */
-+			natbyp_print("DEVICE(%s) DN >> !WAN\n",netdev->name);
++			natbyp_print(STATE, "DEVICE(%s) DN >> !WAN\n",netdev->name);
 +			wandev_db = NULL;
 +		} else {
 +			/* LAN */
@@ -2350,7 +2315,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +			for (index = 0; index < MAX_LAN_DEV; index++) {
 +				if (!_strcmp( netdev->name, landev_name[ index ] )) {
-+					natbyp_print("DEVICE(%s) DN >> !LAN\n",netdev->name);
++					natbyp_print(STATE, "DEVICE(%s) DN >> !LAN\n",netdev->name);
 +					landev_db[ index ] = NULL;
 +					break;
 +				}
@@ -2379,89 +2344,94 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +{
 +	int index;
 +
++	/* create db structure */
++	natbyp_db = (natbyp_db_t *)kmalloc( sizeof(natbyp_db_t) , GFP_KERNEL );
++	if (!natbyp_db) {
++		natbyp_errmsg("KMALLOC( sizeof(natbyp_db_t) )::failed\n");
++		return -ENOMEM;
++	}
++	memset( (char *)natbyp_db, 0, sizeof(natbyp_db_t) ); /* zeroing */
++
++	/* create flow structure */
++	natbyp_flow = (natbyp_flow_t *)kmalloc( sizeof(natbyp_flow_t)*MAX_NATBYP_FLOW , GFP_KERNEL );
++	if (!natbyp_flow) {
++		natbyp_errmsg("KMALLOC( sizeof(natbyp_flow_t) * %d )::failed\n",MAX_NATBYP_FLOW);
++		kfree( natbyp_db );
++		return -ENOMEM;
++	}
++	memset( (char *)natbyp_flow, 0, sizeof(natbyp_flow_t)*MAX_NATBYP_FLOW ); /* zeroing */
++
 +	/* initialize device name */
 +	memset( wandev_name, 0, NAMELEN );
 +	for( index = 0; index < MAX_LAN_DEV; index++ )
 +		memset( landev_name[ index ], 0, NAMELEN );
 +
-+	/* initialize nat_flow structure */
-+	for( index = 0; index < MAX_NAT_FLOW; index++ ) {
++	/* initialize natbyp_flow structure */
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
 +		/* found !! */
-+		nat_flow[ index ].magic = NATBYP_MAGIC_4BYTES;
-+		nat_flow[ index ].index = index;
-+		nat_flow[ index ].used = 0;
++		natbyp_flow[ index ].magic = NATBYP_MAGIC_4BYTES;
++		natbyp_flow[ index ].index = index;
++		natbyp_flow[ index ].used = 0;
 +	}
 +
 +	/* timer init */
-+	timer_setup( &(nat_flow_info.timer), nat_flow_mon, 0 );
++	timer_setup( &(natbyp_db->timer), natbyp_flow_mon, 0 );
 +
-+	nat_flow_info.expiry_max_count = DEFAULT_NATBYP_SLOT_MAX_EXPIRY;
++	natbyp_db->expiry_max_count = DEFAULT_NATBYP_SLOT_MAX_EXPIRY;
 +
 +	/* Window size update Feature */
-+	nat_flow_info.window_update = 0;
-+	nat_flow_info.window_scale = __DEFAULT_WINDOW_SIZE__;
++	natbyp_db->window_update = 0;
++	natbyp_db->window_scale = DEFAULT_WINDOW_SIZE;
 +
 +	/* ACK packet */
 +	/* TCP ACK packet does not belong to the candidates 
 + 	to be NAT bypassed */
-+	nat_flow_info.ack_handle = 0;  
++	natbyp_db->ack_handle = 0;  
 +
 +	/* device drop number - UL/DL */
-+	for( index = 0; index < NUM_FLOW_TYPE; index++)
-+		nat_flow_info.dev_drop[ index ] = 0;
++	natbyp_db->pkt_drop[ NATBYP_UL ] = 0;
++	natbyp_db->pkt_drop[ NATBYP_DL ] = 0;
 +
-+	/* proc structure */
-+	proc_create("natbyp", S_IRUGO | S_IFREG | S_IWUSR, NULL, &proc_natbyp_ops);
++	/* number of pkts - UL/DL */
++	natbyp_db->pkt_count[ NATBYP_UL ] = 0;
++	natbyp_db->pkt_count[ NATBYP_DL ] = 0;
 +
 +	/* network devices */
 +	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {
-+		nat_flow_info.ndevs[ index ].used = 0;
-+		nat_flow_info.ndevs[ index ].dev = NULL;
++		natbyp_db->ndevs[ index ].used = 0;
++		natbyp_db->ndevs[ index ].dev = NULL;
 +	}
++			
++	/* proc structure */
++	proc_create("natbyp", S_IRUGO | S_IFREG | S_IWUSR, NULL, &proc_natbyp_ops);
 +
 +	/* network device notifier */
 +	if ( register_netdevice_notifier(&natbyp_netdev_notifier) ) {
 +		natbyp_errmsg("[ERR] NATBYP - failed in register_netdevice_notifier() \n");
++		kfree( natbyp_db );
++		kfree( natbyp_flow );
 +		return -EIO;
-+	}
-+
-+	/* device forwarder - UL/DL */
-+	for( index = 0; index < NUM_FLOW_TYPE; index++) {
-+		/* device payload flow initialization */
-+
-+		natbyp_flow_skb_init( &(dev_queue[ index ]) );
-+		spin_lock_init( &(dev_queue[ index ].lock) );
-+
-+		nat_flow_info.dev_task_id[ index ] = index; /* type : UL/DL */
-+
-+		/* kernel thread */
-+		init_waitqueue_head( &(nat_flow_info.dev_waitq[ index ]) );
-+		nat_flow_info.dev_task[ index ] =
-+				kthread_create(dev_forwarder, &(nat_flow_info.dev_task_id[ index ]),
-+					(index == NATBYP_UL)?"natbyp-devf/ul":"natbyp-devf/dl");
-+		if (IS_ERR(nat_flow_info.dev_task[ index ])) {
-+			printk(KERN_ERR "kthread_create(devf-%s)::failed\n", dirname(index));
-+			return -EIO;
-+		}
-+		wake_up_process( nat_flow_info.dev_task[ index ] );
 +	}
 +
 +	/* packet forwarder - UL/DL */	
 +	for( index = 0; index < NUM_FLOW_TYPE; index++) {
 +
 +		/* kernel thread */
-+		init_waitqueue_head( &nat_flow_info.flow_waitq[ index ] );
++		init_waitqueue_head( &natbyp_db->flow_waitq[ index ] );
 +
-+		nat_flow_info.flow_task_id[ index ] = index; /* type : UL/DL */
++		/* task parameter */
++		natbyp_db->flow_task_id[ index ] = index; /* type : UL/DL */
 +
-+		nat_flow_info.flow_task[ index ] =
-+				kthread_create(flow_forwarder, &(nat_flow_info.flow_task_id[ index ]),
++		natbyp_db->flow_task[ index ] =
++				kthread_create(natbyp_forwarder, &(natbyp_db->flow_task_id[ index ]),
 +					(index == NATBYP_UL)?"natbyp-pktf/ul":"natbyp-pktf/dl");
-+		if (IS_ERR(nat_flow_info.flow_task[ index ])) {
-+			printk(KERN_ERR "kthread_create(pktf-%s)::failed\n", dirname(index));
++		if (IS_ERR(natbyp_db->flow_task[ index ])) {
++			natbyp_errmsg("[ERR] kthread_create(pktf-%s)::failed\n", dirname(index));
++			kfree( natbyp_db );
++			kfree( natbyp_flow );
 +			return -EIO;
 +		}
-+		wake_up_process( nat_flow_info.flow_task[ index ] );
++		wake_up_process( natbyp_db->flow_task[ index ] );
 +	}
 +
 +	/* Logo */
@@ -2483,9 +2453,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +MODULE_LICENSE("GPL");
 +
 +#endif /* defined(CONFIG_NETFILTER) */
-diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
---- linux-rpi-5.15.y-original/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-04 09:15:21.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
+--- linux-rpi-5.15.y-orig/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-14 14:17:07.297109859 -0700
 @@ -71,6 +71,9 @@
  #include <net/mpls.h>
  #include <net/mptcp.h>
@@ -2524,9 +2494,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/
  	atomic_inc(&(skb_shinfo(skb)->dataref));
  	skb->cloned = 1;
  
-diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
---- linux-rpi-5.15.y-original/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/Kconfig	2023-04-29 15:06:21.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/net/Kconfig linux-rpi-5.15.y/net/Kconfig
+--- linux-rpi-5.15.y-orig/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/Kconfig	2023-05-14 14:17:07.297109859 -0700
 @@ -174,6 +174,13 @@
  
  if NETFILTER
@@ -2541,9 +2511,9 @@ diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
  config NETFILTER_ADVANCED
  	bool "Advanced netfilter configuration"
  	depends on NETFILTER
-diff -uNr linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
---- linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-04-29 15:06:21.000000000 -0700
+diff -uNr linux-rpi-5.15.y-orig/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
+--- linux-rpi-5.15.y-orig/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-14 14:17:07.297109859 -0700
 @@ -1156,11 +1156,20 @@
  		break;
  	}

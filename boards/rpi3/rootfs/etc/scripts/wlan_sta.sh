@@ -21,31 +21,31 @@ case $1 in
 		## tcpdump 
 		##
 		[ "$STACAPTURE" = "0" ] || \
-            tcpdump -i $STAINT -c 99999 -w /var/tmp/pcap_$STAINT.pcap &
+			tcpdump -i $STAINT -c 99999 -w /var/tmp/pcap_$STAINT.pcap &
 
 		echo "[WLAN] Building up $WPACONFDIR/$CFILE"
 		[ -d $WPACONFDIR ] || mkdir -p $WPACONFDIR
 
-		cat > $WPACONFDIR/$CFILE <<-EOF
-		ctrl_interface=$WPACONFDIR/ctrl
-		update_config=1
-		eapol_version=1
-		ap_scan=1
-		fast_reauth=1
-		country=US
-		network={
-			ssid="$STASSID"
-			psk="$STAPASSWORD"
-			scan_ssid=1
-		}
-		EOF
+	cat > $WPACONFDIR/$CFILE <<-EOF
+	ctrl_interface=$WPACONFDIR/ctrl
+	update_config=1
+	eapol_version=1
+	ap_scan=1
+	fast_reauth=1
+	country=US
+	network={
+		ssid="$STASSID"
+		psk="$STAPASSWORD"
+		scan_ssid=1
+	}
+	EOF
 
-        ## eth0 MAC address
-        ETHMAC=`$ASK wan/mac`
-        if [ "$ETHMAC" = "random" ]; then
-            ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
-        fi
-        ifconfig $STAINT hw ether $ETHMAC
+		## eth0 MAC address
+		ETHMAC=`$ASK wan/mac`
+		if [ "$ETHMAC" = "random" ]; then
+			ETHMAC=`tr -dc A-F0-9 < /dev/urandom | head -c 10 | sed -r 's/(..)/\1:/g;s/:$//;s/^/02:/'`
+		fi
+		ifconfig $STAINT hw ether $ETHMAC
 
 		echo "[WLAN] Running WPA Suppplicant !!"
 		[ -d $PIDDIR ] || mkdir -p $PIDDIR
@@ -61,16 +61,16 @@ case $1 in
 		## NATBYP setting 
 		[ ! -f /proc/natbyp ] || echo "dev $STAINT wan" > /proc/natbyp
 
-        NETMODE=`$ASK wan/mode`
-        if [ "$NETMODE" = "dhcp" ]; then
-            echo "IPv4 DHCP ..."
-            /etc/scripts/dhcpc.sh start $STAINT
-        else
-            IP=`$ASK wan/ip`
-            NETMASK=`$ASK wan/netmask`
-            ifconfig $STAINT $IP netmask $NETMASK up
-            route add -net 0.0.0.0 dev $STAINT
-        fi
+		NETMODE=`$ASK wan/mode`
+		if [ "$NETMODE" = "dhcp" ]; then
+			echo "IPv4 DHCP ..."
+			/etc/scripts/dhcpc.sh start $STAINT
+		else
+			IP=`$ASK wan/ip`
+			NETMASK=`$ASK wan/netmask`
+			ifconfig $STAINT $IP netmask $NETMASK up
+			route add -net 0.0.0.0 dev $STAINT
+		fi
 
 		#
 		# IPv4 
@@ -108,4 +108,3 @@ case $1 in
 	"*")
 		;;
 esac
-

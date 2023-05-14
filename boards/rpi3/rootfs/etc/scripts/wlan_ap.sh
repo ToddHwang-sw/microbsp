@@ -35,28 +35,28 @@ add_ap() {
 		##
 		## AP hostapd ...
 		##
-		cat > $APCONFDIR/$1.conf  <<-EOF
-		interface=$APINTF
-		ctrl_interface=$APCONFDIR/ctrl
-		bridge=$BRINTF
-		driver=nl80211
-		ssid=$NAPSSID
-		channel=1
-		ieee80211d=1
-		ieee80211h=1
-		ieee80211n=1
-		wmm_enabled=1
-		country_code=US
-		hw_mode=g
-		macaddr_acl=0
-		auth_algs=3
-		ignore_broadcast_ssid=0
-		wpa=2
-		wpa_passphrase=$APPASSWORD
-		wpa_key_mgmt=WPA-PSK
-		wpa_pairwise=TKIP
-		rsn_pairwise=CCMP
-		EOF
+	cat > $APCONFDIR/$1.conf  <<-EOF
+	interface=$APINTF
+	ctrl_interface=$APCONFDIR/ctrl
+	bridge=$BRINTF
+	driver=nl80211
+	ssid=$NAPSSID
+	channel=1
+	ieee80211d=1
+	ieee80211h=1
+	ieee80211n=1
+	wmm_enabled=1
+	country_code=US
+	hw_mode=g
+	macaddr_acl=0
+	auth_algs=3
+	ignore_broadcast_ssid=0
+	wpa=2
+	wpa_passphrase=$APPASSWORD
+	wpa_key_mgmt=WPA-PSK
+	wpa_pairwise=TKIP
+	rsn_pairwise=CCMP
+	EOF
 
 		echo "[WLAN] Running AP Suppplicant for $APINTF"
 		/usr/local/bin/hostapd -dd -B -P $PIDDIR/$1.pid $APCONFDIR/$1.conf &
@@ -79,9 +79,11 @@ case $1 in
 		[ -d $PIDDIR ] || mkdir -p $PIDDIR
 
 		echo "[ETH] Ethernet and Bridge"
-        ifconfig $ETHINTF up
+		ifconfig $ETHINTF up
 		brctl addbr $BRINTF
 		brctl addif $BRINTF $ETHINTF
+
+		[ ! -f /proc/natbyp ] || echo "dev $ETHINTF lan" > /proc/natbyp
 
 		echo "[AP] Adding APs..."
 		cnt=0
@@ -114,6 +116,7 @@ case $1 in
 		##
 		[ "$BRCAPTURE" = "0" ] || $tcpdump_CMD -c 99999 -w /var/tmp/pcap_$BRINTF.pcap &
 		;;
+
 	"stop")
 		echo "[WLAN] TCPDUMP down..."
 		[ "$BRCAPTURE" = "0" ] || kill -9 $tcpdump_PID
@@ -124,7 +127,7 @@ case $1 in
 		brctl delbr $BRINTF
 
 		echo "[ETH] Ethernet"
-        ifconfig $ETHINTF down
+		ifconfig $ETHINTF down
 
 		echo "[WLAN] Shutting down..."
 		pid=`cat $PIDDIR/hostapd.pid`
@@ -132,6 +135,7 @@ case $1 in
 
 		ifconfig $BRINTF down 
 		;;
+
 	"*")
 		;;
 esac

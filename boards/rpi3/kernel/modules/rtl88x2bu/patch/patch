@@ -1,11 +1,94 @@
-diff -uNr 88x2bu-20210702-orig/Makefile 88x2bu-20210702/Makefile
---- 88x2bu-20210702-orig/Makefile	2023-04-08 09:26:16.778576538 -0700
-+++ 88x2bu-20210702/Makefile	2023-04-08 09:28:28.770475398 -0700
-@@ -1355,6 +1355,7 @@
- # *** AUTODETECT ***
- ifeq ($(CONFIG_PLATFORM_AUTODETECT), y)
- EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
-+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
- EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+diff -uNr 88x2bu-20210702-origin/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
+--- 88x2bu-20210702-origin/core/rtw_xmit.c	2023-05-14 14:25:20.071633640 -0700
++++ 88x2bu-20210702/core/rtw_xmit.c	2023-05-14 14:27:39.696348942 -0700
+@@ -17,6 +17,10 @@
+ #include <drv_types.h>
+ #include <hal_data.h>
  
- SUBARCH := $(shell uname -m)
++#ifdef CONFIG_NET_NATBYP
++#include <net/natbyp.h>
++#endif
++
+ static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
+ static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
+ 
+@@ -5170,6 +5174,11 @@
+ 		return -1;
+ #endif
+ 
++#ifdef CONFIG_NET_NATBYP
++	if (*ppkt)
++		natbyp_egress(*ppkt);
++#endif
++
+ 	if (start == 0)
+ 		start = rtw_get_current_time();
+ 
+diff -uNr 88x2bu-20210702-origin/Makefile 88x2bu-20210702/Makefile
+--- 88x2bu-20210702-origin/Makefile	2023-05-14 14:25:20.051633538 -0700
++++ 88x2bu-20210702/Makefile	2023-05-14 14:27:39.664348778 -0700
+@@ -21,7 +21,7 @@
+ #EXTRA_CFLAGS += -Wno-discarded-qualifiers
+ 
+ # Activates Concurrent Mode if uncommented
+-#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
++EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE -DCONFIG_NET_NATBYP
+ 
+ # LED Control
+ EXTRA_CFLAGS += -DCONFIG_LED_CONTROL
+@@ -81,7 +81,7 @@
+ CONFIG_LPS_MODE = default
+ CONFIG_USB_AUTOSUSPEND = n
+ CONFIG_HW_PWRP_DETECTION = n
+-CONFIG_BT_COEXIST = y
++CONFIG_BT_COEXIST = n
+ CONFIG_WAPI_SUPPORT = n
+ CONFIG_EFUSE_CONFIG_FILE = n
+ CONFIG_EXT_CLK = n
+diff -uNr 88x2bu-20210702-origin/os_dep/osdep_service.c 88x2bu-20210702/os_dep/osdep_service.c
+--- 88x2bu-20210702-origin/os_dep/osdep_service.c	2023-05-14 14:25:20.171634153 -0700
++++ 88x2bu-20210702/os_dep/osdep_service.c	2023-05-14 14:27:39.760349270 -0700
+@@ -18,6 +18,10 @@
+ 
+ #include <drv_types.h>
+ 
++#ifdef CONFIG_NET_NATBYP
++#include <net/natbyp.h>
++#endif
++
+ #define RT_TAG	'1178'
+ 
+ #ifdef DBG_MEMORY_LEAK
+@@ -331,6 +335,10 @@
+ {
+ #if defined(PLATFORM_LINUX)
+ 	skb->dev = ndev;
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return netif_rx(skb);
+ #elif defined(PLATFORM_FREEBSD)
+ 	return (*ndev->if_input)(ndev, skb);
+@@ -345,6 +353,10 @@
+ {
+ #if defined(PLATFORM_LINUX)
+ 	skb->dev = ndev;
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return netif_receive_skb(skb);
+ #else
+ 	rtw_warn_on(1);
+@@ -356,6 +368,10 @@
+ inline gro_result_t _rtw_napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+ {
+ #if defined(PLATFORM_LINUX)
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return napi_gro_receive(napi, skb);
+ #else
+ 	rtw_warn_on(1);
