@@ -31,3 +31,15 @@ sync
 sync
 sync
 
+done=0
+while [ $done != 1 ];
+do
+	res=`mount | grep $1 | head -n 1 | awk '{print $3}'`
+	if [ "$res" != "" ]; then
+		echo "Unmounting $res"
+		sudo umount $res
+	else
+		done=1
+	fi
+	sleep 1
+done

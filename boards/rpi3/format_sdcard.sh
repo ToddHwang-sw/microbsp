@@ -50,16 +50,25 @@ fi
 ## which drive....
 DRIVE=$1
 
-if [ `mount | grep /dev/$DRIVE | wc -l` -eq 0 ]; then
-	echo "disk /dev/$DRIVE was not mounted."
-	exit 1
-fi
-
 read -p "Please enter 'yes' if you want to keep going on with /dev/$DRIVE disk : " answer
 if [ "$answer" != "yes" ]; then 
 	echo "Answer is not 'yes'"
 	exit
 fi
+
+## Unmounting disks..
+done=0
+while [ $done != 1 ];
+do
+	res=`mount | grep $1 | head -n 1 | awk '{print $3}'`
+	if [ "$res" != "" ]; then
+		echo "Unmounting $res"
+		sudo umount $res
+	else
+		done=1
+	fi
+	sleep 1
+done
 
 ##
 ## Deleting existing partitions 
