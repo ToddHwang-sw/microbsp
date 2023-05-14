@@ -220,10 +220,10 @@ echo ""
 cnt=0
 while true 
 do
-	[ "$cnt" -ne "99" ] || break
-	prefix=`printf %02d $cnt`
-	[ ! -f /etc/rc.d/r$prefix.sys ] || /etc/rc.d/r$prefix.sys start 
-	cnt=`expr $cnt + 1`
+    [ "$cnt" -ne "99" ] || break
+    prefix=`printf %02d $cnt`
+    [ ! -f /etc/rc.d/r$prefix.sys ] || /etc/rc.d/r$prefix.sys start 
+    cnt=`expr $cnt + 1`
 done
 
 
@@ -234,10 +234,13 @@ export COLUMNS=160
 export TERM=linux
 
 
+NTPEN=`$ASK ntp/en`
+STAINT=`$ASK wan/name`
+NETMODE=`$ASK wan/mode`
+
 echo ""
 echo "NTP " 
 echo ""
-NTPEN=`$ASK ntp/en`
 if [ "$NTPEN" = "1" ]; then 
     apptime=("`ntpclient`")
     skip=1
@@ -250,7 +253,23 @@ if [ "$NTPEN" = "1" ]; then
         cnt=`expr $cnt + 1`
     done
     CTIME=`echo $CTIME | xargs`
+
+    #
+    # DHCP client will get screw up due to time change.
+    #
+    if [ "$NETMODE" = "dhcp" ]; then
+        echo "Shutting down DHCP"
+        /etc/scripts/dhcpc.sh stop $STAINT
+        sleep 1
+    fi
+
     date -R -s "$CTIME"
+
+    if [ "$NETMODE" = "dhcp" ]; then
+        sleep 1
+        echo "Starting DHCP"
+        /etc/scripts/dhcpc.sh start $STAINT
+    fi
 fi
 
 sleep 1
@@ -261,6 +280,6 @@ cat /etc/motd
 ## Never stop interactive shell....
 ##
 while true; do \
-	/sbin/getty -l /bin/bash -n 0 ttyS0; \
-	echo "Running again...."
+    /sbin/getty -l /bin/bash -n 0 ttyS0; \
+    echo "Running again...."
 done
