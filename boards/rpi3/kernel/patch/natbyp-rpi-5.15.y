@@ -1,6 +1,6 @@
-diff -uNr linux-rpi-5.15.y-orig/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
---- linux-rpi-5.15.y-orig/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
+--- linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-17 21:27:17.213786997 -0700
 @@ -29,6 +29,9 @@
  #include <linux/of_mdio.h>
  #include <linux/of_net.h>
@@ -37,9 +37,9 @@ diff -uNr linux-rpi-5.15.y-orig/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drive
  	status = netif_rx(skb);
  	if (status != NET_RX_SUCCESS)
  		netif_dbg(dev, rx_err, dev->net,
-diff -uNr linux-rpi-5.15.y-orig/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
---- linux-rpi-5.15.y-orig/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
+--- linux-rpi-5.15.y-original/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-17 21:27:17.213786997 -0700
 @@ -958,6 +958,16 @@
  	__u16			network_header;
  	__u16			mac_header;
@@ -57,9 +57,9 @@ diff -uNr linux-rpi-5.15.y-orig/include/linux/skbuff.h linux-rpi-5.15.y/include/
  #ifdef CONFIG_KCOV
  	u64			kcov_handle;
  #endif
-diff -uNr linux-rpi-5.15.y-orig/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
---- linux-rpi-5.15.y-orig/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
+--- linux-rpi-5.15.y-original/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
++++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-17 21:27:17.213786997 -0700
 @@ -0,0 +1,35 @@
 +#ifndef __NATBYP_HEADERS__
 +
@@ -96,18 +96,18 @@ diff -uNr linux-rpi-5.15.y-orig/include/net/natbyp.h linux-rpi-5.15.y/include/ne
 +extern void natbyp_fastev( int evt , void * param);
 +
 +#endif /* __NATBYP_HEADERS__ */
-diff -uNr linux-rpi-5.15.y-orig/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
---- linux-rpi-5.15.y-orig/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/Makefile	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
+--- linux-rpi-5.15.y-original/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/core/Makefile	2023-05-17 21:27:17.213786997 -0700
 @@ -37,3 +37,4 @@
  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
  obj-$(CONFIG_OF)	+= of_net.o
 +obj-$(CONFIG_NET_NATBYP)	+= natbyp.o
-diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
---- linux-rpi-5.15.y-orig/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-14 14:19:56.481976178 -0700
-@@ -0,0 +1,2345 @@
+diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
+--- linux-rpi-5.15.y-original/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
++++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-17 21:31:00.631453403 -0700
+@@ -0,0 +1,2349 @@
 +#if defined(CONFIG_NETFILTER)
 +#include <linux/module.h>
 +#include <linux/types.h>
@@ -180,10 +180,10 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +typedef struct {
 +	u8 used;
 +	struct net_device *dev;
-+}__attribute__((aligned)) natbyp_dev_t;
++} natbyp_dev_t;
 +
 +/* size of socket queue */
-+#define MAX_SKB_QUEUE 			256
++#define MAX_SKB_QUEUE			128
 +
 +/* queue structure to store socket buffer */
 +typedef struct {
@@ -191,12 +191,12 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +	/*
 + 	* Socket buffers temporarily saved in this list to keep packet order. 
 + 	*/
-+	u32 head;
-+	u32 tail;
-+	u32 occu;   /* occupancy */
++	int head;
++	int tail;
++	int occu;   /* occupancy */
 +
 +	struct sk_buff *skbs[ MAX_SKB_QUEUE ];
-+}__attribute__((aligned)) skbq_t;
++} skbq_t;
 +
 +/* NAT TCP flow container */
 +typedef struct {
@@ -253,7 +253,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +
 +	skbq_t skbq;  /* socket buffer queue */
 +
-+}__attribute__((aligned)) natbyp_flow_t;
++} natbyp_flow_t;
 +
 +/*
 + * NATBYP_UL/NATBYP_DL  - include/net/natbyp.h 
@@ -319,9 +319,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +	 *
 +	 *
 +	 */
-+	struct task_struct *flow_task[ NUM_FLOW_TYPE ];
-+	wait_queue_head_t flow_waitq[ NUM_FLOW_TYPE ];
-+	u32 flow_task_id[ NUM_FLOW_TYPE ]; /* thread parameter */
++	struct tasklet_struct flow_tasklet[ NUM_FLOW_TYPE ];
 +
 +	/* Counter variables how many packets are processed */
 +	u32 pkt_count[ NUM_FLOW_TYPE ];
@@ -329,7 +327,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +	/* Device array */
 +	natbyp_dev_t ndevs[ MAX_NATBYP_DEVS ];
 +
-+}__attribute__((aligned)) natbyp_db_t;
++} natbyp_db_t;
 +
 +static natbyp_db_t * natbyp_db;
 +
@@ -400,13 +398,11 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +}
 +
 +/* CREATE */
-+static __inline__ int natbyp_skbq_init( skbq_t *queue )
++static __inline__ void natbyp_skbq_init( skbq_t *queue )
 +{
 +	queue->head = 0;
 +	queue->tail = 0;
 +	queue->occu = 0;
-+
-+	return 0;
 +}
 +
 +/* EMPTY */
@@ -724,33 +720,57 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +}
 +#endif /* ..._TIME_ESTIMATE */
 +
++/* clearing one flow */
++static int natbyp_flush_flow( natbyp_flow_t * flow )
++{
++	skbq_t *q;
++	int tail;
++	int cnt = 0;
++	struct sk_buff *pskb;
++
++	if (!flow) 
++		return -1;
++
++	if (!flow->used) 
++		return -1;
++
++	if (flow->op.mode != NATBYP_SLOT_REMOVE)
++		return -1;
++
++	q = (skbq_t *)&(flow->skbq);
++
++	/* clearing queue */
++	tail = q->tail;
++	while (tail != q->head) {
++		pskb = q->skbs[ tail ];
++		if (pskb) {
++			dev_kfree_skb(pskb);
++			++cnt;
++		} else {
++			natbyp_errmsg("FLOW[%-2d] NULL SKB %-3d : %-3d - %-3d \n",flow->index, q->occu, q->head, q->tail);
++		}
++
++		++tail;
++		if (tail == MAX_SKB_QUEUE)
++			tail = 0;
++	}
++
++	/* clear... */
++	natbyp_skbq_init( q );
++
++	flow->used = 0;
++
++	return cnt;
++}
++
 +/* zapping */
 +static void natbyp_squeeze( void )
 +{
-+	natbyp_flow_t * flow;
 +	int index;
 +	
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
-+
-+		/* check sanity !! */
-+		if ( !flow->used )
-+			continue;
-+
-+		if ( (flow->op.mode == NATBYP_SLOT_REMOVE) ) {
-+
-+			/* check */
-+			if ( flow->count < 0 )
-+				natbyp_errmsg("UNDER FLOW (%d:%d)\n",flow->index,flow->count);
-+
-+			flow->used = 0; /* free up */
-+		}
-+	}
-+
++	for( index = 0; index < MAX_NATBYP_FLOW; index++ )
++		natbyp_flush_flow( &(natbyp_flow[ index ]) );	
 +}
-+
-+/* defined below.. */
-+static int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb );
 +
 +/* this is the same function to natbyp_get for ACK packet */
 +static natbyp_flow_t * natbyp_ack_get( struct iphdr * iph , struct tcphdr *tcph )
@@ -1056,14 +1076,23 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +						}
 +					} else {
 +						/* NATBYP_SLOT_BYPASS_ACT */
++						int again = 0;
++
++						/* exceptional case */
++						if (natbyp_db->pkt_count[ NATBYP_DL ] == 0)
++							again = 1;
 +
 +						/* status of 3 queues - flow/dev[UL]/dev[DL] */
 +						skbq_t *skbq  = &(flow->skbq);
-+						natbyp_print(FLOW, "FLOW[%-2d] BYPASS_ACT %6u %6d %6d\n", 
++						natbyp_print(FLOW, "FLOW[%-2d] BYPASS_ACT    %-6d %-6d %-6d  %c\n", 
 +							flow->index, 
 +						   	skbq->occu,
 +							natbyp_db->pkt_count[ NATBYP_DL ],
-+							natbyp_db->pkt_count[ NATBYP_UL ]);
++							natbyp_db->pkt_count[ NATBYP_UL ],
++							(again == 1)? 'A': ' ');
++
++						if (again)
++							tasklet_schedule( &(natbyp_db->flow_tasklet[ NATBYP_DL ]) );
 +
 +						/* clear counters */
 +						natbyp_db->pkt_count[ NATBYP_UL ] = 0;
@@ -1076,8 +1105,13 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +			break;
 +
 +		case NATBYP_SLOT_REMOVE:
-+			flow->used = 0; /* free up */
-+			natbyp_print(STATE, "FLOW[%-2d] FLUSHED \n", flow->index );
++			{
++				int items = natbyp_flush_flow( flow );
++				if (items < 0)
++					natbyp_errmsg("FLOW[%-2d] FLUSH ERROR\n", flow->index);
++				else
++					natbyp_print(STATE, "FLOW[%-2d] FLUSH %-2d\n", flow->index, items);
++			}
 +			break;
 +
 +		default:
@@ -1134,8 +1168,22 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +
 +	natbyp_reset_counter( flow ); /* update counter */
 +
-+	/* device queue transmit */
-+	rc = dev_queue_xmit( skb );
++	/*
++	 *
++	 * TBD: Selection of following device transmisson callback 
++	 * may depend on the structure of device interface implementation. 
++	 *
++	 */
++	/* 
++	 * 	{
++		rc = dev_queue_xmit( skb );
++		}
++	 *
++	*/
++	{
++		struct net_device *netdev = skb->dev;
++		rc = netdev->netdev_ops->ndo_start_xmit( skb, netdev );
++	}
 +	switch (rc) {
 +	case NETDEV_TX_OK:
 +		break;
@@ -1154,7 +1202,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +
 +
 +/* handle one packet */
-+static int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb )
++static __inline__ int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb )
 +{
 +	struct net_device * dev;
 +
@@ -1218,7 +1266,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +}
 +
 +/* actual packet handler ... */
-+static int handle_packets( int dir )
++static __inline__ int handle_packets( int dir )
 +{
 +	int index;
 +	int count;
@@ -1255,72 +1303,44 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +	return count;
 +}
 +
-+static bool natbyp_any_packets( int dir )
-+{
-+	int index;
-+	natbyp_flow_t *flow;
-+	
-+	/* navigates outstanding flow in round-robin manner */		
-+	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
-+
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
-+
-+		/* Check 1 */
-+		if ( !flow->used )
-+			continue;
-+
-+		/* filtering matching flow type.  */
-+		if ( flow->dir != dir )
-+			continue; 
-+
-+		/* if any of packets */
-+		if ( !natbyp_skbq_empty(&(flow->skbq)) )
-+			return true;
-+
-+	} /* for( index ... */
-+
-+	return false;
-+}
-+
 +/*
 + * Daemon process to directly push packet to destined device. 
 + *
 + */
-+static int natbyp_forwarder( void * arg )
++static void natbyp_dl_forwarder(struct tasklet_struct *unused)
 +{
-+	int count, tot_count;
-+	int dir = *(u32 *)arg;
++	int count = 0;
++	int tot_count = 0;
 +
-+	tot_count = count = 0;
-+
-+	while(!kthread_should_stop()) { /* endless loop */
-+	//while(1) { /* endless loop */
-+
-+		/* total sum initialize */
-+		if (!count) {
-+	
-+			set_current_state(TASK_INTERRUPTIBLE);
-+
-+			/* statistics */	
-+			natbyp_db->pkt_count[ dir ] += tot_count;
-+
-+			wait_event_interruptible(
-+				(natbyp_db->flow_waitq[ dir ]), (natbyp_any_packets( dir ) == true));
-+
-+			tot_count = 0;
-+
-+			__set_current_state(TASK_RUNNING);
-+		}
-+
++	while(1) { 
 +		/* handle packets */	
-+		count = handle_packets( dir );
-+
++		count = handle_packets( NATBYP_DL );
 +		tot_count += count;
 +
++		if (!count) {
++			/* statistics */	
++			natbyp_db->pkt_count[ NATBYP_DL ] += tot_count;
++			break; 
++		}
 +	} /* while( 1 ) */
++}
 +
-+	natbyp_print(STATE, "[%s] TERMINATED \n", dirname(dir));
-+	return 0;
++static void natbyp_ul_forwarder(struct tasklet_struct *unused)
++{
++	int count = 0;
++	int tot_count = 0;
++
++	while(1) { 
++		/* handle packets */	
++		count = handle_packets( NATBYP_UL );
++		tot_count += count;
++
++		if (!count) {
++			/* statistics */	
++			natbyp_db->pkt_count[ NATBYP_UL ] += tot_count;
++			break; 
++		}
++	} /* while( 1 ) */
 +}
 +
 +/***
@@ -1415,7 +1435,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +				}
 +			
 +				/* TIP: ACK traffic --> push traffic */	
-+				wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
++				tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
 +			}
 +		} else {
 +			goto normal_traffic;
@@ -1593,15 +1613,14 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +			* THIS IS INTERRUPT CONTEXT !!
 + 			*/
 +			if (natbyp_skbq_put( &(flow->skbq), skb ) < 0) {
-+				natbyp_errmsg("FLOW[%-2d] ING FLOW OVERFLOW\n", flow->index);
-+
++				/* natbyp_errmsg("FLOW[%-2d] ING FLOW OVERFLOW\n", flow->index); */
 +				/* definitely this will cause TCP traffic shutdown */
 +				dev_kfree_skb( skb );
 +			}
 +
 +			/* Wake up !! */
 +			if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)
-+				wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
++				tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
 +			break;
 +		}
 +	} /* if (ret == NATBYP_BYPASSED) */
@@ -1691,7 +1710,7 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +		/* reset counter */
 +		natbyp_reset_counter( flow );
 +
-+		wake_up_interruptible( &(natbyp_db->flow_waitq[ flow->dir ]) );
++		tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
 +	}
 +
 +	/* NAT information fills in */
@@ -1860,11 +1879,8 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 + 		*/
 +		/* wake up device flow */
 +		for (index = 0; index < NUM_FLOW_TYPE; index++) 
-+			#if 0
-+			wake_up_interruptible( &(natbyp_db->dev_waitq[ index ]) );
-+			#else
-+			wake_up_interruptible( &(natbyp_db->flow_waitq[ index ]) );
-+			#endif
++			tasklet_schedule( &(natbyp_db->flow_tasklet[ index ]) );
++
 +		msleep(	1000 ); /* long time sleep */
 +		break;
 +	default:
@@ -2372,6 +2388,9 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +		natbyp_flow[ index ].magic = NATBYP_MAGIC_4BYTES;
 +		natbyp_flow[ index ].index = index;
 +		natbyp_flow[ index ].used = 0;
++	
++		/* initializing queue */
++		natbyp_skbq_init( &(natbyp_flow[ index ].skbq) );
 +	}
 +
 +	/* timer init */
@@ -2415,23 +2434,8 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +
 +	/* packet forwarder - UL/DL */	
 +	for( index = 0; index < NUM_FLOW_TYPE; index++) {
-+
-+		/* kernel thread */
-+		init_waitqueue_head( &natbyp_db->flow_waitq[ index ] );
-+
-+		/* task parameter */
-+		natbyp_db->flow_task_id[ index ] = index; /* type : UL/DL */
-+
-+		natbyp_db->flow_task[ index ] =
-+				kthread_create(natbyp_forwarder, &(natbyp_db->flow_task_id[ index ]),
-+					(index == NATBYP_UL)?"natbyp-pktf/ul":"natbyp-pktf/dl");
-+		if (IS_ERR(natbyp_db->flow_task[ index ])) {
-+			natbyp_errmsg("[ERR] kthread_create(pktf-%s)::failed\n", dirname(index));
-+			kfree( natbyp_db );
-+			kfree( natbyp_flow );
-+			return -EIO;
-+		}
-+		wake_up_process( natbyp_db->flow_task[ index ] );
++		tasklet_setup( &(natbyp_db->flow_tasklet[ index ]), 
++				(index == NATBYP_DL) ? natbyp_dl_forwarder : natbyp_ul_forwarder );
 +	}
 +
 +	/* Logo */
@@ -2453,9 +2457,9 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/natbyp.c linux-rpi-5.15.y/net/core/natb
 +MODULE_LICENSE("GPL");
 +
 +#endif /* defined(CONFIG_NETFILTER) */
-diff -uNr linux-rpi-5.15.y-orig/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
---- linux-rpi-5.15.y-orig/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
+--- linux-rpi-5.15.y-original/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-17 21:27:17.217787027 -0700
 @@ -71,6 +71,9 @@
  #include <net/mpls.h>
  #include <net/mptcp.h>
@@ -2494,9 +2498,9 @@ diff -uNr linux-rpi-5.15.y-orig/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbu
  	atomic_inc(&(skb_shinfo(skb)->dataref));
  	skb->cloned = 1;
  
-diff -uNr linux-rpi-5.15.y-orig/net/Kconfig linux-rpi-5.15.y/net/Kconfig
---- linux-rpi-5.15.y-orig/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/Kconfig	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
+--- linux-rpi-5.15.y-original/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/Kconfig	2023-05-17 21:27:17.217787027 -0700
 @@ -174,6 +174,13 @@
  
  if NETFILTER
@@ -2511,9 +2515,9 @@ diff -uNr linux-rpi-5.15.y-orig/net/Kconfig linux-rpi-5.15.y/net/Kconfig
  config NETFILTER_ADVANCED
  	bool "Advanced netfilter configuration"
  	depends on NETFILTER
-diff -uNr linux-rpi-5.15.y-orig/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
---- linux-rpi-5.15.y-orig/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-14 14:17:07.297109859 -0700
+diff -uNr linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
+--- linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
++++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-17 21:27:17.217787027 -0700
 @@ -1156,11 +1156,20 @@
  		break;
  	}
