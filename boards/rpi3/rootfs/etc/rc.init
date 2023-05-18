@@ -255,7 +255,7 @@ if [ "$NTPEN" = "1" ]; then
     CTIME=`echo $CTIME | xargs`
 
     #
-    # DHCP client will get screw up due to time change.
+    # DHCP shutdown - DHCP client will get screw up due to time change.
     #
     if [ "$NETMODE" = "dhcp" ]; then
         echo "Shutting down DHCP"
@@ -265,6 +265,9 @@ if [ "$NTPEN" = "1" ]; then
 
     date -R -s "$CTIME"
 
+    #
+    # DHCP rewakeup - DHCP client will get screw up due to time change.
+    #
     if [ "$NETMODE" = "dhcp" ]; then
         sleep 1
         echo "Starting DHCP"
