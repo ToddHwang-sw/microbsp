@@ -27,6 +27,7 @@ export extra_SUBDIR=\
 		libnftnl \
 		nftables \
 		iptables \
+		iproute2 \
 		dhcp \
 		radvd \
 		dnsmasq \

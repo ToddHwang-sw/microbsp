@@ -1,4 +1,4 @@
-DIR=iproute2-5.4.0
+DIR=iproute2-6.0.0
 LOC=https://mirrors.edge.kernel.org/pub/linux/utils/net/iproute2/
 
 include $(TOPDIR)/scripts/extenv.mk
@@ -6,6 +6,10 @@ include $(TOPDIR)/scripts/extenv.mk
 MICB_CONFIGURE_RUNENV += PKG_CONFIG=""
 
 MICB_CONFIGURE_PRG = ./configure
+
+MICB_DEPENDS = libmnl
+
+export iproute2_EXTRA_OPT=-L$(EXTINSTDIR)/lib
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -16,5 +20,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) LDFLAGS+=$(iproute2_EXTRA_OPT) $@ )
 
