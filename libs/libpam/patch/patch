@@ -137,16 +137,3 @@ diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
  
  fi
  
-diff -uNr linux-pam-original/Makefile.am linux-pam/Makefile.am
---- linux-pam-original/Makefile.am	2023-02-19 17:00:25.000842816 -0800
-+++ linux-pam/Makefile.am	2023-02-19 19:46:37.268123696 -0800
-@@ -4,7 +4,8 @@
- 
- AUTOMAKE_OPTIONS = 1.9 gnu dist-xz no-dist-gzip check-news
- 
--SUBDIRS = libpam tests libpamc libpam_misc modules po conf examples xtests
-+##SUBDIRS = libpam tests libpamc libpam_misc modules po conf examples xtests
-+SUBDIRS = libpam libpamc libpam_misc modules po conf 
- 
- if HAVE_DOC
- SUBDIRS += doc

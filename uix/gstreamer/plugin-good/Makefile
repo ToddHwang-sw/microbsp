@@ -9,7 +9,7 @@ GSTREAMER_OPTS += \
 	-D tests=disabled
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 x11 alsa \
-		   cairo cairo-gobject gdk-pixbuf-2.0 \
+		   cairo cairo-gobject gdk-pixbuf-2.0 libjpeg \
 	       pango pangocairo    \
 		   xfixes xdamage      \
 		   gstreamer-1.0       \

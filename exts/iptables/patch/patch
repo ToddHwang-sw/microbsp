@@ -1,22 +1,6 @@
-diff -uNr iptables-1.8.5-original/extensions/libxt_CONNMARK.c iptables-1.8.5/extensions/libxt_CONNMARK.c
---- iptables-1.8.5-original/extensions/libxt_CONNMARK.c	2020-06-03 03:32:01.000000000 -0700
-+++ iptables-1.8.5/extensions/libxt_CONNMARK.c	2023-05-17 22:01:19.447749029 -0700
-@@ -31,10 +31,12 @@
- 	uint8_t mode;
- };
- 
-+#if 0
- enum {
- 	D_SHIFT_LEFT = 0,
- 	D_SHIFT_RIGHT,
- };
-+#endif 
- 
- enum {
- 	O_SET_MARK = 0,
 diff -uNr iptables-1.8.5-original/extensions/libxt_hashlimit.c iptables-1.8.5/extensions/libxt_hashlimit.c
 --- iptables-1.8.5-original/extensions/libxt_hashlimit.c	2020-06-03 03:32:01.000000000 -0700
-+++ iptables-1.8.5/extensions/libxt_hashlimit.c	2023-05-17 22:03:05.436287481 -0700
++++ iptables-1.8.5/extensions/libxt_hashlimit.c	2023-05-18 22:18:46.887936580 -0700
 @@ -21,6 +21,7 @@
  #include <stdlib.h>
  #include <errno.h>
@@ -25,23 +9,9 @@ diff -uNr iptables-1.8.5-original/extensions/libxt_hashlimit.c iptables-1.8.5/ex
  #include <linux/netfilter/x_tables.h>
  #include <linux/netfilter/xt_hashlimit.h>
  
-diff -uNr iptables-1.8.5-original/extensions/libxt_osf.c iptables-1.8.5/extensions/libxt_osf.c
---- iptables-1.8.5-original/extensions/libxt_osf.c	2020-06-03 03:32:01.000000000 -0700
-+++ iptables-1.8.5/extensions/libxt_osf.c	2023-05-17 22:01:42.351864486 -0700
-@@ -23,8 +23,10 @@
- #include <stdio.h>
- #include <string.h>
- #include <xtables.h>
-+#if 0
- #include <netinet/ip.h>
- #include <netinet/tcp.h>
-+#endif
- #include <linux/netfilter/xt_osf.h>
- 
- enum {
 diff -uNr iptables-1.8.5-original/libxtables/xtables.c iptables-1.8.5/libxtables/xtables.c
 --- iptables-1.8.5-original/libxtables/xtables.c	2020-06-03 03:32:01.000000000 -0700
-+++ iptables-1.8.5/libxtables/xtables.c	2023-05-17 22:03:46.708499835 -0700
++++ iptables-1.8.5/libxtables/xtables.c	2023-05-18 22:18:46.887936580 -0700
 @@ -44,7 +44,7 @@
  #endif
  
