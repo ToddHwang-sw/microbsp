@@ -748,7 +748,7 @@ Waiting IP .. 0
 Waiting IP .. 1
 Waiting IP .. 2
 [   26.220451] RTW: set bssid:10:27:f5:16:b7:30
-[   26.221267] RTW: set ssid [UNIXBOY2] fw_state=0x00000088
+[   26.221267] RTW: set ssid [MyHomeNetwork] fw_state=0x00000088
 [   26.395574] RTW: start auth
 [   26.396953] RTW: auth success, start assoc
 [   26.398810] RTW: assoc success
