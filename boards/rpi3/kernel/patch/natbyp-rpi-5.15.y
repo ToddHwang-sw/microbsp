@@ -1,6 +1,6 @@
 diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
 --- linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-17 21:27:17.213786997 -0700
++++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-21 19:43:47.226743091 -0700
 @@ -29,6 +29,9 @@
  #include <linux/of_mdio.h>
  #include <linux/of_net.h>
@@ -39,7 +39,7 @@ diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/d
  		netif_dbg(dev, rx_err, dev->net,
 diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
 --- linux-rpi-5.15.y-original/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-17 21:27:17.213786997 -0700
++++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-21 19:43:47.230743120 -0700
 @@ -958,6 +958,16 @@
  	__u16			network_header;
  	__u16			mac_header;
@@ -59,7 +59,7 @@ diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/incl
  #endif
 diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
 --- linux-rpi-5.15.y-original/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-17 21:27:17.213786997 -0700
++++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-21 19:43:47.230743120 -0700
 @@ -0,0 +1,35 @@
 +#ifndef __NATBYP_HEADERS__
 +
@@ -98,7 +98,7 @@ diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/includ
 +#endif /* __NATBYP_HEADERS__ */
 diff -uNr linux-rpi-5.15.y-original/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
 --- linux-rpi-5.15.y-original/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/Makefile	2023-05-17 21:27:17.213786997 -0700
++++ linux-rpi-5.15.y/net/core/Makefile	2023-05-21 19:43:47.234743148 -0700
 @@ -37,3 +37,4 @@
  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
@@ -106,8 +106,11 @@ diff -uNr linux-rpi-5.15.y-original/net/core/Makefile linux-rpi-5.15.y/net/core/
 +obj-$(CONFIG_NET_NATBYP)	+= natbyp.o
 diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
 --- linux-rpi-5.15.y-original/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-17 21:31:00.631453403 -0700
-@@ -0,0 +1,2349 @@
++++ linux-rpi-5.15.y/net/core/natbyp.c	2023-05-21 19:44:20.158977317 -0700
+@@ -0,0 +1,2590 @@
++/*
++ * Formatting: astyle --style=linux -A4 --unpad-paren --pad-oper --pad-first-paren-out <this file>
++ */
 +#if defined(CONFIG_NETFILTER)
 +#include <linux/module.h>
 +#include <linux/types.h>
@@ -147,18 +150,18 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +#define MAX_LAN_DEV 8
 +
 +/*
-+ * For stability reason, we replace list processing by simple iteration. 
++ * For stability reason, we replace list processing by simple iteration.
 + */
 +#define NATBYP_VERSION	"ver 1.5.1 (2023.05)"
 +
 +/*
-+ * NAT socket flag 
++ * NAT socket flag
 + */
 +#define NATBYP_FLAG_BYPASSED 	0x80000000
 +#define NATBYP_FLAG_MARKER		0x40000000
 +
 +/*
-+ * Log mode 
++ * Log mode
 + */
 +#define NATBYP_VERBOSE_NONE		0x0
 +#define NATBYP_VERBOSE_FLOW		0x1
@@ -166,97 +169,108 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +#define NATBYP_VERBOSE_PACKET	0x3
 +
 +/* verbose flag */
-+static u16 natbyp_verbose = NATBYP_VERBOSE_STATE;
++static u16 natbyp_verbose = NATBYP_VERBOSE_FLOW;
 +
 +/* printk */
 +#define natbyp_print(level, fmt,args...)	\
 +		{ \
 +		if( natbyp_verbose >= NATBYP_VERBOSE_ ##level ) \
-+			printk(KERN_INFO "[NATBYP : %-12.12s] I "fmt,__FUNCTION__,##args); \
++			printk(KERN_INFO "[NATBYP] I "fmt,##args); \
 +		}
-+#define natbyp_errmsg(fmt,args...)	printk(KERN_INFO "[NATBYP : %-12.12s] E "fmt,__FUNCTION__,##args)
++#define natbyp_errmsg(fmt,args...)	printk(KERN_INFO "[NATBYP] E "fmt,##args)
 +
 +/* device table structure */
 +typedef struct {
-+	u8 used;
-+	struct net_device *dev;
++    u8 used;
++    struct net_device *dev;
 +} natbyp_dev_t;
 +
 +/* size of socket queue */
-+#define MAX_SKB_QUEUE			128
++#define MAX_SKB_QUEUE			256
 +
 +/* queue structure to store socket buffer */
 +typedef struct {
 +
-+	/*
-+ 	* Socket buffers temporarily saved in this list to keep packet order. 
-+ 	*/
-+	int head;
-+	int tail;
-+	int occu;   /* occupancy */
++    /*
++    * Socket buffers temporarily saved in this list to keep packet order.
++    */
++    int head;
++    int tail;
++    int occu;   /* occupancy */
 +
-+	struct sk_buff *skbs[ MAX_SKB_QUEUE ];
++    /*
++     * Socket buffers
++     */
++    struct {
++        u8 valid;
++        struct sk_buff *pkt;
++    } skbs[ MAX_SKB_QUEUE ];
++
 +} skbq_t;
 +
 +/* NAT TCP flow container */
 +typedef struct {
 +#define NATBYP_MAGIC_4BYTES		0xbabeface
-+	u32 magic;       /* magic data */
-+	u8  used;        /* used bit */
-+	u16 index;       /* index */
++    u32 magic;       /* magic data */
++    u8  used;        /* used bit */
++    u16 index;       /* index */
 +
-+	/* NAT information */
-+	u32 ip;          /* destination IP */
-+	u16 port;        /* destination Port */
-+	u32 sip;         /* source IP */
-+	u16 sport;       /* source Port */
++    /* NAT information */
++    u32 ip;          /* destination IP */
++    u16 port;        /* destination Port */
++    u32 sip;         /* source IP */
++    u16 sport;       /* source Port */
 +
-+	u8  dir;	       /* flow direction - NATBYP_UL/NATBYP_DL */
++    u8  dir;	     /* flow direction - NATBYP_UL/NATBYP_DL */
 +
-+	u32 nated_ip;		            /* NAT destination IP */
-+	u16 nated_port;	            /* NAT destination Port */
-+	u16 nated_sport;	            /* NAT source Port - only available in UL traffic */
-+	u8  nated_ethhdr[ETH_HLEN];	/* NAT ethernet header */
++    u32 nated_ip;		        /* NAT destination IP */
++    u16 nated_port;	            /* NAT destination Port */
++    u16 nated_sport;	        /* NAT source Port - only available in UL traffic */
++    u8  nated_ethhdr[ETH_HLEN];	/* NAT ethernet header */
 +
-+	natbyp_dev_t *nated_dev; /* NAT device */
++    natbyp_dev_t *nated_dev;    /* NAT device */
 +#define NATDEV(x)	(struct net_device *)(((x)->nated_dev)->dev)
-+	u8  mapped; 		/* NAT bypass mapped !! */
++    u8  mapped; 	         	/* NAT bypass mapped !! */
 +
-+	/* operation statistics */
-+	struct {
++    /* operation statistics */
++    struct {
 +#define NATBYP_SLOT_TEST			0x01
 +#define NATBYP_SLOT_REMOVE			0x02
 +#define NATBYP_SLOT_BYPASS_READY	0x03
 +#define NATBYP_SLOT_BYPASS_ACT		0x04
-+		u8 mode;	/* mode */
++        u8 mode;	/* mode */
 +
-+		/* marking state */
++        /* marking state */
 +#define NATBYP_BYPASS_MARK_INIT   	0x00
 +#define NATBYP_BYPASS_MARK_READY  	0x01
 +#define NATBYP_BYPASS_MARK_WAIT   	0x02
 +#define NATBYP_BYPASS_MARK_DONE   	0x03
-+		u8 mark_state;
++        u8 mark_state;
 +
-+		/*
-+		 * At least more subsequent transactions should happen at each stage. 
-+		 * With no extra transactions, the counter keeps descreasing and it 
-+		 * will free up corresponding flow resource. 
-+		 */
-+		s32 expiry_count;
-+	}op;
++        /*
++         * At least more subsequent transactions should happen at each stage.
++         * With no extra transactions, the counter keeps descreasing and it
++         * will free up corresponding flow resource.
++         */
++        s32 expiry_count;
++    } op;
 +
-+	u32 count;	    /* number of skbs */
-+	u32 dropnum;   /* packets dropped */
-+	u32 bytes;     /* packet bytes */
-+	u32 bw;        /* latest bandwidth */
-+	u8  ack;       /* Is this flow for ACK ? */
++    u32 count;	         /* number of skbs */
++    u32 dropnum;         /* packets dropped */
++    u32 bytes;           /* packet bytes */
++    u32 bw;              /* latest bandwidth */
++    u8  ack;             /* Is this flow for ACK ? */
 +
-+	skbq_t skbq;  /* socket buffer queue */
++    u32 overflow_pkt;    /* ingress packet overflow */
++    u32 winupd_count;    /* ACK window update */
++    u32 suppack_count;   /* UL ACK suppression count*/
++
++    skbq_t skbq;         /* socket buffer queue */
 +
 +} natbyp_flow_t;
 +
 +/*
-+ * NATBYP_UL/NATBYP_DL  - include/net/natbyp.h 
++ * NATBYP_UL/NATBYP_DL  - include/net/natbyp.h
 + */
 +#define NUM_FLOW_TYPE 2
 +#define dirname(n)	(((n) == NATBYP_UL)?"UL":(((n) == NATBYP_DL)?"DL":"??"))
@@ -264,10 +278,10 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +/* Device name length */
 +#define NAMELEN	32
 +
-+enum{
-+	LAN_TYPE = 0,
-+	WAN_TYPE,
-+	NUM_INT_TYPE,
++enum {
++    LAN_TYPE = 0,
++    WAN_TYPE,
++    NUM_INT_TYPE,
 +};
 +
 +static struct net_device *wandev_db = NULL;
@@ -278,301 +292,346 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +/* NAT TCP flow information */
 +typedef struct {
-+	struct timer_list timer;
++    struct timer_list timer;
 +
-+	/* 
-+	 * Expiry at each stage...
-+	 */
++    /*
++     * Expiry at each stage...
++     */
 +
-+	/* 2 seconds */
-+	#define DEFAULT_NATBYP_SLOT_MAX_EXPIRY 4
-+	s32 expiry_max_count;
++    /* 2 seconds */
++#define DEFAULT_NATBYP_SLOT_MAX_EXPIRY 4
++    s32 expiry_max_count;
 +
-+	/* system drop number */
-+	u32 pkt_drop[ NUM_FLOW_TYPE ];
++    /* system drop number */
++    u32 pkt_drop[ NUM_FLOW_TYPE ];
 +
-+	/* Intentional ACK window update */
-+	u8  window_update;
++    /* Intentional ACK window update */
++    u8  ackwin_handle;
 +
 +#define MAX_WINDOW_SIZE	32
 +#define MIN_WINDOW_SIZE	2
 +#define MAX_WINDOW_LIMIT	(0xfff0)
 +#define DEFAULT_WINDOW_SIZE	4
-+	u32 window_scale;
++    u32 window_scale;
 +
-+	/*
-+ 	* NATBYP works for ACK packet ??
-+ 	*/
-+	u8  ack_handle;
++    /*
++    * NATBYP works for ACK packet ??
++    */
++    u8  ack_handle;
 +
-+	/* 
-+	 * flow forwarder
-+	 *
-+	 *
-+	 * FLOW[0]   QUEUE  ----+
-+	 * FLOW[1]   QUEUE  ---+|
-+	 * FLOW[2]   QUEUE  -+ ||  +-->  FLOW TASK[ UL ] --> DEV QUEUE[ UL ]
-+	 * FLOW[3]   QUEUE  -+-++--+ 
-+	 * ...               | |   +-->  FLOW TASK[ DL ] --> DEV QUEUE[ DL ]
-+	 * FLOW[N-1] QUEUE  -+ |
-+	 * FLOW[N]   QUEUE  ---+
-+	 *
-+	 *
-+	 */
-+	struct tasklet_struct flow_tasklet[ NUM_FLOW_TYPE ];
++    /*
++     * NATBYP works for ACK suppression ??
++     */
++    u8  suppack_handle;
 +
-+	/* Counter variables how many packets are processed */
-+	u32 pkt_count[ NUM_FLOW_TYPE ];
++    /*
++     * flow forwarder
++     *
++     *
++     * FLOW[0]   QUEUE  ----+
++     * FLOW[1]   QUEUE  ---+|
++     * FLOW[2]   QUEUE  -+ ||  +-->  FLOW TASK[ UL ] --> DEV QUEUE[ UL ]
++     * FLOW[3]   QUEUE  -+-++--+
++     * ...               | |   +-->  FLOW TASK[ DL ] --> DEV QUEUE[ DL ]
++     * FLOW[N-1] QUEUE  -+ |
++     * FLOW[N]   QUEUE  ---+
++     *
++     *
++     */
++    struct tasklet_struct flow_tasklet[ NUM_FLOW_TYPE ];
 +
-+	/* Device array */
-+	natbyp_dev_t ndevs[ MAX_NATBYP_DEVS ];
++    /* Counter variables how many packets are processed */
++    u32 pkt_count[ NUM_FLOW_TYPE ];
++
++    /* Device array */
++    natbyp_dev_t ndevs[ MAX_NATBYP_DEVS ];
 +
 +} natbyp_db_t;
 +
 +static natbyp_db_t * natbyp_db;
 +
-+// String operation .. 
-+static __inline__ int _strcmp(const char *a, const char *b) 
++// String operation ..
++static __inline__ int _strcmp (const char *a, const char *b)
 +{
-+	if (b)
-+		return strncmp(a,b,strlen(b));
-+	else
-+		return (a) ? 1 : 0 /* !a && !b */;
++    if (b)
++        return strncmp (a, b, strlen (b));
++    else
++        return (a) ? 1 : 0 /* !a && !b */;
 +}
 +
 +/* Device operation function */
 +
 +/* Scanning Device List */
-+static __inline__ void * natbyp_dev_search( struct net_device *netdev )
++static __inline__ void * natbyp_dev_search (struct net_device *netdev)
 +{
-+	int index;
++    int index;
 +
-+	if (!netdev)
-+		return NULL;
++    if (!netdev)
++        return NULL;
 +
-+	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( natbyp_db->ndevs[ index ].used &&
-+				natbyp_db->ndevs[ index ].dev == netdev ) {
-+			return &natbyp_db->ndevs[ index ];
-+		}
-+	}
-+	return NULL;
++    for (index = 0; index < MAX_NATBYP_DEVS; index++) {
++        if (natbyp_db->ndevs[ index ].used &&
++                natbyp_db->ndevs[ index ].dev == netdev) {
++            return &natbyp_db->ndevs[ index ];
++        }
++    }
++    return NULL;
 +}
 +
 +/* insert */
-+static int natbyp_dev_insert( struct net_device *netdev )
++static int natbyp_dev_insert (struct net_device *netdev)
 +{
-+	int index;
++    int index;
 +
-+	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( !natbyp_db->ndevs[ index ].used ) {
-+			natbyp_db->ndevs[ index ].dev = netdev;
-+			natbyp_db->ndevs[ index ].used = 1;
-+			return index;
-+		}
-+	}
-+	natbyp_errmsg("NATBYP[ERR]-INS/Too many devices\n");
-+	return (-1);
++    for (index = 0; index < MAX_NATBYP_DEVS; index++) {
++        if (!natbyp_db->ndevs[ index ].used) {
++            natbyp_db->ndevs[ index ].dev = netdev;
++            natbyp_db->ndevs[ index ].used = 1;
++            return index;
++        }
++    }
++    natbyp_errmsg ("NATBYP[ERR]-INS/Too many devices\n");
++    return (-1);
 +}
 +
 +/* delete */
-+static int natbyp_dev_delete( struct net_device *netdev )
++static int natbyp_dev_delete (struct net_device *netdev)
 +{
-+	int index;
++    int index;
 +
-+	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {	
-+		if ( natbyp_db->ndevs[ index ].used &&
-+				(natbyp_db->ndevs[ index ].dev == netdev) ) {
-+			natbyp_db->ndevs[ index ].dev = NULL;
-+			natbyp_db->ndevs[ index ].used = 0;
-+			return index;
-+		}
-+	}
-+	return (-1);
++    for (index = 0; index < MAX_NATBYP_DEVS; index++) {
++        if (natbyp_db->ndevs[ index ].used &&
++                (natbyp_db->ndevs[ index ].dev == netdev)) {
++            natbyp_db->ndevs[ index ].dev = NULL;
++            natbyp_db->ndevs[ index ].used = 0;
++            return index;
++        }
++    }
++    return (-1);
 +}
 +
 +/* RESET COUNTER */
-+static __inline__ void natbyp_reset_counter( natbyp_flow_t * flow )
++static __inline__ void natbyp_reset_counter (natbyp_flow_t * flow)
 +{
-+	flow->op.expiry_count = natbyp_db->expiry_max_count;
++    flow->op.expiry_count = natbyp_db->expiry_max_count;
 +}
 +
 +/* CREATE */
-+static __inline__ void natbyp_skbq_init( skbq_t *queue )
++static __inline__ void natbyp_skbq_init (skbq_t *queue)
 +{
-+	queue->head = 0;
-+	queue->tail = 0;
-+	queue->occu = 0;
++    int index;
++
++    queue->head = 0;
++    queue->tail = 0;
++    queue->occu = 0;
++
++    for (index = 0; index < MAX_SKB_QUEUE; index++) {
++        queue->skbs[ index ].pkt = NULL;
++        queue->skbs[ index ].valid = 0;
++    }
 +}
 +
 +/* EMPTY */
-+static __inline__ int natbyp_skbq_empty( skbq_t *queue )
++static __inline__ int natbyp_skbq_empty (skbq_t *queue)
 +{
-+	return (queue->tail == queue->head)? 1 : 0;
++    return (queue->tail == queue->head) ? 1 : 0;
 +}
 +
 +/* PUT */
-+static __inline__ int natbyp_skbq_put( skbq_t *queue, struct sk_buff *skb )
++static __inline__ int natbyp_skbq_put (skbq_t *queue, struct sk_buff *skb)
 +{
-+	int ntail;
++    int ntail;
 +
-+	if ( !queue || !skb ) 
-+		return -1;
++    if (!queue || !skb)
++        return -1;
 +
-+	/* next tail */
-+	ntail = queue->tail + 1;
-+	if (ntail >= MAX_SKB_QUEUE) 
-+		ntail = 0;
++    /* next tail */
++    ntail = queue->tail + 1;
++    if (ntail >= MAX_SKB_QUEUE)
++        ntail = 0;
 +
-+	if (ntail == queue->head)
-+		return -1; /* queue full */
++    if (ntail == queue->head)
++        return -1; /* queue full */
 +
-+	queue->skbs[ queue->tail ] = skb;
++    queue->skbs[ queue->tail ].pkt   = skb;
++    queue->skbs[ queue->tail ].valid = 1;
 +
-+	/* update tail */
-+	queue->tail = ntail;
++    /* update tail */
++    queue->tail = ntail;
 +
-+	++ (queue->occu);
++    ++ (queue->occu);
 +
-+	return 0; /* success !! */
++    return 0; /* success !! */
 +}
 +
 +/* GET */
-+static __inline__ struct sk_buff * natbyp_skbq_get( skbq_t *queue )
++static __inline__ struct sk_buff * natbyp_skbq_get (skbq_t *queue)
 +{
-+	struct sk_buff * pskb;
-+	int nhead;
++    struct sk_buff * pskb;
++    int nhead;
++    int found = 0;
 +
-+	if ( !queue ) 
-+		return NULL;
++    if (!queue) {
++        return NULL;
++    }
 +
-+	/* empty queue ? */
-+	if (queue->head == queue->tail)
-+		return NULL;
++    do {
++        /* empty queue ? */
++        if (queue->head == queue->tail)
++            return NULL;
 +
-+	/* next head */
-+	nhead = queue->head + 1;
-+	if (nhead >= MAX_SKB_QUEUE) 
-+		nhead = 0;
++        /* next head */
++        nhead = queue->head + 1;
++        if (nhead >= MAX_SKB_QUEUE) {
++            nhead = 0;
++        }
 +
-+	pskb = queue->skbs[ queue->head ];
++        if (queue->skbs[ queue->head ].valid == 0) {
 +
-+	/* update head */
-+	queue->head = nhead;
++            /* skip current space */
++            pskb = queue->skbs[ queue->head ].pkt;
++            if (pskb) {
++                dev_kfree_skb (pskb);
++            }
 +
-+	-- (queue->occu);
++            /* update head */
++            queue->head = nhead;
++            continue;
++        }
 +
-+	return pskb; /* success !! */
++        pskb = queue->skbs[ queue->head ].pkt;
++
++        /* invalidating.. */
++        queue->skbs[ queue->head ].valid = 0;
++
++        /* update head */
++        queue->head = nhead;
++
++        found = 1;
++
++    }
++    while (!found);
++
++    -- (queue->occu);
++
++    return pskb; /* success !! */
 +}
 +
 +/* test function  - check NAT information is changed !! */
-+static __inline__ int tcp_flow_changed( natbyp_flow_t * flow , struct iphdr *iph , struct tcphdr *tcph )
++static __inline__ int tcp_flow_changed (natbyp_flow_t * flow, struct iphdr *iph, struct tcphdr *tcph)
 +{
-+	int result = 1; /* changed by default */
++    int result = 1; /* changed by default */
 +
-+	if( !flow || !iph || !tcph )
-+		return 1; /* changed */
++    if (!flow || !iph || !tcph)
++        return 1; /* changed */
 +
-+	switch( flow->dir ) {
-+	case NATBYP_DL:
-+		result =  ((flow->nated_ip   != iph->daddr) ||
-+				   (flow->nated_port != tcph->dest)) ? 1 : 0;
-+		break;
-+	case NATBYP_UL:
-+		result =  ((flow->nated_ip   != iph->saddr) ||
-+				   (flow->nated_port != tcph->dest)) ? 1 : 0;
-+		break;
-+	default:
-+		natbyp_errmsg("FLOW[%-2d] Unknown direction (%08x) \n", flow->index , flow->dir);
-+		break;
-+	}
++    switch (flow->dir) {
++    case NATBYP_DL:
++        result = ((flow->nated_ip   != iph->daddr) ||
++                  (flow->nated_port != tcph->dest)) ? 1 : 0;
++        break;
++    case NATBYP_UL:
++        result = ((flow->nated_ip   != iph->saddr) ||
++                  (flow->nated_port != tcph->dest)) ? 1 : 0;
++        break;
++    default:
++        natbyp_errmsg ("FLOW[%-2d] Unknown direction (%08x) \n", flow->index, flow->dir);
++        break;
++    }
 +
-+	return result;
++    return result;
 +}
 +
 +/* printout function */
-+static void printout_natbyp_packet(const char *title, natbyp_flow_t * flow, struct sk_buff *skb, int off, int ack)
++static void printout_natbyp_packet (const char *title, natbyp_flow_t * flow, struct sk_buff *skb, int off, int ack)
 +{
-+	u32 saddr;
-+	u32 daddr;
-+  	struct iphdr *iph;
-+   	struct tcphdr *tcph;
-+	char ipinfo[128];
-+	char tag;
++    u32 saddr;
++    u32 daddr;
++    struct iphdr *iph;
++    struct tcphdr *tcph;
++    char ipinfo[128];
++    char tag;
 +
-+	/* header indexing */
-+	iph = (struct iphdr *)((u8 *)skb->data + off);
-+	tcph = (struct tcphdr *)((u8 *)iph + sizeof(struct iphdr));
++    if (natbyp_verbose < NATBYP_VERBOSE_PACKET)
++        return;
 +
-+	/* IP addresses */
-+	saddr = ntohl(iph->saddr);
-+	daddr = ntohl(iph->daddr);
++    /* header indexing */
++    iph = (struct iphdr *) ((u8 *) skb->data + off);
++    tcph = (struct tcphdr *) ((u8 *) iph + sizeof (struct iphdr));
 +
-+	memset(ipinfo, 0, sizeof(ipinfo));
-+	snprintf(ipinfo, sizeof(ipinfo)-1, "%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d",
-+		(saddr & 0xff000000) >> 24,
-+		(saddr & 0x00ff0000) >> 16,
-+		(saddr & 0x0000ff00) >> 8,
-+		(saddr & 0x000000ff) >> 0,
-+		ntohs(tcph->source),
-+		(daddr & 0xff000000) >> 24,
-+		(daddr & 0x00ff0000) >> 16,
-+		(daddr & 0x0000ff00) >> 8,
-+		(daddr & 0x000000ff) >> 0,
-+		ntohs(tcph->dest));
++    /* IP addresses */
++    saddr = ntohl (iph->saddr);
++    daddr = ntohl (iph->daddr);
 +
-+	/* symbol */
-+	if (flow->op.mark_state == NATBYP_BYPASS_MARK_READY) {
-+		tag = '@';
-+	} else if (flow->op.mark_state == NATBYP_BYPASS_MARK_WAIT) {
-+		tag = '#';
-+	} else if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE) {
-+		if (skb->natbyp_bypassed & NATBYP_FLAG_BYPASSED) {
-+			tag = '>';
-+		} else if (ack) {
-+			tag = '<';
-+		} else {
-+			tag = ' ';
-+		}
-+	} else {
-+		tag = '?';
-+	}
++    memset (ipinfo, 0, sizeof (ipinfo));
++    snprintf (ipinfo, sizeof (ipinfo) - 1, "%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d",
++              (saddr & 0xff000000) >> 24,
++              (saddr & 0x00ff0000) >> 16,
++              (saddr & 0x0000ff00) >> 8,
++              (saddr & 0x000000ff) >> 0,
++              ntohs (tcph->source),
++              (daddr & 0xff000000) >> 24,
++              (daddr & 0x00ff0000) >> 16,
++              (daddr & 0x0000ff00) >> 8,
++              (daddr & 0x000000ff) >> 0,
++              ntohs (tcph->dest));
 +
-+	natbyp_print(PACKET, "FLOW[%-2d] %3s %-3d %-8s [%-42s] %-4d %04x %04x %08x %08x %c\n",
-+		flow->index,
-+		title,
-+		flow->count,
-+		skb->dev->name,
-+		ipinfo,
-+		ntohs(iph->tot_len) - (iph->ihl*4),
-+		ntohs(iph->id),
-+		ntohs(iph->check),
-+		ntohl(tcph->seq),
-+		ntohl(tcph->ack_seq),
-+		tag);
++    /* symbol */
++    if (flow->op.mark_state == NATBYP_BYPASS_MARK_READY) {
++        tag = '@';
++    }
++    else if (flow->op.mark_state == NATBYP_BYPASS_MARK_WAIT) {
++        tag = '#';
++    }
++    else if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE) {
++        if (skb->natbyp_bypassed & NATBYP_FLAG_BYPASSED) {
++            tag = '>';
++        }
++        else if (ack) {
++            tag = '<';
++        }
++        else {
++            tag = ' ';
++        }
++    }
++    else {
++        tag = '?';
++    }
++
++    natbyp_print (PACKET, "FLOW[%-2d] %3s %-3d %-8s [%-42s] %-4d %04x %04x %08x %08x %c\n",
++                  flow->index,
++                  title,
++                  flow->count,
++                  skb->dev->name,
++                  ipinfo,
++                  ntohs (iph->tot_len) - (iph->ihl * 4),
++                  ntohs (iph->id),
++                  ntohs (iph->check),
++                  ntohl (tcph->seq),
++                  ntohl (tcph->ack_seq),
++                  tag);
 +}
 +
 +/*
 + *
-+ * Generic operations 
++ * Generic operations
 + *
 + */
 +
 +/* nat flow status */
-+static char * natbyp_flow_status[5] = 
-+			{ 
-+			"UNKNOWN" ,
-+			"TEST"    ,
-+			"REMOVE"  ,
-+			"READY"   ,
-+			"BYPASS" 
-+			};
++static char * natbyp_flow_status[5] = {
++    "UNKNOWN",
++    "TEST",
++    "REMOVE",
++    "READY",
++    "BYPASS"
++};
 +
 +/* flow sanity check */
 +#define natbyp_flow_ok(f)	(((f)->magic) == NATBYP_MAGIC_4BYTES)
 +
-+/* 16 -- maximum NAT flow */
-+#define MAX_NATBYP_FLOW 	16
++/* 32 -- maximum NAT flow */
++#define MAX_NATBYP_FLOW 	64
 +
 +/* NAT TCP flow container */
 +static natbyp_flow_t * natbyp_flow = NULL ;
@@ -580,12 +639,12 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +/* types for flow table - payload/ack */
 +/*  for better readability */
 +typedef struct {
-+	u8 name[12];
-+	natbyp_flow_t *q[2]; /* 0 -> HIGH / 1 -> LOW */
-+}natbyp_flow_table_t;
++    u8 name[12];
++    natbyp_flow_t *q[2]; /* 0 -> HIGH / 1 -> LOW */
++} natbyp_flow_table_t;
 +
 +/*
-+ * Global flags 
++ * Global flags
 + */
 +static __u16 natbyp_activated = 0;
 +
@@ -598,749 +657,909 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +/*
 + *
 + * PLEASE DO NOT DELETE THIS COMMENTED SECTION !!
-+ * THE APS iphdr_csum and tcphdr_csum HAVE BEEN COMPLETELY PROBED. 
++ * THE APS iphdr_csum and tcphdr_csum HAVE BEEN COMPLETELY PROBED.
 + *
 + */
 +
 +/* IP header */
-+typedef struct{
-+	__u16 	ihl_v_tos;
-+	__u16	tot_len;
-+	__u16	id;
-+	__u16	frag_off;
-+	__u16	ttl_proto;
-+	__u16	unused; /* checksum */
-+	__u16	saddr_l;
-+	__u16	saddr_h;
-+	__u16	daddr_l;
-+	__u16	daddr_h;
-+}iphdr_16bit_cls;
++typedef struct {
++    __u16 	ihl_v_tos;
++    __u16	tot_len;
++    __u16	id;
++    __u16	frag_off;
++    __u16	ttl_proto;
++    __u16	unused; /* checksum */
++    __u16	saddr_l;
++    __u16	saddr_h;
++    __u16	daddr_l;
++    __u16	daddr_h;
++} iphdr_16bit_cls;
 +
 +/* TCP header */
-+typedef struct{
-+	__u16	sport;
-+	__u16	dport;
-+	__u16	seqno_l;
-+	__u16	seqno_h;
-+	__u16	ackno_l;
-+	__u16	ackno_h;
-+	__u16	hlen_flags;
-+	__u16	wnd;
-+	__u16	unused; /* checksum */
-+	__u16	urgp;
-+	__u16	payload[0]; 
-+}tcphdr_16bit_cls;
++typedef struct {
++    __u16	sport;
++    __u16	dport;
++    __u16	seqno_l;
++    __u16	seqno_h;
++    __u16	ackno_l;
++    __u16	ackno_h;
++    __u16	hlen_flags;
++    __u16	wnd;
++    __u16	unused; /* checksum */
++    __u16	urgp;
++    __u16	payload[0];
++} tcphdr_16bit_cls;
 +
 +#if 0
 +/* IP header checksum */
-+static u16 iphdr_csum(struct iphdr *iph)
++static u16 iphdr_csum (struct iphdr *iph)
 +{
-+	u32 chksum = 0;
-+	iphdr_16bit_cls *p = (iphdr_16bit_cls *)iph;
++    u32 chksum = 0;
++    iphdr_16bit_cls *p = (iphdr_16bit_cls *) iph;
 +
-+	/* checksum calculation */
-+	chksum += p->ihl_v_tos;
-+	chksum += p->tot_len;
-+	chksum += p->id;
-+	chksum += p->frag_off;
-+	chksum += p->ttl_proto;
-+	chksum += p->saddr_l;
-+	chksum += p->saddr_h;
-+	chksum += p->daddr_l;
-+	chksum += p->daddr_h;
-+	chksum = (chksum >> 16) + (chksum & 0xFFFF);
-+	chksum = (chksum >> 16) + chksum;
-+	chksum = ~chksum;
++    /* checksum calculation */
++    chksum += p->ihl_v_tos;
++    chksum += p->tot_len;
++    chksum += p->id;
++    chksum += p->frag_off;
++    chksum += p->ttl_proto;
++    chksum += p->saddr_l;
++    chksum += p->saddr_h;
++    chksum += p->daddr_l;
++    chksum += p->daddr_h;
++    chksum = (chksum >> 16) + (chksum & 0xFFFF);
++    chksum = (chksum >> 16) + chksum;
++    chksum = ~chksum;
 +
-+	return (u16)chksum;
++    return (u16) chksum;
 +}
 +#endif
 +
 +/* TCP header checksum */
-+static u16 tcphdr_csum(struct tcphdr *tcph, struct iphdr *iph )
++static u16 tcphdr_csum (struct tcphdr *tcph, struct iphdr *iph)
 +{
-+	u32 i;
-+	u32 chksum = 0;
-+	int payload_len;
-+	u16 *px;
-+	tcphdr_16bit_cls *p = (tcphdr_16bit_cls *)tcph;
-+	iphdr_16bit_cls *pi = (iphdr_16bit_cls *)iph;
++    u32 i;
++    u32 chksum = 0;
++    int payload_len;
++    u16 *px;
++    tcphdr_16bit_cls *p = (tcphdr_16bit_cls *) tcph;
++    iphdr_16bit_cls *pi = (iphdr_16bit_cls *) iph;
 +
-+	/* TCP payload length */
-+	payload_len = 
-+		iph->tot_len - ((iph->ihl*4) + (tcph->doff*4));
++    /* TCP payload length */
++    payload_len =
++        iph->tot_len - ((iph->ihl * 4) + (tcph->doff * 4));
 +
-+	/* header checksum */
-+	chksum += p->sport;
-+	chksum += p->dport;
-+	chksum += p->seqno_l;
-+	chksum += p->seqno_h;
-+	chksum += p->ackno_l;
-+	chksum += p->ackno_h;
-+	chksum += p->hlen_flags;
-+	chksum += p->wnd;
-+	chksum += p->urgp; 
++    /* header checksum */
++    chksum += p->sport;
++    chksum += p->dport;
++    chksum += p->seqno_l;
++    chksum += p->seqno_h;
++    chksum += p->ackno_l;
++    chksum += p->ackno_h;
++    chksum += p->hlen_flags;
++    chksum += p->wnd;
++    chksum += p->urgp;
 +
-+	/* pseudo header */
-+	chksum += pi->daddr_l;
-+	chksum += pi->daddr_h;
-+	chksum += pi->saddr_l;
-+	chksum += pi->saddr_h;
-+	chksum += (u16)IPPROTO_TCP;
-+	chksum += (u16)(tcph->doff << 2);
++    /* pseudo header */
++    chksum += pi->daddr_l;
++    chksum += pi->daddr_h;
++    chksum += pi->saddr_l;
++    chksum += pi->saddr_h;
++    chksum += (u16) IPPROTO_TCP;
++    chksum += (u16) (tcph->doff << 2);
 +
-+	/* option fields */
-+	for(i = 0;i < ((tcph->doff << 2) - sizeof(struct tcphdr))/sizeof(__u16); i++)
-+		chksum += (u16)(p->payload[ i ]);
++    /* option fields */
++    for (i = 0; i < ((tcph->doff << 2) - sizeof (struct tcphdr)) / sizeof (__u16); i++)
++        chksum += (u16) (p->payload[ i ]);
 +
-+	/* payload */
-+	px = (u16 *)((char *)tcph + (tcph->doff << 2));
++    /* payload */
++    px = (u16 *) ((char *) tcph + (tcph->doff << 2));
 +
-+	/* payload checksum */
-+	for(i = 0;i < payload_len/sizeof(__u16); i++) {
-+		chksum += (u16)(*px);
-+		++ px;
-+	}
++    /* payload checksum */
++    for (i = 0; i < payload_len / sizeof (__u16); i++) {
++        chksum += (u16) (*px);
++        ++ px;
++    }
 +
-+	chksum = (chksum >> 16) + (chksum & 0xFFFF);
-+	chksum = (chksum >> 16) + chksum;
-+	chksum = ~chksum;
++    chksum = (chksum >> 16) + (chksum & 0xFFFF);
++    chksum = (chksum >> 16) + chksum;
++    chksum = ~chksum;
 +
-+	return (u16)chksum;
++    return (u16) chksum;
 +}
 +
 +#ifdef DEBUG_TIME_ESTIMATE
 +/* obtaining current time */
-+static u32 natbyp_current_time(void)
++static u32 natbyp_current_time (void)
 +{
-+	struct timeval tv;
++    struct timeval tv;
 +
-+	do_gettimeofday(&tv);
-+	return (u32)( ((u32)tv.tv_sec * 1000000) + (u32)tv.tv_usec );
++    do_gettimeofday (&tv);
++    return (u32) (((u32) tv.tv_sec * 1000000) + (u32) tv.tv_usec);
 +}
 +#endif /* ..._TIME_ESTIMATE */
 +
 +/* clearing one flow */
-+static int natbyp_flush_flow( natbyp_flow_t * flow )
++static int natbyp_flush_flow (natbyp_flow_t * flow)
 +{
-+	skbq_t *q;
-+	int tail;
++    skbq_t *q;
++    int tail;
++    int cnt = 0;
++    struct sk_buff *pskb;
++
++    if (!flow)
++        return -1;
++
++    q = (skbq_t *) & (flow->skbq);
++
++    /* clearing queue */
++    tail = q->tail;
++    while ((tail != q->head) &&
++            (cnt++ <= MAX_SKB_QUEUE)) {
++
++        if (! ((tail >= 0) && (tail < MAX_SKB_QUEUE)))
++            goto __skip_current;
++
++        pskb = q->skbs[ tail ].pkt;
++        if (pskb) {
++            dev_kfree_skb (pskb);
++            q->skbs[ tail ].pkt = NULL;
++        }
++
++__skip_current:
++        ++tail;
++        if (tail == MAX_SKB_QUEUE)
++            tail = 0;
++    }
++
++    /* clear... */
++    natbyp_skbq_init (q);
++
++    return cnt;
++}
++
++/* zapping */
++static int natbyp_squeeze (void)
++{
++    int index;
++    natbyp_flow_t * flow;
 +	int cnt = 0;
-+	struct sk_buff *pskb;
 +
-+	if (!flow) 
-+		return -1;
-+
-+	if (!flow->used) 
-+		return -1;
-+
-+	if (flow->op.mode != NATBYP_SLOT_REMOVE)
-+		return -1;
-+
-+	q = (skbq_t *)&(flow->skbq);
-+
-+	/* clearing queue */
-+	tail = q->tail;
-+	while (tail != q->head) {
-+		pskb = q->skbs[ tail ];
-+		if (pskb) {
-+			dev_kfree_skb(pskb);
-+			++cnt;
-+		} else {
-+			natbyp_errmsg("FLOW[%-2d] NULL SKB %-3d : %-3d - %-3d \n",flow->index, q->occu, q->head, q->tail);
-+		}
-+
-+		++tail;
-+		if (tail == MAX_SKB_QUEUE)
-+			tail = 0;
-+	}
-+
-+	/* clear... */
-+	natbyp_skbq_init( q );
-+
-+	flow->used = 0;
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        flow = & (natbyp_flow[ index ]);
++        cnt += natbyp_flush_flow (flow);
++        flow->used = 0;
++    }
 +
 +	return cnt;
 +}
 +
-+/* zapping */
-+static void natbyp_squeeze( void )
-+{
-+	int index;
-+	
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ )
-+		natbyp_flush_flow( &(natbyp_flow[ index ]) );	
-+}
-+
 +/* this is the same function to natbyp_get for ACK packet */
-+static natbyp_flow_t * natbyp_ack_get( struct iphdr * iph , struct tcphdr *tcph )
++static natbyp_flow_t * natbyp_ack_get (struct iphdr * iph, struct tcphdr *tcph)
 +{
-+	natbyp_flow_t * flow;
-+	int index;
-+	int matched;
++    natbyp_flow_t * flow;
++    int index;
++    int matched;
 +
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
-+	
-+		if ( !flow->used )
-+			continue;
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
 +
-+		if ( !(flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
-+					(flow->op.mark_state == NATBYP_BYPASS_MARK_DONE) )
-+			continue;
++        if (!flow->used)
++            continue;
 +
-+		matched = ( (iph->saddr   == flow->nated_ip) && 
-+					(tcph->source == flow->port) )? 1 : 0;
++        if (! (flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
++                (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE))
++            continue;
 +
-+		if ( matched )
-+			return flow;
-+	}
++        matched = ((iph->saddr   == flow->nated_ip) &&
++                   (tcph->source == flow->port)) ? 1 : 0;
 +
-+	return NULL;
++        if (matched)
++            return flow;
++    }
++
++    return NULL;
 +}
 +
 +/* return corresponding natbyp_flow container */
-+static natbyp_flow_t * natbyp_get( struct iphdr * iph , struct tcphdr *tcph , int dir )
++static natbyp_flow_t * natbyp_get (struct iphdr * iph, struct tcphdr *tcph, int dir)
 +{
-+	natbyp_flow_t * flow;
-+	int index;
-+	int matched;
++    natbyp_flow_t * flow;
++    int index;
++    int matched;
 +
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);	
-+	
-+		if ( !flow->used )
-+			continue;
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
 +
-+		matched = 0; /* clear */
++        if (!flow->used)
++            continue;
 +
-+		switch( dir ) {
-+		case NATBYP_DL: /* DL */
-+			matched = ( (iph->daddr  == flow->ip) && (tcph->dest  == flow->port))? 1 : 0;
-+			break;
-+		case NATBYP_UL: /* UL */
-+			matched = ( (iph->saddr  == flow->ip) && (tcph->source == flow->port))? 1 : 0;
-+			break;
-+		default:
-+			return NULL;
-+		}
++        matched = 0; /* clear */
 +
-+		if ( matched )
-+			return flow;
-+	}
++        switch (dir) {
++        case NATBYP_DL: /* DL */
++            matched = ((iph->daddr  == flow->ip) && (tcph->dest  == flow->port)) ? 1 : 0;
++            break;
++        case NATBYP_UL: /* UL */
++            matched = ((iph->saddr  == flow->ip) && (tcph->source == flow->port)) ? 1 : 0;
++            break;
++        default:
++            return NULL;
++        }
 +
-+	return NULL;
++        if (matched)
++            return flow;
++    }
++
++    return NULL;
 +}
 +
 +/* allocate an empty queue */
-+static natbyp_flow_t * natbyp_allocate( struct iphdr * iph , struct tcphdr *tcph , int dir )
++static natbyp_flow_t * natbyp_allocate (struct iphdr * iph, struct tcphdr *tcph, int dir)
 +{
-+	int index;
-+	natbyp_flow_t *flow;
-+	u32 saddr, daddr;
++    int index;
++    natbyp_flow_t *flow;
++    u32 saddr, daddr;
 +
-+	/* Search empty slot */
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
-+		if ( !natbyp_flow[ index ].used ) 
-+			break;
-+	}
++    /* Search empty slot */
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        if (!natbyp_flow[ index ].used)
++            break;
++    }
 +
-+	/* No empty flow */
-+	if ( index == MAX_NATBYP_FLOW ) {
++    /* No empty flow */
++    if (index == MAX_NATBYP_FLOW) {
++#if 0
++        /*
++         * It may happen - too noisy messages
++         */
 +
-+		u32 saddr = ntohl(iph->saddr);
-+		u32 daddr = ntohl(iph->daddr);
++        u32 saddr = ntohl (iph->saddr);
++        u32 daddr = ntohl (iph->daddr);
 +
-+		/* Overflow may happen !! */
-+		natbyp_errmsg("ALLOC FAIL::OVERFLOW (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d)\n",
-+			(saddr & 0xff000000) >> 24,
-+			(saddr & 0x00ff0000) >> 16,
-+			(saddr & 0x0000ff00) >> 8,
-+			(saddr & 0x000000ff) ,
-+			ntohs(tcph->source),
-+			(daddr & 0xff000000) >> 24,
-+			(daddr & 0x00ff0000) >> 16,
-+			(daddr & 0x0000ff00) >> 8,
-+			(daddr & 0x000000ff) ,
-+			ntohs(tcph->dest)); 
-+		return NULL;
-+	}
++        /* Overflow may happen !! */
++        natbyp_errmsg ("ALLOC FAIL::OVERFLOW (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d)\n",
++                       (saddr & 0xff000000) >> 24,
++                       (saddr & 0x00ff0000) >> 16,
++                       (saddr & 0x0000ff00) >> 8,
++                       (saddr & 0x000000ff),
++                       ntohs (tcph->source),
++                       (daddr & 0xff000000) >> 24,
++                       (daddr & 0x00ff0000) >> 16,
++                       (daddr & 0x0000ff00) >> 8,
++                       (daddr & 0x000000ff),
++                       ntohs (tcph->dest));
++#endif
++        return NULL;
++    }
 +
-+	/* find & fetch ... */
-+	flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
-+	if ( !flow ) {
-+		natbyp_errmsg("ALLOC FAIL::FREE NODE BROKEN!\n");
-+		return NULL;
-+	}
++    /* find & fetch ... */
++    flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
++    if (!flow) {
++        natbyp_errmsg ("ALLOC FAIL::FREE NODE BROKEN!\n");
++        return NULL;
++    }
 +
-+	/* found !! */
-+	flow->magic = NATBYP_MAGIC_4BYTES;
++    /* found !! */
++    flow->magic = NATBYP_MAGIC_4BYTES;
 +
-+	/* flow information */
-+	switch( dir ) {
-+	case NATBYP_DL: /* DL */
-+		/* destination address information */
-+		flow->ip    = iph->daddr;
-+		flow->port  = tcph->dest;
-+		/* source address information */
-+		flow->sip   = iph->saddr;
-+		flow->sport = tcph->source;
-+		break;
-+	case NATBYP_UL: /* UL */
-+		/* destination address information */
-+		flow->ip    = iph->saddr;
-+		flow->port  = tcph->source;
-+		/* source address information */
-+		flow->sip   = iph->daddr;
-+		flow->sport = tcph->dest;
-+		break;
-+	default:
-+		natbyp_errmsg("ALLOC FAIL::UNKNOWN DIRECTION (%s) !\n",dirname( dir ));
-+		return NULL;
-+	}
++    /* flow information */
++    switch (dir) {
++    case NATBYP_DL: /* DL */
++        /* destination address information */
++        flow->ip    = iph->daddr;
++        flow->port  = tcph->dest;
++        /* source address information */
++        flow->sip   = iph->saddr;
++        flow->sport = tcph->source;
++        break;
++    case NATBYP_UL: /* UL */
++        /* destination address information */
++        flow->ip    = iph->saddr;
++        flow->port  = tcph->source;
++        /* source address information */
++        flow->sip   = iph->daddr;
++        flow->sport = tcph->dest;
++        break;
++    default:
++        natbyp_errmsg ("ALLOC FAIL::UNKNOWN DIRECTION (%s) !\n", dirname (dir));
++        return NULL;
++    }
 +
-+	/* flow direction */
-+	flow->dir  			= dir;
-+	flow->dropnum       = 0;
-+	flow->count         = 0;
-+	flow->bytes         = 0;
-+	flow->bw            = 0;
-+	flow->nated_ip 	    = 0;
-+	flow->nated_port 	= 0;
-+	flow->mapped		= 0;
++    /* flow direction */
++    flow->dir  			= dir;
++    flow->dropnum       = 0;
++    flow->count         = 0;
++    flow->bytes         = 0;
++    flow->bw            = 0;
++    flow->overflow_pkt  = 0;
++    flow->winupd_count  = 0;
++    flow->suppack_count = 0;
++    flow->nated_ip 	    = 0;
++    flow->nated_port 	= 0;
++    flow->mapped		= 0;
 +
-+	/* flow type */
-+	flow->ack           = 0; /* undetermined */
++    /* flow type */
++    flow->ack           = 0; /* undetermined */
 +
-+	/* flow detection counter */
-+	natbyp_reset_counter( flow );
-+	flow->op.mode       = NATBYP_SLOT_TEST; /* Initial state */
-+	flow->op.mark_state = NATBYP_BYPASS_MARK_INIT;
++    /* flow detection counter */
++    natbyp_reset_counter (flow);
++    flow->op.mode       = NATBYP_SLOT_TEST; /* Initial state */
++    flow->op.mark_state = NATBYP_BYPASS_MARK_INIT;
 +
-+	/* queue init */
-+	natbyp_skbq_init( &(flow->skbq) );
++    /* queue init */
++    natbyp_skbq_init (& (flow->skbq));
 +
-+	/* Now we use this */
-+	flow->used = 1;
++    saddr = ntohl (iph->saddr);
++    daddr = ntohl (iph->daddr);
 +
-+	saddr = ntohl(iph->saddr);
-+	daddr = ntohl(iph->daddr);
++    /* Overflow may happen !! */
++    natbyp_print (STATE, "FLOW[%-2d] ALLOCED (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d) \n",
++                  flow->index,
++                  (saddr & 0xff000000) >> 24,
++                  (saddr & 0x00ff0000) >> 16,
++                  (saddr & 0x0000ff00) >> 8,
++                  (saddr & 0x000000ff),
++                  ntohs (tcph->source),
++                  (daddr & 0xff000000) >> 24,
++                  (daddr & 0x00ff0000) >> 16,
++                  (daddr & 0x0000ff00) >> 8,
++                  (daddr & 0x000000ff),
++                  ntohs (tcph->dest));
 +
-+	/* Overflow may happen !! */
-+	natbyp_print(STATE, "FLOW[%-2d] ALLOCED (%d.%d.%d.%d:%d -> %d.%d.%d.%d:%d) \n",
-+		flow->index,
-+		(saddr & 0xff000000) >> 24,
-+		(saddr & 0x00ff0000) >> 16,
-+		(saddr & 0x0000ff00) >> 8,
-+		(saddr & 0x000000ff) ,
-+		ntohs(tcph->source),
-+		(daddr & 0xff000000) >> 24,
-+		(daddr & 0x00ff0000) >> 16,
-+		(daddr & 0x0000ff00) >> 8,
-+		(daddr & 0x000000ff) ,
-+		ntohs(tcph->dest)); 
++    /* Now we use this */
++    flow->used = 1;
 +
-+	/* start timer */
-+	if ( !timer_pending(&(natbyp_db->timer)) ) {
-+		mod_timer( &(natbyp_db->timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
-+		natbyp_print(STATE, "FLOW TIMER START \n");
-+	}
++    /* start timer */
++    if (!timer_pending (& (natbyp_db->timer))) {
++        mod_timer (& (natbyp_db->timer), jiffies + (HZ / (NATBYP_TIME_SCALE)));
++        natbyp_print (STATE, "FLOW TIMER START \n");
++    }
 +
-+	return flow;
++    return flow;
 +}
 +
 +/* insert a skb into queue */
-+static void natbyp_flow_map( natbyp_flow_t * flow, struct sk_buff * skb )
++static void natbyp_flow_map (natbyp_flow_t * flow, struct sk_buff * skb)
 +{
-+	if (!flow)
-+		return;
++    if (!flow)
++        return;
 +
-+	/* natbyp parent */
-+	skb->natbyp_flow = (void *)flow;
++    /* natbyp parent */
++    skb->natbyp_flow = (void *) flow;
 +
-+	/* count increase */
-+	++ flow->count;
++    /* count increase */
++    ++ flow->count;
 +
-+	/* traffic measurement */
-+	flow->bytes += skb->len;
++    /* traffic measurement */
++    flow->bytes += skb->len;
 +}
 +
 +/* delete a skb from queue */
-+static int natbyp_flow_unmap( struct sk_buff * skb )
++static int natbyp_flow_unmap (struct sk_buff * skb)
 +{
-+	natbyp_flow_t * flow;
++    natbyp_flow_t * flow;
 +
-+	if ( !skb->natbyp_flow ) {
-+		natbyp_errmsg("SKB ALREADY UNMAPPED\n");
-+		return 1;
-+	}
++    if (!skb->natbyp_flow) {
++        natbyp_errmsg ("SKB ALREADY UNMAPPED\n");
++        return 1;
++    }
 +
-+	/* flow */
-+	flow = (natbyp_flow_t *)(skb->natbyp_flow);
++    /* flow */
++    flow = (natbyp_flow_t *) (skb->natbyp_flow);
 +
-+	/* sanity check */
-+	if ( !natbyp_flow_ok( flow ) ) {
-+		natbyp_errmsg("NATBYP BROKEN\n");
-+		return 1;
-+	}
++    /* sanity check */
++    if (!natbyp_flow_ok (flow)) {
++        natbyp_errmsg ("NATBYP BROKEN\n");
++        return 1;
++    }
 +
-+	skb->natbyp_flow = NULL;
++    skb->natbyp_flow = NULL;
 +
-+	/* count decrease */
-+	-- flow->count ;
-+	if ( flow->count < 0 )
-+		/*
-+ 		* 2010/08/12 
-+ 		*	- We cannot find any case that a control falls into here. 
-+ 		*/
-+		natbyp_errmsg("FLOW(%d) UNDERFLOW\n",flow->index);
++    /* count decrease */
++    -- flow->count ;
++    if (flow->count < 0)
++        /*
++        * 2010/08/12
++        *	- We cannot find any case that a control falls into here.
++        */
++        natbyp_errmsg ("FLOW(%d) UNDERFLOW\n", flow->index);
 +
-+	return 0;
++    return 0;
 +}
 +
 +/* timer function */
-+static void natbyp_flow_mon( struct timer_list *unused )
++static void natbyp_flow_mon (struct timer_list *unused)
 +{
-+	int counter = 0;
-+	natbyp_flow_t *flow;
-+	int index;
++    int counter = 0;
++    natbyp_flow_t *flow;
++    int index;
 +
-+	for(index = 0;index < MAX_NATBYP_FLOW;index++ ) {
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
 +
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
++        flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
 +
-+		if( !flow ) {
-+			natbyp_errmsg("BROKEN LIST\n");
-+			return ;
-+		}
++        if (!flow) {
++            natbyp_errmsg ("BROKEN LIST\n");
++            return ;
++        }
 +
-+		if( !flow->used )
-+			continue;
-+	
-+		/* sanity check */
-+		if ( !natbyp_flow_ok(flow) ){
-+			natbyp_errmsg("NATBYP[%d] BROKEN\n", flow->index );
-+			continue;
-+		}
++        if (!flow->used)
++            continue;
 +
-+		/* update traffic information */
-+		flow->bw = flow->bytes;
-+		flow->bytes = 0;
++        /* sanity check */
++        if (!natbyp_flow_ok (flow)) {
++            natbyp_errmsg ("NATBYP[%d] BROKEN\n", flow->index);
++            continue;
++        }
 +
-+		/* depending on working mode */
-+		switch( flow->op.mode ) {
-+		case NATBYP_SLOT_TEST:
-+		case NATBYP_SLOT_BYPASS_READY:
-+		case NATBYP_SLOT_BYPASS_ACT:
++        /* update traffic information */
++        flow->bw = flow->bytes;
++        flow->bytes = 0;
 +
-+			/* local counter for activated flow */
-+			++ counter;
++        /* depending on working mode */
++        switch (flow->op.mode) {
++        case NATBYP_SLOT_TEST:
++        case NATBYP_SLOT_BYPASS_READY:
++        case NATBYP_SLOT_BYPASS_ACT:
 +
-+			/* Current slot is allocated and 
-+ 				it is placed on a state monitoring any more next packets come in */
-+			if ( --flow->op.expiry_count <= 0 ) {
-+				/* This state is prevented by "natbyp_reset_counter" call.  */
-+				flow->op.mode = NATBYP_SLOT_REMOVE;
-+				flow->mapped = 0;  /* unmapped !! */
-+				natbyp_print(STATE, "FLOW[%-2d] REMOVE *SILENT FLOW* \n", flow->index);
-+			} else {
-+				/* state transition */
-+				switch( flow->op.mode ) {
-+				case NATBYP_SLOT_TEST:
-+					/* Next State */
-+					flow->op.mode = NATBYP_SLOT_BYPASS_READY;
-+					break;
++            /* local counter for activated flow */
++            ++ counter;
 +
-+				case NATBYP_SLOT_BYPASS_READY:
-+				case NATBYP_SLOT_BYPASS_ACT:
++            /* Current slot is allocated and
++            	it is placed on a state monitoring any more next packets come in */
++            if (--flow->op.expiry_count <= 0) {
++                /* This state is prevented by "natbyp_reset_counter" call.  */
++                flow->op.mode = NATBYP_SLOT_REMOVE;
++                flow->mapped = 0;  /* unmapped !! */
++                natbyp_print (STATE, "FLOW[%-2d] REMOVE *SILENT FLOW* \n", flow->index);
++            }
++            else {
++                /* state transition */
++                switch (flow->op.mode) {
++                case NATBYP_SLOT_TEST:
++                    /* Next State */
++                    flow->op.mode = NATBYP_SLOT_BYPASS_READY;
++                    break;
 +
-+					/* Update state */
-+					if ( flow->op.mode == NATBYP_SLOT_BYPASS_READY ) {
-+						if( flow->mapped )  {
-+							/*
-+ 							* 1st step. 
-+ 							*
-+ 							*  -> MARK_READY
-+ 							*  	Socket buffer found in this flow will be mared. 
-+ 							*
-+ 							*/
-+							flow->op.mark_state = NATBYP_BYPASS_MARK_READY;
-+							flow->op.mode = NATBYP_SLOT_BYPASS_ACT;
-+				
-+							natbyp_print(STATE, "FLOW[%-2d] BYPASS_READY_ACT\n", flow->index );
-+						} else {
-+							/* Not mapped !! */
-+							flow->op.mode = NATBYP_SLOT_REMOVE;
-+							flow->mapped = 0;
-+							natbyp_print(STATE, "FLOW[%-2d] CANCELLED *NO EGRESS* \n", flow->index);
-+						}
-+					} else {
-+						/* NATBYP_SLOT_BYPASS_ACT */
-+						int again = 0;
++                case NATBYP_SLOT_BYPASS_READY:
++                case NATBYP_SLOT_BYPASS_ACT:
 +
-+						/* exceptional case */
-+						if (natbyp_db->pkt_count[ NATBYP_DL ] == 0)
-+							again = 1;
++                    /* Update state */
++                    if (flow->op.mode == NATBYP_SLOT_BYPASS_READY) {
++                        if (flow->mapped)  {
++                            /*
++                            * 1st step.
++                            *
++                            *  -> MARK_READY
++                            *  	Socket buffer found in this flow will be mared.
++                            *
++                            */
++                            flow->op.mark_state = NATBYP_BYPASS_MARK_READY;
++                            flow->op.mode = NATBYP_SLOT_BYPASS_ACT;
 +
-+						/* status of 3 queues - flow/dev[UL]/dev[DL] */
-+						skbq_t *skbq  = &(flow->skbq);
-+						natbyp_print(FLOW, "FLOW[%-2d] BYPASS_ACT    %-6d %-6d %-6d  %c\n", 
-+							flow->index, 
-+						   	skbq->occu,
-+							natbyp_db->pkt_count[ NATBYP_DL ],
-+							natbyp_db->pkt_count[ NATBYP_UL ],
-+							(again == 1)? 'A': ' ');
++                            natbyp_print (STATE, "FLOW[%-2d] BYPASS_READY_ACT\n", flow->index);
++                        }
++                        else {
++                            /* Not mapped !! */
++                            flow->op.mode = NATBYP_SLOT_REMOVE;
++                            flow->mapped = 0;
++                            natbyp_print (STATE, "FLOW[%-2d] CANCELLED *NO EGRESS* \n", flow->index);
++                        }
++                    }
++                    else {
++                        /* NATBYP_SLOT_BYPASS_ACT */
++                        int again = 0;
++                        int dir = flow->dir;
 +
-+						if (again)
-+							tasklet_schedule( &(natbyp_db->flow_tasklet[ NATBYP_DL ]) );
++                        /* exceptional case */
++                        /*
++                         * TBD: Why ???
++                         *
++                         */
++                        if (natbyp_db->pkt_count[ dir ] == 0)
++                            again = 1;
 +
-+						/* clear counters */
-+						natbyp_db->pkt_count[ NATBYP_UL ] = 0;
-+						natbyp_db->pkt_count[ NATBYP_DL ] = 0;
++                        /* status of 3 queues - flow/dev[UL]/dev[DL] */
++                        natbyp_print (FLOW, "FLOW[%-2d] BYPASS_ACT  %c %-6d %-6d %-4d %-4d %-4d %c\n",
++                                      flow->index,
++                                      flow->ack ? 'A' : 'P',
++                                      flow->skbq.occu,
++                                      natbyp_db->pkt_count[ dir ],
++                                      flow->suppack_count,
++                                      flow->winupd_count,
++                                      flow->overflow_pkt,
++                                      (again == 1) ? 'S' : ' ');
 +
-+					}
-+					break;
-+				}
-+			}
-+			break;
++                        /* clear counters */
++                        natbyp_db->pkt_count[ dir ] = 0;
++                        flow->overflow_pkt   = 0;
++                        flow->winupd_count = 0;
++                        flow->suppack_count  = 0;
 +
-+		case NATBYP_SLOT_REMOVE:
-+			{
-+				int items = natbyp_flush_flow( flow );
-+				if (items < 0)
-+					natbyp_errmsg("FLOW[%-2d] FLUSH ERROR\n", flow->index);
-+				else
-+					natbyp_print(STATE, "FLOW[%-2d] FLUSH %-2d\n", flow->index, items);
-+			}
-+			break;
++                        if (again)
++                            tasklet_schedule (& (natbyp_db->flow_tasklet[ dir ]));
++                    }
++                    break;
++                }
++            }
++            break;
 +
-+		default:
-+			natbyp_errmsg("Unknown working mode [%d/%d] \n", flow->index , flow->op.mode );
-+		}
-+	}
++        case NATBYP_SLOT_REMOVE:
++            natbyp_print (STATE, "FLOW[%-2d] FLUSH \n", flow->index);
++            flow->used = 0;
++            break;
 +
-+	/* next timer setup if any flow is pending */
-+	if( counter ) {
-+		/* next timer wake up - 1 second later */
-+		mod_timer( &(natbyp_db->timer) , jiffies + (HZ/(NATBYP_TIME_SCALE)) );
-+	}else{
-+		natbyp_squeeze(); /* 2012/02/13 */
-+		natbyp_print(STATE, "FLOW TIMER STOP\n");
-+	}
++        default:
++            natbyp_errmsg ("Unknown working mode [%d/%d] \n", flow->index, flow->op.mode);
++        }
++    }
++
++    /* next timer setup if any flow is pending */
++    if (counter) {
++        /* next timer wake up - 1 second later */
++        mod_timer (& (natbyp_db->timer), jiffies + (HZ / (NATBYP_TIME_SCALE)));
++    }
++    else {
++		/* discarding packets in all flows */
++        natbyp_print (STATE, "FLOW TIMER STOP %d\n", 
++						natbyp_squeeze());
++    }
 +}
 +
 +/* shoot skb to driver transmit function */
-+static int natbyp_skb_send( struct sk_buff * skb , u32 dir )
++static int natbyp_skb_send (struct sk_buff * skb, u32 dir)
 +{
-+	natbyp_flow_t *flow;
-+	int rc;
-+	natbyp_dev_t *ndev;
++    natbyp_flow_t *flow;
++    int rc;
++    natbyp_dev_t *ndev;
 +
-+	/* flow */
-+	flow = (natbyp_flow_t *)(skb->natbyp_flow);
-+	if( !flow ) {
-+		natbyp_errmsg("SKB BROKEN\n");
-+		skb->dev = NULL; /* unlink device ~ */
-+		dev_kfree_skb( skb );
-+		return -1;
-+	}
++    /* flow */
++    flow = (natbyp_flow_t *) (skb->natbyp_flow);
++    if (!flow) {
++        natbyp_errmsg ("SKB MAP BROKEN\n");
++        return -1;
++    }
 +
-+	/* not used flow */
-+	if ( !flow->used ) {
-+		natbyp_errmsg("FLOW[%-2d] UNUSED\n", flow->index);
-+		skb->dev = NULL; /* unlink device ~ */
-+		dev_kfree_skb( skb );
-+		return -1;
-+	}
++    /* not used flow */
++    if (!flow->used) {
++        natbyp_errmsg ("FLOW[%-2d] UNUSED\n", flow->index);
++        return -1;
++    }
 +
-+	/* make it single node */
-+	/* very important !! - It prevents chained resource free at kfree_skb() */
-+	skb_orphan(skb);
++    /* make it single node */
++    /* very important !! - It prevents chained resource free at kfree_skb() */
++    skb_orphan (skb);
 +
-+	/* check device */
-+	ndev = (natbyp_dev_t *)flow->nated_dev;
-+	if ( !ndev->used ) {
-+		natbyp_errmsg("FLOW[%-2d] DEVICE CRASH (len=%d)\n",flow->index,skb->len);
-+		skb->dev = NULL; /* unlink device ~ */
-+		dev_kfree_skb( skb );
-+		return -1;
-+	}
++    /* check device */
++    ndev = (natbyp_dev_t *) flow->nated_dev;
++    if (!ndev->used) {
++        natbyp_errmsg ("FLOW[%-2d] DEVICE CRASH (len=%d)\n", flow->index, skb->len);
++        return -1;
++    }
 +
-+	natbyp_reset_counter( flow ); /* update counter */
++    natbyp_reset_counter (flow);   /* update counter */
 +
-+	/*
-+	 *
-+	 * TBD: Selection of following device transmisson callback 
-+	 * may depend on the structure of device interface implementation. 
-+	 *
-+	 */
-+	/* 
-+	 * 	{
-+		rc = dev_queue_xmit( skb );
-+		}
-+	 *
-+	*/
-+	{
-+		struct net_device *netdev = skb->dev;
-+		rc = netdev->netdev_ops->ndo_start_xmit( skb, netdev );
-+	}
-+	switch (rc) {
-+	case NETDEV_TX_OK:
-+		break;
-+	case NETDEV_TX_BUSY:
-+		natbyp_errmsg("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname(dir));
-+		++ natbyp_db->pkt_drop[ dir ];
-+		break;
-+	default:
-+		natbyp_errmsg("FLOW[%-2d] DEV_TX_DROP[%s] %08x \n", flow->index, dirname(dir), rc);
-+		++ natbyp_db->pkt_drop[ dir ];
-+		break;
-+	}
++    /*
++     *
++     * TBD: Selection of following device transmisson callback
++     * may depend on the structure of device interface implementation.
++     *
++     */
++    /*
++     * 	{
++    	rc = dev_queue_xmit( skb );
++    	}
++     *
++    */
++    {
++        struct net_device *netdev = skb->dev;
++        rc = netdev->netdev_ops->ndo_start_xmit (skb, netdev);
++    }
++    switch (rc) {
++    case NETDEV_TX_OK:
++        break;
++    case NETDEV_TX_BUSY:
++        natbyp_errmsg ("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname (dir));
++        ++ natbyp_db->pkt_drop[ dir ];
++        break;
++    default:
++        natbyp_errmsg ("FLOW[%-2d] DEV_TX_DROP[%s] %08x \n", flow->index, dirname (dir), rc);
++        ++ natbyp_db->pkt_drop[ dir ];
++        break;
++    }
 +
-+	return 0;
-+}
-+
-+
-+/* handle one packet */
-+static __inline__ int handle_single_packet( natbyp_flow_t * flow , struct sk_buff *skb )
-+{
-+	struct net_device * dev;
-+
-+	if( !flow || !skb )
-+		return 0;
-+
-+	/* output device */
-+ 	dev = skb->dev;
-+	if ( !dev ) {
-+		natbyp_errmsg("FLOW[%-2d] NULL DEV, SKB DELETED \n",flow->index);
-+		dev_kfree_skb( skb );
-+		return 0;
-+	}
-+
-+	if (!((flow->dir == NATBYP_UL) || (flow->dir == NATBYP_DL))) {
-+		natbyp_errmsg("FLOW[%-2d] INVALID DIRECTION\n",flow->index);
-+		dev_kfree_skb( skb );
-+		return 0;
-+	}
-+
-+ 	/* No need to checksum */ 
-+	skb->ip_summed = CHECKSUM_UNNECESSARY;
-+
-+	/* update window size */
-+	/* only ACK frame is applied */
-+	if( natbyp_db->window_update ) {
-+		struct iphdr *iph;
-+		struct tcphdr *tcph;
-+	
-+		/* IP header */
-+		iph = (struct iphdr *)(skb->data + sizeof(struct ethhdr));
-+		/* TCP header */
-+		tcph = (struct tcphdr *)((char*)iph + sizeof(struct iphdr));
-+
-+		if( NATBYP_IS_TCP_ACK(iph,tcph) ) {
-+			u16 newwin;
-+
-+			/* IP & TCP header */
-+			newwin = (u16)( tcph->window * natbyp_db->window_scale ) ;
-+
-+			if( (newwin < MAX_WINDOW_LIMIT) && 
-+					(newwin > tcph->window )) {
-+				/* boom up window size */
-+				tcph->window = newwin;
-+				/* Update checksum */
-+				tcph->check = tcphdr_csum( tcph , iph );
-+			}
-+		}
-+	} /* if( natbyp_db->window_update ) ... */
-+
-+	natbyp_reset_counter( flow ); /* update counter */
-+
-+	if (natbyp_skb_send( skb, flow->dir )) {
-+		natbyp_errmsg("FLOW[%-2d] OVERFLOW\n", flow->index);
-+		/* definitely this will cause TCP traffic shutdown */
-+		dev_kfree_skb( skb );
-+		return 0;
-+	}
-+
-+	return 1; /* 1 packet */
++    return 0;
 +}
 +
 +/* actual packet handler ... */
-+static __inline__ int handle_packets( int dir )
++static __inline__ int handle_packets (int dir)
 +{
-+	int index;
-+	int count;
-+	natbyp_flow_t *flow;
-+	struct sk_buff *skb;
-+	
-+	count = 0;
++    int index;
++    int count = 0;
++    natbyp_flow_t *flow;
++    struct sk_buff *skb;
++    struct net_device * dev;
 +
-+	/* navigates outstanding flow in round-robin manner */		
-+	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
++    /* navigates outstanding flow in round-robin manner */
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
 +
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
++        flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
 +
-+		/* Check 1 */
-+		if ( !flow->used )
-+			continue;
++        /* Check 1 */
++        if (!flow->used)
++            continue;
 +
-+		/* filtering matching flow type.  */
-+		if ( flow->dir != dir )
-+			continue; 
++        /* filtering matching flow type.  */
++        if (flow->dir != dir)
++            continue;
 +
-+		/* Check 2 */
-+		if ( !((flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
-+				(flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)) )
-+			continue;
++        /* Check 2 */
++        if (! ((flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
++                (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)))
++            continue;
 +
-+		/* processing packets */
-+		skb = natbyp_skbq_get( &(flow->skbq) );
-+		if ( skb )
-+			count += handle_single_packet( flow , skb );
++        /* processing packets */
++        skb = natbyp_skbq_get (& (flow->skbq));
++        if (!skb)
++            continue;
 +
-+	} /* for( index ... */
++        /* output device */
++        dev = skb->dev;
++        if (!dev) {
++            natbyp_errmsg ("FLOW[%-2d] NULL DEV, SKB DELETED \n", flow->index);
++            dev_kfree_skb (skb);
++            continue;
++        }
 +
-+	return count;
++        if (! ((flow->dir == NATBYP_UL) || (flow->dir == NATBYP_DL))) {
++            natbyp_errmsg ("FLOW[%-2d] INVALID DIRECTION\n", flow->index);
++            dev_kfree_skb (skb);
++            continue;
++        }
++
++        /* No need to checksum */
++        skb->ip_summed = CHECKSUM_UNNECESSARY;
++
++        natbyp_reset_counter (flow);   /* update counter */
++
++        if (natbyp_skb_send (skb, flow->dir)) {
++            natbyp_errmsg ("FLOW[%-2d] SEND ERROR\n", flow->index);
++            continue;
++        }
++
++        ++ count;
++
++    } /* for( index ... */
++
++    return count;
++}
++
++static __inline__ void natbyp_ack_window (natbyp_flow_t *flow)
++{
++    skbq_t *q;
++    int head, tail;
++    struct sk_buff *ack;
++    struct iphdr *iph;
++    struct tcphdr *tcph;
++
++    if (!flow)
++        return;
++
++    /* Check 1 */
++    if (!flow->used)
++        return;
++
++    /* Check 2 - Bypass state */
++    if (! ((flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
++            (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)))
++        return;
++
++    /* Check 3 - only ACK flow */
++    if (!flow->ack)
++        return;
++
++    q = (skbq_t *) & (flow->skbq);
++
++    head = q->head;
++    tail = q->tail;
++
++    while (head != tail) {
++
++        /* invalid item */
++        if (q->skbs[ head ].valid == 0)
++            goto __next_ack_skb;
++
++        ack = q->skbs[ head ].pkt; /* ack packet */
++        if (!ack) {
++            q->skbs[ head ].valid = 0;
++            goto __next_ack_skb;
++        }
++
++        /* packet header */
++        iph = (struct iphdr *) (ack->data + sizeof (struct ethhdr));    /* IP header */
++        tcph = (struct tcphdr *) ((char*) iph + sizeof (struct iphdr)); /* TCP header */
++
++        if (NATBYP_IS_TCP_ACK (iph, tcph)) {
++            u16 newwin;
++            u16 curwin = ntohs (tcph->window);
++
++            /* Updating window parameter */
++            newwin = (u16) (curwin * natbyp_db->window_scale) ;
++
++            if ((newwin < MAX_WINDOW_LIMIT) && (newwin > curwin)) {
++                /* boom up window size */
++                tcph->window = htons (newwin);
++
++                /* Update checksum */
++                tcph->check = tcphdr_csum (tcph, iph);
++
++                ++ flow->winupd_count;
++
++                /* natbyp_print (PACKET, "FLOW[%-2d] ACK WINDOW %d -> %d \n", flow->index, curwin, newwin); */
++            }
++        } /* if (NATBYP_IS_TCP_ACK ..*/
++
++__next_ack_skb:
++        head = head + 1;
++        if (head >= MAX_SKB_QUEUE)
++            head = 0;
++    } /* while (head != tail) */
++}
++
++static __inline__ void natbyp_ack_suppress (natbyp_flow_t *flow)
++{
++    skbq_t *q;
++    int head, tail;
++    int phead; /* previous head */
++    struct sk_buff *ack;
++    struct iphdr *iph;
++    struct tcphdr *tcph;
++    int first_ack;
++    u32 ack_seq;
++
++    if (!flow)
++        return;
++
++    /* Check 1 */
++    if (!flow->used)
++        return;
++
++    /* Check 2 - Bypass state */
++    if (! ((flow->op.mode == NATBYP_SLOT_BYPASS_ACT) &&
++            (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)))
++        return;
++
++    /* Check 3 - only ACK flow */
++    if (!flow->ack)
++        return;
++
++    q = (skbq_t *) & (flow->skbq);
++
++    head = q->head;
++    tail = q->tail;
++    first_ack = 1;
++    phead = -1;
++
++    while (head != tail) {
++
++        /* invalid item */
++        if (q->skbs[ head ].valid == 0)
++            goto __next_skb;
++
++        ack = q->skbs[ head ].pkt; /* ack packet */
++        if (!ack) {
++            q->skbs[ head ].valid = 0;
++            goto __next_skb;
++        }
++
++        /* packet header */
++        iph = (struct iphdr *) (ack->data + sizeof (struct ethhdr));    /* IP header */
++        tcph = (struct tcphdr *) ((char*) iph + sizeof (struct iphdr)); /* TCP header */
++
++        if (NATBYP_IS_TCP_ACK (iph, tcph)) {
++
++            if (first_ack) {
++                ack_seq = ntohl (tcph->ack_seq);
++                phead = head;
++                first_ack = 0;
++            }
++            else {
++                u32 diff;
++
++                if (ntohl (tcph->ack_seq) < ack_seq) {
++                    /* reverse ack sequence */
++                    first_ack = 1;
++                }
++                else {
++                    diff = ntohl (tcph->ack_seq) - ack_seq;
++                    ack_seq = ntohl (tcph->ack_seq); /* update ACK */
++
++                    if (phead != -1) {
++                        struct sk_buff *pskb = q->skbs[ phead ].pkt;
++                        if (pskb) {
++                            natbyp_flow_unmap (pskb); /* Updates... */
++                            dev_kfree_skb (pskb);     /* Deleting packets */
++                        }
++
++                        /* Suppressing ACK */
++                        /* invalidate previous ACK */
++                        q->skbs[ phead ].valid = 0;
++                        q->skbs[ phead ].pkt = NULL;
++                        phead = head;
++
++                        /* decreasing occupation */
++                        -- q->occu;
++
++                        natbyp_print (PACKET, "FLOW[%-2d] ACK SUPP %08x %d \n", flow->index, ntohl (tcph->ack_seq), diff);
++                        flow->suppack_count ++ ;
++                    }
++                } /* else { ... */
++            } /* if (!first_ack .. */
++
++        } /* if (NATBYP_IS_TCP_ACK ..*/
++        else {
++            first_ack = 1;
++        }
++
++__next_skb:
++        head = head + 1;
++        if (head >= MAX_SKB_QUEUE)
++            head = 0;
++    } /* while (head != tail) */
 +}
 +
 +/*
-+ * Daemon process to directly push packet to destined device. 
++ * Daemon process to directly push packet to destined device.
 + *
 + */
-+static void natbyp_dl_forwarder(struct tasklet_struct *unused)
++static void natbyp_dl_forwarder (struct tasklet_struct *unused)
 +{
-+	int count = 0;
-+	int tot_count = 0;
++    int count = 0;
++    int tot_count = 0;
 +
-+	while(1) { 
-+		/* handle packets */	
-+		count = handle_packets( NATBYP_DL );
-+		tot_count += count;
++    while (1) {
++        /* handle packets */
++        count = handle_packets (NATBYP_DL);
++        tot_count += count;
 +
-+		if (!count) {
-+			/* statistics */	
-+			natbyp_db->pkt_count[ NATBYP_DL ] += tot_count;
-+			break; 
-+		}
-+	} /* while( 1 ) */
++        if (!count) {
++            /* statistics */
++            natbyp_db->pkt_count[ NATBYP_DL ] += tot_count;
++            break;
++        }
++    } /* while( 1 ) */
 +}
 +
-+static void natbyp_ul_forwarder(struct tasklet_struct *unused)
++static void natbyp_ul_forwarder (struct tasklet_struct *unused)
 +{
-+	int count = 0;
-+	int tot_count = 0;
++    int count = 0;
++    int tot_count = 0;
++    int index;
 +
-+	while(1) { 
-+		/* handle packets */	
-+		count = handle_packets( NATBYP_UL );
-+		tot_count += count;
++    /* ACK suppression */
++    if (natbyp_db->suppack_handle) {
++        for (index = 0; index < MAX_NATBYP_FLOW; index++)
++            natbyp_ack_suppress (& (natbyp_flow[ index ]));
++    }
 +
-+		if (!count) {
-+			/* statistics */	
-+			natbyp_db->pkt_count[ NATBYP_UL ] += tot_count;
-+			break; 
-+		}
-+	} /* while( 1 ) */
++    /* WINDOW update */
++    if (natbyp_db->ackwin_handle) {
++        for (index = 0; index < MAX_NATBYP_FLOW; index++)
++            natbyp_ack_window (& (natbyp_flow[ index ]));
++    }
++
++    /* handle packets */
++    while (1) {
++        count = handle_packets (NATBYP_UL);
++        tot_count += count;
++
++        if (!count) {
++            /* statistics */
++            natbyp_db->pkt_count[ NATBYP_UL ] += tot_count;
++            break;
++        }
++    } /* while( 1 ) */
 +}
 +
 +/***
@@ -1350,571 +1569,561 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + */
 +
 +/* delete from q queue */
-+int natbyp_ingress(struct sk_buff *skb)
++int natbyp_ingress (struct sk_buff *skb)
 +{
-+	int tolandir; /* direction */
-+	struct iphdr *iph;
-+	struct tcphdr *tcph;
-+	natbyp_flow_t *flow;
-+	int ret = NATBYP_INSERTED; /* default */
++    int tolandir; /* direction */
++    struct iphdr *iph;
++    struct tcphdr *tcph;
++    natbyp_flow_t *flow;
++    int ret = NATBYP_INSERTED; /* default */
 +
-+	if ( !skb )
-+		goto normal_traffic;
++    if (!skb)
++        goto normal_traffic;
 +
-+	/* clear bypass flag */
-+	skb->natbyp_bypassed = 0;
++    /* clear bypass flag */
++    skb->natbyp_bypassed = 0;
 +
-+	/* skb field initial */
-+	skb->natbyp_flow = NULL;
++    /* skb field initial */
++    skb->natbyp_flow = NULL;
 +
-+	/* check activated or not !! */
-+	if ( !natbyp_activated )
-+		goto normal_traffic;
++    /* check activated or not !! */
++    if (!natbyp_activated)
++        goto normal_traffic;
 +
-+	iph = (struct iphdr *)skb->data;
++    iph = (struct iphdr *) skb->data;
 +
-+	/* check IPv4 */
-+	if( iph->version != IPVERSION )
-+		goto normal_traffic;
++    /* check IPv4 */
++    if (iph->version != IPVERSION)
++        goto normal_traffic;
 +
-+	/* check TCP packet */
-+	if( iph->protocol != IPPROTO_TCP ) {
-+		if ( (iph->protocol == IPPROTO_ICMP)  && 
-+					(natbyp_verbose == NATBYP_VERBOSE_PACKET) ) {
++    /* check TCP packet */
++    if (iph->protocol == IPPROTO_ICMP) {
 +
-+			u32 saddr = ntohl(iph->saddr);
-+			u32 daddr = ntohl(iph->daddr);
++        u32 saddr = ntohl (iph->saddr);
++        u32 daddr = ntohl (iph->daddr);
 +
-+			natbyp_print(STATE, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
-+					(saddr & 0xff000000) >> 24,
-+					(saddr & 0x00ff0000) >> 16,
-+					(saddr & 0x0000ff00) >> 8,
-+					(saddr & 0x000000ff) >> 0,
-+					(daddr & 0xff000000) >> 24,
-+					(daddr & 0x00ff0000) >> 16,
-+					(daddr & 0x0000ff00) >> 8,
-+					(daddr & 0x000000ff) >> 0,
-+					ntohs(iph->tot_len) );
-+		}
-+		goto normal_traffic;
-+	}
++        natbyp_print (PACKET, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
++                      (saddr & 0xff000000) >> 24,
++                      (saddr & 0x00ff0000) >> 16,
++                      (saddr & 0x0000ff00) >> 8,
++                      (saddr & 0x000000ff) >> 0,
++                      (daddr & 0xff000000) >> 24,
++                      (daddr & 0x00ff0000) >> 16,
++                      (daddr & 0x0000ff00) >> 8,
++                      (daddr & 0x000000ff) >> 0,
++                      ntohs (iph->tot_len));
 +
-+	/*
-+	 * TCP packet ... 
-+	 */
++        goto normal_traffic;
++    }
 +
-+	/* TCP packet header */
-+	tcph = (struct tcphdr *)((char *)iph + sizeof(struct iphdr));
++    /*
++     * TCP packet ...
++     */
 +
-+	/* TCP control packet check */
-+	if ( tcph->syn | tcph->rst | tcph->fin | tcph->ece | tcph->cwr )
-+		goto normal_traffic;
++    /* TCP packet header */
++    tcph = (struct tcphdr *) ((char *) iph + sizeof (struct iphdr));
 +
-+	/*
-+	 * ACK printout
-+	 */
-+	tolandir = natbyp_direction(skb->dev);
-+	switch (tolandir) {
-+	case -1:
-+		goto normal_traffic;
-+	case NATBYP_DL:
-+		break;
-+	case NATBYP_UL:
-+		if ( NATBYP_IS_TCP_ACK( iph, tcph ) ) {
-+			natbyp_flow_t *flow = natbyp_ack_get( iph, tcph );
-+			if (flow) {
-+	
-+				/* ACK packet is also another type of transaction */	
-+				natbyp_reset_counter( flow ); 
++    /* TCP control packet check */
++    if (tcph->syn | tcph->rst | tcph->fin | tcph->ece | tcph->cwr)
++        goto normal_traffic;
 +
-+				if (natbyp_verbose == NATBYP_VERBOSE_PACKET) {
-+					/*
-+				 	* Only the case of BYPASS_ACT ..
-+				 	*/
-+					printout_natbyp_packet("ACK", flow, skb, 0, 1);
-+				}
-+			
-+				/* TIP: ACK traffic --> push traffic */	
-+				tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
-+			}
-+		} else {
-+			goto normal_traffic;
-+		}
-+		break;
-+	}
++    /*
++     * ACK printout
++     */
++    tolandir = natbyp_direction (skb->dev);
++    switch (tolandir) {
++    case -1:
++        goto normal_traffic;
++    case NATBYP_DL:
++        break;
++    case NATBYP_UL:
++        if (NATBYP_IS_TCP_ACK (iph, tcph)) {
++            natbyp_flow_t *flow = natbyp_ack_get (iph, tcph);
++            if (flow) {
 +
-+	/* TCP ACK packet - no TCP data payload */
-+	if ( !natbyp_db->ack_handle ) {
-+		if ( NATBYP_IS_TCP_ACK( iph, tcph ) )
-+			goto normal_traffic;
-+	}
++                /* ACK packet is also another type of transaction */
++                natbyp_reset_counter (flow);
 +
-+	/* check allocated container */
-+	flow = natbyp_get( iph , tcph , tolandir );
-+	if(!flow){
-+		if ((flow = natbyp_allocate( iph , tcph , tolandir )) == NULL) {
-+			goto normal_traffic;
-+		}
-+	}
++                printout_natbyp_packet ("ACK", flow, skb, 0, 1);
++
++                /* TIP: ACK traffic --> push traffic */
++                tasklet_schedule (& (natbyp_db->flow_tasklet[ flow->dir ]));
++            }
++        }
++        else {
++            goto normal_traffic;
++        }
++        break;
++    }
++
++    /* TCP ACK packet - no TCP data payload */
++    if (!natbyp_db->ack_handle) {
++        if (NATBYP_IS_TCP_ACK (iph, tcph))
++            goto normal_traffic;
++    }
++
++    /* check allocated container */
++    flow = natbyp_get (iph, tcph, tolandir);
++    if (!flow) {
++        if ((flow = natbyp_allocate (iph, tcph, tolandir)) == NULL) {
++            goto normal_traffic;
++        }
++    }
 +
 +#ifdef DEBUG_TIME_ESTIMATE
-+	/* check time */
-+	skb->natbyp_etime = natbyp_current_time();
++    /* check time */
++    skb->natbyp_etime = natbyp_current_time();
 +#else
-+	skb->natbyp_etime = 0;
++    skb->natbyp_etime = 0;
 +#endif
 +
-+	if (flow->op.mode == NATBYP_SLOT_REMOVE)
-+		/*
-+ 		* NATBYP_SLOT_REMOVE 
-+ 		* 	- Slot to be deleted ( no more packets can be queued in )
-+ 		*/
-+		goto normal_traffic;
++    if (flow->op.mode == NATBYP_SLOT_REMOVE)
++        /*
++        * NATBYP_SLOT_REMOVE
++        * 	- Slot to be deleted ( no more packets can be queued in )
++        */
++        goto normal_traffic;
 +
-+	/* mapping skb into flow */
-+	natbyp_flow_map(flow, skb);
++    /* mapping skb into flow */
++    natbyp_flow_map (flow, skb);
 +
-+	/* resetting counter */
-+	natbyp_reset_counter(flow);
++    /* resetting counter */
++    natbyp_reset_counter (flow);
 +
-+	if ( flow->op.mode == NATBYP_SLOT_BYPASS_ACT ) {
++    if (flow->op.mode == NATBYP_SLOT_BYPASS_ACT) {
 +
-+		u32 addr, nataddr;
-+		u16 natport, oldport;
-+		u32 * paddr;
++        u32 addr, nataddr;
++        u16 natport, oldport;
++        u32 * paddr;
 +
-+		char *ethh;
++        char *ethh;
 +
-+		/*
-+ 		* marking a skb 
-+ 		*/
-+		if ( flow->op.mark_state == NATBYP_BYPASS_MARK_READY ) {
++        /*
++        * marking a skb
++        */
++        if (flow->op.mark_state == NATBYP_BYPASS_MARK_READY) {
 +
-+			/* update flow type */
-+			{
-+			struct iphdr *iph = (struct iphdr *)skb->data;
-+			struct tcphdr *tcph = (struct tcphdr *)((char *)iph + sizeof(struct iphdr));
++            /* update flow type */
++            {
++                struct iphdr *iph = (struct iphdr *) skb->data;
++                struct tcphdr *tcph = (struct tcphdr *) ((char *) iph + sizeof (struct iphdr));
 +
-+			flow->ack = NATBYP_IS_TCP_ACK( iph, tcph ) ? 1: 0;
-+			}
++                flow->ack = NATBYP_IS_TCP_ACK (iph, tcph) ? 1 : 0;
++            }
 +
-+			/* initialize wait queue */
-+			natbyp_skbq_init( &(flow->skbq) );
++            /* initialize wait queue */
++            natbyp_skbq_init (& (flow->skbq));
 +
-+			/* Marking an socket buffer */
-+			skb->natbyp_bypassed |= NATBYP_FLAG_MARKER;
-+			/*
-+ 			* 2nd step. 
-+ 			*
-+ 			*  -> MARK_WAIT
-+ 			*  	Socket buffer is marked and following socket buffer found at egress point
-+ 			*  	will be buffered but isn't transferred to output device to keep packet order. 
-+ 			*
-+ 			*/
-+			flow->op.mark_state = NATBYP_BYPASS_MARK_WAIT;
++            /* Marking an socket buffer */
++            skb->natbyp_bypassed |= NATBYP_FLAG_MARKER;
++            /*
++            * 2nd step.
++            *
++            *  -> MARK_WAIT
++            *  	Socket buffer is marked and following socket buffer found at egress point
++            *  	will be buffered but isn't transferred to output device to keep packet order.
++            *
++            */
++            flow->op.mark_state = NATBYP_BYPASS_MARK_WAIT;
 +
-+			if ( natbyp_verbose == NATBYP_VERBOSE_PACKET )
-+				printout_natbyp_packet("MRK", flow, skb, 0, 0);
++            printout_natbyp_packet ("MRK", flow, skb, 0, 0);
 +
-+			/*
-+			 * This packet will be detected in natbyp_egress() side...
-+			 */
-+			return NATBYP_INSERTED; /* normal return */	
-+		}
++            /*
++             * This packet will be detected in natbyp_egress() side...
++             */
++            return NATBYP_INSERTED; /* normal return */
++        }
 +
-+		/* configure bypass flag */
-+		skb->natbyp_bypassed |= NATBYP_FLAG_BYPASSED;
-+		
-+		/* Todd 2013/02/14 -> PPP connection bug */
-+		/* prediction ... check validity */
-+		if (unlikely((skb->data-ETH_HLEN)<skb->head)) {
-+			/* simply skip this !! */
-+			/* I do not know what this is ... */
-+			natbyp_print(STATE, "FLOW[%-2d] UNDER SKB SKIP\n",flow->index);
-+			skb->natbyp_bypassed &= ~NATBYP_FLAG_BYPASSED; /* clear flag */
-+			return ret; /* !BYPASSED */
-+		}
++        /* configure bypass flag */
++        skb->natbyp_bypassed |= NATBYP_FLAG_BYPASSED;
 +
-+		/* Speedy partial checksum */
-+		switch( tolandir ) {
-+		case NATBYP_DL:
-+			addr       = iph->daddr;
-+			nataddr    = flow->nated_ip;
-+			/* desintation address/port hack */
-+			natport    = flow->nated_port;
-+			oldport    = tcph->dest;
-+			tcph->dest = flow->nated_port;
-+			/* to be changed */
-+			paddr      = (u32 *)&(iph->daddr);
-+			break;
-+		case NATBYP_UL:
-+			addr        = iph->saddr;
-+			nataddr     = flow->nated_ip;
-+			/* source address/port hack */
-+			natport      = flow->nated_sport;
-+			oldport      = tcph->source;
-+			tcph->source = flow->nated_sport;
-+			/* to be changed */
-+			paddr      = (u32 *)&(iph->saddr);
-+			break;
-+		}
++        /* Todd 2013/02/14 -> PPP connection bug */
++        /* prediction ... check validity */
++        if (unlikely ((skb->data - ETH_HLEN) < skb->head)) {
++            /* simply skip this !! */
++            /* I do not know what this is ... */
++            natbyp_print (STATE, "FLOW[%-2d] UNDER SKB SKIP\n", flow->index);
++            skb->natbyp_bypassed &= ~NATBYP_FLAG_BYPASSED; /* clear flag */
++            return ret; /* !BYPASSED */
++        }
 +
-+		/* Update TCP checksum */
-+		inet_proto_csum_replace4(&tcph->check, skb, addr, nataddr, 1);
-+		inet_proto_csum_replace2(&tcph->check, skb, oldport, natport, 0);
++        /* Speedy partial checksum */
++        switch (tolandir) {
++        case NATBYP_DL:
++            addr       = iph->daddr;
++            nataddr    = flow->nated_ip;
++            /* desintation address/port hack */
++            natport    = flow->nated_port;
++            oldport    = tcph->dest;
++            tcph->dest = flow->nated_port;
++            /* to be changed */
++            paddr      = (u32 *) & (iph->daddr);
++            break;
++        case NATBYP_UL:
++            addr        = iph->saddr;
++            nataddr     = flow->nated_ip;
++            /* source address/port hack */
++            natport      = flow->nated_sport;
++            oldport      = tcph->source;
++            tcph->source = flow->nated_sport;
++            /* to be changed */
++            paddr      = (u32 *) & (iph->saddr);
++            break;
++        }
 +
-+		/* IP checksum */
-+		csum_replace4(&iph->check, addr, nataddr);
++        /* Update TCP checksum */
++        inet_proto_csum_replace4 (&tcph->check, skb, addr, nataddr, 1);
++        inet_proto_csum_replace2 (&tcph->check, skb, oldport, natport, 0);
 +
-+		/* Update IP address */
-+		*paddr = flow->nated_ip;
++        /* IP checksum */
++        csum_replace4 (&iph->check, addr, nataddr);
 +
-+		/* ethernet header replacement */
-+		ethh = (char *)iph - ETH_HLEN;
-+		memcpy( (char *)ethh , flow->nated_ethhdr , ETH_HLEN );	
++        /* Update IP address */
++        *paddr = flow->nated_ip;
 +
-+		/* back to data pointer */
-+		skb_push( skb , ETH_HLEN );
++        /* ethernet header replacement */
++        ethh = (char *) iph - ETH_HLEN;
++        memcpy ((char *) ethh, flow->nated_ethhdr, ETH_HLEN);
 +
-+		/* reset header */
-+		skb_set_network_header( skb , ETH_HLEN );
-+		skb_set_transport_header( skb , ETH_HLEN );
-+		skb->mac_len = ETH_HLEN;
++        /* back to data pointer */
++        skb_push (skb, ETH_HLEN);
 +
-+		/* update device */
-+		skb->dev = NATDEV(flow);
++        /* reset header */
++        skb_set_network_header (skb, ETH_HLEN);
++        skb_set_transport_header (skb, ETH_HLEN);
++        skb->mac_len = ETH_HLEN;
 +
-+		/*
-+ 		* natbyp_activated : 2 (emulation mode)
-+ 		*/
-+		ret = NATBYP_BYPASSED;
-+	} 
++        /* update device */
++        skb->dev = NATDEV (flow);
 +
-+	/* 
-+	 * skb_push() affects offset of the following above.. 
-+	 */
-+	if (natbyp_verbose == NATBYP_VERBOSE_PACKET)
-+		printout_natbyp_packet("ING", flow, skb, 
-+					(ret == NATBYP_BYPASSED)? ETH_HLEN : 0, 0);
++        /*
++        * natbyp_activated : 2 (emulation mode)
++        */
++        ret = NATBYP_BYPASSED;
++    }
 +
-+	if ( ret == NATBYP_BYPASSED ) {
++    /*
++     * skb_push() affects offset of the following above..
++     */
++    printout_natbyp_packet ("ING", flow, skb,
++                            (ret == NATBYP_BYPASSED) ? ETH_HLEN : 0, 0);
 +
-+		switch( flow->op.mark_state ) {
-+		case NATBYP_BYPASS_MARK_INIT:
-+		case NATBYP_BYPASS_MARK_READY:
-+			/* shouldn't be here !! */
-+			break;
++    if (ret == NATBYP_BYPASSED) {
 +
-+		case NATBYP_BYPASS_MARK_WAIT:
-+		case NATBYP_BYPASS_MARK_DONE:
-+			/*
-+ 			* Simply buffering packets at this stage...
-+			*
-+			* THIS IS INTERRUPT CONTEXT !!
-+ 			*/
-+			if (natbyp_skbq_put( &(flow->skbq), skb ) < 0) {
-+				/* natbyp_errmsg("FLOW[%-2d] ING FLOW OVERFLOW\n", flow->index); */
-+				/* definitely this will cause TCP traffic shutdown */
-+				dev_kfree_skb( skb );
-+			}
++        switch (flow->op.mark_state) {
++        case NATBYP_BYPASS_MARK_INIT:
++        case NATBYP_BYPASS_MARK_READY:
++            /* shouldn't be here !! */
++            break;
 +
-+			/* Wake up !! */
-+			if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)
-+				tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
-+			break;
-+		}
-+	} /* if (ret == NATBYP_BYPASSED) */
++        case NATBYP_BYPASS_MARK_WAIT:
++        case NATBYP_BYPASS_MARK_DONE:
++            /*
++            * Simply buffering packets at this stage...
++            *
++            * THIS IS INTERRUPT CONTEXT !!
++            */
++            if (natbyp_skbq_put (& (flow->skbq), skb) < 0) {
++                /* natbyp_errmsg("FLOW[%-2d] ING FLOW OVERFLOW\n", flow->index); */
++                /* definitely this will cause TCP traffic shutdown */
++                ++ flow->overflow_pkt ;
++                dev_kfree_skb (skb);
++            }
++
++            /* Wake up !! */
++            if (flow->op.mark_state == NATBYP_BYPASS_MARK_DONE)
++                tasklet_schedule (& (natbyp_db->flow_tasklet[ flow->dir ]));
++            break;
++        }
++    } /* if (ret == NATBYP_BYPASSED) */
 +
 +normal_traffic:
-+	return ret;
++    return ret;
 +
 +}
-+EXPORT_SYMBOL(natbyp_ingress);
++EXPORT_SYMBOL (natbyp_ingress);
 +
 +/* insert into a queue */
-+int natbyp_egress(struct sk_buff *skb)
++int natbyp_egress (struct sk_buff *skb)
 +{
-+	struct ethhdr *ethh;
-+	struct iphdr *iph;
-+	struct tcphdr *tcph;
-+	natbyp_flow_t *flow;
++    struct ethhdr *ethh;
++    struct iphdr *iph;
++    struct tcphdr *tcph;
++    natbyp_flow_t *flow;
 +
-+	/* ethernet header */
-+	ethh = (struct ethhdr *)skb->data;
-+	if( ntohs(ethh->h_proto) != ETH_P_IP ) {
-+		return 0;
-+	}
++    /* ethernet header */
++    ethh = (struct ethhdr *) skb->data;
++    if (ntohs (ethh->h_proto) != ETH_P_IP) {
++        return 0;
++    }
 +
-+	/* check TCP packet */
-+	iph = (struct iphdr *)(skb->data + sizeof(struct ethhdr));
-+	if( iph->protocol != IPPROTO_TCP ) {
-+		if ( (iph->protocol == IPPROTO_ICMP)  && 
-+					(natbyp_verbose == NATBYP_VERBOSE_PACKET) ) {
++    /* check TCP packet */
++    iph = (struct iphdr *) (skb->data + sizeof (struct ethhdr));
++    if (iph->protocol == IPPROTO_ICMP) {
 +
-+			u32 saddr = ntohl(iph->saddr);
-+			u32 daddr = ntohl(iph->daddr);
++        u32 saddr = ntohl (iph->saddr);
++        u32 daddr = ntohl (iph->daddr);
 +
-+			natbyp_print(STATE, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
-+					(saddr & 0xff000000) >> 24,
-+					(saddr & 0x00ff0000) >> 16,
-+					(saddr & 0x0000ff00) >> 8,
-+					(saddr & 0x000000ff) >> 0,
-+					(daddr & 0xff000000) >> 24,
-+					(daddr & 0x00ff0000) >> 16,
-+					(daddr & 0x0000ff00) >> 8,
-+					(daddr & 0x000000ff) >> 0,
-+					ntohs(iph->tot_len) );
-+		}
-+		return 0;
-+	}
++        natbyp_print (PACKET, "ICMP [%d.%d.%d.%d -> %d.%d.%d.%d] %d \n",
++                      (saddr & 0xff000000) >> 24,
++                      (saddr & 0x00ff0000) >> 16,
++                      (saddr & 0x0000ff00) >> 8,
++                      (saddr & 0x000000ff) >> 0,
++                      (daddr & 0xff000000) >> 24,
++                      (daddr & 0x00ff0000) >> 16,
++                      (daddr & 0x0000ff00) >> 8,
++                      (daddr & 0x000000ff) >> 0,
++                      ntohs (iph->tot_len));
++        return 0;
++    }
 +
-+	/* flow is not associated !! */
-+	if ( !skb->natbyp_flow ) 
-+		return 0;
++    /* flow is not associated !! */
++    if (!skb->natbyp_flow)
++        return 0;
 +
-+	/* parent flow structure */
-+	flow = (natbyp_flow_t *)skb->natbyp_flow;
++    /* parent flow structure */
++    flow = (natbyp_flow_t *) skb->natbyp_flow;
 +
-+	/* sanity check */
-+	if ( !natbyp_flow_ok(flow) ){
-+		natbyp_errmsg("NATBYP BROKEN\n");
-+		return 0;
-+	}
++    /* sanity check */
++    if (!natbyp_flow_ok (flow)) {
++        natbyp_errmsg ("NATBYP BROKEN\n");
++        return 0;
++    }
 +
-+	/* check current flow again */
-+	if ( (flow->op.mode == NATBYP_SLOT_REMOVE) && (flow->count <= 0) ) {
-+		flow->used = 0;
-+		natbyp_errmsg("FLOW[%-2d] >> FLOW REMOVED \n",flow->index);
-+		return 0;
-+	}
++    /* check current flow again */
++    if ((flow->op.mode == NATBYP_SLOT_REMOVE) && (flow->count <= 0)) {
++        flow->used = 0;
++        natbyp_errmsg ("FLOW[%-2d] >> FLOW REMOVED \n", flow->index);
++        return 0;
++    }
 +
 +#ifdef DEBUG_TIME_ESTIMATE
-+	/* update time */
-+	skb->natbyp_etime = 
-+		natbyp_current_time() - skb->natbyp_etime;
++    /* update time */
++    skb->natbyp_etime =
++        natbyp_current_time() - skb->natbyp_etime;
 +#endif
 +
-+	/* TCP header */
-+	tcph = (struct tcphdr *)((char *)iph + sizeof(struct iphdr));
++    /* TCP header */
++    tcph = (struct tcphdr *) ((char *) iph + sizeof (struct iphdr));
 +
-+	/* Check we met marker socket buffer */	
-+	if ( skb->natbyp_bypassed & NATBYP_FLAG_MARKER ) {
++    /* Check we met marker socket buffer */
++    if (skb->natbyp_bypassed & NATBYP_FLAG_MARKER) {
 +
-+		/* printout */
-+		if( natbyp_verbose == NATBYP_VERBOSE_PACKET )
-+			printout_natbyp_packet("DCT", flow, skb, ETH_HLEN, 0);
++        /* printout */
++        printout_natbyp_packet ("DCT", flow, skb, ETH_HLEN, 0);
 +
-+		/* MARK complete !! */
-+		flow->op.mark_state = NATBYP_BYPASS_MARK_DONE;
++        /* MARK complete !! */
++        flow->op.mark_state = NATBYP_BYPASS_MARK_DONE;
 +
-+		/* reset counter */
-+		natbyp_reset_counter( flow );
++        /* reset counter */
++        natbyp_reset_counter (flow);
 +
-+		tasklet_schedule( &(natbyp_db->flow_tasklet[ flow->dir ]) );
-+	}
++        tasklet_schedule (& (natbyp_db->flow_tasklet[ flow->dir ]));
++    }
 +
-+	/* NAT information fills in */
-+	if ( !flow->mapped ) {
-+		if ( flow->op.mode == NATBYP_SLOT_BYPASS_READY ) {
-+			u32 nated_ip;
++    /* NAT information fills in */
++    if (!flow->mapped) {
++        if (flow->op.mode == NATBYP_SLOT_BYPASS_READY) {
++            u32 nated_ip;
 +
-+			/* Currently test stage */
-+			memcpy( flow->nated_ethhdr , (char *)ethh , ETH_HLEN );
-+			
-+			switch( flow->dir ) {
-+			case NATBYP_DL:
-+				flow->nated_ip 		= iph->daddr; 
-+				flow->nated_port 	= tcph->dest;
-+				flow->nated_sport	= 0; /* No use .. */
-+				flow->nated_dev		= (natbyp_dev_t *)natbyp_dev_search( skb->dev ); /* NATED device */
-+				break;
-+			case NATBYP_UL:
-+				flow->nated_ip 		= iph->saddr; 
-+				/* 2011/10/19 */
-+				flow->nated_port 	= tcph->dest; 
-+				flow->nated_sport	= tcph->source;
-+				flow->nated_dev		= (natbyp_dev_t *)natbyp_dev_search( skb->dev ); /* NATED device */
-+				break;
-+			default:
-+				natbyp_errmsg("FLOW[%-2d] UNKNOWN DIR (%08x) \n", flow->index, flow->dir );
-+				break;
-+			}
++            /* Currently test stage */
++            memcpy (flow->nated_ethhdr, (char *) ethh, ETH_HLEN);
 +
-+			/* check validity */
-+			if (!flow->nated_dev) {
-+				natbyp_errmsg("FLOW[%-2d] NULL DEVICE\n",flow->index);
-+				/* clean up flow */
-+				flow->used = 0;
-+				flow->op.mode = NATBYP_SLOT_REMOVE;
-+				return 0;
-+			}
++            switch (flow->dir) {
++            case NATBYP_DL:
++                flow->nated_ip 		= iph->daddr;
++                flow->nated_port 	= tcph->dest;
++                flow->nated_sport	= 0; /* No use .. */
++                flow->nated_dev		= (natbyp_dev_t *) natbyp_dev_search (skb->dev);     /* NATED device */
++                break;
++            case NATBYP_UL:
++                flow->nated_ip 		= iph->saddr;
++                /* 2011/10/19 */
++                flow->nated_port 	= tcph->dest;
++                flow->nated_sport	= tcph->source;
++                flow->nated_dev		= (natbyp_dev_t *) natbyp_dev_search (skb->dev);     /* NATED device */
++                break;
++            default:
++                natbyp_errmsg ("FLOW[%-2d] UNKNOWN DIR (%08x) \n", flow->index, flow->dir);
++                break;
++            }
 +
-+			nated_ip = ntohl(flow->nated_ip);
++            /* check validity */
++            if (!flow->nated_dev) {
++                natbyp_errmsg ("FLOW[%-2d] NULL DEVICE\n", flow->index);
++                /* clean up flow */
++                flow->used = 0;
++                flow->op.mode = NATBYP_SLOT_REMOVE;
++                return 0;
++            }
 +
-+			natbyp_print(STATE, "FLOW[%-2d] %d.%d.%d.%d:%d:%s MAPPED %s \n",
-+				flow->index , 
-+				(nated_ip & 0xff000000) >> 24 , 
-+				(nated_ip & 0x00ff0000) >> 16 , 
-+				(nated_ip & 0x0000ff00) >> 8 , 
-+				(nated_ip & 0x000000ff) >> 0 , 
-+				ntohs(flow->nated_port) , 
-+				(char *)(NATDEV(flow)->name), 
-+			    dirname(flow->dir));
++            nated_ip = ntohl (flow->nated_ip);
 +
-+			flow->mapped 		= 1;
-+		}
-+	} else {
-+		/* check NAT information */
-+		/*
-+ 		* Sockets bypassed in ingress function will keep changed IP header.
-+ 		*/
-+		if ( tcp_flow_changed( flow , iph , tcph ) && 
-+				!(skb->natbyp_bypassed & NATBYP_FLAG_BYPASSED) ) {
++            natbyp_print (STATE, "FLOW[%-2d] %d.%d.%d.%d:%d:%s MAPPED %s \n",
++                          flow->index,
++                          (nated_ip & 0xff000000) >> 24,
++                          (nated_ip & 0x00ff0000) >> 16,
++                          (nated_ip & 0x0000ff00) >> 8,
++                          (nated_ip & 0x000000ff) >> 0,
++                          ntohs (flow->nated_port),
++                          (char *) (NATDEV (flow)->name),
++                          dirname (flow->dir));
 +
-+			u32 nated_ip, _ip;
-+			u32 ip = 0;
-+			u16 port = 0;
-+			char title = 'X';
++            flow->mapped 		= 1;
++        }
++    }
++    else {
++        /* check NAT information */
++        /*
++        * Sockets bypassed in ingress function will keep changed IP header.
++        */
++        if (tcp_flow_changed (flow, iph, tcph) &&
++                ! (skb->natbyp_bypassed & NATBYP_FLAG_BYPASSED)) {
 +
-+			/* check */
-+			switch( flow->dir ){
-+			case NATBYP_DL:
-+				ip = iph->daddr;
-+				port = tcph->dest;
-+				title = 'D';
-+				break;
-+			case NATBYP_UL:
-+				ip = iph->saddr;
-+				port = tcph->source;
-+				title = 'S';
-+				break;
-+			default:
-+				natbyp_errmsg("FLOW[%-2d] UNKNOWN DIRECTION(%08x) \n", flow->index, flow->dir );
-+				break;
-+			}
++            u32 nated_ip, _ip;
++            u32 ip = 0;
++            u16 port = 0;
++            char title = 'X';
 +
-+			nated_ip = ntohl(flow->nated_ip);
-+			_ip = ntohl(ip);
++            /* check */
++            switch (flow->dir) {
++            case NATBYP_DL:
++                ip = iph->daddr;
++                port = tcph->dest;
++                title = 'D';
++                break;
++            case NATBYP_UL:
++                ip = iph->saddr;
++                port = tcph->source;
++                title = 'S';
++                break;
++            default:
++                natbyp_errmsg ("FLOW[%-2d] UNKNOWN DIRECTION(%08x) \n", flow->index, flow->dir);
++                break;
++            }
 +
-+			/* NAT information differs */
-+			natbyp_print(STATE, "FLOW[%-2d] -- NAT CHANGE(%d.%d.%d.%d:%d -> [%c]%d.%d.%d.%d:%d)[%s -> %s]\n",
-+				flow->index , 
-+				(nated_ip & 0xff000000) >> 24,
-+				(nated_ip & 0x00ff0000) >> 16,
-+				(nated_ip & 0x0000ff00) >> 8,
-+				(nated_ip & 0x000000ff) ,
-+				ntohs(flow->nated_port), 
-+				title,
-+				(_ip & 0xff000000) >> 24,
-+				(_ip & 0x00ff0000) >> 16,
-+				(_ip & 0x0000ff00) >> 8,
-+				(_ip & 0x000000ff) ,
-+				ntohs(port),
-+				(char *)(NATDEV(flow)->name),
-+				skb->dev->name);
++            nated_ip = ntohl (flow->nated_ip);
++            _ip = ntohl (ip);
 +
-+			/* Flow stops!! */
-+			/* Slot remove !! */
-+			flow->op.mode = NATBYP_SLOT_REMOVE;
-+			flow->mapped = 0; /* waste NAT information */
-+		} /* check NAT */
-+	} /* if( flow->mapped ) */
++            /* NAT information differs */
++            natbyp_print (STATE, "FLOW[%-2d] -- NAT CHANGE(%d.%d.%d.%d:%d -> [%c]%d.%d.%d.%d:%d)[%s -> %s]\n",
++                          flow->index,
++                          (nated_ip & 0xff000000) >> 24,
++                          (nated_ip & 0x00ff0000) >> 16,
++                          (nated_ip & 0x0000ff00) >> 8,
++                          (nated_ip & 0x000000ff),
++                          ntohs (flow->nated_port),
++                          title,
++                          (_ip & 0xff000000) >> 24,
++                          (_ip & 0x00ff0000) >> 16,
++                          (_ip & 0x0000ff00) >> 8,
++                          (_ip & 0x000000ff),
++                          ntohs (port),
++                          (char *) (NATDEV (flow)->name),
++                          skb->dev->name);
 +
-+	/* Decide whether we reached to a point that NAT bypass could be activated ... */
-+	if ( flow->count == 0 ) {
-+		switch( flow->op.mode ){
-+		case NATBYP_SLOT_BYPASS_READY:
-+			flow->op.mode = NATBYP_SLOT_BYPASS_ACT;	
-+			natbyp_print(STATE, "FLOW[%-2d] (%s) BYPASS_ACT \n",flow->index,(char *)(NATDEV(flow)->name));
-+	
-+			/*
-+ 			* TODO.
-+ 			*
-+ 			* 	- Wake up interface 
-+ 			*/
-+			break;
-+		default:
-+			break;
-+		}
-+	}
++            /* Flow stops!! */
++            /* Slot remove !! */
++            flow->op.mode = NATBYP_SLOT_REMOVE;
++            flow->mapped = 0; /* waste NAT information */
++        } /* check NAT */
++    } /* if( flow->mapped ) */
 +
-+	/* deleting from flow */
-+	natbyp_flow_unmap(skb);
++    /* Decide whether we reached to a point that NAT bypass could be activated ... */
++    if (flow->count == 0) {
++        switch (flow->op.mode) {
++        case NATBYP_SLOT_BYPASS_READY:
++            flow->op.mode = NATBYP_SLOT_BYPASS_ACT;
++            natbyp_print (STATE, "FLOW[%-2d] (%s) BYPASS_ACT \n", flow->index, (char *) (NATDEV (flow)->name));
 +
-+	if( natbyp_verbose == NATBYP_VERBOSE_PACKET )
-+		printout_natbyp_packet("EGR", flow, skb, ETH_HLEN, 0);
++            /*
++            * TODO.
++            *
++            * 	- Wake up interface
++            */
++            break;
++        default:
++            break;
++        }
++    }
 +
-+	return 0;
++    /* deleting from flow */
++    natbyp_flow_unmap (skb);
++
++    printout_natbyp_packet ("EGR", flow, skb, ETH_HLEN, 0);
++
++    return 0;
 +}
-+EXPORT_SYMBOL(natbyp_egress);
++EXPORT_SYMBOL (natbyp_egress);
 +
-+void natbyp_destructor(struct sk_buff *skb)
++void natbyp_destructor (struct sk_buff *skb)
 +{
-+	/* sanity check 1 */
-+	if (!skb)
-+		return ;
++    /* sanity check 1 */
++    if (!skb)
++        return ;
 +
-+	/* delete a skb */	
-+	natbyp_flow_unmap( skb );
++    /* delete a skb */
++    natbyp_flow_unmap (skb);
 +}
-+EXPORT_SYMBOL(natbyp_destructor);
++EXPORT_SYMBOL (natbyp_destructor);
 +
-+void natbyp_fastev( int evt , void * param )
++void natbyp_fastev (int evt, void * param)
 +{
-+	struct net_device *ndev;
-+	int index;
++    struct net_device *ndev;
++    int index;
 +
-+	switch( evt ) {
-+	case NATBYP_EVT_DEVDEL:
-+		if (!param) {
-+			natbyp_print(STATE, "DEVDEL : No Parameter\n");
-+			break;
-+		}
-+		ndev = (struct net_device *)param;
-+		natbyp_print(STATE, "DEVICE(%s) - DELETED\n",ndev->name);
-+		natbyp_dev_delete( ndev );
-+		/*
-+ 		* 2013/04/18 - 
-+ 		* Delaying to clean up pending skbs.
-+ 		*/
-+		/* wake up device flow */
-+		for (index = 0; index < NUM_FLOW_TYPE; index++) 
-+			tasklet_schedule( &(natbyp_db->flow_tasklet[ index ]) );
++    switch (evt) {
++    case NATBYP_EVT_DEVDEL:
++        if (!param) {
++            natbyp_print (STATE, "DEVDEL : No Parameter\n");
++            break;
++        }
++        ndev = (struct net_device *) param;
++        natbyp_print (STATE, "DEVICE(%s) - DELETED\n", ndev->name);
++        natbyp_dev_delete (ndev);
++        /*
++        * 2013/04/18 -
++        * Delaying to clean up pending skbs.
++        */
++        /* wake up device flow */
++        for (index = 0; index < NUM_FLOW_TYPE; index++)
++            tasklet_schedule (& (natbyp_db->flow_tasklet[ index ]));
 +
-+		msleep(	1000 ); /* long time sleep */
-+		break;
-+	default:
-+		break;
-+	}
++        msleep (1000);   /* long time sleep */
++        break;
++    default:
++        break;
++    }
 +}
-+EXPORT_SYMBOL(natbyp_fastev);
++EXPORT_SYMBOL (natbyp_fastev);
 +
 +/* NAT Q ENABLED / OR NOT */
-+int natbyp_enabled( void )
++int natbyp_enabled (void)
 +{
-+	return  natbyp_activated;
++    return  natbyp_activated;
 +}
-+EXPORT_SYMBOL(natbyp_enabled);
++EXPORT_SYMBOL (natbyp_enabled);
 +
-+int natbyp_direction( struct net_device *dev )
++int natbyp_direction (struct net_device *dev)
 +{
-+	if (dev == wandev_db) {
-+		/* WAN device check */
-+		return NATBYP_DL; /* WAN -> LAN */
-+	} else {
-+		int index;
++    if (dev == wandev_db) {
++        /* WAN device check */
++        return NATBYP_DL; /* WAN -> LAN */
++    }
++    else {
++        int index;
 +
-+		/* LAN device check */
-+		for (index = 0; index < MAX_LAN_DEV; index++) {
-+			if (dev == landev_db[ index ]) 
-+				return NATBYP_UL;  /* LAN -> WAN */
-+		}
++        /* LAN device check */
++        for (index = 0; index < MAX_LAN_DEV; index++) {
++            if (dev == landev_db[ index ])
++                return NATBYP_UL;  /* LAN -> WAN */
++        }
 +
-+		/* No direction */
-+		return -1;
-+	}
++        /* No direction */
++        return -1;
++    }
 +}
-+EXPORT_SYMBOL(natbyp_direction);
++EXPORT_SYMBOL (natbyp_direction);
 +
 +/* bandwidth display granularity */
 +#define MEGA_UNIT	((1000*1000) / NATBYP_TIME_SCALE)
@@ -1922,167 +2131,173 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +
 +/*
 + *
-+ * P R O C   F U N C T I O N S 
++ * P R O C   F U N C T I O N S
 + *
 + *
 + */
-+static int proc_natbyp_show(struct seq_file *s, void *dummy)
++static int proc_natbyp_show (struct seq_file *s, void *dummy)
 +{
-+	int index;
-+	natbyp_flow_t *flow;
-+	u32 bw_n=0 ,bw_d;
-+	u32 t_bw;
-+	char bw_u;
-+	char speed[24];
-+	struct net_device *dev;
++    int index;
++    natbyp_flow_t *flow;
++    u32 bw_n = 0, bw_d;
++    u32 t_bw;
++    char bw_u;
++    char speed[24];
++    struct net_device *dev;
 +
-+	/* check activated or not */
-+	if ( !natbyp_activated ) {
-+		seq_printf(s,"%s not activated.\n", NATBYP_VERSION);
-+		return 0;
-+	}
++    /* check activated or not */
++    if (!natbyp_activated) {
++        seq_printf (s, "%s not activated.\n", NATBYP_VERSION);
++        return 0;
++    }
 +
-+	seq_printf(s,"%s \n",NATBYP_VERSION);
++    seq_printf (s, "%s \n", NATBYP_VERSION);
 +
-+	/* Device list... */
-+	seq_printf(s,"Devs : ");
-+	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {
-+		if ( natbyp_db->ndevs[ index ].used ) {
-+			dev = natbyp_db->ndevs[ index ].dev;
-+			seq_printf(s,"%s", dev? dev->name : "NULL" );
++    /* Device list... */
++    seq_printf (s, "Devs : ");
++    for (index = 0; index < MAX_NATBYP_DEVS; index++) {
++        if (natbyp_db->ndevs[ index ].used) {
++            dev = natbyp_db->ndevs[ index ].dev;
++            seq_printf (s, "%s", dev ? dev->name : "NULL");
 +
-+			/* LAN ? WAN ? */
-+			if (!_strcmp(dev->name,wandev_name)) {
-+				seq_printf(s,"* ");
-+			} else {
-+				int index;
++            /* LAN ? WAN ? */
++            if (!_strcmp (dev->name, wandev_name)) {
++                seq_printf (s, "* ");
++            }
++            else {
++                int index;
 +
-+				for (index = 0; index < MAX_LAN_DEV; index++) {
-+					if (!_strcmp(dev->name,landev_name[ index ])) {
-+						seq_printf(s,"^ ");
-+						break;
-+					}
-+				}
-+			
-+				if (index == MAX_LAN_DEV) {
-+					seq_printf(s,"  ");
-+				}
-+			} 
-+		}
-+	}
-+	seq_printf(s,"\n\n");
++                for (index = 0; index < MAX_LAN_DEV; index++) {
++                    if (!_strcmp (dev->name, landev_name[ index ])) {
++                        seq_printf (s, "^ ");
++                        break;
++                    }
++                }
 +
-+	seq_printf(s,"Flows: \n");
-+	seq_printf(s,"NUM  TYPE     STATUS    PKT   DROP  TRAFFIC          NAT\n");
-+	seq_printf(s,"-----------------------------------------------------------------------------\n");
++                if (index == MAX_LAN_DEV) {
++                    seq_printf (s, "  ");
++                }
++            }
++        }
++    }
++    seq_printf (s, "\n\n");
 +
-+	t_bw = 0; /* total bandwidth */
++    seq_printf (s, "Flows: \n");
++    seq_printf (s, "NUM  TYPE     STATUS    PKT       DROP  TRAFFIC          NAT\n");
++    seq_printf (s, "-----------------------------------------------------------------------------\n");
 +
-+	for(index = 0; index < MAX_NATBYP_FLOW; index++) {
-+		if ( !natbyp_flow[ index ].used ) 
-+			continue;
++    t_bw = 0; /* total bandwidth */
 +
-+		flow = (natbyp_flow_t *)&(natbyp_flow[ index ]);
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        if (!natbyp_flow[ index ].used)
++            continue;
 +
-+		/* bandwidth calculation */
++        flow = (natbyp_flow_t *) & (natbyp_flow[ index ]);
 +
-+		bw_n = (flow->bw*8) ;  /* Kbits */
++        /* bandwidth calculation */
 +
-+		t_bw += bw_n; /* total bandwidth */
++        bw_n = (flow->bw * 8) ; /* Kbits */
 +
-+		if ( bw_n > MEGA_UNIT ) {
-+			bw_d = (bw_n) - (bw_n & MEGA_UNIT);
-+			bw_n /= MEGA_UNIT;
-+			bw_d /= MEGA_UNIT;
-+			bw_u = 'M';
-+		}else
-+		if ( bw_n > KILO_UNIT ) {
-+			bw_d = (bw_n) - (bw_n & KILO_UNIT);
-+			bw_n /= KILO_UNIT;
-+			bw_d /= KILO_UNIT;
-+			bw_u = 'K';
-+		}else{
-+			bw_d = bw_n;
-+			bw_n = 0;
-+			bw_u = 'K';
-+		}
++        t_bw += bw_n; /* total bandwidth */
 +
-+		memset(speed, 0, sizeof(speed));
-+		snprintf(speed,sizeof(speed)-1,"%d.%d%cbps", bw_n, bw_d, bw_u);
++        if (bw_n > MEGA_UNIT) {
++            bw_d = (bw_n) - (bw_n & MEGA_UNIT);
++            bw_n /= MEGA_UNIT;
++            bw_d /= MEGA_UNIT;
++            bw_u = 'M';
++        }
++        else if (bw_n > KILO_UNIT) {
++            bw_d = (bw_n) - (bw_n & KILO_UNIT);
++            bw_n /= KILO_UNIT;
++            bw_d /= KILO_UNIT;
++            bw_u = 'K';
++        }
++        else {
++            bw_d = bw_n;
++            bw_n = 0;
++            bw_u = 'K';
++        }
 +
-+		seq_printf(s,"%-3d  %-4s[%c]  %-8s  %-3d   %-3d   %-13.13s    ",
-+			index ,
-+			dirname(flow->dir),
-+			flow->ack ? 'A':'D',
-+			((flow->op.mode >= NATBYP_SLOT_TEST) && 
-+					(flow->op.mode <= NATBYP_SLOT_BYPASS_ACT))? 
-+				natbyp_flow_status[ flow->op.mode ] : natbyp_flow_status[ 0 ],
-+			flow->count , flow->dropnum , speed);
++        memset (speed, 0, sizeof (speed));
++        snprintf (speed, sizeof (speed) - 1, "%d.%d%cbps", bw_n, bw_d, bw_u);
 +
-+		if( flow->mapped && 
-+				(flow->op.mode != NATBYP_SLOT_REMOVE) ) {
++        seq_printf (s, "%-3d  %-4s[%c]  %-8s  %-7d   %-3d   %-13.13s    ",
++                    index,
++                    dirname (flow->dir),
++                    flow->ack ? 'A' : 'D',
++                    ((flow->op.mode >= NATBYP_SLOT_TEST) &&
++                     (flow->op.mode <= NATBYP_SLOT_BYPASS_ACT)) ?
++                    natbyp_flow_status[ flow->op.mode ] : natbyp_flow_status[ 0 ],
++                    flow->count,
++                    flow->dropnum,
++                    speed);
 +
-+			u32 ip    = ntohl(flow->ip);
-+			u16 port  = ntohs(flow->port);
-+			u32 sip   = ntohl(flow->sip);
-+			u16 sport = ntohs(flow->sport);
-+			char *d   = (flow->dir == NATBYP_DL) ? "<-" : "->" ;
++        if (flow->mapped &&
++                (flow->op.mode != NATBYP_SLOT_REMOVE)) {
 +
-+			seq_printf(s,"[%d.%d.%d.%d:%d  %s  %d.%d.%d.%d:%d]\n",
-+				(ip & 0xff000000) >> 24,
-+				(ip & 0x00ff0000) >> 16,
-+				(ip & 0x0000ff00) >> 8,
-+				(ip & 0x000000ff) ,
-+				port ,
-+				d,
-+				(sip & 0xff000000) >> 24,
-+				(sip & 0x00ff0000) >> 16,
-+				(sip & 0x0000ff00) >> 8,
-+				(sip & 0x000000ff),
-+				sport 
-+			);
-+		} else 
-+			seq_printf(s,"\n");
++            u32 ip    = ntohl (flow->ip);
++            u16 port  = ntohs (flow->port);
++            u32 sip   = ntohl (flow->sip);
++            u16 sport = ntohs (flow->sport);
++            char *d   = (flow->dir == NATBYP_DL) ? "<-" : "->" ;
 +
-+	}
++            seq_printf (s, "[%d.%d.%d.%d:%d  %s  %d.%d.%d.%d:%d]\n",
++                        (ip & 0xff000000) >> 24,
++                        (ip & 0x00ff0000) >> 16,
++                        (ip & 0x0000ff00) >> 8,
++                        (ip & 0x000000ff),
++                        port,
++                        d,
++                        (sip & 0xff000000) >> 24,
++                        (sip & 0x00ff0000) >> 16,
++                        (sip & 0x0000ff00) >> 8,
++                        (sip & 0x000000ff),
++                        sport
++                       );
++        }
++        else
++            seq_printf (s, "\n");
 +
-+	/* total bandwidth printout */
-+	if ( t_bw ) {
-+		int  t_bw_d;
-+		char t_bw_u;
++    }
 +
-+		if ( t_bw > MEGA_UNIT ) {
-+			t_bw_d = (t_bw) - (t_bw & MEGA_UNIT);
-+			t_bw /= MEGA_UNIT;
-+			t_bw_d /= MEGA_UNIT;
-+			t_bw_u = 'M';
-+		}else
-+		if ( t_bw > KILO_UNIT ) {
-+			t_bw_d = (t_bw) - (t_bw & KILO_UNIT);
-+			t_bw /= KILO_UNIT;
-+			t_bw_d /= KILO_UNIT;
-+			t_bw_u = 'K';
-+		}else{
-+			t_bw_d = bw_n;
-+			t_bw = 0;
-+			t_bw_u = 'K';
-+		}
++    /* total bandwidth printout */
++    if (t_bw) {
++        int  t_bw_d;
++        char t_bw_u;
 +
-+		seq_printf(s,"-----------------------------------------------------------------------------\n");
-+		seq_printf(s,"                                    %d.%d%cbps\n",t_bw , t_bw_d , t_bw_u );
-+	}
++        if (t_bw > MEGA_UNIT) {
++            t_bw_d = (t_bw) - (t_bw & MEGA_UNIT);
++            t_bw /= MEGA_UNIT;
++            t_bw_d /= MEGA_UNIT;
++            t_bw_u = 'M';
++        }
++        else if (t_bw > KILO_UNIT) {
++            t_bw_d = (t_bw) - (t_bw & KILO_UNIT);
++            t_bw /= KILO_UNIT;
++            t_bw_d /= KILO_UNIT;
++            t_bw_u = 'K';
++        }
++        else {
++            t_bw_d = bw_n;
++            t_bw = 0;
++            t_bw_u = 'K';
++        }
 +
-+	if ( natbyp_db->pkt_drop[ NATBYP_UL ] || natbyp_db->pkt_drop[ NATBYP_DL ] ) {
-+		seq_printf(s,"                               [UL:%-4d DL:%-4d] Packet drops\n",
-+				natbyp_db->pkt_drop[ NATBYP_UL ] , natbyp_db->pkt_drop[ NATBYP_UL ] );
-+	}
++        seq_printf (s, "-----------------------------------------------------------------------------\n");
++        seq_printf (s, "                                        %d.%d%cbps\n", t_bw, t_bw_d, t_bw_u);
++    }
 +
-+	return 0;
++    if (natbyp_db->pkt_drop[ NATBYP_UL ] || natbyp_db->pkt_drop[ NATBYP_DL ]) {
++        seq_printf (s, "                               [UL:%-4d DL:%-4d] Packet drops\n",
++                    natbyp_db->pkt_drop[ NATBYP_UL ], natbyp_db->pkt_drop[ NATBYP_UL ]);
++    }
++
++    return 0;
 +}
 +
-+static int proc_natbyp_open(struct inode *inode, struct file *file)
++static int proc_natbyp_open (struct inode *inode, struct file *file)
 +{
-+	return single_open(file, proc_natbyp_show, NULL);
++    return single_open (file, proc_natbyp_show, NULL);
 +}
 +
 +/*
@@ -2090,376 +2305,402 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 + * # echo en > /proc/natbyp                      - enabling NATBYP
 + * # echo dis > /proc/natbyp                     - disabling NATBYP
 + * # echo log state/packet/dis > /proc/natbyp    - Logging  (state/packet/disabling)
-+ * # echo dev <name> lan/wan   > /proc/natbyp    - Device related 
++ * # echo dev <name> lan/wan   > /proc/natbyp    - Device related
 + *
 + */
-+static ssize_t proc_natbyp_write(struct file *file, const char __user *buffer, size_t count, loff_t *data)
++static ssize_t proc_natbyp_write (struct file *file, const char __user *buffer, size_t count, loff_t *data)
 +{
-+	static __u8 cmds[64];
++    static __u8 cmds[64];
 +#define MAX_ARGS	16
-+	__u8 *args[MAX_ARGS];
-+	int index,nth;
++    __u8 *args[MAX_ARGS];
++    int index, nth;
 +
-+	if (copy_from_user(cmds, buffer, (count>64)?64:count ))
-+		return -EFAULT;
++    if (copy_from_user (cmds, buffer, (count > 64) ? 64 : count))
++        return -EFAULT;
 +
-+	/* tokenizing */
-+	index = 0;
-+	nth = 0;
-+	
-+	while (index < count)
-+	{
-+		/* skipping head blank... */
-+		while( (cmds[index] == ' ') && (index < count) ) ++index;
-+		
-+		if ( index >= count ) break;
++    /* tokenizing */
++    index = 0;
++    nth = 0;
 +
-+		args[nth++] = (__u8 *)&(cmds[index]);
-+		
-+		while(( (cmds[index] != ' ') &&
-+				(cmds[index] != '\n')) && (index < count) ) ++index;
++    while (index < count) {
++        /* skipping head blank... */
++        while ((cmds[index] == ' ') && (index < count)) ++index;
 +
-+		cmds[index++] = 0x0;
++        if (index >= count) break;
 +
-+		if (nth >= MAX_ARGS) 
-+			break;
-+	}
++        args[nth++] = (__u8 *) & (cmds[index]);
 +
-+	if (!nth)
-+		return count;
++        while (((cmds[index] != ' ') &&
++                (cmds[index] != '\n')) && (index < count)) ++index;
 +
-+	if( !_strcmp(args[0],"en") ) {
-+		natbyp_activated = 1;  /* enable */
-+	} else
-+	if( !_strcmp(args[0],"dis") ){
-+		natbyp_activated = 0;  /* disable */	
-+	} else
-+	if( !_strcmp(args[0],"log") ){
-+		if( nth < 2 )
-+			return count;
-+		if( !_strcmp(args[1],"none") ){
-+			natbyp_verbose = NATBYP_VERBOSE_NONE;
-+		}else
-+		if( !_strcmp(args[1],"flow") ){
-+			natbyp_verbose = NATBYP_VERBOSE_FLOW;
-+		}else
-+		if( !_strcmp(args[1],"state") ){
-+			natbyp_verbose = NATBYP_VERBOSE_STATE;
-+		}else
-+		if( !_strcmp(args[1],"packet") ){
-+			natbyp_verbose = NATBYP_VERBOSE_PACKET;
-+		}
-+	} else
-+	if( !_strcmp(args[0],"window") ){
-+		if( nth < 2 )
-+			return count;
-+		if( !_strcmp(args[1],"dis") ){
-+			natbyp_db->window_update = 0;
-+		}else
-+		if( !_strcmp(args[1],"en") ){
-+			natbyp_db->window_update = 1;
-+		}else{
-+			int newval = 
-+				simple_strtoul( args[1] , (char **)&(args[1]) , 10 );
-+			/*
-+ 			* MIN : 1536
-+ 			* MAX : 8192
-+ 			*/
-+			if( !( (newval > MIN_WINDOW_SIZE) && (newval <= MAX_WINDOW_SIZE) ) )
-+				return count;
++        cmds[index++] = 0x0;
 +
-+			/* new window size */
-+			natbyp_db->window_scale = newval;
-+		}
-+	} else
-+	if( !_strcmp(args[0],"ack") ){
-+		if( nth < 2 )
-+			return count;
-+		if( !_strcmp(args[1],"dis") ){
-+			natbyp_db->ack_handle = 0;
-+		}else
-+		if( !_strcmp(args[1],"en") ){
-+			natbyp_db->ack_handle = 1;
-+		}
-+	} else
-+	if( !_strcmp(args[0],"dev") ){
-+		char * devname;
++        if (nth >= MAX_ARGS)
++            break;
++    }
 +
-+		/* 2013/02/28 */
-+		/* device selective control */
-+		/* this menu comes out with ppp0 interface */
-+		/* PPP0 cannot go with NAT bypass traffic boosting */
-+		/*  
-+ 		*  # echo dev ppp0 ack dis > /proc/net/natbyp 
-+ 		* 
-+ 		*/
-+		if( nth < 3 )
-+			return count;
++    if (!nth)
++        return count;
 +
-+		devname = (char *)args[1]; /* device name */
++    if (!_strcmp (args[0], "en")) {
++        natbyp_activated = 1;  /* enable */
++    }
++    else if (!_strcmp (args[0], "dis")) {
++        natbyp_activated = 0;  /* disable */
++    }
++    else if (!_strcmp (args[0], "log")) {
++        if (nth < 2)
++            return count;
++        if (!_strcmp (args[1], "none")) {
++            natbyp_verbose = NATBYP_VERBOSE_NONE;
++        }
++        else if (!_strcmp (args[1], "flow")) {
++            natbyp_verbose = NATBYP_VERBOSE_FLOW;
++        }
++        else if (!_strcmp (args[1], "state")) {
++            natbyp_verbose = NATBYP_VERBOSE_STATE;
++        }
++        else if (!_strcmp (args[1], "packet")) {
++            natbyp_verbose = NATBYP_VERBOSE_PACKET;
++        }
++    }
++    else if (!_strcmp (args[0], "ack")) {
++        if (nth < 2)
++            return count;
++        if (!_strcmp (args[1], "dis")) {
++            natbyp_db->ack_handle = 0;
++        }
++        else if (!_strcmp (args[1], "en")) {
++            natbyp_db->ack_handle = 1;
++        }
++    }
++    else if (!_strcmp (args[0], "window")) {
++        if (nth < 2)
++            return count;
++        if (!_strcmp (args[1], "dis")) {
++            natbyp_db->ackwin_handle = 0;
++        }
++        else if (!_strcmp (args[1], "en")) {
++            natbyp_db->ackwin_handle = 1;
++        }
++        else {
++            int newval =
++                simple_strtoul (args[1], (char **) & (args[1]), 10);
++            /*
++            * MIN : 1536
++            * MAX : 8192
++            */
++            if (! ((newval > MIN_WINDOW_SIZE) && (newval <= MAX_WINDOW_SIZE)))
++                return count;
 +
-+		if( !_strcmp(args[2],"lan") ){
-+			/* UL device */
-+			int index;
++            /* new window size */
++            natbyp_db->window_scale = newval;
++        }
++    }
++    else if (!_strcmp (args[0], "supp")) {
++        if (nth < 2)
++            return count;
++        if (!_strcmp (args[1], "dis")) {
++            natbyp_db->suppack_handle = 0;
++        }
++        else if (!_strcmp (args[1], "en")) {
++            natbyp_db->suppack_handle = 1;
++        }
++    }
++    else if (!_strcmp (args[0], "dev")) {
++        char * devname;
 +
-+			for (index = 0; index < MAX_LAN_DEV; index++) {
-+				if (*landev_name[ index ] == 0x0) {
-+					memset( landev_name[ index ], 0, NAMELEN );
-+					strncpy( landev_name[ index ], devname, NAMELEN-1 );
-+					break;
-+				}
-+			}
-+		}else
-+		if( !_strcmp(args[2],"wan") ){
-+			/* DL device */
-+			memset( wandev_name, 0, NAMELEN );
-+			strncpy( wandev_name, devname, NAMELEN-1 );
-+		}
-+	} else
-+	if( !_strcmp(args[0],"expire") ){
-+		int newval;
++        /* 2013/02/28 */
++        /* device selective control */
++        /* this menu comes out with ppp0 interface */
++        /* PPP0 cannot go with NAT bypass traffic boosting */
++        /*
++        *  # echo dev ppp0 ack dis > /proc/net/natbyp
++        *
++        */
++        if (nth < 3)
++            return count;
 +
-+		if( nth < 2 )
-+			return count;
-+		/*
-+ 		* MIN : 1 
-+ 		* MAX : 20 seconds 
-+ 		*/
-+		newval = simple_strtoul( args[1] , (char **)&(args[1]) , 10 );
-+		if( !((newval >= 1) && (newval <= 20)) )
-+			return count;
++        devname = (char *) args[1];   /* device name */
 +
-+		natbyp_db->expiry_max_count = newval;
-+	} else
-+	if( !_strcmp(args[0],"show") ){
++        if (!_strcmp (args[2], "lan")) {
++            /* UL device */
++            int index;
 +
-+		int msglen = 0;
-+		u8 msg[ 256 ];
++            for (index = 0; index < MAX_LAN_DEV; index++) {
++                if (*landev_name[ index ] == 0x0) {
++                    memset (landev_name[ index ], 0, NAMELEN);
++                    strncpy (landev_name[ index ], devname, NAMELEN - 1);
++                    break;
++                }
++            }
++        }
++        else if (!_strcmp (args[2], "wan")) {
++            /* DL device */
++            memset (wandev_name, 0, NAMELEN);
++            strncpy (wandev_name, devname, NAMELEN - 1);
++        }
++    }
++    else if (!_strcmp (args[0], "expire")) {
++        int newval;
 +
-+		/* zeroing */
-+		memset( msg , 0 , 256 );
++        if (nth < 2)
++            return count;
++        /*
++        * MIN : 1
++        * MAX : 20 seconds
++        */
++        newval = simple_strtoul (args[1], (char **) & (args[1]), 10);
++        if (! ((newval >= 1) && (newval <= 20)))
++            return count;
 +
-+		if( !natbyp_activated ) {
-+			goto _natbyp_write_epilogue;
-+		} else {
-+			msglen = sprintf(msg, "NATBYP >> \n");
-+		}
-+	
-+		/* log */	
-+		msglen += sprintf(msg+msglen , "\tLOG=");
-+		switch( natbyp_verbose ){
-+		case NATBYP_VERBOSE_NONE:	msglen += sprintf( msg+msglen , "NONE\n"); break;
-+		case NATBYP_VERBOSE_STATE:	msglen += sprintf( msg+msglen , "STATE\n"); break;
-+		case NATBYP_VERBOSE_PACKET:	msglen += sprintf( msg+msglen , "PACKET\n"); break;
-+		default: msglen += sprintf( msg+msglen , "UNKONWN\n"); break;
-+		}
++        natbyp_db->expiry_max_count = newval;
++    }
++    else if (!_strcmp (args[0], "show")) {
 +
-+		msglen += sprintf(msg+msglen , "\tCOUNTER=%d\n", natbyp_db->expiry_max_count);
++        int msglen = 0;
++        u8 msg[ 256 ];
 +
-+		/* Window */
-+		msglen += sprintf(msg+msglen , "\tWINDOW=");
-+		if( natbyp_db->window_update ) {
-+			msglen += sprintf(msg+msglen , "%d \n", natbyp_db->window_scale );
-+		} else {
-+			msglen += sprintf(msg+msglen , "NONE \n");
-+		}
++        /* zeroing */
++        memset (msg, 0, 256);
 +
-+		/* ACK */
-+		msglen += sprintf(msg+msglen , "\tACK=%s\n",natbyp_db->ack_handle ? "YES" : "NO" );
++        if (!natbyp_activated) {
++            goto _natbyp_write_epilogue;
++        }
++        else {
++            msglen = sprintf (msg, "NATBYP >> \n");
++        }
 +
-+	_natbyp_write_epilogue:
++        /* log */
++        msglen += sprintf (msg + msglen, "\tLOG=");
++        switch (natbyp_verbose) {
++        case NATBYP_VERBOSE_NONE:
++            msglen += sprintf (msg + msglen, "NONE\n");
++            break;
++        case NATBYP_VERBOSE_STATE:
++            msglen += sprintf (msg + msglen, "STATE\n");
++            break;
++        case NATBYP_VERBOSE_PACKET:
++            msglen += sprintf (msg + msglen, "PACKET\n");
++            break;
++        default:
++            msglen += sprintf (msg + msglen, "UNKONWN\n");
++            break;
++        }
 +
-+		/* console print */
-+		printk(KERN_INFO "%s \n", msg);
-+	}
-+		
++        msglen += sprintf (msg + msglen, "\tCOUNTER=%d\n", natbyp_db->expiry_max_count);
 +
-+	return count;
++        /* Window */
++        msglen += sprintf (msg + msglen, "\tWINDOW=");
++        if (natbyp_db->ackwin_handle) {
++            msglen += sprintf (msg + msglen, "%d \n", natbyp_db->window_scale);
++        }
++        else {
++            msglen += sprintf (msg + msglen, "NONE \n");
++        }
++
++        /* ACK */
++        msglen += sprintf (msg + msglen, "\tACK=%s\n", natbyp_db->ack_handle ? "YES" : "NO");
++
++_natbyp_write_epilogue:
++
++        /* console print */
++        printk (KERN_INFO "%s \n", msg);
++    }
++
++
++    return count;
 +}
 +
 +static const struct proc_ops proc_natbyp_ops = {
-+	.proc_open 		= proc_natbyp_open,
-+	.proc_read 		= seq_read,
-+	.proc_lseek		= seq_lseek,
-+	.proc_write		= proc_natbyp_write,
-+	.proc_release	= seq_release,
++    .proc_open 		= proc_natbyp_open,
++    .proc_read 		= seq_read,
++    .proc_lseek		= seq_lseek,
++    .proc_write		= proc_natbyp_write,
++    .proc_release	= seq_release,
 +};
 +
 +
 +/*
 + * network device event handler
 + */
-+static int natbyp_netdev_event(struct notifier_block *this, unsigned long event, void *ptr)
++static int natbyp_netdev_event (struct notifier_block *this, unsigned long event, void *ptr)
 +{
-+	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
++    struct net_device *netdev = netdev_notifier_info_to_dev (ptr);
 +
-+	switch( event ) {
-+	case NETDEV_UP:
-+		/* get it more picky */
-+		/* TODO */
-+		if (!_strcmp( netdev->name, wandev_name )) {
-+			/* WAN */
-+			natbyp_print(STATE, "DEVICE(%s) UP >> WAN\n",netdev->name);
-+			wandev_db = netdev;
-+		} else {
-+			/* LAN */
-+			int index;
++    switch (event) {
++    case NETDEV_UP:
++        /* get it more picky */
++        /* TODO */
++        if (!_strcmp (netdev->name, wandev_name)) {
++            /* WAN */
++            natbyp_print (STATE, "DEVICE(%s) UP >> WAN\n", netdev->name);
++            wandev_db = netdev;
++        }
++        else {
++            /* LAN */
++            int index;
 +
-+			for (index = 0; index < MAX_LAN_DEV; index++) {
-+				if (!_strcmp( netdev->name, landev_name[ index ] )) {
-+					natbyp_print(STATE, "DEVICE(%s) UP >> LAN\n",netdev->name);
-+					landev_db[ index ] = netdev;
-+					break;
-+				}
-+			}
++            for (index = 0; index < MAX_LAN_DEV; index++) {
++                if (!_strcmp (netdev->name, landev_name[ index ])) {
++                    natbyp_print (STATE, "DEVICE(%s) UP >> LAN\n", netdev->name);
++                    landev_db[ index ] = netdev;
++                    break;
++                }
++            }
 +
-+			if (index == MAX_LAN_DEV) {
-+				return -EIO; /* No device */ 
-+			}
-+		}
-+		natbyp_dev_insert( netdev );
-+		break;
-+	case NETDEV_DOWN:
-+		/* TODO */
-+		if (!_strcmp( netdev->name, wandev_name )) {
-+			/* WAN */
-+			natbyp_print(STATE, "DEVICE(%s) DN >> !WAN\n",netdev->name);
-+			wandev_db = NULL;
-+		} else {
-+			/* LAN */
-+			int index;
++            if (index == MAX_LAN_DEV) {
++                return -EIO; /* No device */
++            }
++        }
++        natbyp_dev_insert (netdev);
++        break;
++    case NETDEV_DOWN:
++        /* TODO */
++        if (!_strcmp (netdev->name, wandev_name)) {
++            /* WAN */
++            natbyp_print (STATE, "DEVICE(%s) DN >> !WAN\n", netdev->name);
++            wandev_db = NULL;
++        }
++        else {
++            /* LAN */
++            int index;
 +
-+			for (index = 0; index < MAX_LAN_DEV; index++) {
-+				if (!_strcmp( netdev->name, landev_name[ index ] )) {
-+					natbyp_print(STATE, "DEVICE(%s) DN >> !LAN\n",netdev->name);
-+					landev_db[ index ] = NULL;
-+					break;
-+				}
-+			}
++            for (index = 0; index < MAX_LAN_DEV; index++) {
++                if (!_strcmp (netdev->name, landev_name[ index ])) {
++                    natbyp_print (STATE, "DEVICE(%s) DN >> !LAN\n", netdev->name);
++                    landev_db[ index ] = NULL;
++                    break;
++                }
++            }
 +
-+			if (index == MAX_LAN_DEV) {
-+				return -EIO; /* No device */ 
-+			}
-+		}
-+		natbyp_dev_delete( netdev );
-+		break;
-+	default:
-+		break;
-+	}
++            if (index == MAX_LAN_DEV) {
++                return -EIO; /* No device */
++            }
++        }
++        natbyp_dev_delete (netdev);
++        break;
++    default:
++        break;
++    }
 +
-+	return NOTIFY_DONE;
++    return NOTIFY_DONE;
 +}
 +
 +/* device event handler */
 +static struct notifier_block natbyp_netdev_notifier = {
-+	.notifier_call = natbyp_netdev_event
++    .notifier_call = natbyp_netdev_event
 +};
 +
 +/* init */
-+static int __init natbyp_init( void )
++static int __init natbyp_init (void)
 +{
-+	int index;
++    int index;
 +
-+	/* create db structure */
-+	natbyp_db = (natbyp_db_t *)kmalloc( sizeof(natbyp_db_t) , GFP_KERNEL );
-+	if (!natbyp_db) {
-+		natbyp_errmsg("KMALLOC( sizeof(natbyp_db_t) )::failed\n");
-+		return -ENOMEM;
-+	}
-+	memset( (char *)natbyp_db, 0, sizeof(natbyp_db_t) ); /* zeroing */
++    /* create db structure */
++    natbyp_db = (natbyp_db_t *) kmalloc (sizeof (natbyp_db_t), GFP_KERNEL);
++    if (!natbyp_db) {
++        natbyp_errmsg ("KMALLOC( sizeof(natbyp_db_t) )::failed\n");
++        return -ENOMEM;
++    }
++    memset ((char *) natbyp_db, 0, sizeof (natbyp_db_t));       /* zeroing */
 +
-+	/* create flow structure */
-+	natbyp_flow = (natbyp_flow_t *)kmalloc( sizeof(natbyp_flow_t)*MAX_NATBYP_FLOW , GFP_KERNEL );
-+	if (!natbyp_flow) {
-+		natbyp_errmsg("KMALLOC( sizeof(natbyp_flow_t) * %d )::failed\n",MAX_NATBYP_FLOW);
-+		kfree( natbyp_db );
-+		return -ENOMEM;
-+	}
-+	memset( (char *)natbyp_flow, 0, sizeof(natbyp_flow_t)*MAX_NATBYP_FLOW ); /* zeroing */
++    /* create flow structure */
++    natbyp_flow = (natbyp_flow_t *) kmalloc (sizeof (natbyp_flow_t) * MAX_NATBYP_FLOW, GFP_KERNEL);
++    if (!natbyp_flow) {
++        natbyp_errmsg ("KMALLOC( sizeof(natbyp_flow_t) * %d )::failed\n", MAX_NATBYP_FLOW);
++        kfree (natbyp_db);
++        return -ENOMEM;
++    }
++    memset ((char *) natbyp_flow, 0, sizeof (natbyp_flow_t) *MAX_NATBYP_FLOW);       /* zeroing */
 +
-+	/* initialize device name */
-+	memset( wandev_name, 0, NAMELEN );
-+	for( index = 0; index < MAX_LAN_DEV; index++ )
-+		memset( landev_name[ index ], 0, NAMELEN );
++    /* initialize device name */
++    memset (wandev_name, 0, NAMELEN);
++    for (index = 0; index < MAX_LAN_DEV; index++)
++        memset (landev_name[ index ], 0, NAMELEN);
 +
-+	/* initialize natbyp_flow structure */
-+	for( index = 0; index < MAX_NATBYP_FLOW; index++ ) {
-+		/* found !! */
-+		natbyp_flow[ index ].magic = NATBYP_MAGIC_4BYTES;
-+		natbyp_flow[ index ].index = index;
-+		natbyp_flow[ index ].used = 0;
-+	
-+		/* initializing queue */
-+		natbyp_skbq_init( &(natbyp_flow[ index ].skbq) );
-+	}
++    /* initialize natbyp_flow structure */
++    for (index = 0; index < MAX_NATBYP_FLOW; index++) {
++        /* found !! */
++        natbyp_flow[ index ].magic = NATBYP_MAGIC_4BYTES;
++        natbyp_flow[ index ].index = index;
++        natbyp_flow[ index ].used = 0;
 +
-+	/* timer init */
-+	timer_setup( &(natbyp_db->timer), natbyp_flow_mon, 0 );
++        /* initializing queue */
++        natbyp_skbq_init (& (natbyp_flow[ index ].skbq));
++    }
 +
-+	natbyp_db->expiry_max_count = DEFAULT_NATBYP_SLOT_MAX_EXPIRY;
++    /* timer init */
++    timer_setup (& (natbyp_db->timer), natbyp_flow_mon, 0);
 +
-+	/* Window size update Feature */
-+	natbyp_db->window_update = 0;
-+	natbyp_db->window_scale = DEFAULT_WINDOW_SIZE;
++    natbyp_db->expiry_max_count = DEFAULT_NATBYP_SLOT_MAX_EXPIRY;
 +
-+	/* ACK packet */
-+	/* TCP ACK packet does not belong to the candidates 
-+ 	to be NAT bypassed */
-+	natbyp_db->ack_handle = 0;  
++    /* Window size update Feature */
++    natbyp_db->ackwin_handle = 0;
++    natbyp_db->window_scale = DEFAULT_WINDOW_SIZE;
 +
-+	/* device drop number - UL/DL */
-+	natbyp_db->pkt_drop[ NATBYP_UL ] = 0;
-+	natbyp_db->pkt_drop[ NATBYP_DL ] = 0;
++    /* ACK packet */
++    /* TCP ACK packet does not belong to the candidates
++    to be NAT bypassed */
++    natbyp_db->ack_handle = 1;
 +
-+	/* number of pkts - UL/DL */
-+	natbyp_db->pkt_count[ NATBYP_UL ] = 0;
-+	natbyp_db->pkt_count[ NATBYP_DL ] = 0;
++    /* TCP ACK suppression */
++    natbyp_db->suppack_handle = 1;
 +
-+	/* network devices */
-+	for( index = 0; index < MAX_NATBYP_DEVS; index++ ) {
-+		natbyp_db->ndevs[ index ].used = 0;
-+		natbyp_db->ndevs[ index ].dev = NULL;
-+	}
-+			
-+	/* proc structure */
-+	proc_create("natbyp", S_IRUGO | S_IFREG | S_IWUSR, NULL, &proc_natbyp_ops);
++    /* device drop number - UL/DL */
++    natbyp_db->pkt_drop[ NATBYP_UL ] = 0;
++    natbyp_db->pkt_drop[ NATBYP_DL ] = 0;
 +
-+	/* network device notifier */
-+	if ( register_netdevice_notifier(&natbyp_netdev_notifier) ) {
-+		natbyp_errmsg("[ERR] NATBYP - failed in register_netdevice_notifier() \n");
-+		kfree( natbyp_db );
-+		kfree( natbyp_flow );
-+		return -EIO;
-+	}
++    /* number of pkts - UL/DL */
++    natbyp_db->pkt_count[ NATBYP_UL ] = 0;
++    natbyp_db->pkt_count[ NATBYP_DL ] = 0;
 +
-+	/* packet forwarder - UL/DL */	
-+	for( index = 0; index < NUM_FLOW_TYPE; index++) {
-+		tasklet_setup( &(natbyp_db->flow_tasklet[ index ]), 
-+				(index == NATBYP_DL) ? natbyp_dl_forwarder : natbyp_ul_forwarder );
-+	}
++    /* network devices */
++    for (index = 0; index < MAX_NATBYP_DEVS; index++) {
++        natbyp_db->ndevs[ index ].used = 0;
++        natbyp_db->ndevs[ index ].dev = NULL;
++    }
 +
-+	/* Logo */
-+	printk(KERN_INFO "NATBYP module %s\n", NATBYP_VERSION );
++    /* proc structure */
++    proc_create ("natbyp", S_IRUGO | S_IFREG | S_IWUSR, NULL, &proc_natbyp_ops);
 +
-+	return 0;
++    /* network device notifier */
++    if (register_netdevice_notifier (&natbyp_netdev_notifier)) {
++        natbyp_errmsg ("[ERR] NATBYP - failed in register_netdevice_notifier() \n");
++        kfree (natbyp_db);
++        kfree (natbyp_flow);
++        return -EIO;
++    }
++
++    /* packet forwarder - UL/DL */
++    for (index = 0; index < NUM_FLOW_TYPE; index++) {
++        tasklet_setup (& (natbyp_db->flow_tasklet[ index ]),
++                       (index == NATBYP_DL) ? natbyp_dl_forwarder : natbyp_ul_forwarder);
++    }
++
++    /* Logo */
++    printk (KERN_INFO "NATBYP module %s\n", NATBYP_VERSION);
++
++    return 0;
 +}
 +
 +/* exit */
-+static void __exit natbyp_exit( void )
-+{ /* nothing done */
++static void __exit natbyp_exit (void)
++{
++    /* nothing done */
 +}
 +
-+module_init(natbyp_init);
-+module_exit(natbyp_exit);
++module_init (natbyp_init);
++module_exit (natbyp_exit);
 +
-+MODULE_DESCRIPTION("NAT Bypass Control Module");
-+MODULE_AUTHOR("Todd HWang");
-+MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION ("NAT Bypass Control Module");
++MODULE_AUTHOR ("Todd HWang");
++MODULE_LICENSE ("GPL");
 +
 +#endif /* defined(CONFIG_NETFILTER) */
 diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
 --- linux-rpi-5.15.y-original/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-17 21:27:17.217787027 -0700
++++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-21 19:43:47.238743177 -0700
 @@ -71,6 +71,9 @@
  #include <net/mpls.h>
  #include <net/mptcp.h>
@@ -2500,7 +2741,7 @@ diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/
  
 diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
 --- linux-rpi-5.15.y-original/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/Kconfig	2023-05-17 21:27:17.217787027 -0700
++++ linux-rpi-5.15.y/net/Kconfig	2023-05-21 19:43:47.238743177 -0700
 @@ -174,6 +174,13 @@
  
  if NETFILTER
@@ -2517,7 +2758,7 @@ diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
  	depends on NETFILTER
 diff -uNr linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
 --- linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-17 21:27:17.217787027 -0700
++++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-21 19:43:47.242743205 -0700
 @@ -1156,11 +1156,20 @@
  		break;
  	}
