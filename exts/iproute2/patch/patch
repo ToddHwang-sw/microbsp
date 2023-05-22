@@ -1,12 +1,337 @@
-diff -uNr iproute2-5.4.0-source/misc/lnstat.h iproute2-5.4.0/misc/lnstat.h
---- iproute2-5.4.0-source/misc/lnstat.h	2019-11-25 08:07:24.000000000 -0800
-+++ iproute2-5.4.0/misc/lnstat.h	2020-07-17 17:46:58.928715366 -0700
-@@ -2,7 +2,7 @@
- #ifndef _LNSTAT_H
- #define _LNSTAT_H
+diff -uNr iproute2-6.0.0-original/bridge/fdb.c iproute2-6.0.0/bridge/fdb.c
+--- iproute2-6.0.0-original/bridge/fdb.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/bridge/fdb.c	2023-05-17 23:31:17.555856488 -0700
+@@ -15,6 +15,8 @@
+ #include <fcntl.h>
+ #include <sys/socket.h>
+ #include <sys/time.h>
++#include <uapi/linux/netlink.h>
++#include <uapi/linux/neighbour.h>
+ #include <net/if.h>
+ #include <netinet/in.h>
+ #include <linux/if_bridge.h>
+diff -uNr iproute2-6.0.0-original/bridge/link.c iproute2-6.0.0/bridge/link.c
+--- iproute2-6.0.0-original/bridge/link.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/bridge/link.c	2023-05-17 23:32:15.836239510 -0700
+@@ -7,6 +7,7 @@
+ #include <sys/socket.h>
+ #include <sys/time.h>
+ #include <netinet/in.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/if.h>
+ #include <linux/if_bridge.h>
+ #include <string.h>
+diff -uNr iproute2-6.0.0-original/bridge/monitor.c iproute2-6.0.0/bridge/monitor.c
+--- iproute2-6.0.0-original/bridge/monitor.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/bridge/monitor.c	2023-05-17 23:31:45.908043685 -0700
+@@ -16,6 +16,8 @@
+ #include <time.h>
+ #include <sys/socket.h>
+ #include <sys/time.h>
++#include <uapi/linux/rtnetlink.h>
++#include <uapi/linux/if_link.h>
+ #include <net/if.h>
+ #include <netinet/in.h>
+ #include <linux/if_bridge.h>
+diff -uNr iproute2-6.0.0-original/bridge/vni.c iproute2-6.0.0/bridge/vni.c
+--- iproute2-6.0.0-original/bridge/vni.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/bridge/vni.c	2023-05-17 23:32:46.796440254 -0700
+@@ -12,6 +12,9 @@
+ #include <sys/socket.h>
+ #include <net/if.h>
+ #include <netinet/in.h>
++#include <uapi/linux/if_link.h>
++#include <uapi/linux/netlink.h>
++#include <uapi/linux/rtnetlink.h>
+ #include <linux/if_link.h>
+ #include <linux/if_bridge.h>
+ #include <linux/if_ether.h>
+diff -uNr iproute2-6.0.0-original/configure iproute2-6.0.0/configure
+--- iproute2-6.0.0-original/configure	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/configure	2023-05-17 23:01:59.253968468 -0700
+@@ -266,15 +266,7 @@
  
--#include <limits.h>
-+#include <linux/limits.h>
- #include <sys/select.h>
+ check_elf()
+ {
+-    if ${PKG_CONFIG} libelf --exists; then
+-	echo "HAVE_ELF:=y" >>$CONFIG
+-	echo "yes"
+-
+-	echo 'CFLAGS += -DHAVE_ELF' `${PKG_CONFIG} libelf --cflags` >> $CONFIG
+-	echo 'LDLIBS += ' `${PKG_CONFIG} libelf --libs` >>$CONFIG
+-    else
+ 	echo "no"
+-    fi
+ }
  
- #define LNSTAT_VERSION "0.02 041002"
+ have_libbpf_basic()
+@@ -398,15 +390,7 @@
+ 
+ check_tirpc()
+ {
+-	if ${PKG_CONFIG} libtirpc --exists; then
+-		echo "HAVE_RPC:=y" >>$CONFIG
+-		echo "yes"
+-
+-		echo 'LDLIBS +=' `${PKG_CONFIG} --libs libtirpc` >>$CONFIG
+-		echo 'CFLAGS += -DHAVE_RPC' `${PKG_CONFIG} --cflags libtirpc` >>$CONFIG
+-	else
+-		echo "no"
+-	fi
++	echo "no"
+ }
+ 
+ check_mnl()
+diff -uNr iproute2-6.0.0-original/devlink/devlink.c iproute2-6.0.0/devlink/devlink.c
+--- iproute2-6.0.0-original/devlink/devlink.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/devlink/devlink.c	2023-05-17 23:34:05.048940102 -0700
+@@ -25,6 +25,7 @@
+ #include <arpa/inet.h>
+ #include <sys/sysinfo.h>
+ #define _LINUX_SYSINFO_H /* avoid collision with musl header */
++#include <uapi/linux/devlink.h>
+ #include <linux/genetlink.h>
+ #include <linux/devlink.h>
+ #include <linux/netlink.h>
+diff -uNr iproute2-6.0.0-original/ip/ipaddress.c iproute2-6.0.0/ip/ipaddress.c
+--- iproute2-6.0.0-original/ip/ipaddress.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/ipaddress.c	2023-05-17 23:01:59.253968468 -0700
+@@ -25,6 +25,7 @@
+ #include <string.h>
+ #include <fnmatch.h>
+ 
++#include <uapi/linux/if_link.h>
+ #include <linux/netdevice.h>
+ #include <linux/if_arp.h>
+ #include <linux/if_infiniband.h>
+diff -uNr iproute2-6.0.0-original/ip/iplink_bond.c iproute2-6.0.0/ip/iplink_bond.c
+--- iproute2-6.0.0-original/ip/iplink_bond.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_bond.c	2023-05-17 23:01:59.253968468 -0700
+@@ -13,6 +13,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/if_bonding.h>
+ 
+ #include "list.h"
+diff -uNr iproute2-6.0.0-original/ip/iplink_bond_slave.c iproute2-6.0.0/ip/iplink_bond_slave.c
+--- iproute2-6.0.0-original/ip/iplink_bond_slave.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_bond_slave.c	2023-05-17 23:01:59.253968468 -0700
+@@ -11,6 +11,7 @@
+ 
+ #include <stdio.h>
+ #include <sys/socket.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/if_bonding.h>
+ 
+ #include "rt_names.h"
+diff -uNr iproute2-6.0.0-original/ip/iplink_bridge_slave.c iproute2-6.0.0/ip/iplink_bridge_slave.c
+--- iproute2-6.0.0-original/ip/iplink_bridge_slave.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_bridge_slave.c	2023-05-17 23:01:59.253968468 -0700
+@@ -12,6 +12,7 @@
+ #include <stdio.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/if_link.h>
+ #include <linux/if_bridge.h>
+ 
+diff -uNr iproute2-6.0.0-original/ip/iplink.c iproute2-6.0.0/ip/iplink.c
+--- iproute2-6.0.0-original/ip/iplink.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink.c	2023-05-17 23:01:59.253968468 -0700
+@@ -17,6 +17,7 @@
+ #include <dlfcn.h>
+ #include <errno.h>
+ #include <sys/socket.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/if.h>
+ #include <linux/if_packet.h>
+ #include <linux/if_ether.h>
+diff -uNr iproute2-6.0.0-original/ip/iplink_can.c iproute2-6.0.0/ip/iplink_can.c
+--- iproute2-6.0.0-original/ip/iplink_can.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_can.c	2023-05-17 23:01:59.253968468 -0700
+@@ -13,6 +13,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#include <uapi/linux/can/netlink.h>
+ #include <linux/can/netlink.h>
+ 
+ #include "rt_names.h"
+diff -uNr iproute2-6.0.0-original/ip/iplink_geneve.c iproute2-6.0.0/ip/iplink_geneve.c
+--- iproute2-6.0.0-original/ip/iplink_geneve.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_geneve.c	2023-05-17 23:01:59.253968468 -0700
+@@ -11,6 +11,8 @@
+ 
+ #include <stdio.h>
+ 
++#include <uapi/linux/if_link.h>
++
+ #include "rt_names.h"
+ #include "utils.h"
+ #include "ip_common.h"
+diff -uNr iproute2-6.0.0-original/ip/iplink_gtp.c iproute2-6.0.0/ip/iplink_gtp.c
+--- iproute2-6.0.0-original/ip/iplink_gtp.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_gtp.c	2023-05-17 23:01:59.253968468 -0700
+@@ -2,6 +2,7 @@
+ 
+ #include <stdio.h>
+ 
++#include <uapi/linux/if_link.h>
+ #include "rt_names.h"
+ #include "utils.h"
+ #include "ip_common.h"
+diff -uNr iproute2-6.0.0-original/ip/iplink_vxlan.c iproute2-6.0.0/ip/iplink_vxlan.c
+--- iproute2-6.0.0-original/ip/iplink_vxlan.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iplink_vxlan.c	2023-05-17 23:01:59.253968468 -0700
+@@ -13,6 +13,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <net/if.h>
++#include <uapi/linux/if_link.h>
+ #include <linux/ip.h>
+ #include <linux/if_link.h>
+ #include <arpa/inet.h>
+diff -uNr iproute2-6.0.0-original/ip/ipmonitor.c iproute2-6.0.0/ip/ipmonitor.c
+--- iproute2-6.0.0-original/ip/ipmonitor.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/ipmonitor.c	2023-05-17 23:01:59.253968468 -0700
+@@ -20,6 +20,7 @@
+ #include <string.h>
+ #include <time.h>
+ 
++#include <uapi/linux/rtnetlink.h>
+ #include "utils.h"
+ #include "ip_common.h"
+ #include "nh_common.h"
+diff -uNr iproute2-6.0.0-original/ip/ipneigh.c iproute2-6.0.0/ip/ipneigh.c
+--- iproute2-6.0.0-original/ip/ipneigh.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/ipneigh.c	2023-05-17 23:01:59.253968468 -0700
+@@ -20,6 +20,7 @@
+ #include <netinet/in.h>
+ #include <netinet/ip.h>
+ 
++#include <uapi/linux/neighbour.h>
+ #include "rt_names.h"
+ #include "utils.h"
+ #include "ip_common.h"
+diff -uNr iproute2-6.0.0-original/ip/iproute_lwtunnel.c iproute2-6.0.0/ip/iproute_lwtunnel.c
+--- iproute2-6.0.0-original/ip/iproute_lwtunnel.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/iproute_lwtunnel.c	2023-05-17 23:01:59.257968486 -0700
+@@ -28,13 +28,16 @@
+ #include "ila_common.h"
+ 
+ #include <linux/seg6.h>
++#include <uapi/linux/seg6_iptunnel.h>
+ #include <linux/seg6_iptunnel.h>
+ #include <linux/rpl.h>
++#include <uapi/linux/rpl_iptunnel.h>
+ #include <linux/rpl_iptunnel.h>
+ #include <linux/seg6_hmac.h>
+ #include <linux/seg6_local.h>
+ #include <linux/if_tunnel.h>
+ #include <linux/ioam6.h>
++#include <uapi/linux/ioam6_iptunnel.h>
+ #include <linux/ioam6_iptunnel.h>
+ 
+ static const char *format_encap_type(int type)
+diff -uNr iproute2-6.0.0-original/ip/ipstats.c iproute2-6.0.0/ip/ipstats.c
+--- iproute2-6.0.0-original/ip/ipstats.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/ip/ipstats.c	2023-05-17 23:01:59.257968486 -0700
+@@ -7,6 +7,9 @@
+ #include <sys/param.h>
+ #include <sys/socket.h>
+ 
++#include <uapi/linux/if_link.h>
++#include <uapi/linux/rtnetlink.h>
++
+ #include "list.h"
+ #include "utils.h"
+ #include "ip_common.h"
+diff -uNr iproute2-6.0.0-original/lib/libnetlink.c iproute2-6.0.0/lib/libnetlink.c
+--- iproute2-6.0.0-original/lib/libnetlink.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/lib/libnetlink.c	2023-05-17 23:01:59.257968486 -0700
+@@ -22,6 +22,8 @@
+ #include <errno.h>
+ #include <time.h>
+ #include <sys/uio.h>
++#include <uapi/linux/if_link.h>
++#include <uapi/linux/rtnetlink.h>
+ #include <linux/fib_rules.h>
+ #include <linux/if_addrlabel.h>
+ #include <linux/if_bridge.h>
+diff -uNr iproute2-6.0.0-original/lib/ll_proto.c iproute2-6.0.0/lib/ll_proto.c
+--- iproute2-6.0.0-original/lib/ll_proto.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/lib/ll_proto.c	2023-05-17 23:01:59.257968486 -0700
+@@ -19,6 +19,7 @@
+ #include <arpa/inet.h>
+ #include <string.h>
+ 
++#include <uapi/linux/if_ether.h>
+ #include <linux/netdevice.h>
+ #include <linux/if_arp.h>
+ #include <linux/sockios.h>
+diff -uNr iproute2-6.0.0-original/Makefile iproute2-6.0.0/Makefile
+--- iproute2-6.0.0-original/Makefile	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/Makefile	2023-05-17 23:29:13.923018444 -0700
+@@ -65,9 +65,11 @@
+ CFLAGS := $(WFLAGS) $(CCOPTS) -I../include -I../include/uapi $(DEFINES) $(CFLAGS)
+ YACCFLAGS = -d -t -v
+ 
+-SUBDIRS=lib ip tc bridge misc netem genl man
++## SUBDIRS=lib ip tc bridge misc netem genl man
++SUBDIRS=lib ip tc bridge misc netem genl
+ ifeq ($(HAVE_MNL),y)
+-SUBDIRS += tipc devlink rdma dcb vdpa
++## SUBDIRS += tipc devlink rdma dcb vdpa
++SUBDIRS += tipc devlink
+ endif
+ 
+ LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
+diff -uNr iproute2-6.0.0-original/misc/ss.c iproute2-6.0.0/misc/ss.c
+--- iproute2-6.0.0-original/misc/ss.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/misc/ss.c	2023-05-17 23:33:27.828703638 -0700
+@@ -38,6 +38,7 @@
+ #include "rt_names.h"
+ #include "cg_map.h"
+ 
++#include <uapi/linux/tls.h>
+ #include <linux/tcp.h>
+ #include <linux/unix_diag.h>
+ #include <linux/netdevice.h>	/* for MAX_ADDR_LEN */
+diff -uNr iproute2-6.0.0-original/tc/m_action.c iproute2-6.0.0/tc/m_action.c
+--- iproute2-6.0.0-original/tc/m_action.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/tc/m_action.c	2023-05-17 23:27:53.670452407 -0700
+@@ -24,6 +24,8 @@
+ #include <string.h>
+ #include <dlfcn.h>
+ 
++#include <uapi/linux/pkt_cls.h>
++
+ #include "utils.h"
+ #include "tc_common.h"
+ #include "tc_util.h"
+diff -uNr iproute2-6.0.0-original/tc/Makefile iproute2-6.0.0/tc/Makefile
+--- iproute2-6.0.0-original/tc/Makefile	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/tc/Makefile	2023-05-17 23:28:27.678694634 -0700
+@@ -28,7 +28,7 @@
+ TCMODULES += f_bpf.o
+ TCMODULES += f_flow.o
+ TCMODULES += f_cgroup.o
+-TCMODULES += f_flower.o
++## TCMODULES += f_flower.o
+ TCMODULES += q_dsmark.o
+ TCMODULES += q_gred.o
+ TCMODULES += f_tcindex.o
+diff -uNr iproute2-6.0.0-original/tc/q_fq_codel.c iproute2-6.0.0/tc/q_fq_codel.c
+--- iproute2-6.0.0-original/tc/q_fq_codel.c	2022-10-04 08:17:15.000000000 -0700
++++ iproute2-6.0.0/tc/q_fq_codel.c	2023-05-17 23:30:37.851591379 -0700
+@@ -44,6 +44,8 @@
+ #include <arpa/inet.h>
+ #include <string.h>
+ 
++#include <uapi/linux/pkt_sched.h>
++
+ #include "utils.h"
+ #include "tc_util.h"
+ 

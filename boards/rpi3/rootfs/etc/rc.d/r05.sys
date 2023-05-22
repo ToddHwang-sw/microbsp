@@ -4,7 +4,7 @@ case $1 in
 	"start")
 		echo "[WLAN] Loading all WLAN modules..."
 		modprobe 8192eu
-		modprobe 88x2bu
+		modprobe 8812bu
 
 		/etc/scripts/wlan_sta.sh start
 		;;
@@ -12,7 +12,7 @@ case $1 in
 		echo "[WLAN] Unloading all WLAN modules..."
 		/etc/scripts/wlan_sta.sh stop
 
-		rmmod 88x2bu
+		rmmod 8812bu
 		rmmod 8192eu
 		;;
 	"*")

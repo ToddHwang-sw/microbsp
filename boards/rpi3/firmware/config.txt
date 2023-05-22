@@ -46,3 +46,9 @@ kernel=u-boot.bin
 ## OVERLAY DTB
 ##
 dtoverlay=vc4-kms-v3d
+
+##
+## SPI enable 
+##
+dtoverlay=spi1-3cs
+
