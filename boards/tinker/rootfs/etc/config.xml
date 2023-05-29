@@ -1,0 +1,121 @@
+<?xml version="1.0.0.1" encoding="utf-8"?>
+<config>
+	<product>ASUS Tinker WiFi-WiFi CPE</product>
+	<date>202211011600</date>
+	<model>TinkerCPE</model>
+	<operation>
+		<mode>normal</mode>			<!-- operation mode -->
+		<passwd>stepforward</passwd>		<!-- password -->
+		<webui>0</webui>		<!-- webui -->
+		<syslog>
+			<en>1</en>
+			<mode>local</mode>	<!-- local -> /var/log/messages, remote -> UDP -->
+			<ip>10.10.10.30</ip>
+			<port>514</port>	<!-- by default 514 -->
+		</syslog>
+		<date>2022.11.01-12:00:00</date>  <!-- date -->
+	</operation>
+	<ssh>
+		<en>1</en>          <!-- activate -->
+		<port>22</port>             <!-- service port -->
+	</ssh>
+	<user>
+		<u0>
+			<valid>1</valid>
+			<name>todd</name>
+			<passwd>12345678</passwd>
+		</u0>          
+		<u1>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u1>          
+		<u2>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u2>          
+		<u3>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u3>          
+		<u4>
+			<valid>0</valid>
+			<name>0</name>
+			<passwd>0</passwd>
+		</u4>          
+    </user>
+    <http>
+        <en>0</en>
+    </http>
+    <ntp>
+        <en>1</en>
+    </ntp>
+	<mon>
+        <en>0</en>          <!-- wifi monitor -->
+        <intf>wlan1</intf>
+	</mon>
+	<lan>
+        <mode>dhcp</mode>          <!-- static, dhcp, none -->
+        <mac>random</mac>
+        <name>br0</name>
+        <interfaces>
+            <wlan0>wlan2</wlan0>
+            <wlan1>wlan1</wlan1>
+            <wlan2>0</wlan2>
+            <wlan3>0</wlan3>
+            <wlan4>0</wlan4>
+            <eth0>eth0</eth0>
+        </interfaces>
+        <ip>100.5.5.1</ip>
+        <start>50</start>
+        <end>240</end>
+		<netmask>255.255.255.0</netmask>
+		<gateway>100.5.5.1</gateway>
+		<tftpserver>100.5.5.10</tftpserver>
+		<dns>8.8.8.8</dns>
+		<ipv6>
+			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
+			<global>2001:b0d8:2233:1000::</global>
+			<local>4400::</local>
+			<plen>64</plen>
+			<id>200</id>
+		</ipv6>
+		<ssid>rpiwifi</ssid>  <!-- SSID for wlan0 -->
+        <password>12345678</password>
+        <capture>0</capture>
+	</lan>
+	<wan>
+        <mode>dhcp</mode>          <!-- static, dhcp, none -->
+        <mac>random</mac>
+        <name>wlan0</name>
+		<ip>192.167.0.162</ip>
+		<netmask>255.255.255.0</netmask>
+		<gateway>192.167.0.1</gateway>
+		<dns>8.8.8.8</dns>
+		<ipv6>
+			<mode>dhcp</mode>     <!-- IPv6 DHCP -->
+			<global>2400:b0d8:2233:1000::</global>
+			<local>4400::</local>
+			<plen>64</plen>
+			<id>1</id>
+		</ipv6>
+        <ssid>myhomeap</ssid>
+        <password>12345678</password>
+        <capture>0</capture>
+	</wan>
+	<xcfgd>
+		<httpport>8082</httpport>  <!-- HTTP service port -->
+		<sysport>56432</sysport>   <!-- Generic socket service port -->
+		<timeout>2</timeout>	   <!-- Client timeout -->
+		<verbose>0</verbose>	   <!-- Verbosity -->
+		<mainidle>5</mainidle>     <!-- Sleep interval of idle loop -->
+		<syncexpire>1000</syncexpire> <!-- Persistent syncing job expire -->
+        <shellproc>/var/tmp/xconfig/xconfig_shell_proc.sh</shellproc>     <!-- Shell processor -->
+		<tls>
+            <keyfile>/var/tmp/xconfig/key.pem</keyfile>
+            <cafile>/var/tmp/xconfig/cert.pem</cafile>
+		</tls>
+	</xcfgd>
+</config>

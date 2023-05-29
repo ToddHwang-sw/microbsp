@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ASK='xcfgcli.sh get '
+
+case $1 in
+	"start")
+		echo "[WLAN] BRCM Loading modules..."
+		modprobe brcmutil
+		modprobe brcmfmac
+	
+		/etc/scripts/wlan_ap.sh start 		
+		;;
+	"stop")
+		/etc/scripts/wlan_ap.sh stop
+
+		echo "[WLAN] BRCM Unloading modules..."
+		rmmod brcmfmac
+		rmmod brcmutil
+		;;
+	"*")
+		;;
+esac

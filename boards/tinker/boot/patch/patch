@@ -1,0 +1,24 @@
+diff --git a/arch/arm/dts/rk3288-tinker.dts b/arch/arm/dts/rk3288-tinker.dts
+index 6193288949..2163215fa9 100755
+--- a/arch/arm/dts/rk3288-tinker.dts
++++ b/arch/arm/dts/rk3288-tinker.dts
+@@ -12,7 +12,8 @@
+ 	compatible = "rockchip,rk3288-tinker", "rockchip,rk3288";
+ 
+ 	chosen {
+-		stdout-path = &uart3;
++		/* stdout-path = &uart3; */
++		stdout-path = &uart1;
+ 	};
+ };
+ 
+@@ -42,7 +43,8 @@
+ 	status = "okay";
+ };
+ 
+-&uart3 {
++&uart1 {
++/*&uart3 {*/
+ 	u-boot,dm-pre-reloc;
+ 	reg-shift = <2>;
+ };
