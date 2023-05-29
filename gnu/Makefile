@@ -6,6 +6,9 @@ endif
 ifeq ($(_CORE_),aarch64)
 	KARCH=arm64
 endif
+ifeq ($(_CORE_),arm)
+	KARCH=arm
+endif
 
 download:
 	@[ -f $(BINUTILS).tar.bz2 ] || wget https://ftp.gnu.org/pub/gnu/binutils/$(BINUTILS).tar.bz2
@@ -15,7 +18,7 @@ download:
 config_binutils:
 	@[ -d $(RP)/$(BINUTILS) ] || tar jxvf $(RP)/../sources/$(BINUTILS).tar.bz2 -C $(RP)
 	$(RP)/$(BINUTILS)/configure --prefix=$(TOOLCHAIN_ROOT) --program-prefix=$(PLATFORM)- --target=$(PLATFORM) --build=$(PLATFORM) \
-			--without-gmp --without-mpfr --without-mpc --disable-multilib
+			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib
 
 setup_binutils:
 	@make
@@ -34,7 +37,7 @@ config_gcc:
 			--disable-multiarch \
 			--enable-libstdcxx \
 			--enable-languages=$(SUPPORTED_LANGUAGES) \
-			--without-gmp --without-mpfr --without-mpc --disable-multilib
+			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib
 
 setup_gcc:
 	make all-gcc
@@ -80,7 +83,7 @@ config_glibc:
 	CXX="$(TOOLCHAIN_ROOT)/bin/$(CROSS_COMP_PREFIX)g++ $(CROSS_COMP_FLAGS)" \
 	lib_cv_forced_unwind=yes \
 		$(RP)/$(GLIBC)/configure --prefix=$(TOOLCHAIN_ROOT)/$(PLATFORM) \
-			--build=i686-linux --host=$(PLATFORM) --target=$(PLATFORM) \
+			--build=$(HOSTSYSTEM) --host=$(PLATFORM) --target=$(PLATFORM) \
 			--with-headers=$(TOOLCHAIN_ROOT)/$(PLATFORM)/include --disable-multi-arch
 
 setup_glibc:
