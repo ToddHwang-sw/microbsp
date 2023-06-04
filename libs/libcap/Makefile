@@ -1,20 +1,16 @@
-DIR=libcap
-LOC=https://git.kernel.org/pub/scm/linux/kernel/git/morgan
+DIR=libcap-2.24
+LOC=https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) BUILD_CC=gcc LD="$(CROSS_COMP_PREFIX)gcc -shared" WARNINGS=
+MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) BUILD_CC=gcc LD="$(CROSS_COMP_PREFIX)gcc -shared" WARNINGS= 
 
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || (              \
-			cd $(BUILDDIR) ;                          \
-			git clone $(LOC)/$(DIR).git ;             \
-			[ ! -f ../../patch/patch ] || (           \
-				cd $(DIR) ;                           \
-				cat ../../../patch/patch | patch -p 1 \
-				)                                     \
-		)
+	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz ; $(MICB_PATCH) )
+	@[ -f $(BUILDDIR)/$(DIR)/Makefile ] || (          \
+		cd $(BUILDDIR)/$(DIR) ;                       \
+		cp -rf ../../../$(MICBSRC)/$(DIR)/* . )
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
