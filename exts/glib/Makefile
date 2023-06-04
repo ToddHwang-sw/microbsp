@@ -13,6 +13,7 @@ MICB_MESON_OPTS+=\
 	-D gtk_doc=false \
 	-D glib_debug=disabled \
 	-D libelf=disabled \
+	-D selinux=disabled \
 	-D tests=false \
 	-D man=false \
 	-D installed_tests=false 
