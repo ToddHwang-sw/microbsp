@@ -201,9 +201,10 @@ LIBDIR=\
 	libssh2 \
 	nettle \
 	flex \
-	lsjson \
-	pcre2 \
+	lsjson  \
+	pcre2   \
 	libxml  \
+	libxslt \
 	expat \
 	libpam \
 	libpcap \
@@ -285,7 +286,6 @@ UIDIR=\
 	libgcrypt              \
 	libdbus	               \
 	sndfile	               \
-	X11/libxslt            \
 	X11/xorg-macros        \
 	X11/xorg-doctools      \
 	X11/xorg-x11proto      \
