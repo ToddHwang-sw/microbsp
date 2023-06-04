@@ -9,7 +9,7 @@ export _ARCH_=$(_CORE_)-tinker
 ##
 ## NOTICE !! The should be ended with "*eabi" only for the case of arm 32 bit architecture
 ##
-export PLATFORM=$(_CORE_)-any-linux-gnueabi
+export PLATFORM=$(_CORE_)-mbsp-linux-gnueabi
 
 ## kernel version 
 export KERNELVER=linux-5.15.113

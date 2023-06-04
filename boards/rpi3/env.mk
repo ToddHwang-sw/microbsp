@@ -6,7 +6,7 @@ export _CORE_=aarch64
 export _ARCH_=$(_CORE_)-rpi3
 
 ## platfom string ...
-export PLATFORM=$(_CORE_)-any-linux-gnu
+export PLATFORM=$(_CORE_)-mbsp-linux-gnu
 
 ## kernel version 
 export KERNELVER=linux-rpi-5.15.y
