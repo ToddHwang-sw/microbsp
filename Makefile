@@ -767,7 +767,7 @@ board: run_bootstrap
 	@echo ""
 	@echo "Copying static rootfs...."
 	@echo ""
-	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/ 
+	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/
 	@echo ""
 	@echo "Merging $(INSTALLDIR) and GLIBC ...."
 	@echo ""
@@ -778,7 +778,7 @@ board: run_bootstrap
 		cd $(TOPDIR) ; \
 		make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc
 	@echo ""
-	@echo "Setting for copying $(BOOTSTAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
+	@echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
 	@echo ""
 	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
 		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done
