@@ -23,13 +23,24 @@ MICB_CONFIGURE_OPTS = \
 	--enable-postproc \
 	--enable-swresample \
 	--enable-swscale \
-	--enable-shared \
+	--enable-shared  \
+	--enable-ffplay  \
+	--enable-ffprobe \
+	--enable-ffmpeg  \
+	--enable-sdl2    \
 	--extra-cflags="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 	--extra-ldflags="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAGS_EXTRA)" \
 	--cross-prefix=$(CROSS_COMP_PREFIX) \
 	--pkg-config=$(MICB_MESON_PKG_CONFIG) \
 	--enable-gpl \
 	--enable-nonfree
+
+MICB_DEPENDS = sdl2 \
+	x11 xext xfixes xi iconv \
+	x11-xcb blkid zlib \
+	libdrm libdrm_freedreno libdrm_nouveau \
+	expat libffi intl ncursesw tinfow formw menuw panelw uuid \
+	xcb-dri2 xcb-dri3 xcb-randr xcb-sync xcb-fixies xcb-input xcb-present xcb-shape xcb-xinput xshmfence
 
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
