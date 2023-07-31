@@ -15,7 +15,7 @@ prepare:
 		cd $(BUILDDIR)/$(DIR); \
 		cat ../../../$(MICB_PATCH_FN) | patch -p 1 )
 
-all uninstall uninstall clean:
+all uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); \
 		PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) make $(MICB_CONFIGURE_MAKEOPTS) $@ )
