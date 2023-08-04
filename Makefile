@@ -266,6 +266,8 @@ EXTDIR=\
 	texinfo \
 	help2man  \
 	mtdev \
+	ethtool \
+	linuxpps \
 	lpps
 SUBDIR+=$(EXTDIR)
 
