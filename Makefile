@@ -267,7 +267,8 @@ EXTDIR=\
 	help2man  \
 	mtdev \
 	ethtool \
-	linuxpps \
+	linuxptp \
+	pciutils \
 	lpps
 SUBDIR+=$(EXTDIR)
 
@@ -482,9 +483,9 @@ lib: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || ( \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
+				$(call SETUP_BUILDOUT,$$dir)                                                      && \
 				$(call PERFORM_EXCLUSIVELY,lib,$$dir,prepare,\
-						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
+						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee -a $$dir/$(BUILDOUT)\
 						) && \
 				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
 				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
