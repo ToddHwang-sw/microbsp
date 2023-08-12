@@ -3,12 +3,14 @@ LOC=https://gitlab.freedesktop.org/wayland
 
 BUILDDIRNAME=build
 
-prepare:
+download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR); \
 			git clone --single-branch $(LOC)/$(DIR).git ; \
 			cd $(DIR); \
 			cat ../../../patch/patch | patch -p 1 )
+
+prepare:
 	@cd $(BUILDDIR); \
 			mkdir -p $(DIR)/$(BUILDDIRNAME); \
 			cd $(DIR); \

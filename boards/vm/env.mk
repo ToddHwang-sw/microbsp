@@ -6,7 +6,7 @@ export _CORE_=x86_64
 export _ARCH_=$(_CORE_)-vm
 
 ## platfom string ...
-export PLATFORM=$(_CORE_)-any-linux-gnu
+export PLATFORM=$(_CORE_)-mbsp-linux-gnu
 
 ## kernel version 
 export KERNELVER=linux-5.17.7

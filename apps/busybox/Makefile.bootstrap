@@ -13,9 +13,11 @@ MICB_CONFIGURE_MAKEOPTS=\
 	CONFIG_PREFIX=$(destination) \
 	V=1
 
-prepare:
+download:
 	@[ -d $(BBBS_BDIR) ] || mkdir -p $(BBBS_BDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
+
+prepare:
 	@cd $(BBBS_BDIR)/$(DIR); \
 		echo "CROSS_COMPILE=$(CROSS_COMP_PREFIX)"      > .compile_cmds; \
 		echo "CFLAGS=\"$(CROSS_COMP_FLAGS)\""         >> .compile_cmds; \

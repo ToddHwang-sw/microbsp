@@ -8,10 +8,12 @@ CROSS_PATCH=perl-cross-1.1.3.tar.gz
 ## NOTICE scripts/extenv.mk is not used !! 
 ##
 
-prepare:
+download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -f $(MICBSRC)/$(FILENM) ] || wget -P $(MICBSRC) $(LOC)/$(FILENM)
 	@[ -f $(MICBSRC)/$(CROSS_PATCH) ] || wget -P $(MICBSRC) $(CROSS_PATCH_LOC)/$(CROSS_PATCH)
+
+prepare:
 	@[ -f $(BUILDDIR)/$(DIR)/Makefile ] || \
 	( tar zxvf $(MICBSRC)/$(FILENM) -C $(BUILDDIR) ; \
 		cd $(BUILDDIR)/$(DIR); \

@@ -18,6 +18,9 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_DEPENDS = mpc mpfr gmp
 
+download:
+	@echo "Downloading $(GCC) - completed"
+
 prepare: 
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( \

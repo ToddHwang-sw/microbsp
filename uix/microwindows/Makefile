@@ -24,13 +24,15 @@ MICB_CONFIGURE_MAKEOPTS += \
 	MW_RULE_DEPEND_C= \
 	CONFIG="$(TOPDIR)/uix/microwindows/$(BUILDDIR)/$(DIR)/src/Configs/config.raspberrypi" $@ \
 
-prepare: 
+download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(DIR)  ] || ( \
 		cd $(BUILDDIR); \
 		git clone --single-branch $(LOC)/$(DIR).git ; \
 		cd $(DIR); \
 		cat ../../../patch/patch | patch -p1 )
+
+prepare: 
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR)/src ] || ( \

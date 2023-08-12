@@ -15,7 +15,7 @@ SASS_PATHENV=\
 
 MICB_CONFIGURE_MAKEOPTS += -C ../../../$(MICBSRC)/$(DIR)
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( \
 			$(UNCOMPRESS) $(LOC)/$(DIR).git;  \
@@ -24,6 +24,8 @@ prepare:
 				git clone --single-branch $(LOC)/$(SDIR).git; \
 			popd;                                     \
 			$(MICB_PATCH) )
+
+prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

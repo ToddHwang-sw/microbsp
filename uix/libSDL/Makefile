@@ -19,10 +19,12 @@ MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib wayland-client \
 
 CROSS_USER_LFLAGS += -lglapi
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
-	cd $(BUILDDIR)/$(DIR); \
+
+prepare:
+	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 all install uninstall clean:

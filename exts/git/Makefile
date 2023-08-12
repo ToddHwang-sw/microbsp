@@ -19,13 +19,15 @@ MICB_CONFIGURE_PRG = ./configure
 
 MICB_DEPENDS = openssl libssh2 nettle zlib expat iconv libcurl
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || wget -P $(MICBSRC) $(LOC)/$(DIR).tar.gz
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		tar zxvf $(MICBSRC)/$(DIR).tar.gz -C $(BUILDDIR) > /dev/null ; \
 		cd $(BUILDDIR)/$(DIR); \
 		[ ! -f ../../../$(MICB_PATCH_FN) ] || cat ../../../$(MICB_PATCH_FN) | patch -p1 )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

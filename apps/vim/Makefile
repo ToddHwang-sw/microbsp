@@ -8,13 +8,15 @@ include $(TOPDIR)/arch/$(_ARCH_)/env.mk
 
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16 
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(FILENM) )
 	@[ ! -f ./patch/patch ] || ( \
 		cd $(BUILDDIR)/$(DIR) ; \
 		cat ../../../patch/patch | patch -p 1; \
 		)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS)  \
 		LIBS="-L$(destination)/lib -L$(destination)/lib64 -lncursesw -ltinfow -lrt -lpthread" \

@@ -15,10 +15,12 @@ CROSS_USER_CFLAGS += -DCAIRO_NO_MUTEX=1 -DHAVE_CTIME_R
 
 MICB_DEPENDS = fontconfig freetype2 libpng libpng16 xcb zlib pixman-1 xcb-shm xcb-render glib-2.0 gobject-2.0 lzo2
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 

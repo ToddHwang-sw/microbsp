@@ -748,7 +748,7 @@ Waiting IP .. 0
 Waiting IP .. 1
 Waiting IP .. 2
 [   26.220451] RTW: set bssid:10:27:f5:16:b7:30
-[   26.221267] RTW: set ssid [UNIXBOY2] fw_state=0x00000088
+[   26.221267] RTW: set ssid [MyHomeNetwork] fw_state=0x00000088
 [   26.395574] RTW: start auth
 [   26.396953] RTW: auth success, start assoc
 [   26.398810] RTW: assoc success
@@ -1122,6 +1122,73 @@ wlan2     Link encap:Ethernet  HWaddr B8:27:EB:AA:C5:B5
 
 bash-5.1# 
 bash-5.1# 
+bash-5.1#
+bash-5.1# 
+bash-5.1# xcfgcli.sh get wan | jq
+{
+  "mode": "dhcp",
+  "mac": "random",
+  "name": "wlan0",
+  "ip": "192.167.0.162",
+  "netmask": "255.255.255.0",
+  "gateway": "192.167.0.1",
+  "dns": "8.8.8.8",
+  "ipv6": {
+    "mode": "dhcp",
+    "global": "2400:b0d8:2233:1000::",
+    "local": "4400::",
+    "plen": "64",
+    "id": "1"
+  },
+  "ssid": "MyHomeNetwork",
+  "password": "homepasswd",
+  "capture": "0"
+}
+bash-5.1# 
+bash-5.1# 
+bash-5.1# 
+bash-5.1# 
+bash-5.1# xcfgcli.sh get lan | jq                                                                                                                                                                                                     
+{
+  "mode": "dhcp",
+  "mac": "random",
+  "name": "br0",
+  "interfaces": {
+    "wlan0": "wlan2",
+    "wlan1": "wlan1",
+    "wlan2": "0",
+    "wlan3": "0",
+    "wlan4": "0",
+    "eth0": "eth0"
+  },
+  "ip": "100.5.5.1",
+  "start": "50",
+  "end": "240",
+  "netmask": "255.255.255.0",
+  "gateway": "100.5.5.1",
+  "tftpserver": "100.5.5.10",
+  "dns": "8.8.8.8",
+  "ipv6": {
+    "mode": "dhcp",
+    "global": "2001:b0d8:2233:1000::",
+    "local": "4400::",
+    "plen": "64",
+    "id": "200"
+  },
+  "ssid": "RPI3LAN",
+  "password": "rpi3passwd",
+  "capture": "0"
+}
+bash-5.1# 
+bash-5.1# 
+bash-5.1# 
+bash-5.1# 
+bash-5.1# 
+bash-5.1# brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.9e532260f71e       no              eth0
+                                                        wlan2
+                                                        wlan1
 bash-5.1# 
 bash-5.1# 
 bash-5.1# 

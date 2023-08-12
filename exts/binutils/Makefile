@@ -10,9 +10,11 @@ MICB_CONFIGURE_OPTS += --disable-multilib \
 	--with-mpfr=$(INSTALLDIR)  \
 	--with-gmp=$(INSTALLDIR)   \
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( tar jxvf $(BINUTILSDIR)/$(BINUTILS).tar.bz2 -C $(MICBSRC) ; $(MICB_PATCH) )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

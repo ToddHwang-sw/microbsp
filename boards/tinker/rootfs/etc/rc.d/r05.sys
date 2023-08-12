@@ -1,0 +1,20 @@
+#!/bin/sh
+
+case $1 in
+	"start")
+		echo "[WLAN] Loading all WLAN modules..."
+		modprobe 8192eu
+		modprobe 8812bu
+
+		/etc/scripts/wlan_sta.sh start
+		;;
+	"stop")
+		echo "[WLAN] Unloading all WLAN modules..."
+		/etc/scripts/wlan_sta.sh stop
+
+		rmmod 8812bu
+		rmmod 8192eu
+		;;
+	"*")
+		;;
+esac

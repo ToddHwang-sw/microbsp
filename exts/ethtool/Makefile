@@ -1,18 +1,17 @@
-DIR=libxslt
-LOC=https://gitlab.gnome.org/GNOME
+DIR=ethtool
+LOC=-b ethtool-3.4.y https://kernel.googlesource.com/pub/scm/network/ethtool/
 
-include $(TOPDIR)/scripts/x11uixenv.mk
+include $(TOPDIR)/scripts/extenv.mk
 
-export MICB_CONFIGURE_OPTS += \
-		--without-python
+MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
-MICB_CONFIGURE_AUTOCONF_CMD=NOCONFIGURE=0 ./autogen.sh
+MICB_DEPENDS = libmnl
 
-MICB_DEPENDS = libxml-2.0
-
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
@@ -20,6 +19,4 @@ prepare:
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
-
-
 

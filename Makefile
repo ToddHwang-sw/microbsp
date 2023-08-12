@@ -40,7 +40,7 @@ export BUILDOUT=$(BUILDDIR)/build.log
 
 define SETUP_BUILDOUT
 	[ -d $(1)/$(BUILDDIR) ] || mkdir -p $(1)/$(BUILDDIR)  && \
-	[ -f $(1)/$(BUILDOUT) ] || touch $(1)/$(BUILDOUT) 
+	[ -f $(1)/$(BUILDOUT) ] || touch $(1)/$(BUILDOUT)
 endef
 
 ##
@@ -53,10 +53,21 @@ export BUILD_LOCK_FOLDER=$(BUILD_FOLDER)/lock
 ## exclusive execution of command
 ##
 define PERFORM_EXCLUSIVELY
-	$(eval DEPTH  := `echo $$2 | sed "s/\//-/g"`)       \
-	$(eval LOCKFN := $(BUILD_LOCK_FOLDER)/microbsp-$1-) \
+	$(eval DEPTH  := `echo $$2 | sed "s/\//-/g"`)         \
+	$(eval LOCKFN := $(BUILD_LOCK_FOLDER)/microbsp-$1-)   \
 	[ -f $(LOCKFN)$(DEPTH).$(3) ] || touch $(LOCKFN)$(DEPTH).$(3)  && \
 	flock $(LOCKFN)$(DEPTH).$(3) $(4)
+endef
+
+## Exclusive execution
+define DO_EXCL
+	$(call PERFORM_EXCLUSIVELY,$3,$1,$2,\
+			make -C $1 destination=$4 $2 2>&1  | tee -a $1/$(BUILDOUT) )
+endef
+
+## Normal execution
+define DO_NORM
+	make -C $1 destination=$4 $2 2>&1 | tee -a $1/$(BUILDOUT)
 endef
 
 ## ISO image name...
@@ -201,9 +212,10 @@ LIBDIR=\
 	libssh2 \
 	nettle \
 	flex \
-	lsjson \
-	pcre2 \
+	lsjson  \
+	pcre2   \
 	libxml  \
+	libxslt \
 	expat \
 	libpam \
 	libpcap \
@@ -265,6 +277,12 @@ EXTDIR=\
 	texinfo \
 	help2man  \
 	mtdev \
+	ethtool \
+	linuxptp \
+	pciutils \
+	i2ctools \
+	spitools \
+	gpio \
 	lpps
 SUBDIR+=$(EXTDIR)
 
@@ -285,7 +303,6 @@ UIDIR=\
 	libgcrypt              \
 	libdbus	               \
 	sndfile	               \
-	X11/libxslt            \
 	X11/xorg-macros        \
 	X11/xorg-doctools      \
 	X11/xorg-x11proto      \
@@ -479,30 +496,26 @@ checkfirst:
 lib: checkfirst
 	@cd libs; \
 		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] || ( \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				$(call PERFORM_EXCLUSIVELY,lib,$$dir,prepare,\
-						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-						) && \
-				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
-				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
+			[ ! -d $$dir ] || (          \
+				$(call SETUP_BUILDOUT,$$dir)                     && \
+				$(call DO_EXCL,$$dir,prepare,lib,$(INSTALLDIR))  && \
+				$(call DO_NORM,$$dir,all,lib,$(INSTALLDIR))      && \
+				$(call DO_NORM,$$dir,install,lib,$(INSTALLDIR))  && \
 				$(CLEAN_LIBLA) ) \
 		done
 
 ##
-## lib_prepare , lib_all , lib_install
+## lib_[download/prepare/all/install]
 ##
 lib_%: checkfirst
 	@cd libs; \
-		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] ||  (     \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
-					$(call PERFORM_EXCLUSIVELY,lib,$$dir,prepare,\
-						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-						) ; \
+		for dir in $(SUBDIR); do                     \
+			[ ! -d $$dir ] ||  (                     \
+				$(call SETUP_BUILDOUT,$$dir)      && \
+				if [ "$(subst lib_,,$@)" = "prepare" -o "$(subst lib_,,$@)" = "download" ]; then \
+					$(call DO_EXCL,$$dir,$(subst lib_,,$@),lib,$(INSTALLDIR)) ;  \
 				else  \
-					make -C $$dir destination=$(INSTALLDIR) $(subst lib_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+					$(call DO_NORM,$$dir,$(subst lib_,,$@),lib,$(INSTALLDIR)) ;  \
 				fi && \
 				[ "$(subst lib_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -514,30 +527,26 @@ lib_%: checkfirst
 app: checkfirst
 	@cd apps; \
 		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] || ( \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				$(call PERFORM_EXCLUSIVELY,app,$$dir,prepare,\
-					make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-					) && \
-				make -C $$dir destination=$(INSTALLDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
-				make -C $$dir destination=$(INSTALLDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
+			[ ! -d $$dir ] || (          \
+				$(call SETUP_BUILDOUT,$$dir)                     && \
+				$(call DO_EXCL,$$dir,prepare,app,$(INSTALLDIR))  && \
+				$(call DO_NORM,$$dir,all,app,$(INSTALLDIR))      && \
+				$(call DO_NORM,$$dir,install,app,$(INSTALLDIR))  && \
 				$(CLEAN_LIBLA) ) \
 		done
 
 ##
-## app_prepare , app_all , app_install
+## app_[download/prepare/all/install]
 ##
 app_%: checkfirst
 	@cd apps; \
-		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] ||  (     \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
-					$(call PERFORM_EXCLUSIVELY,app,$$dir,prepare,\
-						make -C $$dir destination=$(INSTALLDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-						) ; \
+		for dir in $(SUBDIR); do                     \
+			[ ! -d $$dir ] ||  (                     \
+				$(call SETUP_BUILDOUT,$$dir)      && \
+				if [ "$(subst app_,,$@)" = "prepare" -o "$(subst app_,,$@)" = "download" ]; then \
+					$(call DO_EXCL,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;  \
 				else  \
-					make -C $$dir destination=$(INSTALLDIR) $(subst app_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+					$(call DO_NORM,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;  \
 				fi && \
 				[ "$(subst app_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -548,71 +557,66 @@ app_%: checkfirst
 ##
 ext: checkfirst
 	@cd exts; \
-		for dir in $(SUBDIR); do    \
-			[ ! -d $$dir ] || ( \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				$(call PERFORM_EXCLUSIVELY,ext,$$dir,prepare,\
-					make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-					) && \
-				make -C $$dir destination=$(EXTINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
-				make -C $$dir destination=$(EXTINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
+		for dir in $(SUBDIR); do         \
+			[ ! -d $$dir ] || (          \
+				$(call SETUP_BUILDOUT,$$dir)                     && \
+				$(call DO_EXCL,$$dir,prepare,ext,$(EXTINSTDIR))  && \
+				$(call DO_NORM,$$dir,all,ext,$(EXTINSTDIR))      && \
+				$(call DO_NORM,$$dir,install,ext,$(EXTINSTDIR))  && \
 				$(CLEAN_LIBLA) ) \
 		done
 
 ##
-## ext_prepare , ext_all , ext_install
+## ext_[download/prepare/all/install]
 ##
 ext_%: checkfirst
 	@cd exts; \
-		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] ||  (     \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
-					$(call PERFORM_EXCLUSIVELY,ext,$$dir,prepare,\
-						make -C $$dir destination=$(EXTINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-						) ; \
+		for dir in $(SUBDIR); do                     \
+			[ ! -d $$dir ] ||  (                     \
+				$(call SETUP_BUILDOUT,$$dir)      && \
+				if [ "$(subst ext_,,$@)" = "prepare" -o "$(subst ext_,,$@)" = "download" ]; then \
+					$(call DO_EXCL,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;  \
 				else  \
-					make -C $$dir destination=$(EXTINSTDIR) $(subst ext_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+					$(call DO_NORM,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;  \
 				fi && \
 				[ "$(subst ext_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
 
 ##
-##  ui
+## uix - only raspberry PI 3 board
 ##
 ui: checkfirst llvm_okay
-	@cd uix; \
-		for dir in $(SUBDIR); do    \
-			[ ! -d $$dir ] || ( \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				$(call PERFORM_EXCLUSIVELY,ui,$$dir,prepare,\
-					make -C $$dir destination=$(UIXNSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-					) && \
-				make -C $$dir destination=$(UIXINSTDIR) all      2>&1  | tee -a $$dir/$(BUILDOUT) && \
-				make -C $$dir destination=$(UIXINSTDIR) install  2>&1  | tee -a $$dir/$(BUILDOUT) && \
+	@[ "$(TBOARD)" = "rpi3" ] || ( echo "Only \"TBOARD=rpi3\" option is mandatory for UI"; exit 1 )
+	@cd uix && \
+		for dir in $(SUBDIR); do         \
+			[ ! -d $$dir ] || (          \
+				$(call SETUP_BUILDOUT,$$dir)                     && \
+				$(call DO_EXCL,$$dir,prepare,ui,$(UNIXINSTDIR))  && \
+				$(call DO_NORM,$$dir,all,ui,$(UIXINSTDIR))       && \
+				$(call DO_NORM,$$dir,install,ui,$(UIXINSTDIR))   && \
 				$(CLEAN_LIBLA) ) \
 		done
-	
+
+
 ##
-## ui_prepare , ui_all , ui_install
+## ui_[prepare/all/install] - only raspberry PI 3 board
 ##
 ui_%: checkfirst llvm_okay
+	@[ "$(TBOARD)" = "rpi3" ] || ( echo "Only \"TBOARD=rpi3\" option is mandatory for UI"; exit 1 )
 	@cd uix; \
-		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] ||  (     \
-				$(call SETUP_BUILDOUT,$$dir)                                                   && \
-				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
-					$(call PERFORM_EXCLUSIVELY,ui,$$dir,prepare,\
-						make -C $$dir destination=$(UIXINSTDIR) prepare  2>&1  | tee $$dir/$(BUILDOUT)\
-						) ; \
+		for dir in $(SUBDIR); do                     \
+			[ ! -d $$dir ] ||  (                     \
+				$(call SETUP_BUILDOUT,$$dir)      && \
+				if [ "$(subst ui_,,$@)" = "prepare" -o "$(subst ui_,,$@)" = "download" ]; then \
+					$(call DO_EXCL,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
 				else  \
-					make -C $$dir destination=$(UIXINSTDIR) $(subst ui_,,$@) 2>&1 | tee $$dir/$(BUILDOUT) ; \
+					$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
 				fi && \
 				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
-	
+
 ##
 ## projects
 ##
@@ -647,7 +651,6 @@ llvm_%: llvm_okay
 
 ##
 ## clean
-## distclean 
 ##
 clean: checkfirst
 	@for cat in $(COMPDIR); do                 \
@@ -658,6 +661,9 @@ clean: checkfirst
 		cd .. ;                                \
 	done
 
+##
+## distclean
+##
 distclean:
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
@@ -672,6 +678,21 @@ distclean:
 		cd .. ;                                \
 	done
 
+##
+## download
+##
+download:
+	@for cat in $(COMPDIR); do                 \
+		cd $$cat ;                             \
+		for dir in $(SUBDIR); do               \
+			[ ! -d $$dir ] || make -C $$dir download || exit 1; \
+		done ;                                 \
+		cd .. ;                                \
+	done
+
+##
+## cleanup everything 
+##
 wipeout:
 	@for cdir in $(COMPDIR); do                 						        \
 		for dir in $(SUBDIR); do               						            \
@@ -720,9 +741,9 @@ uidisk_clean:
 ## BUILDUP_ROOTFS --> Please refer to boards/rpi3/env.mk 
 ##
 run_bootstrap: checkfirst
-	@make -C apps/busybox         destination=$(XBASEDIR) -f Makefile.bootstrap prepare all install
+	@make -C apps/busybox         destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install
 	@make -C apps/bash            destination=$(XBASEDIR) install
-	@make -C apps/tools/overlayfs destination=$(XBASEDIR) prepare all install
+	@make -C apps/tools/overlayfs destination=$(XBASEDIR) download prepare all install
 	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
@@ -767,7 +788,7 @@ board: run_bootstrap
 	@echo ""
 	@echo "Copying static rootfs...."
 	@echo ""
-	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/ 
+	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/
 	@echo ""
 	@echo "Merging $(INSTALLDIR) and GLIBC ...."
 	@echo ""
@@ -778,7 +799,7 @@ board: run_bootstrap
 		cd $(TOPDIR) ; \
 		make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc
 	@echo ""
-	@echo "Setting for copying $(BOOTSTAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
+	@echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
 	@echo ""
 	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
 		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done

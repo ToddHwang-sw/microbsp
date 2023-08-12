@@ -1,12 +1,35 @@
-diff -uNr libcap-orig/libcap/libcap.pc.in libcap/libcap/libcap.pc.in
---- libcap-orig/libcap/libcap.pc.in	2023-04-02 14:20:49.190891390 -0700
-+++ libcap/libcap/libcap.pc.in	2023-04-02 14:22:26.667191742 -0700
+diff -uNr libcap-2.24-orig/libcap/libcap.pc.in libcap-2.24/libcap/libcap.pc.in
+--- libcap-2.24-orig/libcap/libcap.pc.in	2013-12-24 09:08:53.000000000 -0800
++++ libcap-2.24/libcap/libcap.pc.in	2023-06-04 15:26:21.499684403 -0700
 @@ -6,6 +6,6 @@
  Name: libcap
- Description: libcap - linux capabilities library
+ Description: libcap
  Version: @VERSION@
 -Libs: -L${libdir} -lcap
 +Libs: -L${prefix}/lib64 -lcap
  Libs.private: @deps@
 -Cflags: -I${includedir}
 +Cflags: -I${prefix}/usr/include
+diff -uNr libcap-2.24-orig/libcap/Makefile libcap-2.24/libcap/Makefile
+--- libcap-2.24-orig/libcap/Makefile	2014-01-05 16:55:03.000000000 -0800
++++ libcap-2.24/libcap/Makefile	2023-06-04 15:37:36.594878550 -0700
+@@ -50,6 +50,7 @@
+ 
+ $(GPERF_OUTPUT): cap_names.list.h
+ 	perl -e 'print "struct __cap_token_s { const char *name; int index; };\n%{\nconst struct __cap_token_s *__cap_lookup_name(const char *, unsigned int);\n%}\n%%\n"; while ($$l = <>) { $$l =~ s/[\{\"]//g; $$l =~ s/\}.*// ; print $$l; }' < $< | gperf --ignore-case --language=ANSI-C --readonly --null-strings --global-table --hash-function-name=__cap_hash_name --lookup-function-name="__cap_lookup_name" -c -t -m20 $(INDENT) > $@
++	sed -i "s/size_t/unsigned int/g" $@
+ 
+ cap_names.list.h: Makefile $(KERNEL_HEADERS)/linux/capability.h
+ 	@echo "=> making $@ from $(KERNEL_HEADERS)/linux/capability.h"
+diff -uNr libcap-2.24-orig/Makefile libcap-2.24/Makefile
+--- libcap-2.24-orig/Makefile	2013-12-27 10:17:17.000000000 -0800
++++ libcap-2.24/Makefile	2023-06-04 15:39:31.845429654 -0700
+@@ -13,8 +13,6 @@
+ ifneq ($(PAM_CAP),no)
+ 	$(MAKE) -C pam_cap $@
+ endif
+-	$(MAKE) -C progs $@
+-	$(MAKE) -C doc $@
+ 
+ all-here:
+ 

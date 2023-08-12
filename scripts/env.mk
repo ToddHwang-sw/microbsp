@@ -79,6 +79,9 @@ endif
 ifeq ($(_CORE_),aarch64)
 	KARCH=arm64
 endif
+ifeq ($(_CORE_),arm)
+	KARCH=arm
+endif
 
 ## Source decompressor
 export UNCOMPRESS=$(TOPDIR)/scripts/setupsrcs.sh $(MICBSRC)/$(DIR)

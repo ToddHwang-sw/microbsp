@@ -53,7 +53,7 @@ python_req:
 		echo "This python tool is essential to QT compilayion." ; \
 		exit 1 )
 
-prepare: python_req
+download: python_req
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
 		mkdir -p $(BUILDDIR)/$(DIR) ; \
 		[ ! -d $(MICBSRC)/$(DIR)/$(SPECDIR)/$(QTPLATFORM) ] || \
@@ -117,6 +117,8 @@ prepare: python_req
 		echo "#include \"../linux-g++/qplatformdefs.h\""               >>  $(QTPLATFORM)/qplatformdefs.h ; \
 		echo ""                                                        >>  $(QTPLATFORM)/qplatformdefs.h ; \
 	) 
+
+prepare: python_req
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || (       \
 		cd $(BUILDDIR)/$(DIR) ;             \
 		../../../$(MICBSRC)/$(DIR)/configure\

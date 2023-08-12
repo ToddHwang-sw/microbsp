@@ -29,10 +29,12 @@ MICB_DEPENDS = libdrm libzstd expat zlib \
 		xext xextproto xshmfence xrandr \
 		wayland-egl wayland-client wayland-protocols wayland-scanner wayland-server
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 
