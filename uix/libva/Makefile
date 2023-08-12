@@ -10,10 +10,12 @@ MICB_MESON_OPTS += \
 MICB_DEPENDS = libdrm_nouveau libdrm_freedreno libdrm_vc4 zlib xext xfixes x11 \
 			   egl wayland-client
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 

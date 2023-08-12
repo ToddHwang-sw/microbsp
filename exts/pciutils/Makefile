@@ -3,11 +3,13 @@ LOC=https://github.com/pciutils
 
 include $(TOPDIR)/scripts/extenv.mk
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
 		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
 		cd $(BUILDDIR);                             \
 		git clone $(LOC)/$(DIR).git )
+
+prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

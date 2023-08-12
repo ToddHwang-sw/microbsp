@@ -7,7 +7,7 @@ MICB_CONFIGURE_MAKEOPTS += VERBOSE=1 $(COMP_CMDS) OS=linux prefix=/usr
 
 MICB_DEPENDS = zlib
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( \
 			cd $(BUILDDIR) ; \
@@ -15,6 +15,8 @@ prepare:
 			[ ! -f ../../patch/patch ] || ( \
 				cd $(DIR); cat ../../../patch/patch | patch -p 1 ) \
 			)
+
+prepare:
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

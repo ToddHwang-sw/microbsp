@@ -12,9 +12,11 @@ MICB_CMAKE_COMMON_OPTS +=             \
 
 MICB_DEPENDS = openssl zlib
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_CMAKE_RUNENV) cmake $(MICB_CMAKE_COMMON_OPTS) ../../../$(MICBSRC)/$(DIR) 
 		

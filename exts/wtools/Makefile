@@ -6,7 +6,7 @@ include $(TOPDIR)/scripts/extenv.mk
 MICB_CONFIGURE_MAKEOPTS = \
 	$(COMP_CMDS) PREFIX=$(destination)
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( \
 		wget -P $(MICBSRC) $(LOC)/$(DIR).tar.gz ; \
@@ -14,6 +14,8 @@ prepare:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); \
 		cat ../../../$(MICB_PATCH_FN) | patch -p 1 )
+
+prepare:
 
 all uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

@@ -26,10 +26,12 @@ MICB_DEPENDS = dbus-1 alsa sndfile x11-xcb x11 xcb xau libudev uuid   \
 CROSS_USER_LFLAGS += -lcairo-script-interpreter
 CROSS_USER_LFLAGS += -lglapi 
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 

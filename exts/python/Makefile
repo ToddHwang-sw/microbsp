@@ -27,13 +27,15 @@ MICB_DEPENDS = expat openssl ncurses libffi
 CROSS_USER_CFLAGS += -I$(EXTINSTDIR)/include 
 CROSS_USER_LFLAGS += -L$(EXTINSTDIR)/lib -lgcov 
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(FILENM) ] || \
 		wget -P $(MICBSRC) $(LOC)/$(FILENM)
 	@tar xvf $(MICBSRC)/$(FILENM) -C $(BUILDDIR) > /dev/null 
 	@[ ! -f $(MICB_PATCH_FN) ] || \
 		(cd $(BUILDDIR)/$(DIR) && cat ../../../$(MICB_PATCH_FN) | patch -p 1)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

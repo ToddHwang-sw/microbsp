@@ -23,16 +23,18 @@ MICB_DEPENDS = expat intl iconv gio-unix-2.0 gstreamer-1.0 x11 xext libdrm libxm
 
 CROSS_USER_CFLAGS += -lglapi
 
-fluxcomp:
+download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(FLUXDIR) ] || ( cd $(BUILDDIR); $(UNCOMPRESS) $(FLUXLOC) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+
+fluxcomp:
 	@[ -f $(FLUXCOMPAPP) ] || ( \
 		cd $(BUILDDIR)/$(FLUXDIR); \
 		./autogen.sh ; ./configure --prefix= ; make )
 
 prepare: fluxcomp
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

@@ -11,12 +11,14 @@ MICB_CONFIGURE_MAKEOPTS += \
 
 MICB_CONFIGURE_PRG = ./configure
 
-prepare:
+download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR); \
 		git clone --single-branch $(LOC)/$(DIR).git ; \
 		cd $(BUILDDIR)/$(DIR); \
 		cat    ../../../patch/patch | patch -p 1; )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		aclocal ; \
 		autoreconf --install -v; \

@@ -30,9 +30,7 @@ export extra_SUBDIR=\
 		iproute2 \
 		dhcp \
 		radvd \
-		dnsmasq \
-		i2ctool \
-		gpio
+		dnsmasq
 
 ##
 ## external disk volume name 

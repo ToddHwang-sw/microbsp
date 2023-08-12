@@ -15,10 +15,12 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_PRG = ./configure 
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES) 
+
+prepare:
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

@@ -20,9 +20,11 @@ MICB_DEPENDS = ncurses uuid blkid
 CROSS_USER_CFLAGS += \
 	-D MB_LEN_MAX=16 
 
-prepare: 
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz; $(MICB_PATCH) )
+
+prepare: 
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

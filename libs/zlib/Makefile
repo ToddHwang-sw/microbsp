@@ -8,9 +8,11 @@ MICB_CONFIGURE_OPTS = --prefix= --enable-shared
 
 CROSS_USER_CFLAGS += -fPIC 
 
-prepare: 
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare: 
 	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) LDSHARED="$(CC) -shared" $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

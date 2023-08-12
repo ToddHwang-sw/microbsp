@@ -3,11 +3,16 @@ LOC=git://git.code.sf.net/p/linuxptp/code
 
 include $(TOPDIR)/scripts/extenv.mk
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
 		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
 		cd $(BUILDDIR);                             \
 		git clone $(LOC).git $(DIR) )
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+		cd $(BUILDDIR)/$(DIR); \
+		cat ../../../$(MICB_PATCH_FN) | patch -p 1 )
+
+prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

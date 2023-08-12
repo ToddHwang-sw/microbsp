@@ -13,9 +13,11 @@ MICB_CONFIGURE_CMD=../../../$(MICBSRC)/$(DIR)/Configure
 MICB_CONFIGURE_OPTS=--prefix=/ --openssldir=/etc/openssl shared no-async linux-$(_ARCH)
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS)
 
-prepare: 
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare: 
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

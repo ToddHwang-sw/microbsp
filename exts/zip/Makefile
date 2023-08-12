@@ -3,9 +3,11 @@ LOC=https://github.com/LuaDist
 
 include $(TOPDIR)/scripts/extenv.mk
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		cmake $(MICB_CMAKE_COMMON_OPTS) ../../../$(MICBSRC)/$(DIR) 
 		

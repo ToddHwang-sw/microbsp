@@ -10,11 +10,13 @@ MICB_CONFIGURE_PRG = ./configure
 
 MICB_DEPENDS = libnftnl
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
-	cd $(BUILDDIR)/$(DIR); \
+
+prepare:
+	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 all install uninstall clean:

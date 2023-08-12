@@ -19,6 +19,9 @@ LOCALE_FLAG=0
 
 GLIBC_TARGET_FILE=$(GLIBC)-$(PLATFORM).tar.gz
 
+download:
+	@echo "Donwloading $(GLIBC) - completed"
+
 prepare:
 	@[ -d $(BUILDDIR)/$(GLIBC) ] || mkdir -p $(BUILDDIR)/$(GLIBC)
 	@[ -d $(GLIBCDIR) ] || ( echo "$(GLIBC) has not been compiled..."; exit 1 )

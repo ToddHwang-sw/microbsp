@@ -42,9 +42,11 @@ MICB_DEPENDS = sdl2 \
 	expat libffi intl ncursesw tinfow formw menuw panelw uuid \
 	xcb-dri2 xcb-dri3 xcb-randr xcb-sync xcb-fixies xcb-input xcb-present xcb-shape xcb-xinput xshmfence
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_RUNENV) $(MICB_CONFIGURE_PRG) $(MICB_CONFIGURE_OPTS)
 

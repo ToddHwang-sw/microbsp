@@ -12,10 +12,12 @@ MICB_CONFIGURE_MAKEOPTS += \
 		STRIP=$(CROSS_COMP_PREFIX)strip \
 		AR=$(CROSS_COMP_PREFIX)ar
 
-prepare:
+download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR)-src.tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR)-src.tar.gz; $(MICB_PATCH) )
 	@$(MICB_DUP_SOURCES)
+
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
