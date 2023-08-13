@@ -25,6 +25,10 @@ include $(BDDIR)/env.mk
 export EXT4HDD=$(BDDIR)/$(EXTDISKNM)
 export EXT4CFG=$(BDDIR)/$(CFGDISKNM)
 
+##
+## Download history file 
+export DOWNLOAD_FN=download.log
+
 # architecture environment 
 ##
 ##  Applicatin build directory name
@@ -685,7 +689,10 @@ download:
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
-			[ ! -d $$dir ] || make -C $$dir download || exit 1; \
+			[ ! -d $$dir ] || (                \
+				[ -f $$dir/$(DOWNLOAD_FN) ] || touch $$dir/$(DOWNLOAD_FN)  ; \
+				make -C $$dir download  2>&1 | tee -a $$dir/$(DOWNLOAD_FN) ; \
+			)                                  \
 		done ;                                 \
 		cd .. ;                                \
 	done
@@ -705,6 +712,7 @@ wipeout:
 					echo "Cleaning in $$cdir/$$dir/$(MICBSRC)/*" ;		        \
 				fi;								                                \
 			fi ;									                            \
+			[ ! -f $$cdir/$$dir/$(DOWNLOAD_FN) ] || \rm -rf $$cdir/$$dir/$(DOWNLOAD_FN) ; \
 		done ;                                						            \
 	done
 

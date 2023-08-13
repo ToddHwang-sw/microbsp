@@ -1,11 +1,11 @@
-DIR=lzo-2.10
-LOC=http://www.oberhumer.com/opensource/lzo/download
+DIR=lzo
+LOC=https://github.com/nemequ
 
 include $(TOPDIR)/scripts/env.mk
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare: 
 	@cd $(BUILDDIR)/$(DIR); \
