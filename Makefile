@@ -686,6 +686,7 @@ distclean:
 ## download
 ##
 download:
+	@make -C gnu/sources -f ../Makefile download
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
