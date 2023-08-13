@@ -687,6 +687,7 @@ distclean:
 ##
 download:
 	@make -C gnu/sources -f ../Makefile download
+	@[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
