@@ -12,23 +12,25 @@
 	4. [Booting Shot](#rpi3_boot)
 	5. [Procedures](#rpi3_procedures)
 		1. [Toolchain](#rpi3_toolchain)
-		2. [Libraries, Applications, Extra Applications](#rpi3_library)
-		3. [Booting Image](#rpi3_bootimage)
-		4. [Creating UI image (Embedded QT - Cross-compilation)](#rpi3_ui) 
-		5. [Bootable SD Card](#rpi3_sdcard)
-		6. [WLAN Configuration](#rpi3_wlan)
-		7. [Available Packages](#rpi3_packages)
+		2. [Downloading sources](#rpi3_download)
+		3. [Libraries, Applications, Extra Applications](#rpi3_library)
+		4. [Booting Image](#rpi3_bootimage)
+		5. [Creating UI image (Embedded QT - Cross-compilation)](#rpi3_ui) 
+		6. [Bootable SD Card](#rpi3_sdcard)
+		7. [WLAN Configuration](#rpi3_wlan)
+		8. [Available Packages](#rpi3_packages)
 8. [MBSP VM](#qemu) 
 	1. [Testbed components](#qemu_component)
 	2. [Setup](#qemu_setup) 
 	3. [Booting Shot](#qemu_boot)
 	4. [Procedures](#qemu_procedures)
 		1. [Toolchain](#qemu_toolchain)
-		2. [Libraries, Applications, Extra Applications](#qemu_library)
-		3. [Platform specfic binaries ( HTTP server, currently )](#qemu_http)
-		4. [Booting Image Creation](#qemu_bootimage)
-		5. [Partitioning external USB disk](#qemu_partition)
-		6. [Running/Stopping "output.iso"](#qemu_control)
+		2. [Downloading sources](#qemu_download)
+		3. [Libraries, Applications, Extra Applications](#qemu_library)
+		4. [Platform specfic binaries ( HTTP server, currently )](#qemu_http)
+		5. [Booting Image Creation](#qemu_bootimage)
+		6. [Partitioning external USB disk](#qemu_partition)
+		7. [Running/Stopping "output.iso"](#qemu_control)
 	5. [Host Network](#qemu_hostnetwork)
 		1. [Realtek WLAN configuration](#qemu_realtek)
 			1. [802.11a AP](#qemu_80211a_ap)
@@ -1213,6 +1215,16 @@ bash-5.1#
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
 
 
+#### Downloading sources <a name="rpi3_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=rpi3 download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing such a download user can release MBSP SDK as "tar.bz2".
+
 #### Libraries, Applications, Extra Applications Building <a name="rpi3_library"></a>
 
 ```
@@ -2015,6 +2027,16 @@ bash-5.1#
 
  * "TBOARD" indicates type of board which is the name of folders in boards/ .
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
+
+#### Downloading sources <a name="qemu_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=vm download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing such a download user can release MBSP SDK as "tar.bz2".
 
 #### Libraries, Applications, Extra Applications <a name="qemu_library"></a>
 
