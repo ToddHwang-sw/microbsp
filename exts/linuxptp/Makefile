@@ -10,7 +10,7 @@ download:
 		git clone $(LOC).git $(DIR) )
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); \
-		cat ../../../$(MICB_PATCH_FN) | patch -p 1 )
+		[ ! -f ../../../$(MICB_PATCH_FN) ] || (cat ../../../$(MICB_PATCH_FN) | patch -p 1) )
 
 prepare:
 
