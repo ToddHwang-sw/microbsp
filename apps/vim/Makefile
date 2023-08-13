@@ -10,11 +10,12 @@ CROSS_USER_CFLAGS += -DMB_LEN_MAX=16
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(FILENM) )
-	@[ ! -f ./patch/patch ] || ( \
-		cd $(BUILDDIR)/$(DIR) ; \
-		cat ../../../patch/patch | patch -p 1; \
-		)
+	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); \
+		git clone $(LOC)/$(FILENM) ; \
+		[ ! -f ./patch/patch ] || ( \
+			cd $(BUILDDIR)/$(DIR) ; \
+			cat ../../../patch/patch | patch -p 1; \
+	))
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \
