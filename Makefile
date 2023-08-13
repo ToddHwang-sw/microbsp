@@ -419,7 +419,7 @@ installcomps:
 	@[ ! -f /usr/local/pip3.8 ] || /usr/local/bin/pip3.8 install mako
 	@pip3 install package_name setuptools --user
 
-checkfirst:
+compiler_check:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
 		[ -f $(TOOLCHAIN_ROOT)/bin/$(CC) ] || ( \
 			echo ""; \
@@ -437,6 +437,8 @@ checkfirst:
 		fi; \
 		echo "" ; \
 		exit 1 )
+
+checkfirst: compiler_check
 	@if [ ! -d $(INSTALLDIR) ]; then \
 		mkdir -p $(INSTALLDIR);                                     \
 		mkdir -p $(INSTALLDIR)/etc;                                 \
@@ -661,6 +663,7 @@ clean: checkfirst
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || make -C $$dir clean || exit 1; \
+			[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT) ; \
 		done ;                                 \
 		cd .. ;                                \
 	done
@@ -668,7 +671,7 @@ clean: checkfirst
 ##
 ## distclean
 ##
-distclean:
+distclean: checkfirst
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
@@ -685,7 +688,7 @@ distclean:
 ##
 ## download
 ##
-download:
+download: compiler_check
 	@make -C gnu/sources -f ../Makefile download
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
 	@for cat in $(COMPDIR); do                 \
@@ -694,6 +697,9 @@ download:
 			[ ! -d $$dir ] || (                \
 				[ -f $$dir/$(DOWNLOAD_FN) ] || touch $$dir/$(DOWNLOAD_FN)  ; \
 				make -C $$dir download  2>&1 | tee -a $$dir/$(DOWNLOAD_FN) ; \
+				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)         ; \
+				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
+				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
 			)                                  \
 		done ;                                 \
 		cd .. ;                                \
