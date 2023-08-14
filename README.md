@@ -11,8 +11,8 @@
 	3. [Device operation](#rpi3_operation)
 	4. [Booting Shot](#rpi3_boot)
 	5. [Procedures](#rpi3_procedures)
-		1. [Toolchain](#rpi3_toolchain)
-		2. [Downloading sources](#rpi3_download)
+		1. [Downloading sources](#rpi3_download)
+		2. [Toolchain](#rpi3_toolchain)
 		3. [Libraries, Applications, Extra Applications](#rpi3_library)
 		4. [Booting Image](#rpi3_bootimage)
 		5. [Creating UI image (Embedded QT - Cross-compilation)](#rpi3_ui) 
@@ -24,8 +24,8 @@
 	2. [Setup](#qemu_setup) 
 	3. [Booting Shot](#qemu_boot)
 	4. [Procedures](#qemu_procedures)
-		1. [Toolchain](#qemu_toolchain)
-		2. [Downloading sources](#qemu_download)
+		1. [Downloading sources](#qemu_download)
+		2. [Toolchain](#qemu_toolchain)
 		3. [Libraries, Applications, Extra Applications](#qemu_library)
 		4. [Platform specfic binaries ( HTTP server, currently )](#qemu_http)
 		5. [Booting Image Creation](#qemu_bootimage)
@@ -1200,6 +1200,16 @@ bash-5.1#
 ### Procedures <a name="rpi3_procedures"></a>
 
 
+#### Downloading sources <a name="rpi3_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=rpi3 download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing such a download user can release MBSP SDK as "tar.bz2".
+
 #### Toolchain Building <a name="rpi3_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/rpi3</strong> folder.
@@ -1213,17 +1223,6 @@ bash-5.1#
 
  * "TBOARD" indicates type of board which is the name of folders in boards/ .
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
-
-
-#### Downloading sources <a name="rpi3_download"></a>
-
-- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
-```
-  # make TBOARD=rpi3 download
-```
-
-  * Linux kernel sources will be downloaded. 
-  * Completing such a download user can release MBSP SDK as "tar.bz2".
 
 #### Libraries, Applications, Extra Applications Building <a name="rpi3_library"></a>
 
@@ -2014,6 +2013,16 @@ bash-5.1#
 ### Procedures <a name="qemu_procedures"></a>
 
 
+#### Downloading sources <a name="qemu_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=vm download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing such a download user can release MBSP SDK as "tar.bz2".
+
 #### Toolchain <a name="qemu_toolchain"></a>
 
 - When user want to setup a toolchain under <strong>/opt/qvm</strong> folder.
@@ -2027,16 +2036,6 @@ bash-5.1#
 
  * "TBOARD" indicates type of board which is the name of folders in boards/ .
  * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
-
-#### Downloading sources <a name="qemu_download"></a>
-
-- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
-```
-  # make TBOARD=vm download
-```
-
-  * Linux kernel sources will be downloaded. 
-  * Completing such a download user can release MBSP SDK as "tar.bz2".
 
 #### Libraries, Applications, Extra Applications <a name="qemu_library"></a>
 

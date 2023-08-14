@@ -1,0 +1,18 @@
+[req]
+default_bits           = 2048
+prompt                 = no
+default_md             = sha384
+distinguished_name     = req_distinguished_name
+
+[req_distinguished_name]
+countryName            = US
+stateOrProvinceName    = Irvine
+organizationName       = Nocompany
+organizationalUnitName = Software
+commonName             = Todd
+emailAddress           = toddhwang@nocompany.com
+
+[alt_names]
+DNS.1                  = 8.8.8.8
+DNS.2                  = 8.8.9.9
+IP.1                   = 127.0.0.1

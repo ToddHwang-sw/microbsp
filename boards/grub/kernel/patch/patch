@@ -1,0 +1,157 @@
+diff -uNr linux-5.17.7-orig/arch/x86/kernel/setup.c linux-5.17.7/arch/x86/kernel/setup.c
+--- linux-5.17.7-orig/arch/x86/kernel/setup.c	2022-05-14 17:25:52.258057791 -0700
++++ linux-5.17.7/arch/x86/kernel/setup.c	2022-05-14 17:31:33.722275024 -0700
+@@ -233,11 +233,27 @@
+ 
+ #ifdef CONFIG_BLK_DEV_INITRD
+ 
++
++#ifdef CONFIG_EMBEDDED_INITRD
++extern void * __initrd_start, * __initrd_end;
++#endif
++
+ static u64 __init get_ramdisk_image(void)
+ {
++#ifdef CONFIG_EMBEDDED_INITRD
++	u64 ramdisk_image;
++
++	if (&__initrd_start != &__initrd_end) {
++		ramdisk_image = (u64)&__initrd_start;
++	} else {
++		ramdisk_image = boot_params.hdr.ramdisk_image;
++		ramdisk_image |= (u64)boot_params.ext_ramdisk_image << 32;
++	}
++#else
+ 	u64 ramdisk_image = boot_params.hdr.ramdisk_image;
+ 
+ 	ramdisk_image |= (u64)boot_params.ext_ramdisk_image << 32;
++#endif 
+ 
+ 	if (ramdisk_image == 0)
+ 		ramdisk_image = phys_initrd_start;
+@@ -246,9 +262,20 @@
+ }
+ static u64 __init get_ramdisk_size(void)
+ {
++#ifdef CONFIG_EMBEDDED_INITRD
++	u64 ramdisk_size;
++
++	if (&__initrd_start != &__initrd_end) {
++		ramdisk_size = (u64)&__initrd_end - (u64)&__initrd_start;
++	} else {
++		ramdisk_size = boot_params.hdr.ramdisk_size;
++		ramdisk_size |= (u64)boot_params.ext_ramdisk_size << 32;
++	}
++#else
+ 	u64 ramdisk_size = boot_params.hdr.ramdisk_size;
+ 
+ 	ramdisk_size |= (u64)boot_params.ext_ramdisk_size << 32;
++#endif 
+ 
+ 	if (ramdisk_size == 0)
+ 		ramdisk_size = phys_initrd_size;
+@@ -313,6 +340,14 @@
+ 	printk(KERN_INFO "RAMDISK: [mem %#010llx-%#010llx]\n", ramdisk_image,
+ 			ramdisk_end - 1);
+ 
++#ifdef CONFIG_EMBEDDED_INITRD
++	if (&__initrd_start != &__initrd_end) {
++		initrd_start = ramdisk_image;
++		initrd_end = initrd_start + ramdisk_size;
++		return ;
++	}
++#endif
++
+ 	if (pfn_range_is_mapped(PFN_DOWN(ramdisk_image),
+ 				PFN_DOWN(ramdisk_end))) {
+ 		/* All are mapped, easy case */
+diff -uNr linux-5.17.7-orig/arch/x86/kernel/vmlinux.lds.S linux-5.17.7/arch/x86/kernel/vmlinux.lds.S
+--- linux-5.17.7-orig/arch/x86/kernel/vmlinux.lds.S	2022-05-14 17:25:52.258057791 -0700
++++ linux-5.17.7/arch/x86/kernel/vmlinux.lds.S	2022-05-14 17:32:52.875609573 -0700
+@@ -367,6 +367,17 @@
+ 	}
+ #endif
+ 
++#ifdef CONFIG_EMBEDDED_INITRD
++	. = ALIGN(PAGE_SIZE);
++	.initrd : {
++		__initrd_start = .;
++		*(.initrd)
++		__initrd_end = .;
++		FILL (0);
++		. = ALIGN (PAGE_SIZE);
++	}
++#endif /* CONFIG_EMBEDDED_INITRD */
++
+ 	/* BSS */
+ 	. = ALIGN(PAGE_SIZE);
+ 	.bss : AT(ADDR(.bss) - LOAD_OFFSET) {
+diff -uNr linux-5.17.7-orig/arch/x86/Makefile linux-5.17.7/arch/x86/Makefile
+--- linux-5.17.7-orig/arch/x86/Makefile	2022-05-14 17:25:52.210057829 -0700
++++ linux-5.17.7/arch/x86/Makefile	2022-05-14 17:34:35.222026662 -0700
+@@ -242,6 +242,9 @@
+ drivers-$(CONFIG_MATH_EMULATION) += arch/x86/math-emu/
+ drivers-$(CONFIG_PCI)            += arch/x86/pci/
+ 
++# ramdisk embedding.
++drivers-$(CONFIG_EMBEDDED_INITRD) += arch/x86/ramdisk/
++
+ # suspend and hibernation support
+ drivers-$(CONFIG_PM) += arch/x86/power/
+ 
+@@ -283,6 +286,8 @@
+ 	$(Q)$(MAKE) $(build)=arch/x86/entry/vdso $@
+ 
+ archprepare: checkbin
++	$(Q)[ "$(CONFIG_EMBEDDED_INITRD)" != "y" ] || rm -rf arch/x86/ramdisk/*.o
++
+ checkbin:
+ ifndef CONFIG_CC_HAS_ASM_GOTO
+ 	@echo Compiler lacks asm-goto support.
+diff -uNr linux-5.17.7-orig/arch/x86/ramdisk/ld.script linux-5.17.7/arch/x86/ramdisk/ld.script
+--- linux-5.17.7-orig/arch/x86/ramdisk/ld.script	1969-12-31 16:00:00.000000000 -0800
++++ linux-5.17.7/arch/x86/ramdisk/ld.script	2022-05-14 17:36:15.854756242 -0700
+@@ -0,0 +1,9 @@
++OUTPUT_ARCH(i386:x86-64)
++SECTIONS
++{
++	.initrd :
++	{
++		*(.data)
++	}
++}
++
+diff -uNr linux-5.17.7-orig/arch/x86/ramdisk/Makefile linux-5.17.7/arch/x86/ramdisk/Makefile
+--- linux-5.17.7-orig/arch/x86/ramdisk/Makefile	1969-12-31 16:00:00.000000000 -0800
++++ linux-5.17.7/arch/x86/ramdisk/Makefile	2022-05-14 17:37:15.835358834 -0700
+@@ -0,0 +1,15 @@
++#
++# Makefile for a ramdisk image - ramdisk.squash image is required.
++#
++SQUASHIMAGE=rootfs.squashfs
++
++obj-y = ramdisk.o
++
++arch/x86/ramdisk/ramdisk.o:
++	$(Q)[ -f arch/x86/ramdisk/$(SQUASHIMAGE) ] || touch arch/x86/ramdisk/$(SQUASHIMAGE)
++	$(Q)$(LD) -T arch/x86/ramdisk/ld.script -r -b binary --oformat $(CONFIG_OUTPUT_FORMAT) \
++		-o $@ arch/x86/ramdisk/$(SQUASHIMAGE)
++
++clean:
++	rm *.o modules.*
++
+diff -uNr linux-5.17.7-orig/init/Kconfig linux-5.17.7/init/Kconfig
+--- linux-5.17.7-orig/init/Kconfig	2022-05-14 17:25:55.546055208 -0700
++++ linux-5.17.7/init/Kconfig	2022-05-14 17:38:35.552882652 -0700
+@@ -1324,6 +1324,11 @@
+ 
+ 	  If unsure, say N.
+ 
++config EMBEDDED_INITRD
++	bool "Including CRAMFS boot image"
++	help
++		Speedy compilation & easy maintenance 
++
+ config BLK_DEV_INITRD
+ 	bool "Initial RAM filesystem and RAM disk (initramfs/initrd) support"
+ 	help

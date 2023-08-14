@@ -1,0 +1,15 @@
+#!/bin/sh
+
+FW_DIR=/lib/firmware
+
+case "$ACTION" in
+add)
+	echo 1 > /sys/$DEVPATH/loading
+	cat $FW_DIR/$FIRMWARE > /sys/$DEVPATH/data
+	echo 0 > /sys/$DEVPATH/loading
+
+	;;
+remove)
+	;;
+
+esac

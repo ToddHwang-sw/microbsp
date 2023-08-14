@@ -1,0 +1,75 @@
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<script language="javascript" type="text/javascript" src="js/myscript.js"></script>
+<script language="javascript">
+
+var Files = [];
+
+function UploadDone( obj )
+{
+	alert("Upload done");
+}
+
+function Upload()
+{
+	for( var index = 0; index < 2; index++ ) {
+		var obj = Files[ index ];
+		if (obj == null)
+			continue;
+		var uristr = "/sbin/server.fcgi?Command=UPLOAD&Path=" + obj.name;
+		var logstr = obj.name + " is selected which is as big as " + obj.size + " bytes.";
+
+		console.log( logstr );
+		XHRUpload( UploadDone, uristr, obj );
+	}
+}
+
+function doFileUpload( index, obj )
+{
+	Files[ index ] = obj.files[0];
+}
+
+</script>
+<link rel="stylesheet" type="text/css" href="css/design.css">
+<body>
+        <table class="table_content">
+        <form>
+                <tr><td>Files to upload</td><tr>
+                <tr>
+                        <td class="table_shaded">SPL</td>
+                        <td class="table_white">
+                                <input type='file' id="spl_file" onchange="{ doFileUpload( 0 , document.getElementById('spl_file') ); }">
+                        </td>
+                        <td>
+                                <div id="progressbox0" style="width: 400px; height: 27px; solid #D0D0D0; display:block">
+                                        <div id="progressbar0" style="width: 400px; height: 27px; background-color: red; solid white">
+                                        <div id="percentage0" style="width: 100%; text-align: center; color:white;">
+                                        </div></div>
+                                </div>
+                        </td>
+                </tr>
+                <tr>
+                        <td class="table_shaded">Kernel</td>
+                        <td class="table_white">
+                                <input type='file' id="kernel_file" onchange="{ doFileUpload( 1 , document.getElementById('kernel_file') ); }">
+                        </td>
+                        <td>
+                                <div id="progressbox1" style="width: 400px; height: 27px; solid #D0D0D0; display:block">
+                                        <div id="progressbar1" style="width: 400px; height: 27px; background-color: blue; solid white">
+                                        <div id="percentage1" style="width: 100%; text-align: center; color:white;">
+                                        </div></div>
+                                </div>
+                        </td>
+                </tr>
+                <tr>
+                        <td class="table_white" colspan="3" align="right">
+                                <input type="button" class="pbutton" id="UploadApply" value="Update" onclick="Upload()">
+                        </td>
+                </tr>
+        </form>
+        </table>
+</body>
+</html>
