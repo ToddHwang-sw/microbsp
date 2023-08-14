@@ -412,7 +412,7 @@ installcomps:
 	  	help2man            valgrind              gperf           libglib2.0-dev-bin\
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
 		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
-		python3-xcbgen      python2
+		python3-xcbgen      python2               xorriso         mtools
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
 	@sudo pip install pkgconfig mako Jinja2
@@ -688,7 +688,7 @@ distclean: checkfirst
 ##
 ## download
 ##
-download: compiler_check
+download:
 	@make -C gnu/sources -f ../Makefile download
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
 	@for cat in $(COMPDIR); do                 \
