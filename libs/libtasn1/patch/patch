@@ -1,0 +1,12 @@
+diff -uNr libtasn1-original/Makefile.am libtasn1/Makefile.am
+--- libtasn1-original/Makefile.am	2023-09-24 14:52:36.978460920 -0700
++++ libtasn1/Makefile.am	2023-09-24 14:53:57.038883173 -0700
+@@ -28,7 +28,7 @@
+ 	windows/test-tree/test-tree.vcproj windows/libtasn14win.mk
+ EXTRA_DIST += cfg.mk maint.mk CONTRIBUTING.md README.md
+ 
+-SUBDIRS = lib src fuzz tests
++SUBDIRS = lib src
+ 
+ if ENABLE_DOC
+ SUBDIRS += doc examples
