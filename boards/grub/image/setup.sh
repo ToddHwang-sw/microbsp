@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 TMPDIR=/tmp/microbsp/vm-grub-dir
 TMPFN=$TMPDIR/grub-rescue.iso
@@ -18,7 +18,7 @@ E2TMPFN=$1
 E2MNTPT=$TMPDIR/__vm_grub_ext2_mntpt
 
 KERNEL=$2
-PARAM=$3
+PARAM="${*:3}"
 
 ##
 ## check param
