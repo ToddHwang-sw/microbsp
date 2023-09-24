@@ -1,0 +1,13 @@
+diff --git a/gnulib-tool b/gnulib-tool
+index ae4eaba48..cf08dc9f6 100755
+--- a/gnulib-tool
++++ b/gnulib-tool
+@@ -1778,6 +1778,8 @@ func_lookup_file ()
+   fi
+   # Now apply the patches, from lowest-priority to highest-priority.
+   lookedup_tmp=
++  # Todd
++  lkpatches=
+   if test -n "$lkpatches"; then
+     lkbase=`echo "$lkfile" | sed -e 's,^.*/,,'`
+     rm -f "$tmp/$lkbase"
