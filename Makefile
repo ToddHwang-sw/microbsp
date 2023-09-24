@@ -224,6 +224,8 @@ LIBDIR=\
 	libpam \
 	libpcap \
 	libev \
+	gnulib \
+	libtasn1 \
 	libtool \
 	libattr
 SUBDIR+=$(LIBDIR)

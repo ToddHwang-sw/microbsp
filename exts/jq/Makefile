@@ -6,7 +6,9 @@ include $(TOPDIR)/scripts/extenv.mk
 MICB_CONFIGURE_AUTOCONF_CMD = \
 	git submodule update --init ; autoreconf --install -v 
 
-MICB_CONFIGURE_OPTS += --without-oniguruma 
+MICB_CONFIGURE_OPTS += \
+	--enable-maintainer-mode \
+	--without-oniguruma
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

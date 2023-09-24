@@ -200,3 +200,9 @@ export MICB_CMAKE_COMMON_OPTS=\
 	-D CMAKE_C_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS) $(CROSS_LFLAG_EXTRA)"          \
 	-D CMAKE_EXE_LINKER_FLAGS="$(CROSS_COMP_FLAGS) $(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)" 
 
+##
+## B O O T S T R A P
+##
+##   gnulib folder location - libs/gnulib
+##
+export MICB_BOOTSTRAP_CMD=./bootstrap --no-git --skip-po --copy --gnulib-srcdir=$(TOPDIR)/libs/gnulib/$(MICBSRC)/gnulib
