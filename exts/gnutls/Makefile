@@ -16,7 +16,7 @@ MICB_CONFIGURE_OPTS += \
 	--enable-local-libopts \
 	--disable-silent-rules
 
-MICB_CONFIGURE_AUTOCONF_CMD = ./bootstrap
+MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD)
 
 MICB_DEPENDS = nettle hogweed libidn2 gmp
 

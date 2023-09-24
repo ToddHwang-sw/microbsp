@@ -3,7 +3,7 @@ LOC=https://github.com/frida
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_AUTOCONF_CMD = ./bootstrap 
+MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD) --skip-git
 MICB_CONFIGURE_OPTS += 
 
 download:
@@ -17,6 +17,6 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+               cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 
 
