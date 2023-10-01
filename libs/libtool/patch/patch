@@ -1,0 +1,12 @@
+diff -uNr libtool-original/configure.ac libtool/configure.ac
+--- libtool-original/configure.ac	2023-09-30 19:57:55.452740941 -0700
++++ libtool/configure.ac	2023-09-30 19:59:00.304549986 -0700
+@@ -24,7 +24,7 @@
+ ####
+ 
+ 
+-AC_PREREQ(2.62)
++AC_PREREQ([2.64])
+ dnl Oldest automake required for bootstrap is below in AM_INIT_AUTOMAKE.
+ 
+ 

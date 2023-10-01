@@ -1,0 +1,18 @@
+diff --git a/hogweed.pc.in b/hogweed.pc.in
+index 97fb9d46..0cddcc17 100644
+--- a/hogweed.pc.in
++++ b/hogweed.pc.in
+@@ -11,9 +11,9 @@ Name: Hogweed
+ Description: Nettle low-level cryptographic library (public-key algorithms)
+ URL: http://www.lysator.liu.se/~nisse/nettle
+ Version: @PACKAGE_VERSION@
+-Requires: @IF_NOT_SHARED@ nettle
+-Requires.private: @IF_SHARED@ nettle
+-Libs: -L${libdir} -lhogweed @IF_NOT_SHARED@ @LIBS@
+-Libs.private: @IF_SHARED@ @LIBS@
++Requires:
++Requires.private: nettle
++Libs: -L${libdir} -lhogweed -lgmp -dl -lnettle -lpthread
++Libs.private: -ldl -lgmp -lhogweed -lnettle -lpthread
+ Cflags: -I${includedir}
+ 

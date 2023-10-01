@@ -1,0 +1,12 @@
+diff --git a/bin/named/main.c b/bin/named/main.c
+index d9127cd..621f8cf 100644
+--- a/bin/named/main.c
++++ b/bin/named/main.c
+@@ -89,6 +89,7 @@
+ #endif
+ #ifdef HAVE_LIBXML2
+ #include <libxml/xmlversion.h>
++#include <libxml/parser.h>
+ #endif
+ #ifdef HAVE_ZLIB
+ #include <zlib.h>
