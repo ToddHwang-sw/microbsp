@@ -372,8 +372,14 @@ UIDIR=\
 	qt
 SUBDIR+=$(UIDIR)
 
-# Component folders - apps, libs, exts, uix
-COMPDIR=libs apps exts uix
+# Component folders -
+#
+# "uix" folder is only useful for "rpi3" board. 
+#
+COMPDIR = libs apps exts
+ifeq ("$(TBOARD)","rpi3")
+COMPDIR += uix
+endif
 
 ## YOU CANNOT CHANGE THIS !! .. {apps,libs,uix}/<..>/source
 export MICBSRC=source
