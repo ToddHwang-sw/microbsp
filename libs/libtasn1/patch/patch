@@ -1,7 +1,8 @@
-diff -uNr libtasn1-original/Makefile.am libtasn1/Makefile.am
---- libtasn1-original/Makefile.am	2023-09-24 14:52:36.978460920 -0700
-+++ libtasn1/Makefile.am	2023-09-24 14:53:57.038883173 -0700
-@@ -28,7 +28,7 @@
+diff --git a/Makefile.am b/Makefile.am
+index 920e935..6f80844 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -28,7 +28,7 @@ EXTRA_DIST = windows/asn1-parser/asn1-parser.vcproj			\
  	windows/test-tree/test-tree.vcproj windows/libtasn14win.mk
  EXTRA_DIST += cfg.mk maint.mk CONTRIBUTING.md README.md
  
@@ -10,3 +11,88 @@ diff -uNr libtasn1-original/Makefile.am libtasn1/Makefile.am
  
  if ENABLE_DOC
  SUBDIRS += doc examples
+diff --git a/lib/includes/libtasn1.h.in b/lib/includes/libtasn1.h.in
+index c58ae22..116d6de 100644
+--- a/lib/includes/libtasn1.h.in
++++ b/lib/includes/libtasn1.h.in
+@@ -510,7 +510,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define node_asn_struct _Pragma ("GCC warning \"'node_asn_struct' macro is deprecated, use 'asn1_node' instead.\"") asn1_node_st
++#   define node_asn_struct asn1_node_st
+ #  else
+ #   define node_asn_struct asn1_node_st
+ #  endif
+@@ -525,7 +525,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define node_asn _Pragma ("GCC warning \"'node_asn' macro is deprecated, use 'asn1_node' instead.\"") asn1_node_st
++#   define node_asn asn1_node_st
+ #  else
+ #   define node_asn asn1_node_st
+ #  endif
+@@ -540,7 +540,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define ASN1_TYPE _Pragma ("GCC warning \"'ASN1_TYPE' macro is deprecated, use 'asn1_node' instead.\"") asn1_node
++#   define ASN1_TYPE asn1_node
+ #  else
+ #   define ASN1_TYPE asn1_node
+ #  endif
+@@ -555,7 +555,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define ASN1_TYPE_EMPTY _Pragma ("GCC warning \"'ASN1_TYPE_EMPTY' macro is deprecated, use 'NULL' instead.\"") NULL
++#   define ASN1_TYPE_EMPTY NULL
+ #  else
+ #   define ASN1_TYPE_EMPTY NULL
+ #  endif
+@@ -570,7 +570,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define static_struct_asn _Pragma ("GCC warning \"'static_struct_asn' macro is deprecated, use 'asn1_static_node_st' instead.\"") asn1_static_node_st
++#   define static_struct_asn asn1_static_node_st
+ #  else
+ #   define static_struct_asn asn1_static_node_st
+ #  endif
+@@ -585,7 +585,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define ASN1_ARRAY_TYPE _Pragma ("GCC warning \"'ASN1_ARRAY_TYPE' macro is deprecated, use 'asn1_static_node' instead.\"") asn1_static_node
++#   define ASN1_ARRAY_TYPE asn1_static_node
+ #  else
+ #   define ASN1_ARRAY_TYPE asn1_static_node
+ #  endif
+@@ -600,7 +600,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define asn1_static_node_t _Pragma ("GCC warning \"'asn1_static_node_t' macro is deprecated, use 'asn1_static_node' instead.\"") asn1_static_node
++#   define asn1_static_node_t asn1_static_node
+ #  else
+ #   define asn1_static_node_t asn1_static_node
+ #  endif
+@@ -615,7 +615,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define node_data_struct _Pragma ("GCC warning \"'node_data_struct' macro is deprecated, use 'asn1_data_node_st' instead.\"") asn1_data_node_st
++#   define node_data_struct asn1_data_node_st
+ #  else
+ #   define node_data_struct asn1_data_node_st
+ #  endif
+@@ -630,7 +630,7 @@ extern "C"
+  */
+ # ifndef ASN1_DISABLE_DEPRECATED
+ #  if _ASN1_GCC_VERSION >= 30100
+-#   define ASN1_DATA_NODE _Pragma ("GCC warning \"'asn1_static_node_t' macro is deprecated, use 'asn1_static_node' instead.\"") asn1_data_node_st
++#   define ASN1_DATA_NODE asn1_data_node_st
+ #  else
+ #   define ASN1_DATA_NODE asn1_data_node_st
+ #  endif

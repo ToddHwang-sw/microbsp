@@ -7,18 +7,20 @@ MICB_CONFIGURE_OPTS += \
 	--disable-doc \
 	--disable-tests \
 	--disable-valgrind-tests \
-	--with-included-libtasn1 \
+	--disable-gost \
 	--with-included-unistring \
 	--without-nettle-mini \
+	--without-included-libtasn1 \
 	--without-p11-kit \
 	--without-tpm \
 	--enable-guile \
+	--disable-fuzzer-target \
 	--enable-local-libopts \
 	--disable-silent-rules
 
 MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD)
 
-MICB_DEPENDS = nettle hogweed libidn2 gmp
+MICB_DEPENDS = nettle hogweed libtasn1 libidn2 gmp
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
@@ -31,6 +33,6 @@ prepare:
 
 
 all install uninstall clean:
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+	[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make V=1 $(MICB_CONFIGURE_MAKEOPTS) $@ )
 

@@ -1,0 +1,33 @@
+diff -uNr gnutls-original/bootstrap.conf gnutls/bootstrap.conf
+--- gnutls-original/bootstrap.conf	2023-09-30 21:42:23.874722320 -0700
++++ gnutls/bootstrap.conf	2023-09-30 21:48:56.721512564 -0700
+@@ -23,7 +23,7 @@
+ use_libtool=1
+ checkout_only_file=
+ local_gl_dir=gl/override/
+-required_submodules="tests/suite/tls-fuzzer/python-ecdsa tests/suite/tls-fuzzer/tlsfuzzer tests/suite/tls-fuzzer/tlslite-ng devel/nettle devel/libtasn1"
++required_submodules=
+ 
+ # Reproduce by: gnulib-tool --import --local-dir=gl/override --lib=libgnu --source-base=gl --m4-base=gl/m4 --doc-base=doc --tests-base=gl/tests --aux-dir=build-aux --with-tests --avoid=alignof-tests --avoid=lock-tests --avoid=lseek-tests --lgpl=2 --no-conditional-dependencies --libtool --macro-prefix=gl --no-vc-files alloca attribute byteswap c-ctype extensions fopen-gnu func gendocs getline gettext-h gettimeofday hash-pjw-bare havelib intprops ldd lib-msvc-compat lib-symbol-versions maintainer-makefile manywarnings memmem-simple minmax netdb netinet_in pmccabe2html read-file secure_getenv snprintf stdint strcase strndup strtok_r strverscmp sys_socket sys_stat threadlib time_r unistd vasprintf verify vsnprintf warnings
+ 
+@@ -101,8 +101,4 @@
+ 
+   # Automake requires that ChangeLog exist.
+   touch ChangeLog || return 1
+-
+-  devel/import-ecc-from-nettle.sh
+-  devel/import-from-nettle.sh
+-  devel/import-minitasn1.sh
+ }
+diff -uNr gnutls-original/configure.ac gnutls/configure.ac
+--- gnutls-original/configure.ac	2023-09-30 21:42:23.874722320 -0700
++++ gnutls/configure.ac	2023-09-30 21:43:28.623184854 -0700
+@@ -20,7 +20,7 @@
+ # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
+ # USA
+ 
+-AC_PREREQ(2.63)
++AC_PREREQ([2.64])
+ 
+ dnl when updating version also update LT_REVISION in m4/hooks.m4
+ AC_INIT([GnuTLS], [3.6.16], [bugs@gnutls.org])

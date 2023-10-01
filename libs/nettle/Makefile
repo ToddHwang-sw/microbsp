@@ -7,7 +7,6 @@ MICB_CONFIGURE_OPTS += \
 	--enable-pic \
 	--enable-openssl \
 	--enable-public-key \
-	--enable-mini-gmp \
 	--disable-documentation
 
 ifeq ($(_CORE_),aarch64)
@@ -24,6 +23,8 @@ ifeq ($(_CORE_),x86_64)
 		--enable-x86-aesni \
 		--enable-x86-sha-ni 
 endif
+
+MICB_DEPENDS = hogweed gmp
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
