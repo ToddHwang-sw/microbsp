@@ -767,7 +767,6 @@ uidisk_clean:
 run_bootstrap: checkfirst
 	@make -C apps/busybox         destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install
 	@make -C apps/bash            destination=$(XBASEDIR) install
-	@make -C apps/tools/overlayfs destination=$(XBASEDIR) download prepare all install
 	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
