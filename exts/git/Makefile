@@ -17,7 +17,7 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_DEPENDS = openssl libssh2 nettle zlib expat iconv libcurl
+MICB_DEPENDS = openssl libssh2 libtasn1 nettle zlib expat iconv libcurl
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
