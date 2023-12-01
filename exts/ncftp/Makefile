@@ -1,5 +1,5 @@
 DIR=ncftp-3.2.6
-LOC=ftp://ftp.ncftp.com/ncftp
+LOC=https://www.ncftp.com/downloads/ncftp
 
 include $(TOPDIR)/scripts/extenv.mk
 
