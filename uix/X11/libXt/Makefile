@@ -1,5 +1,5 @@
-DIR=libXt-1.2.0
-LOC=https://www.x.org/releases/individual/lib
+DIR=libxt
+LOC=-b libXt-1.3.0 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
@@ -10,7 +10,7 @@ MICB_DEPENDS = ice x11 xproto kbproto
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

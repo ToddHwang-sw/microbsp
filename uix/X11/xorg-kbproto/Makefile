@@ -1,11 +1,11 @@
-DIR=kbproto-1.0.7
-LOC=https://www.x.org/archive/individual/proto
+DIR=kbproto
+LOC=-b kbproto-1.0.7 https://gitlab.freedesktop.org/xorg/proto
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

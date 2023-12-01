@@ -1,5 +1,5 @@
-DIR=libXaw-1.0.13
-LOC=https://www.x.org/releases/individual/lib
+DIR=libXaw
+LOC=-b libXaw-1.0.15 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
@@ -7,7 +7,7 @@ MICB_DEPENDS = uuid x11 xmu xext xt
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

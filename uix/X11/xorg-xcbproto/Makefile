@@ -1,11 +1,14 @@
-DIR=xcb-proto-1.14
-LOC=https://xcb.freedesktop.org/dist
+DIR=xcbproto
+LOC=-b xcb-proto-1.16.0 https://gitlab.freedesktop.org/xorg/proto
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+
+MICB_CONFIGURE_RUNENV += \
+	PYTHON=/usr/bin/python3
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

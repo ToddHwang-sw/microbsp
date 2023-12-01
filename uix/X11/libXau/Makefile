@@ -1,5 +1,5 @@
-DIR=libXau-1.0.9
-LOC=https://www.x.org/releases/individual/lib
+DIR=libXau
+LOC=-b libXau-1.0.11 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
@@ -7,7 +7,7 @@ MICB_DEPENDS = xproto
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

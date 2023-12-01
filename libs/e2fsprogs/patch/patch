@@ -1,6 +1,19 @@
-diff -uNr e2fsprogs-1.45.3-original/lib/ext2fs/dirhash.c e2fsprogs-1.45.3/lib/ext2fs/dirhash.c
---- e2fsprogs-1.45.3-original/lib/ext2fs/dirhash.c	2019-07-14 18:03:14.000000000 -0700
-+++ e2fsprogs-1.45.3/lib/ext2fs/dirhash.c	2020-06-29 10:50:42.099592257 -0700
+diff -uNr e2fsprogs-original/configure e2fsprogs/configure
+--- e2fsprogs-original/configure	2023-11-11 14:38:09.525328525 -0800
++++ e2fsprogs/configure	2023-11-11 14:40:24.213726341 -0800
+@@ -1424,6 +1424,9 @@
+   fi
+ fi
+ 
++## enforce... 
++cross_compiling=yes
++
+ ac_tool_prefix=
+ test -n "$host_alias" && ac_tool_prefix=$host_alias-
+ 
+diff -uNr e2fsprogs-original/lib/ext2fs/dirhash.c e2fsprogs/lib/ext2fs/dirhash.c
+--- e2fsprogs-original/lib/ext2fs/dirhash.c	2023-11-11 14:38:09.557327670 -0800
++++ e2fsprogs/lib/ext2fs/dirhash.c	2023-11-11 14:39:11.527670630 -0800
 @@ -14,7 +14,7 @@
  #include "config.h"
  #include <stdio.h>

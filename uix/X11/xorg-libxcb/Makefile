@@ -1,17 +1,20 @@
-DIR=libxcb-1.14
-LOC=https://xcb.freedesktop.org/dist
+DIR=libxcb
+LOC=-b libxcb-1.16 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_RUNENV += \
+	PYTHON=/usr/bin/python3 
+
 MICB_CONFIGURE_MAKEOPTS += \
 	XCBPROTO_XCBINCLUDEDIR=$(X11INSTDIR)/share/xcb \
-	XCBPROTO_XCBPYTHONDIR=$(X11INSTDIR)/lib/python3.8/site-packages
+	XCBPROTO_XCBPYTHONDIR=$(X11INSTDIR)/lib/python$(PYTHON_SYSVER)/site-packages
 
 MICB_DEPENDS = xproto xau
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

@@ -1,4 +1,4 @@
-PYTHONVER=3.10.8
+PYTHONVER=$(PYTHON_SYSVER).8
 DIR=Python-$(PYTHONVER)
 LOC=https://www.python.org/ftp/python/$(PYTHONVER)
 FILENM=$(DIR).tar.xz

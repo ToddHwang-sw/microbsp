@@ -1,5 +1,5 @@
-DIR=libxrandr-master
-LOC=https://gitlab.freedesktop.org/xorg/lib/libxrandr/-/archive/master
+DIR=libxrandr
+LOC=-b libXrandr-1.5.4 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
@@ -7,7 +7,7 @@ MICB_DEPENDS=x11 xext xrender
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

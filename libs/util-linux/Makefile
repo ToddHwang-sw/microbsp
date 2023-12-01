@@ -17,6 +17,7 @@ MICB_CONFIGURE_OPTS +=\
 	--with-ncursesw \
 	--with-readline \
 	--with-tinfo \
+	--without-python \
 	--without-utempter \
 	--without-libiconv-prefix \
 	--disable-makeinstall-chown

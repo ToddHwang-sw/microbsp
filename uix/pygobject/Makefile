@@ -7,7 +7,7 @@ MICB_MESON_OPTS += \
 	-D tests=false  \
 	-D pycairo=false
 
-MICB_DEPENDS = gobject-introspection-1.0 python-3.10-embed
+MICB_DEPENDS = gobject-introspection-1.0 python-$(PYTHON_SYSVER)-embed
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)

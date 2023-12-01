@@ -7,7 +7,8 @@ MICB_CONFIGURE_RUNENV += \
 	ac_cv_lib_readline_readline=yes
 
 MICB_CONFIGURE_OPTS += \
-	--disable-man-doc
+	--disable-man-doc \
+	--disable-python
 
 MICB_DEPENDS = openssl libmnl libnftnl ncurses
 

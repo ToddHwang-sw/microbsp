@@ -1,12 +1,15 @@
-diff --git a/xcb-proto.pc.in b/xcb-proto.pc.in
-index a35f0bd..b6b1afb 100644
---- a/xcb-proto.pc.in
-+++ b/xcb-proto.pc.in
-@@ -4,7 +4,6 @@ datarootdir=@datarootdir@
+diff -uNr xcbproto-original/xcb-proto.pc.in xcbproto/xcb-proto.pc.in
+--- xcbproto-original/xcb-proto.pc.in	2023-11-20 08:17:06.390439475 -0800
++++ xcbproto/xcb-proto.pc.in	2023-11-20 08:27:40.846838867 -0800
+@@ -2,9 +2,8 @@
+ exec_prefix=@exec_prefix@
+ datarootdir=@datarootdir@
  datadir=@datadir@
- libdir=@libdir@
- xcbincludedir=${pc_sysrootdir}@xcbincludedir@
+-xcbincludedir=${pc_sysrootdir}@xcbincludedir@
+-PYTHON_PREFIX=@PYTHON_PREFIX@
 -pythondir=${pc_sysrootdir}@pythondir@
++xcbincludedir=${prefix}/share/xcb
++pythondir=${pc_sysrootdir}${prefix}/lib/python3.10/site-packages
  
  Name: XCB Proto
  Description: X protocol descriptions for XCB

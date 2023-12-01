@@ -7,7 +7,7 @@ GSTREMAER_OPTS += \
 	-D doc=disabled \
 	-D libpython-dir=$(EXTINSTDIR)
 
-MICB_DEPENDS = glib-2.0 python-3.10-embed pygobject-3.0 \
+MICB_DEPENDS = glib-2.0 python-$(PYTHON_SYSVER)-embed pygobject-3.0 \
 	gstreamer-1.0       \
 	gstreamer-base-1.0  \
 	gstreamer-net-1.0   \

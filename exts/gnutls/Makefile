@@ -13,6 +13,7 @@ MICB_CONFIGURE_OPTS += \
 	--without-included-libtasn1 \
 	--without-p11-kit \
 	--without-tpm \
+	--without-python \
 	--enable-guile \
 	--disable-fuzzer-target \
 	--enable-local-libopts \

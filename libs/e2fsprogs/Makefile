@@ -1,5 +1,5 @@
-DIR=e2fsprogs-1.45.3
-LOC=https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/v1.45.3
+DIR=e2fsprogs
+LOC=https://github.com/tytso
 
 include $(TOPDIR)/scripts/env.mk
 
@@ -10,7 +10,6 @@ MICB_CONFIGURE_OPTS += \
 	--disable-resizer \
 	--disable-defrag \
 	--disable-hardening \
-	--enable-libuuid \
 	--disable-libblkid \
 	--disable-profile \
 	--disable-ubsan \
@@ -20,11 +19,15 @@ MICB_CONFIGURE_OPTS += \
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_func_mallinfo=no 
 
-MICB_DEPENDS = uuid blkid
+MICB_DEPENDS = uuid blkid ncurses
+
+download_ss:
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare: 
 	@cd $(BUILDDIR)/$(DIR); \

@@ -1,11 +1,11 @@
-DIR=xinit-master
-LOC=https://gitlab.freedesktop.org/xorg/app/xinit/-/archive/master
+DIR=xinit
+LOC=-b xinit-1.4.2 https://gitlab.freedesktop.org/xorg/app
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2 ; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_CONFIGURE_AUTOCONF)

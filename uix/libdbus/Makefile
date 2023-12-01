@@ -11,7 +11,7 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_CONFIGURE_MAKEOPTS += V=1 
 
-MICB_DEPENDS = intl iconv gio-unix-2.0 
+MICB_DEPENDS = intl iconv gio-unix-2.0 expat
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

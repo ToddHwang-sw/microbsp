@@ -159,6 +159,11 @@ export GLIBC_VER=2.36
 export GLIBC=glibc-$(GLIBC_VER)
 
 ##
+## It means that we are now supporting Ubuntu-22.04.
+##
+export PYTHON_SYSVER=3.10
+
+##
 ## Essential applications 
 ##
 export BASH=bash-5.1.8
@@ -423,9 +428,8 @@ installcomps:
 		python3-xcbgen      python2               xorriso         mtools
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
-	@sudo pip install pkgconfig mako Jinja2
-	@[ ! -f /usr/local/pip3.8 ] || /usr/local/bin/pip3.8 install mako
-	@pip3 install package_name setuptools --user
+	@pip install pkgconfig mako Jinja2
+	@pip install package_name setuptools --user
 
 compiler_check:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
