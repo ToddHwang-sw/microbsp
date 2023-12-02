@@ -44,7 +44,7 @@ UBUNTU_LTSHDR=ubuntu_lts2204.h
 UBUNTU_FLAGS=-include $(TOPDIR)/uix/qt/$(BUILDDIR)/$(UBUNTU_LTSHDR)
 
 ## TO BE FIXED !! 
-QT_LFLAGS += -lglapi
+## QT_LFLAGS += -lglapi
 QT_CFLAGS += $(UBUNTU_FLAGS)
 
 python_req:
