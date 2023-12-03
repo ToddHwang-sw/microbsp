@@ -165,7 +165,7 @@ dnfw:
 		$(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio.bin
 	@\rm -rf $(BRCMFWTMPDIR)
 	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
-	for f in $(CRDAFW0S); do \
+	@for f in $(CRDAFW0S); do \
 		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \
 			[ -d $(CRDAFWTMPDIR) ] || ( \
 				echo "" ;                                 \
@@ -209,8 +209,8 @@ dnfw:
 	@\rm -rf $(CRDAFWTMPDIR)
 
 install: 
-	[ ! -f $(BDDIR)/$(ROOTFSIMAGEFN) ] || \rm -rf $(BDDIR)/$(ROOTFSIMAGEFN)
-	[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \
+	@[ ! -f $(BDDIR)/$(ROOTFSIMAGEFN) ] || \rm -rf $(BDDIR)/$(ROOTFSIMAGEFN)
+	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \
 		if [ "$(SQUASHROOTFS)" = "y" ]; then \
 			mksquashfs $(destination) $(BDDIR)/$(ROOTFSIMAGE) -force-uid 0 -force-gid 0 ; \
 		else                                                                               \

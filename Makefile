@@ -39,6 +39,10 @@ export BUILDDIR=build/$(_ARCH_)
 export TOOLCHAIN_BUILDOUT=$(TOPDIR)/gnu/toolchain/build_toolchain_log.$(_ARCH_)
 
 ##
+## "board" output file 
+export BOARD_BUILDOUT=$(TOPDIR)/boards/$(TBOARD)/build_log.$(_ARCH_)
+
+##
 ## Build output file 
 export BUILDOUT=$(BUILDDIR)/build.log
 
@@ -79,8 +83,8 @@ export IMAGENAME=output.iso
 
 ## install dir
 INSTSUBFN=disk
-XBASEDIR=$(BDDIR)/_base
-FINDIR=$(BDDIR)/__tempd
+XBASEDIR=$(BDDIR)/_basedir
+FINDIR=$(BDDIR)/_tempdir
 INSTALLDIR:=$(XBASEDIR)/$(INSTSUBFN)
 ISODIR=$(BDDIR)/iso
 export XBASEDIR
@@ -769,9 +773,10 @@ uidisk_clean:
 ## BUILDUP_ROOTFS --> Please refer to boards/rpi3/env.mk 
 ##
 run_bootstrap: checkfirst
-	@make -C apps/busybox         destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install
-	@make -C apps/bash            destination=$(XBASEDIR) install
-	@$(shell $(BUILDUP_ROOTFS)) > /dev/null
+	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
+	@make -C apps/busybox  destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install   | tee -a $(BOARD_BUILDOUT)
+	@make -C apps/bash     destination=$(XBASEDIR) install                                              | tee -a $(BOARD_BUILDOUT)
+	@$(shell $(BUILDUP_ROOTFS)) > /dev/null                                                             | tee -a $(BOARD_BUILDOUT)
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
 
@@ -800,62 +805,66 @@ modules_%:
 	fi
 
 board: run_bootstrap
-	@echo ""
-	@echo "Preparing board"
-	@echo ""
-	@make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare
-	@echo ""
-	@echo "Building kernel..."
-	@echo ""
-	@make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) dnfw prepare all
-	@echo ""
-	@echo "External modules...."
-	@echo ""
-	@make -C $(BDDIR)/kernel KERNDIR=$(KERNDIR) destination=$(INSTALLDIR) extmod
-	@echo ""
-	@echo "Copying static rootfs...."
-	@echo ""
+	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
+	@touch $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Preparing board ..."                                               | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare                    2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Building kernel ..."                                               | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) dnfw prepare all    2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "External modules ..."                                              | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR)/kernel KERNDIR=$(KERNDIR) destination=$(INSTALLDIR) extmod            2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Copying static rootfs ..."                                         | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
 	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/
-	@echo ""
-	@echo "Merging $(INSTALLDIR) and GLIBC ...."
-	@echo ""
-	@[ ! -d $(FINDIR) ] || sudo \rm -rf $(FINDIR)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Collecting $(INSTALLDIR) and GLIB to $(FINDIR) ..."                | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@[ ! -d $(FINDIR) ] || \rm -rf $(FINDIR)
 	@mkdir -p $(FINDIR)
-	@cd $(XBASEDIR) ; \
-		sudo find . -depth -print | sudo cpio -pdm $(FINDIR) ; \
-		cd $(TOPDIR) ; \
-		make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc
-	@echo ""
-	@echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) .. "
-	@echo ""
+	@cd $(XBASEDIR) ; find . -depth -print | cpio -pdm $(FINDIR)
+	@make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc      2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) ... "  | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
 	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
 		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done
 	@cd $(FINDIR); \
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
 	@cd $(FINDIR)/$(INSTSUBFN); \
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
-	@echo ""
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/$(INSTSUBFN)/lib64"
-	@echo ""
-	@[ -f $(FINDIR)/$(INSTSUBFN)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ] || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/$(INSTSUBFN)/lib64
-	@echo ""
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib64"
-	@echo ""
-	@[ -f $(FINDIR)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ]              || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib64
-	@echo ""
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib"
-	@echo ""
-	@[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/$(INSTSUBFN)/lib64 ..."         | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@[ -f $(FINDIR)/$(INSTSUBFN)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ] || \
+		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/$(INSTSUBFN)/lib64
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib64 ..."                      | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@[ -f $(FINDIR)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ]              || \
+		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib64
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib ..."                        | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	@[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || \
+		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib
 
 ramdisk:
-	@echo ""
-	@echo "Compiling kernel and combining squash image... "
-	@echo ""
-	@make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) install
-	@echo ""
-	@echo "Build up image..."
-	@echo ""
-	@make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install
+	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
+	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo "Compiling kernel and combining squash image ..."                                 2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) install                 2>&1 | tee -a $(BOARD_BUIDLOUT)
+	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo "Build up image ..."                                                              2>&1 | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install                         2>&1 | tee -a $(BOARD_BUILDOUT)
 
 cleanup:
 	@[ ! -d $(XBASEDIR)   ] || \rm -rf $(XBASEDIR)
@@ -872,13 +881,13 @@ toolchain:
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Preparing sources.... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "Preparing sources ... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@make -C gnu/sources -f ../Makefile download
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "BINUTILS....."                         2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "BINUTILS ..."                          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/binutils/build/$(_ARCH_) ] || mkdir -p gnu/binutils/build/$(_ARCH_)
@@ -886,7 +895,7 @@ toolchain:
 		make -f ../../../Makefile config_binutils setup_binutils  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Kernel Headers....."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "Kernel Headers ..."                    2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || \
@@ -895,12 +904,12 @@ toolchain:
 		make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ ! -f $(TOOLCHAIN_ROOT)/$(PLATFORM)/include/asm/.install ] || ( \
 		echo ""  ;                     \
-		echo "Cleaning up kernel folder" ; \
+		echo "Cleaning up kernel folder ..." ; \
 		echo ""  ;                     \
 		\rm -rf $(KERNDIR)/$(KERNELVER) ; )
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Bootstrap ....."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Bootstrap ..."                     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/gcc/build/$(_ARCH_) ] || mkdir -p gnu/gcc/build/$(_ARCH_)
@@ -908,7 +917,7 @@ toolchain:
 		make -f ../../../Makefile config_gcc setup_gcc          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Bootstrap ....."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Bootstrap ..."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/glibc/build/$(_ARCH_) ] || mkdir -p gnu/glibc/build/$(_ARCH_)
@@ -916,21 +925,21 @@ toolchain:
 		make -f ../../../Makefile config_glibc setup_glibc      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Host Compiler....."                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Host Compiler ..."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
 		make -f ../../../Makefile setup_gcc_2     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Host Library....."               2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GLIBC Host Library ..."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/glibc/build/$(_ARCH_); \
 		make -f ../../../Makefile setup_glibc_2   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Extra Libraries....."              2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	@echo "GCC Extra Libraries ..."               2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu/gcc/build/$(_ARCH_); \
