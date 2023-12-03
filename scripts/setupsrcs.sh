@@ -11,15 +11,12 @@ if   [ $# -eq 0 ]; then
 	exit 1
 else
 	SRCFILE=$LITEM
-	DSTFILE=source
+	DSTFILE=${1%/*}
 fi
 
-GIT_IGNORE=../../scripts/gitignore.template
-
-##
-## GIT checkout date...
-##
 FINAL_DATE=`cat $TOPDIR/date.inc`
+
+GIT_IGNORE=$TOPDIR/scripts/gitignore.template
 
 do_git_setup() {
 	[ -d $DSTFILE/$1/.git ] || \rm -rf $DSTFILE/$1/.git

@@ -1,13 +1,12 @@
 DIR=linuxptp
-LOC=git://git.code.sf.net/p/linuxptp/code
+LOC=https://github.com/richardcochran
 
 include $(TOPDIR)/scripts/extenv.mk
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
-		cd $(BUILDDIR);                             \
-		git clone $(LOC).git $(DIR) )
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR) ; \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git  )
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
 		cd $(BUILDDIR)/$(DIR); \
 		[ ! -f ../../../$(MICB_PATCH_FN) ] || (cat ../../../$(MICB_PATCH_FN) | patch -p 1) )

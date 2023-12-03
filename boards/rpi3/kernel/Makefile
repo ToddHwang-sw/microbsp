@@ -77,6 +77,8 @@ CRDAFW1S=\
 	regulatory.db.p7s
 CRDAFWTMPDIR=\
 	/tmp/___rpi_linuxswtree_linux-crda_firmware____
+CRDATMPTMP=\
+	/tmp/___rpi_linuxswtree_linux-crda_signature___
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
@@ -163,7 +165,7 @@ dnfw:
 		$(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio.bin
 	@\rm -rf $(BRCMFWTMPDIR)
 	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
-	@for f in $(CRDAFW0S); do \
+	for f in $(CRDAFW0S); do \
 		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \
 			[ -d $(CRDAFWTMPDIR) ] || ( \
 				echo "" ;                                 \
@@ -173,6 +175,10 @@ dnfw:
 				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
 				git clone --single-branch $(CRDAFWLOC) ; \
+				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
+				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
+				git checkout -q `cat $(CRDATMPTMP)`;     \
+				\rm -rf $(CRDATMPTMP);                   \
 				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
@@ -190,6 +196,10 @@ dnfw:
 				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
 				git clone --single-branch $(CRDAFWLOC);  \
+				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
+				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
+				git checkout -q `cat $(CRDATMPTMP)`;     \
+				\rm -rf $(CRDATMPTMP);                   \
 				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \

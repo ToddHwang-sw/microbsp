@@ -1,14 +1,17 @@
 DIR=wayland
 LOC=https://gitlab.freedesktop.org/wayland
 
+include $(TOPDIR)/scripts/uixenv.mk
+
 BUILDDIRNAME=build
 
 download:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR); \
-			git clone --single-branch $(LOC)/$(DIR).git ; \
-			cd $(DIR); \
-			cat ../../../patch/patch | patch -p 1 )
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git; \
+		[ ! -f $(MICB_PATCH_FN) ] || ( \
+			cd $(BUILDDIR)/$(DIR); cat ../../../$(MICB_PATCH_FN) | patch -p 1 ) \
+	)
 
 prepare:
 	@cd $(BUILDDIR); \

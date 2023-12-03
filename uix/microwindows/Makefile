@@ -25,12 +25,12 @@ MICB_CONFIGURE_MAKEOPTS += \
 	CONFIG="$(TOPDIR)/uix/microwindows/$(BUILDDIR)/$(DIR)/src/Configs/config.raspberrypi" $@ \
 
 download:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR)  ] || ( \
-		cd $(BUILDDIR); \
-		git clone --single-branch $(LOC)/$(DIR).git ; \
-		cd $(DIR); \
-		cat ../../../patch/patch | patch -p1 )
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git; \
+		[ ! -f $(MICB_PATCH_FN) ] || ( \
+			cd $(BUILDDIR)/$(DIR); cat ../../../$(MICB_PATCH_FN) | patch -p 1 ) \
+	)
 
 prepare: 
 

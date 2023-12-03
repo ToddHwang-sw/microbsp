@@ -1,21 +1,17 @@
 DIR=vim
 LOC=https://github.com/vim
-FILENM=vim.git
 
-##
-## No way with scripts/env.mk -- 
-include $(TOPDIR)/arch/$(_ARCH_)/env.mk
+include $(TOPDIR)/scripts/env.mk
 
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16 
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); \
-		git clone $(LOC)/$(FILENM) ; \
-		[ ! -f ./patch/patch ] || ( \
-			cd $(BUILDDIR)/$(DIR) ; \
-			cat ../../../patch/patch | patch -p 1; \
-	))
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git; \
+		[ ! -f $(MICB_PATCH_FN) ] || ( \
+			cd $(BUILDDIR)/$(DIR); cat ../../../$(MICB_PATCH_FN) | patch -p 1 ) \
+	)
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \

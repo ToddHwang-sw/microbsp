@@ -6,8 +6,9 @@ include $(TOPDIR)/scripts/env.mk
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); git clone $(LOC)/$(DIR).git )
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git )
 
 prepare: 
 

@@ -12,11 +12,12 @@ MICB_CONFIGURE_MAKEOPTS += \
 MICB_CONFIGURE_PRG = ./configure
 
 download:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR); \
-		git clone --single-branch $(LOC)/$(DIR).git ; \
-		cd $(BUILDDIR)/$(DIR); \
-		cat    ../../../patch/patch | patch -p 1; )
+	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
+		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git; \
+		[ ! -f $(MICB_PATCH_FN) ] || ( \
+			cd $(BUILDDIR)/$(DIR); cat ../../../$(MICB_PATCH_FN) | patch -p 1 ) \
+	)
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \

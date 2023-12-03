@@ -13,8 +13,7 @@ endif
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
 		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
-		cd $(BUILDDIR);                             \
-		git clone $(LOC)/$(DIR).git )
+		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git )
 
 prepare:
 
