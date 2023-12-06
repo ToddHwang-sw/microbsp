@@ -29,7 +29,8 @@ prepare:
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		tar xvf source/$(FILENM) -C $(BUILDDIR) ;                  \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
-		cp ../../../patch/$(KERNELVER).config .config;             \
+		cat ../../../patch/patch | patch -p 1;                     \
+		cp  ../../../patch/$(KERNELVER).config .config;            \
 		make ARCH=arm olddefconfig )
 
 all:
@@ -74,6 +75,7 @@ install:
 		\rm -rf $(isodir)/kernel/*-$(subst linux-,,$(KERNELVER)) ; \
 		cd $(BUILDDIR)/$(KERNELVER); \
 		$(LINUXMAKE) INSTALL_PATH=$(isodir)/kernel install; \
+		cp arch/arm/boot/zImage $(isodir)/kernel;           \
 		$(LINUXMAKE) INSTALL_DTBS_PATH=$(isodir)/kernel dtbs_install )
 
 uninstall:

@@ -10,8 +10,9 @@ prepare:
 	@[ -f $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); \
 		git clone $(LOC)/$(DIR).git;       \
 		cd $(DIR);                         \
-		[ ! -f $(RP)/patch/patch        ] || cat $(RP)/patch/patch | patch -p 1 ;     \
-		[ ! -f $(RP)/patch/uboot.config ] || cp  $(RP)/patch/uboot.config .config ;   \
+		[ ! -f $(RP)/patch/patch           ] || cat $(RP)/patch/patch | patch -p 1 ;     \
+		[ ! -f $(RP)/patch/uboot.config    ] || cp  $(RP)/patch/uboot.config .config ;   \
+		[ ! -f $(RP)/patch/tinker_rk3288.h ] || cp  $(RP)/patch/tinker_rk3288.h include/configs ;   \
 		$(UBOOTMAKE) olddefconfig                                                  \
 	)
 
