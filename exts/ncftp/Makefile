@@ -1,4 +1,4 @@
-DIR=ncftp-3.2.6
+DIR=ncftp-3.2.7
 LOC=https://www.ncftp.com/downloads/ncftp
 
 include $(TOPDIR)/scripts/extenv.mk

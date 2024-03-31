@@ -32,7 +32,7 @@ prepare:
 			--program-prefix=  --program-transform-name= \
 			--enable-shared  \
 			--enable-static  \
-			--disable-multi-arch )
+			--disable-multi-arch $(GLIBC_ARCH_OPTIONS) )
 
 all clean:
 	@[ -f $(BUILDDIR)/$(GLIBC_TARGET_FILE) ] || ( \

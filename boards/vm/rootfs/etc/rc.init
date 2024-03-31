@@ -15,7 +15,7 @@ cat /etc/motd
 
 ## mount file systems 
 mount -t proc	 proc   /proc
-mount -t tmpfs	ram	/var  -o size=32m
+mount -t tmpfs	ram	/var  -o size=64m
 mount -t sysfs	sys	/sys
 mount -t devtmpfs devfs /dev 
 

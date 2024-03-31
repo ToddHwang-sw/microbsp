@@ -2,6 +2,12 @@ SYSLIN=isolinux/build/syslinux
 
 BOOTARGS="console=ttyS0 root=/dev/ram0 ro rootfstype=squashfs rootwait"
 
+##
+## Kernel version linux-6.x.y  --> Ramdisk size : 256Mbytes
+ifneq (,$(findstring linux-6,$(KERNELVER)))
+	BOOTARGS+=" ramdisk_size=262144"
+endif
+
 prepare:
 	@[ -d $(isodir) ]          || mkdir -p $(isodir)
 	@[ -d $(isodir)/boot ]     || mkdir -p $(isodir)/boot 

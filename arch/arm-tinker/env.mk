@@ -36,3 +36,12 @@ export COMP_CMDS
 ## export SUPPORTED_LANGUAGES=c,c++,go
 export SUPPORTED_LANGUAGES=c,c++
 
+##
+## GNU toolchains  - component information
+##
+export BINUTILS=binutils-2.38
+export GCC=gcc-11.2.0
+export GLIBC_VER=2.36
+export GLIBC=glibc-$(GLIBC_VER)
+export GLIBC_ARCH_OPTIONS=
+

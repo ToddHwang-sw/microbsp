@@ -16,13 +16,13 @@ MICB_CONFIGURE_RUNENV += \
 
 MICB_CONFIGURE_OPTS += \
 	--enable-optimizations \
-	--disable-profiling \
+	--disable-profiling    \
 	--with-openssl=$(INSTALLDIR) \
 	--with-ensurepip=install
 
 MICB_CONFIGURE_PRG = ./configure
 
-MICB_DEPENDS = expat openssl ncurses libffi
+MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3
 
 CROSS_USER_CFLAGS += -I$(EXTINSTDIR)/include 
 CROSS_USER_LFLAGS += -L$(EXTINSTDIR)/lib -lgcov 
@@ -36,7 +36,7 @@ download:
 		(cd $(BUILDDIR)/$(DIR) && cat ../../../$(MICB_PATCH_FN) | patch -p 1)
 
 prepare:
-	@cd $(BUILDDIR)/$(DIR); \
+	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 all: 

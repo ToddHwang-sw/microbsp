@@ -1,6 +1,15 @@
-diff -uNr Python-3.10.8-original/configure Python-3.10.8/configure
---- Python-3.10.8-original/configure	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/configure	2022-11-06 20:35:51.432348022 -0800
+diff -uNr Python-3.10.8-orig/configure Python-3.10.8/configure
+--- Python-3.10.8-orig/configure	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/configure	2024-03-26 23:08:48.326563139 -0700
+@@ -919,7 +919,7 @@
+ localstatedir='${prefix}/var'
+ runstatedir='${localstatedir}/run'
+ includedir='${prefix}/include'
+-oldincludedir='/usr/include'
++oldincludedir='${prefix}/usr/include'
+ docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
+ infodir='${datarootdir}/info'
+ htmldir='${docdir}'
 @@ -1341,13 +1341,7 @@
  target=$target_alias
  
@@ -67,9 +76,9 @@ diff -uNr Python-3.10.8-original/configure Python-3.10.8/configure
  
  rm -f conftest.$ac_ext conftest$ac_cv_exeext conftest.out
  ac_clean_files=$ac_clean_files_save
-diff -uNr Python-3.10.8-original/Makefile.pre.in Python-3.10.8/Makefile.pre.in
---- Python-3.10.8-original/Makefile.pre.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Makefile.pre.in	2022-11-06 20:35:51.436348033 -0800
+diff -uNr Python-3.10.8-orig/Makefile.pre.in Python-3.10.8/Makefile.pre.in
+--- Python-3.10.8-orig/Makefile.pre.in	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/Makefile.pre.in	2024-03-26 23:08:48.326563139 -0700
 @@ -1270,7 +1270,7 @@
  			upgrade) ensurepip="--upgrade" ;; \
  			install|*) ensurepip="" ;; \
@@ -134,9 +143,9 @@ diff -uNr Python-3.10.8-original/Makefile.pre.in Python-3.10.8/Makefile.pre.in
  
  # bpo-21536: Misc/python-config.sh is generated in the build directory
  # from $(srcdir)Misc/python-config.sh.in.
-diff -uNr Python-3.10.8-original/Misc/python-embed.pc.in Python-3.10.8/Misc/python-embed.pc.in
---- Python-3.10.8-original/Misc/python-embed.pc.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Misc/python-embed.pc.in	2022-11-06 20:38:28.036786067 -0800
+diff -uNr Python-3.10.8-orig/Misc/python-embed.pc.in Python-3.10.8/Misc/python-embed.pc.in
+--- Python-3.10.8-orig/Misc/python-embed.pc.in	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/Misc/python-embed.pc.in	2024-03-26 23:08:48.326563139 -0700
 @@ -8,6 +8,6 @@
  Description: Embed Python into an application
  Requires:
@@ -145,9 +154,9 @@ diff -uNr Python-3.10.8-original/Misc/python-embed.pc.in Python-3.10.8/Misc/pyth
 +Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
  Libs: -L${libdir} -lpython@VERSION@@ABIFLAGS@
  Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
-diff -uNr Python-3.10.8-original/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
---- Python-3.10.8-original/Misc/python.pc.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Misc/python.pc.in	2022-11-06 20:38:47.348839794 -0800
+diff -uNr Python-3.10.8-orig/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
+--- Python-3.10.8-orig/Misc/python.pc.in	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/Misc/python.pc.in	2024-03-26 23:08:48.326563139 -0700
 @@ -8,6 +8,6 @@
  Description: Build a C extension for Python
  Requires:
@@ -156,3 +165,40 @@ diff -uNr Python-3.10.8-original/Misc/python.pc.in Python-3.10.8/Misc/python.pc.
 +Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
  Libs:
  Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
+diff -uNr Python-3.10.8-orig/setup.py Python-3.10.8/setup.py
+--- Python-3.10.8-orig/setup.py	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/setup.py	2024-03-26 23:09:42.846115311 -0700
+@@ -679,12 +679,12 @@
+         finally:
+             os.unlink(tmpfile)
+ 
+-        if multiarch_path_component != '':
+-            add_dir_to_list(self.compiler.library_dirs,
+-                            '/usr/lib/' + multiarch_path_component)
+-            add_dir_to_list(self.compiler.include_dirs,
+-                            '/usr/include/' + multiarch_path_component)
+-            return
++        ## if multiarch_path_component != '':
++        ##    add_dir_to_list(self.compiler.library_dirs,
++        ##                    '/usr/lib/' + multiarch_path_component)
++        ##    add_dir_to_list(self.compiler.include_dirs,
++        ##                    '/usr/include/' + multiarch_path_component)
++        ##    return
+ 
+         if not find_executable('dpkg-architecture'):
+             return
+@@ -701,10 +701,10 @@
+             if ret == 0:
+                 with open(tmpfile) as fp:
+                     multiarch_path_component = fp.readline().strip()
+-                add_dir_to_list(self.compiler.library_dirs,
+-                                '/usr/lib/' + multiarch_path_component)
+-                add_dir_to_list(self.compiler.include_dirs,
+-                                '/usr/include/' + multiarch_path_component)
++                ## add_dir_to_list(self.compiler.library_dirs,
++                ##                '/usr/lib/' + multiarch_path_component)
++                ## add_dir_to_list(self.compiler.include_dirs,
++                ##                '/usr/include/' + multiarch_path_component)
+         finally:
+             os.unlink(tmpfile)
+ 

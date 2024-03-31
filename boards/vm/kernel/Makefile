@@ -1,4 +1,11 @@
-LOC=https://www.kernel.org/pub/linux/kernel/v5.x/
+
+## Source code location
+ifneq ($(findstring linux-5,$(KERNELVER)),)
+	LOC=https://www.kernel.org/pub/linux/kernel/v5.x/
+else
+	LOC=https://www.kernel.org/pub/linux/kernel/v6.x/
+endif
+
 FILENM=$(KERNELVER).tar.gz
 
 LINUXMAKE=$(KERNELMAKE) -j 8 -C .
@@ -32,10 +39,10 @@ prepare:
 	@[ -f source/$(FILENM) ] || wget -P source $(LOC)/$(FILENM);
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || ( \
 		tar zxvf source/$(FILENM) -C $(BUILDDIR) ;                       \
-		cp patch/patch                $(BUILDDIR)/$(KERNELVER)/;         \
+		cp patch/$(KERNELVER).patch   $(BUILDDIR)/$(KERNELVER)/;         \
 		cp patch/$(KERNELVER).config  $(BUILDDIR)/$(KERNELVER)/.config ; \
 		cd $(BUILDDIR)/$(KERNELVER) ;                                    \
-		cat patch | patch -p 1 ;                                         \
+		cat $(KERNELVER).patch | patch -p 1 ;                            \
 		make ARCH=$(_CORE_) olddefconfig \
 	)
 

@@ -31,3 +31,22 @@ COMP_CMDS=CC="$(CC) $(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)" \
 export COMP_CMDS
 
 export SUPPORTED_LANGUAGES=c,c++
+
+##
+## GNU toolchains  - component information
+##
+export BINUTILS=binutils-2.42
+export GCC=gcc-13.2.0
+export GLIBC_VER=2.38
+export GLIBC=glibc-$(GLIBC_VER)
+export GLIBC_ARCH_OPTIONS="-enable-crypt"
+
+##
+## GNU toolchains  - component information
+##
+## export BINUTILS=binutils-2.38
+## export GCC=gcc-11.2.0
+## export GLIBC_VER=2.36
+## export GLIBC=glibc-$(GLIBC_VER)
+## export GLIBC_ARCH_OPTIONS=
+

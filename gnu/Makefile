@@ -1,4 +1,4 @@
-RP=../..
+RP=../../..
 
 ifeq ($(_CORE_),x86_64)
 	KARCH=x86_64
@@ -84,7 +84,8 @@ config_glibc:
 	lib_cv_forced_unwind=yes \
 		$(RP)/$(GLIBC)/configure --prefix=$(TOOLCHAIN_ROOT)/$(PLATFORM) \
 			--build=$(HOSTSYSTEM) --host=$(PLATFORM) --target=$(PLATFORM) \
-			--with-headers=$(TOOLCHAIN_ROOT)/$(PLATFORM)/include --disable-multi-arch
+			--with-headers=$(TOOLCHAIN_ROOT)/$(PLATFORM)/include \
+			--disable-multi-arch $(GLIBC_ARCH_OPTIONS)
 
 setup_glibc:
 	make CC="$(TOOLCHAIN_ROOT)/bin/$(CROSS_COMP_PREFIX)gcc $(CROSS_COMP_FLAGS)" install-bootstrap-headers=yes install-headers

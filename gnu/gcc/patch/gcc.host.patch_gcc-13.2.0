@@ -1,0 +1,23 @@
+diff -uNr gcc-13.2.0-orig/gcc/gcc.cc gcc-13.2.0/gcc/gcc.cc
+--- gcc-13.2.0-orig/gcc/gcc.cc	2023-07-27 01:13:04.000000000 -0700
++++ gcc-13.2.0/gcc/gcc.cc	2024-03-23 15:59:01.533137785 -0700
+@@ -1591,6 +1591,12 @@
+ #define STANDARD_STARTFILE_PREFIX_2 "/usr/lib/"
+ #endif
+ 
++/* Todd - Removing directory structure .. */
++#undef  STANDARD_STARTFILE_PREFIX_1
++#define STANDARD_STARTFILE_PREFIX_1 ""
++#undef  STANDARD_STARTFILE_PREFIX_2
++#define STANDARD_STARTFILE_PREFIX_2 ""
++
+ #ifdef CROSS_DIRECTORY_STRUCTURE  /* Don't use these prefixes for a cross compiler.  */
+ #undef MD_EXEC_PREFIX
+ #undef MD_STARTFILE_PREFIX
+diff -uNr gcc-13.2.0-orig/PATCHED gcc-13.2.0/PATCHED
+--- gcc-13.2.0-orig/PATCHED	1969-12-31 16:00:00.000000000 -0800
++++ gcc-13.2.0/PATCHED	2024-03-23 16:09:43.496611316 -0700
+@@ -0,0 +1,3 @@
++
++
++

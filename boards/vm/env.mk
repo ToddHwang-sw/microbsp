@@ -8,8 +8,12 @@ export _ARCH_=$(_CORE_)-vm
 ## platfom string ...
 export PLATFORM=$(_CORE_)-mbsp-linux-gnu
 
-## kernel version 
-export KERNELVER=linux-5.17.7
+##
+## kernel version  -
+##    5.17.7 --> 6.6.22
+##
+## export KERNELVER=linux-5.17.7
+export KERNELVER=linux-6.6.22
 
 ## Linux Kernel compile
 export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX) 

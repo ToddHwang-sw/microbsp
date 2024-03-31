@@ -58,18 +58,6 @@ diff -uNr ncftp-3.2.6-original/Makefile.in ncftp-3.2.6/Makefile.in
  	-@echo 'Done installing NcFTP.'
  
  clean:
-diff -uNr ncftp-3.2.6-original/sh_util/gpshare.c ncftp-3.2.6/sh_util/gpshare.c
---- ncftp-3.2.6-original/sh_util/gpshare.c	2016-11-12 15:53:39.000000000 -0800
-+++ ncftp-3.2.6/sh_util/gpshare.c	2022-10-23 13:46:58.939781726 -0700
-@@ -28,7 +28,7 @@
- 
- static int gIsAtty1 = 1, gIsAtty2 = 1;
- extern int gLoadedBm, gBookmarkMatchMode;
--Bookmark gBm;
-+extern Bookmark gBm;
- 
- double
- FileSize(double size, const char **uStr0, double *uMult0)
 diff -uNr ncftp-3.2.6-original/sio/Makefile.in ncftp-3.2.6/sio/Makefile.in
 --- ncftp-3.2.6-original/sio/Makefile.in	2016-11-14 15:17:43.000000000 -0800
 +++ ncftp-3.2.6/sio/Makefile.in	2022-10-23 13:49:04.560625643 -0700
