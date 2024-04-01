@@ -39,9 +39,14 @@ mount -t devpts devpts  /dev/pts
 export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
 
 ##
-## Export Path....
+## Export Path...
 ##
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+##
+## GCC path... 
+##
+export COMPILER_PATH=/
 
 ## resolv.conf - name server
 touch /var/tmp/resolv.conf
