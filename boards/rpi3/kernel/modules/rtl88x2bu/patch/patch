@@ -1,6 +1,6 @@
-diff -uNr 88x2bu-20210702-origin/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
---- 88x2bu-20210702-origin/core/rtw_xmit.c	2023-05-14 14:25:20.071633640 -0700
-+++ 88x2bu-20210702/core/rtw_xmit.c	2023-05-14 14:27:39.696348942 -0700
+diff -uNr 88x2bu-20210702-orig/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
+--- 88x2bu-20210702-orig/core/rtw_xmit.c	2024-04-07 09:31:00.702967844 -0700
++++ 88x2bu-20210702/core/rtw_xmit.c	2024-04-07 09:31:12.587182404 -0700
 @@ -17,6 +17,10 @@
  #include <drv_types.h>
  #include <hal_data.h>
@@ -24,11 +24,17 @@ diff -uNr 88x2bu-20210702-origin/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
  	if (start == 0)
  		start = rtw_get_current_time();
  
-diff -uNr 88x2bu-20210702-origin/Makefile 88x2bu-20210702/Makefile
---- 88x2bu-20210702-origin/Makefile	2023-05-14 14:25:20.051633538 -0700
-+++ 88x2bu-20210702/Makefile	2023-05-14 14:27:39.664348778 -0700
-@@ -21,7 +21,7 @@
+diff -uNr 88x2bu-20210702-orig/Makefile 88x2bu-20210702/Makefile
+--- 88x2bu-20210702-orig/Makefile	2024-04-07 09:31:00.658966864 -0700
++++ 88x2bu-20210702/Makefile	2024-04-07 09:31:31.863355296 -0700
+@@ -19,11 +19,11 @@
+ EXTRA_CFLAGS += -Wno-implicit-fallthrough
+ #EXTRA_CFLAGS += -Wno-return-type
  #EXTRA_CFLAGS += -Wno-discarded-qualifiers
+-EXTRA_CFLAGS += -Wno-missing-prototypes
+-EXTRA_CFLAGS += -Wno-missing-declarations
++#EXTRA_CFLAGS += -Wno-missing-prototypes
++#EXTRA_CFLAGS += -Wno-missing-declarations
  
  # Activates Concurrent Mode if uncommented
 -#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
@@ -36,7 +42,7 @@ diff -uNr 88x2bu-20210702-origin/Makefile 88x2bu-20210702/Makefile
  
  # LED Control
  EXTRA_CFLAGS += -DCONFIG_LED_CONTROL
-@@ -81,7 +81,7 @@
+@@ -111,7 +111,7 @@
  CONFIG_LPS_MODE = default
  CONFIG_USB_AUTOSUSPEND = n
  CONFIG_HW_PWRP_DETECTION = n
@@ -45,9 +51,9 @@ diff -uNr 88x2bu-20210702-origin/Makefile 88x2bu-20210702/Makefile
  CONFIG_WAPI_SUPPORT = n
  CONFIG_EFUSE_CONFIG_FILE = n
  CONFIG_EXT_CLK = n
-diff -uNr 88x2bu-20210702-origin/os_dep/osdep_service.c 88x2bu-20210702/os_dep/osdep_service.c
---- 88x2bu-20210702-origin/os_dep/osdep_service.c	2023-05-14 14:25:20.171634153 -0700
-+++ 88x2bu-20210702/os_dep/osdep_service.c	2023-05-14 14:27:39.760349270 -0700
+diff -uNr 88x2bu-20210702-orig/os_dep/osdep_service.c 88x2bu-20210702/os_dep/osdep_service.c
+--- 88x2bu-20210702-orig/os_dep/osdep_service.c	2024-04-07 09:31:00.826970605 -0700
++++ 88x2bu-20210702/os_dep/osdep_service.c	2024-04-07 09:31:12.587182404 -0700
 @@ -18,6 +18,10 @@
  
  #include <drv_types.h>

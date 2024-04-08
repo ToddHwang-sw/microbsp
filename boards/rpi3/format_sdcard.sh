@@ -13,6 +13,9 @@ OVRPSIZE=8G
 UIPSIZE=4G
 CFGPSIZE=10M
 
+## sudo dd command 
+DDCMD="sudo dd bs=128M conv=fsync status=progress "
+
 ##
 ## BOOT Partition
 BOOTFILE=boot.tgz
@@ -175,27 +178,40 @@ if [ -f $BOOTFILE ]; then
 	tar zxvf $BOOTFILE -C $TMPDIR > /dev/null 2>&1 
 	sync
 	sync
+	sync
 	umount $TMPDIR
 	\rm -rf $TMPDIR
 fi
 
 echo "Building RAMDISK partition /dev/${DRIVE}2 "
 if [ -f $RAMDISKFILE ]; then
-	sudo dd if=$RAMDISKFILE of=/dev/${DRIVE}2 bs=128M
+	$DDCMD if=$RAMDISKFILE of=/dev/${DRIVE}2
+	sync
+	sync
+	sync
 fi
 
 echo "Building IMAGE partition /dev/${DRIVE}3 - takes long time... "
 if [ -f $IMAGEFILE ]; then
-	sudo dd if=$IMAGEFILE  of=/dev/${DRIVE}3 bs=128M
+	$DDCMD if=$IMAGEFILE  of=/dev/${DRIVE}3
+	sync
+	sync
+	sync
 fi
 
 echo "Building UI partition /dev/${DRIVE}5 - takes long time... "
 if [ -f $UIFILE ]; then
-	sudo dd if=$UIFILE  of=/dev/${DRIVE}5 bs=128M
+	$DDCMD if=$UIFILE  of=/dev/${DRIVE}5
+	sync
+	sync
+	sync
 fi
 
 echo "Building CFG partition /dev/${DRIVE}6"
 if [ -f $CFGFILE ]; then
-	sudo dd if=$CFGFILE  of=/dev/${DRIVE}6 bs=128K
+	$DDCMD if=$CFGFILE  of=/dev/${DRIVE}6
+	sync
+	sync
+	sync
 fi
 

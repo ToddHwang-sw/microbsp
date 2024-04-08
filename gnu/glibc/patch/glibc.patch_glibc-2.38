@@ -1,6 +1,6 @@
 diff -uNr glibc-2.38-orig/locale/localeinfo.h glibc-2.38/locale/localeinfo.h
 --- glibc-2.38-orig/locale/localeinfo.h	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/locale/localeinfo.h	2024-03-27 00:13:29.955503212 -0700
++++ glibc-2.38/locale/localeinfo.h	2024-04-05 19:14:06.699639149 -0700
 @@ -248,7 +248,8 @@
     we can use __thread variables.  So only in that case do we attempt this.  */
  #ifndef SHARED
@@ -13,19 +13,22 @@ diff -uNr glibc-2.38-orig/locale/localeinfo.h glibc-2.38/locale/localeinfo.h
  #ifdef NL_CURRENT_INDIRECT
 diff -uNr glibc-2.38-orig/math/w_fmod_compat.c glibc-2.38/math/w_fmod_compat.c
 --- glibc-2.38-orig/math/w_fmod_compat.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/math/w_fmod_compat.c	2024-03-28 22:33:49.682392539 -0700
-@@ -40,4 +40,8 @@
++++ glibc-2.38/math/w_fmod_compat.c	2024-04-05 19:16:14.553843298 -0700
+@@ -40,4 +40,11 @@
  LONG_DOUBLE_COMPAT_CHOOSE_libm_fmodl (
    compat_symbol (libm, __fmod_compat, fmodl, FIRST_VERSION_libm_fmodl), );
  # endif
 +
 +/* Todd */
 +//libm_alias_double (__fmod_compat, fmod) 
-+weak_alias (__fmod_compat, fmod) 
++#ifdef __x86_64__
++weak_alias (__fmod_compat, fmod)
++#endif
++
  #endif
 diff -uNr glibc-2.38-orig/PATCHED glibc-2.38/PATCHED
 --- glibc-2.38-orig/PATCHED	1969-12-31 16:00:00.000000000 -0800
-+++ glibc-2.38/PATCHED	2024-03-27 00:13:29.955503212 -0700
++++ glibc-2.38/PATCHED	2024-04-05 19:14:06.791625736 -0700
 @@ -0,0 +1,4 @@
 +
 +
@@ -33,7 +36,7 @@ diff -uNr glibc-2.38-orig/PATCHED glibc-2.38/PATCHED
 +
 diff -uNr glibc-2.38-orig/stdio-common/isoc23_sscanf.c glibc-2.38/stdio-common/isoc23_sscanf.c
 --- glibc-2.38-orig/stdio-common/isoc23_sscanf.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/stdio-common/isoc23_sscanf.c	2024-03-28 22:17:07.215241604 -0700
++++ glibc-2.38/stdio-common/isoc23_sscanf.c	2024-04-05 19:14:06.791625736 -0700
 @@ -34,4 +34,8 @@
  
    return done;
@@ -45,7 +48,7 @@ diff -uNr glibc-2.38-orig/stdio-common/isoc23_sscanf.c glibc-2.38/stdio-common/i
 +#endif
 diff -uNr glibc-2.38-orig/stdio-common/isoc23_vfscanf.c glibc-2.38/stdio-common/isoc23_vfscanf.c
 --- glibc-2.38-orig/stdio-common/isoc23_vfscanf.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/stdio-common/isoc23_vfscanf.c	2024-03-28 22:17:53.485569737 -0700
++++ glibc-2.38/stdio-common/isoc23_vfscanf.c	2024-04-05 19:14:06.791625736 -0700
 @@ -25,4 +25,8 @@
    return __vfscanf_internal (stream, format, args,
  			     SCANF_ISOC99_A | SCANF_ISOC23_BIN_CST);
@@ -57,7 +60,7 @@ diff -uNr glibc-2.38-orig/stdio-common/isoc23_vfscanf.c glibc-2.38/stdio-common/
 +#endif
 diff -uNr glibc-2.38-orig/stdio-common/isoc23_vsscanf.c glibc-2.38/stdio-common/isoc23_vsscanf.c
 --- glibc-2.38-orig/stdio-common/isoc23_vsscanf.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/stdio-common/isoc23_vsscanf.c	2024-03-28 22:22:51.619118530 -0700
++++ glibc-2.38/stdio-common/isoc23_vsscanf.c	2024-04-05 19:14:06.791625736 -0700
 @@ -25,4 +25,8 @@
    return __vfscanf_internal (f, format, args,
  			     SCANF_ISOC99_A | SCANF_ISOC23_BIN_CST);
@@ -69,7 +72,7 @@ diff -uNr glibc-2.38-orig/stdio-common/isoc23_vsscanf.c glibc-2.38/stdio-common/
 +#endif
 diff -uNr glibc-2.38-orig/stdlib/strtol.c glibc-2.38/stdlib/strtol.c
 --- glibc-2.38-orig/stdlib/strtol.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/stdlib/strtol.c	2024-03-28 22:13:32.359362919 -0700
++++ glibc-2.38/stdlib/strtol.c	2024-04-05 19:14:06.791625736 -0700
 @@ -126,4 +126,8 @@
    return INTERNAL (__strtol_l) (nptr, endptr, base, 0, true,
  				_NL_CURRENT_LOCALE);
@@ -81,7 +84,7 @@ diff -uNr glibc-2.38-orig/stdlib/strtol.c glibc-2.38/stdlib/strtol.c
 +#endif
 diff -uNr glibc-2.38-orig/stdlib/strtol_l.c glibc-2.38/stdlib/strtol_l.c
 --- glibc-2.38-orig/stdlib/strtol_l.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/stdlib/strtol_l.c	2024-03-28 22:13:36.327205528 -0700
++++ glibc-2.38/stdlib/strtol_l.c	2024-04-05 19:14:06.791625736 -0700
 @@ -576,4 +576,8 @@
  {
    return INTERNAL (__strtol_l) (nptr, endptr, base, 0, true, loc);
@@ -93,7 +96,7 @@ diff -uNr glibc-2.38-orig/stdlib/strtol_l.c glibc-2.38/stdlib/strtol_l.c
 +#endif
 diff -uNr glibc-2.38-orig/wcsmbs/isoc23_vfwscanf.c glibc-2.38/wcsmbs/isoc23_vfwscanf.c
 --- glibc-2.38-orig/wcsmbs/isoc23_vfwscanf.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/wcsmbs/isoc23_vfwscanf.c	2024-03-28 22:21:20.870257995 -0700
++++ glibc-2.38/wcsmbs/isoc23_vfwscanf.c	2024-04-05 19:14:06.791625736 -0700
 @@ -26,4 +26,8 @@
    return __vfwscanf_internal (stream, format, args,
  			      SCANF_ISOC99_A | SCANF_ISOC23_BIN_CST);
@@ -105,7 +108,7 @@ diff -uNr glibc-2.38-orig/wcsmbs/isoc23_vfwscanf.c glibc-2.38/wcsmbs/isoc23_vfws
 +#endif
 diff -uNr glibc-2.38-orig/wcsmbs/isoc23_vswscanf.c glibc-2.38/wcsmbs/isoc23_vswscanf.c
 --- glibc-2.38-orig/wcsmbs/isoc23_vswscanf.c	2023-07-31 10:54:16.000000000 -0700
-+++ glibc-2.38/wcsmbs/isoc23_vswscanf.c	2024-03-28 22:20:46.455456009 -0700
++++ glibc-2.38/wcsmbs/isoc23_vswscanf.c	2024-04-05 19:14:06.791625736 -0700
 @@ -27,4 +27,8 @@
    return __vfwscanf_internal (f, format, args,
  			      SCANF_ISOC99_A | SCANF_ISOC23_BIN_CST);

@@ -1,0 +1,12 @@
+diff '--exclude=/.git/' -uNr gdb-11.2-orig/sim/aarch64/cpustate.c gdb-11.2/sim/aarch64/cpustate.c
+--- gdb-11.2-orig/sim/aarch64/cpustate.c	2022-01-16 03:19:03.000000000 -0800
++++ gdb-11.2/sim/aarch64/cpustate.c	2024-04-05 19:01:24.852673964 -0700
+@@ -267,7 +267,7 @@
+ 
+ /* Read a specific subset of the CPSR as a bit pattern.  */
+ uint32_t
+-aarch64_get_CPSR_bits (sim_cpu *cpu, FlagMask mask)
++aarch64_get_CPSR_bits (sim_cpu *cpu, uint32_t mask)
+ {
+   return cpu->CPSR & mask;
+ }
