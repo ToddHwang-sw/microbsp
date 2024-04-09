@@ -25,10 +25,6 @@ include $(BDDIR)/env.mk
 export EXT4HDD=$(BDDIR)/$(EXTDISKNM)
 export EXT4CFG=$(BDDIR)/$(CFGDISKNM)
 
-##
-## Download history file 
-export DOWNLOAD_FN=download.log
-
 # architecture environment 
 ##
 ##  Applicatin build directory name
@@ -41,6 +37,10 @@ export TOOLCHAIN_BUILDOUT=$(TOPDIR)/gnu/toolchain/build_toolchain_log.$(_ARCH_)
 ##
 ## "board" output file 
 export BOARD_BUILDOUT=$(TOPDIR)/boards/$(TBOARD)/build_log.$(_ARCH_)
+
+##
+## Download history file
+export DNOUT=$(BUILDDIR)/download.log
 
 ##
 ## Build output file 
@@ -56,6 +56,7 @@ endef
 ##
 export BUILD_FOLDER=/var/tmp/microbsp
 export BUILD_LOCK_FOLDER=$(BUILD_FOLDER)/lock
+export GLOBAL_LOCK_FILE=/var/tmp/microbsp-global-lock-file
 
 ##
 ## exclusive execution of command
@@ -71,6 +72,18 @@ endef
 define DO_EXCL
 	$(call PERFORM_EXCLUSIVELY,$3,$1,$2,\
 			make -C $1 destination=$4 $2 2>&1  | tee -a $1/$(BUILDOUT) )
+endef
+
+## Exclusive execution for downloading ..
+define DO_EXCL_DN
+	$(call PERFORM_EXCLUSIVELY,$3,$1,$2,\
+			make -C $1 destination=$4 $2 2>&1  | tee -a $1/$(DNOUT) )
+endef
+
+## Exclusive execution - Only single execution in system
+define DO_EXCL_SINGLE
+	[ -f $(GLOBAL_LOCK_FILE) ] || touch $(GLOBAL_LOCK_FILE) && \
+	flock $(GLOBAL_LOCK_FILE) $(1)
 endef
 
 ## Normal execution
@@ -517,8 +530,10 @@ lib_%: checkfirst
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
-				if [ "$(subst lib_,,$@)" = "prepare" -o "$(subst lib_,,$@)" = "download" ]; then \
+				if [ "$(subst lib_,,$@)" = "prepare" ]; then \
 					$(call DO_EXCL,$$dir,$(subst lib_,,$@),lib,$(INSTALLDIR)) ;  \
+				elif [ "$(subst lib_,,$@)" = "download" ]; then \
+					$(call DO_EXCL_DN,$$dir,$(subst lib_,,$@),lib,$(INSTALLDIR)) ;  \
 				else  \
 					$(call DO_NORM,$$dir,$(subst lib_,,$@),lib,$(INSTALLDIR)) ;  \
 				fi && \
@@ -548,10 +563,12 @@ app_%: checkfirst
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
-				if [ "$(subst app_,,$@)" = "prepare" -o "$(subst app_,,$@)" = "download" ]; then \
-					$(call DO_EXCL,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;  \
-				else  \
-					$(call DO_NORM,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;  \
+				if [ "$(subst app_,,$@)" = "prepare" ]; then                        \
+					$(call DO_EXCL,$$dir,$(subst app_,,$@),lib,$(INSTALLDIR)) ;     \
+				elif [ "$(subst app_,,$@)" = "download" ]; then                     \
+					$(call DO_EXCL_DN,$$dir,$(subst app_,,$@),lib,$(INSTALLDIR)) ;  \
+				else                                                                \
+					$(call DO_NORM,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;     \
 				fi && \
 				[ "$(subst app_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -579,10 +596,12 @@ ext_%: checkfirst
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
-				if [ "$(subst ext_,,$@)" = "prepare" -o "$(subst ext_,,$@)" = "download" ]; then \
-					$(call DO_EXCL,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;  \
-				else  \
-					$(call DO_NORM,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;  \
+				if [ "$(subst ext_,,$@)" = "prepare" ]; then                        \
+					$(call DO_EXCL,$$dir,$(subst ext_,,$@),lib,$(EXTINSTDIR)) ;     \
+				elif [ "$(subst ext_,,$@)" = "download" ]; then                     \
+					$(call DO_EXCL_DN,$$dir,$(subst ext_,,$@),lib,$(EXTINSTDIR)) ;  \
+				else                                                                \
+					$(call DO_NORM,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;     \
 				fi && \
 				[ "$(subst ext_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
@@ -613,11 +632,13 @@ ui_%: checkfirst llvm_okay
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
-				if [ "$(subst ui_,,$@)" = "prepare" -o "$(subst ui_,,$@)" = "download" ]; then \
-					$(call DO_EXCL,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
-				else  \
-					$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
-				fi && \
+				if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
+					$(call DO_EXCL,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;     \
+				elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
+					$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;  \
+				else                                                               \
+					$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
+				fi &&  \
 				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
 			) ;	\
 		done
@@ -687,15 +708,14 @@ distclean: checkfirst
 ##
 ## download
 ##
-download:
+download_prologue:
 	@make -C gnu/sources -f ../Makefile download
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
 	@for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
-				[ -f $$dir/$(DOWNLOAD_FN) ] || touch $$dir/$(DOWNLOAD_FN)  ; \
-				make -C $$dir download  2>&1 | tee -a $$dir/$(DOWNLOAD_FN) ; \
+				[ -f $$dir/$(DNOUT) ] || touch $$dir/$(DNOUT)  ; \
 				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)         ; \
 				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
 				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
@@ -703,6 +723,8 @@ download:
 		done ;                                 \
 		cd .. ;                                \
 	done
+
+download: download_prologue lib_download app_download ext_download ui_download
 
 ##
 ## cleanup everything 
@@ -719,7 +741,7 @@ wipeout:
 					echo "Cleaning in $$cdir/$$dir/$(MICBSRC)/*" ;		        \
 				fi;								                                \
 			fi ;									                            \
-			[ ! -f $$cdir/$$dir/$(DOWNLOAD_FN) ] || \rm -rf $$cdir/$$dir/$(DOWNLOAD_FN) ; \
+			[ ! -f $$cdir/$$dir/$(DNOUT) ] || \rm -rf $$cdir/$$dir/$(DNOUT) ;   \
 		done ;                                						            \
 	done
 
@@ -867,7 +889,7 @@ toolchain:
 	@echo "Preparing sources ... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@make -C gnu/sources -f ../Makefile download
+	@$(call DO_EXCL_SINGLE,make -C gnu/sources -f ../Makefile download)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo "BINUTILS ..."                          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
@@ -875,7 +897,9 @@ toolchain:
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/binutils/build/$(_ARCH_)/$(BINUTILS) ] || mkdir -p gnu/binutils/build/$(_ARCH_)/$(BINUTILS)
 	@cd gnu/binutils/build/$(_ARCH_)/$(BINUTILS); \
-		make -f $(TOPDIR)/gnu/Makefile config_binutils setup_binutils  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+		$(call DO_EXCL_SINGLE, \
+			make -f $(TOPDIR)/gnu/Makefile config_binutils 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
+		make -f $(TOPDIR)/gnu/Makefile setup_binutils  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo "Kernel Headers ..."                    2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
@@ -884,7 +908,8 @@ toolchain:
 	@[ -d $(KERNDIR)/$(KERNELVER) ] || \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) prepare 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@cd gnu; \
-		make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+		$(call DO_EXCL_SINGLE, \
+			make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT))
 	@[ ! -f $(TOOLCHAIN_ROOT)/$(PLATFORM)/include/asm/.install ] || ( \
 		echo ""  ;                     \
 		echo "Cleaning up kernel folder ..." ; \
@@ -897,7 +922,9 @@ toolchain:
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/gcc/build/$(_ARCH_)/$(GCC) ] || mkdir -p gnu/gcc/build/$(_ARCH_)/$(GCC)
 	@cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
-		make -f $(TOPDIR)/gnu/Makefile config_gcc setup_gcc          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+		$(call DO_EXCL_SINGLE, \
+			make -f $(TOPDIR)/gnu/Makefile config_gcc 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
+		make -f $(TOPDIR)/gnu/Makefile setup_gcc  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo "GLIBC Bootstrap ..."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
@@ -905,7 +932,9 @@ toolchain:
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@[ -d gnu/glibc/build/$(_ARCH_)/$(GLIBC) ] || mkdir -p gnu/glibc/build/$(_ARCH_)/$(GLIBC)
 	@cd gnu/glibc/build/$(_ARCH_)/$(GLIBC); \
-		make -f $(TOPDIR)/gnu/Makefile config_glibc setup_glibc      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+		$(call DO_EXCL_SINGLE, \
+			make -f $(TOPDIR)/gnu/Makefile config_glibc 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
+		make -f $(TOPDIR)/gnu/Makefile setup_glibc      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo "GCC Host Compiler ..."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
