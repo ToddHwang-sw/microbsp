@@ -20,8 +20,6 @@ include $(BDDIR)/env.mk
 # "vm" mode needs external USB disk/image file keeping "image.ext4" of /board/vm/.
 # USB device node/file image  should be passed to boards/vm/Makefile . 
 #
-## export EXT4HDD=/dev/sdd1
-## export EXT4CFG=/dev/sdd2
 export EXT4HDD=$(BDDIR)/$(EXTDISKNM)
 export EXT4CFG=$(BDDIR)/$(CFGDISKNM)
 
@@ -611,37 +609,39 @@ ext_%: checkfirst
 ## uix - only raspberry PI 3 board
 ##
 ui: checkfirst llvm_okay
-	@[ "$(TBOARD)" = "rpi3" ] || ( echo "Only \"TBOARD=rpi3\" option is mandatory for UI"; exit 1 )
-	@cd uix && \
-		for dir in $(SUBDIR); do         \
-			[ ! -d $$dir ] || (          \
-				$(call SETUP_BUILDOUT,$$dir)                     && \
-				$(call DO_EXCL,$$dir,prepare,ui,$(UNIXINSTDIR))  && \
-				$(call DO_NORM,$$dir,all,ui,$(UIXINSTDIR))       && \
-				$(call DO_NORM,$$dir,install,ui,$(UIXINSTDIR))   && \
-				$(CLEAN_LIBLA) ) \
-		done
+	@[ "$(TBOARD)" != "rpi3" ] || ( \
+		cd uix && \
+			for dir in $(SUBDIR); do         \
+				[ ! -d $$dir ] || (          \
+					$(call SETUP_BUILDOUT,$$dir)                     && \
+					$(call DO_EXCL,$$dir,prepare,ui,$(UNIXINSTDIR))  && \
+					$(call DO_NORM,$$dir,all,ui,$(UIXINSTDIR))       && \
+					$(call DO_NORM,$$dir,install,ui,$(UIXINSTDIR))   && \
+					$(CLEAN_LIBLA) ) \
+			done \
+		)
 
 
 ##
 ## ui_[prepare/all/install] - only raspberry PI 3 board
 ##
 ui_%: checkfirst llvm_okay
-	@[ "$(TBOARD)" = "rpi3" ] || ( echo "Only \"TBOARD=rpi3\" option is mandatory for UI"; exit 1 )
-	@cd uix; \
-		for dir in $(SUBDIR); do                     \
-			[ ! -d $$dir ] ||  (                     \
-				$(call SETUP_BUILDOUT,$$dir)      && \
-				if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
-					$(call DO_EXCL,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;     \
-				elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
-					$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;  \
-				else                                                               \
-					$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
-				fi &&  \
-				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
-			) ;	\
-		done
+	@[ "$(TBOARD)" != "rpi3" ] || ( \
+		cd uix; \
+			for dir in $(SUBDIR); do                     \
+				[ ! -d $$dir ] ||  (                     \
+					$(call SETUP_BUILDOUT,$$dir)      && \
+					if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
+						$(call DO_EXCL,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;     \
+					elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
+						$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;  \
+					else                                                               \
+						$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
+					fi &&  \
+					[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
+				) ;	\
+			done \
+		)
 
 ##
 ## projects
@@ -716,6 +716,16 @@ download_prologue:
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
 				[ -f $$dir/$(DNOUT) ] || touch $$dir/$(DNOUT)  ; \
+			)                                  \
+		done ;                                 \
+		cd .. ;                                \
+	done
+
+download_epilogue:
+	@for cat in $(COMPDIR); do                 \
+		cd $$cat ;                             \
+		for dir in $(SUBDIR); do               \
+			[ ! -d $$dir ] || (                \
 				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)         ; \
 				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
 				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
@@ -724,7 +734,7 @@ download_prologue:
 		cd .. ;                                \
 	done
 
-download: download_prologue lib_download app_download ext_download ui_download
+download: download_prologue lib_download app_download ext_download ui_download download_epilogue
 
 ##
 ## cleanup everything 
@@ -876,11 +886,13 @@ cleanup:
 	@[ ! -d $(STAGEDIR)   ] || \rm -rf $(STAGEDIR)
 	@[ ! -d $(UIXINSTDIR) ] || \rm -rf $(UIXINSTDIR)
 	@[ ! -d $(FINDIR)     ] || \rm -rf $(FINDIR)
-	@[ ! -d $(ISODIR)     ] || \rm -rf $(ISODIR)
-	@make -C $(BDDIR)        uninstall
+	@[ ! -f $(BOARD_BUILDOUT)  ] || \rm -rf $(BOARD_BUILDOUT)
+	@make -C $(BDDIR)        isodir=$(ISODIR) isoname=$(IMAGENAME) uninstall
 	@make -C $(BDDIR)/kernel uninstall
 	@cd $(BDDIR); \
-		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
+		[ ! -f $(BDDIR)/$(EXTDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
+	@cd $(BDDIR); \
+		[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM)
 
 toolchain:
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
