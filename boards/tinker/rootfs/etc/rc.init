@@ -31,6 +31,11 @@ mkdir /dev/pts
 mount -t devpts devpts  /dev/pts
 
 ##
+## COMPILER PATH
+##
+export COMPILER_PATH=/
+
+##
 ## Export Libraries...
 ##
 export LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
@@ -86,7 +91,7 @@ echo "XCFGD Configurator - wait 5"
 echo ""
 XCFGDIR=/config
 [ -d $XCFGDIR ] || mkdir -p $XCFGDIR
-mount /dev/mmcblk0p6 $XCFGDIR
+mount /dev/mmcblk0p7 $XCFGDIR
 /usr/sbin/run_xcfgd.sh \
     /usr/bin/xcfgd.cfg -f /etc/config.xml -d $XCFGDIR/db -s &
 
@@ -96,7 +101,7 @@ busywait 3
 ##
 ## NAT Bypass 
 ##
-[ ! -f /proc/natbyp ] || echo en > /proc/natbyp
+## [ ! -f /proc/natbyp ] || echo en > /proc/natbyp
 
 ##
 ## Macros needed to access configuration
@@ -201,12 +206,6 @@ if [ "$SSHEN" = "1" ]; then
 fi
 
 echo ""
-echo "RASPBERRY PI SPECIFIC INIT"
-echo ""
-echo 0 > /proc/sys/kernel/hung_task_timeout_secs
-
-
-echo ""
 echo "LPPS "
 echo ""
 LPPSDIR=/var/tmp/lpps
@@ -283,6 +282,6 @@ cat /etc/motd
 ## Never stop interactive shell....
 ##
 while true; do \
-    /sbin/getty -l /bin/bash -n 0 ttyS0; \
+    /sbin/getty -l /bin/bash -n 0 ttyS2; \
     echo "Running again...."
 done

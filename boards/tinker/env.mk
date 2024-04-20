@@ -38,6 +38,11 @@ export extra_SUBDIR=\
 		gpio
 
 ##
+## Kernel image tar.gz
+##
+export BDTARGZ=boot.tgz
+
+##
 ## external disk volume name 
 ##
 export EXTDISK=apps
@@ -112,7 +117,7 @@ export BUILDUP_ROOTFS=\
 	[ -d $(XBASEDIR)/lib64  ] || mkdir -p $(XBASEDIR)/lib64      && \
 	[ -d $(XBASEDIR)/etc    ] || mkdir -p $(XBASEDIR)/etc        && \
 	[ -d $(XBASEDIR)/etc/init.d ] || mkdir -p $(XBASEDIR)/etc/init.d                   && \
-	echo "ttyS0::respawn:/bin/sh"                   >  $(XBASEDIR)/etc/inittab         && \
+	echo "ttyS2::respawn:/bin/sh"                   >  $(XBASEDIR)/etc/inittab         && \
 	echo "::sysinit:/etc/init.d/rcS"                >> $(XBASEDIR)/etc/inittab         && \
 	echo "::shutdown:/etc/init.d/rc.shutdown"       >> $(XBASEDIR)/etc/inittab         && \
 	echo "\#!/bin/bash "                            >  $(XBASEDIR)/etc/init.d/rcS      && \
@@ -123,8 +128,8 @@ export BUILDUP_ROOTFS=\
 	echo "mkdir /var/root "                         >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "export PATH=/bin:/sbin:/usr/bin:/usr/sbin">> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "export LD_LIBRARY_PATH=/lib:/lib64 "      >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount /dev/mmcblk0p3 /mnt"                >> $(XBASEDIR)/etc/init.d/rcS      && \
-	echo "mount /dev/mmcblk0p5 /ui"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "mount /dev/mmcblk0p5 /mnt"                >> $(XBASEDIR)/etc/init.d/rcS      && \
+	echo "mount /dev/mmcblk0p6 /ui"                 >> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/usr  ] || ( echo \"External disk is not mounted !!\" ; exit 1 ) " \
 							>> $(XBASEDIR)/etc/init.d/rcS      && \
 	echo "[ -d /mnt/work ] || ( echo \"Work disk is not mounted !!\" ; exit 1 ) " \
@@ -143,4 +148,3 @@ export BUILDUP_ROOTFS=\
 	echo "root:x:0:0:root:/root:/bin/sh"            >  $(XBASEDIR)/etc/passwd          && \
 	echo "root:*:0:0:99999:7:::"                    >  $(XBASEDIR)/etc/shadow          && \
 	echo "Done" > /dev/null 
-

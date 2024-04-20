@@ -7,28 +7,25 @@
  *
  */
 
-#ifndef __CONFIG_H
-#define __CONFIG_H
+#ifndef __TINKER_RK3288_HEADER__
+#define __TINKER_RK3288_HEADER__
 
-#define ROCKCHIP_DEVICE_SETTINGS
-#include <configs/rk3288_common.h>
-
-#undef BOOT_TARGET_DEVICES
+#include <asm/arch-rockchip/hardware.h>
+#include <linux/sizes.h>
 
 #define BOOT_TARGET_DEVICES(func) \
 	func(MMC, mmc, 1)
 
-#define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV 1
 
 /* Environment */
-#define ENV_DEVICE_SETTINGS \
+#define ROCKCHIP_DEVICE_SETTINGS \
 	"stdin=serial\0" \
 	"stdout=serial\0" \
 	"stderr=serial\0"
 
 #define BOOTARGS  \
-		"console=ttyS3,115200 root=/dev/mmcblk0p3 ro rootfstype=squashfs earlyprintk rootwait"
+	"console=ttyS2,115200 root=/dev/mmcblk0p3 ro rootfstype=squashfs earlyprintk rootwait"
 
 /* FDT File */
 #define FDTFILE   "rk3288-tinker.dtb"
@@ -36,9 +33,18 @@
 /* /dev/mmc0p1 */
 #define BOOTPART  "1:2"
 
-#undef CONFIG_EXTRA_ENV_SETTINGS
+#ifndef CFG_CPUID_OFFSET
+#define CFG_CPUID_OFFSET	0x7
+#endif
 
-#define CONFIG_EXTRA_ENV_SETTINGS \
+#define BOOT_TARGETS	"mmc1 mmc0"
+
+#define CFG_SYS_HZ_CLOCK		24000000
+#define CFG_IRAM_BASE			0xff700000
+#define CFG_SYS_SDRAM_BASE		0
+#define SDRAM_MAX_SIZE			0xfe000000
+
+#define CFG_EXTRA_ENV_SETTINGS \
 	"fdt_high=0x0fffffff" "\0" \
 	"initrd_high=0x0fffffff" "\0" \
 	"scriptaddr=0x00000000\0" \

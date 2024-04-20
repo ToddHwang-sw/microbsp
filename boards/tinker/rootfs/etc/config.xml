@@ -57,7 +57,7 @@
         <intf>wlan1</intf>
 	</mon>
 	<lan>
-        <mode>dhcp</mode>          <!-- static, dhcp, none -->
+        <mode>none</mode>          <!-- static, dhcp, none -->
         <mac>random</mac>
         <name>br0</name>
         <interfaces>
@@ -66,7 +66,6 @@
             <wlan2>0</wlan2>
             <wlan3>0</wlan3>
             <wlan4>0</wlan4>
-            <eth0>eth0</eth0>
         </interfaces>
         <ip>100.5.5.1</ip>
         <start>50</start>
@@ -89,7 +88,7 @@
 	<wan>
         <mode>dhcp</mode>          <!-- static, dhcp, none -->
         <mac>random</mac>
-        <name>wlan0</name>
+        <name>eth0</name>
 		<ip>192.167.0.162</ip>
 		<netmask>255.255.255.0</netmask>
 		<gateway>192.167.0.1</gateway>

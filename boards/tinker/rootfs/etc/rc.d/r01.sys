@@ -1,12 +1,2 @@
 #!/bin/sh
 
-case $1 in 
-	"start")
-		[ -f /root/nxview ] || exit 1
-		nano-X &  
-		/root/nxview /root/karma.jpg &
-		;;
-	"stop")
-		;;
-esac
-

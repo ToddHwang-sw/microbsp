@@ -1,0 +1,17 @@
+diff -uNr linux-5.15.113-orig/drivers/firmware/arm_scmi/driver.c linux-5.15.113/drivers/firmware/arm_scmi/driver.c
+--- linux-5.15.113-orig/drivers/firmware/arm_scmi/driver.c	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/drivers/firmware/arm_scmi/driver.c	2024-04-19 22:47:58.392660732 -0700
+@@ -2082,8 +2082,13 @@
+ {
+ 	int ret;
+ 
++	/* Todd */
++#if 0
+ 	/* Bail out if no SCMI transport was configured */
+ 	if (WARN_ON(!IS_ENABLED(CONFIG_ARM_SCMI_HAVE_TRANSPORT)))
++#else
++	if (!IS_ENABLED(CONFIG_ARM_SCMI_HAVE_TRANSPORT))
++#endif
+ 		return -EINVAL;
+ 
+ 	scmi_bus_init();

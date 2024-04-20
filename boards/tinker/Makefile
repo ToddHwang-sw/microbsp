@@ -1,5 +1,3 @@
-BDTARGZ=boot.tgz
-
 prepare:
 	@[ -d $(isodir) ]            || mkdir -p $(isodir)
 	@[ -d $(isodir)/boot ]       || mkdir -p $(isodir)/boot
@@ -14,8 +12,6 @@ install:
 	@make -C firmware isodir=$(isodir) install
 	@make -C boot     isodir=$(isodir) install
 	@\rm -rf $(isodir)/boot/*.old
-	@cd $(isodir)/boot; \
-		tar zcvf ../../$(BDTARGZ) * > /dev/null
 
 uninstall:
 	@[ ! -f $(BDTARGZ) ] || \rm -rf $(BDTARGZ)

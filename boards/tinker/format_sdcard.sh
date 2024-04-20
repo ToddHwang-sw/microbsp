@@ -3,14 +3,19 @@
 LOGFILE=/tmp/linuxrpi.rpi3.format_disk.log
 TMPDIR=/tmp/linuxrpi.rpi3.tmpdir
 
+DD=dd conv=sync
+LOADERFILE=iso/boot/idbloader.img
+UBOOTFILE=iso/boot/u-boot.img
+
 ##
 ## Partition Size ...
 ##
+LOADERPSIZE=128M
 BOOTPSIZE=128M
 RAMDISKPSIZE=1G
-ROOTPSIZE=8G
+ROOTPSIZE=16G
 OVRPSIZE=8G
-UIPSIZE=4G
+UIPSIZE=6G
 CFGPSIZE=10M
 
 ##
@@ -114,22 +119,26 @@ n
 p
 1
 
-+$BOOTPSIZE
++$LOADERPSIZE
 
 n
 p
 2
 
-+$RAMDISKPSIZE
++$BOOTPSIZE
 
 n
 p
 3
 
-+$ROOTPSIZE
++$RAMDISKPSIZE
 
 n
 e
+
++$ROOTPSIZE
+
+n
 
 +$OVRPSIZE
 
@@ -150,7 +159,7 @@ echo "-----------------------------------------------------"
 echo "Changing BOOT PARTITION to FAT"
 sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 t
-1
+2
 c
 w
 END " &>> $LOGFILE
@@ -158,44 +167,55 @@ END " &>> $LOGFILE
 sleep 1
 echo "-----------------------------------------------------"
 
-echo "Turning on Bootable Flag"
-sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
-a
-1
-w
-END " &>> $LOGFILE
+echo "Building LOADER partition /dev/${DRIVE}1"
+if [ -f ${LOADERFILE} -a -f ${UBOOTFILE} ]; then
+	echo ""
+    echo "Zeroing..."
+	echo ""
+	sudo ${DD} if=/dev/zero of=/dev/${DRIVE}1 bs=$BOOTPSIZE count=1
 
-echo "Building BOOT partition /dev/${DRIVE}1"
+	echo ""
+    echo "Wring IDBLOADER"
+	echo ""
+	sudo ${DD} if=${LOADERFILE} of=/dev/${DRIVE}1 seek=64
+
+	echo ""
+    echo "Wring BOOTLOADER"
+	echo ""
+	sudo ${DD} if=${UBOOTFILE}  of=/dev/${DRIVE}1 seek=16384
+fi
+
+echo "Building BOOT partition /dev/${DRIVE}2 "
 if [ -f $BOOTFILE ]; then
-    echo "Yes Boot FILe!!!"
-	mkfs.vfat -n $BOOTPNAME /dev/${DRIVE}1 
+	mkfs.vfat -n $BOOTPNAME /dev/${DRIVE}2 
 	[ ! -d $TMPDIR ] || \rm -rf $TMPDIR
 	mkdir -p $TMPDIR
-	mount /dev/${DRIVE}1 $TMPDIR 
+	mount /dev/${DRIVE}2 $TMPDIR 
 	tar zxvf $BOOTFILE -C $TMPDIR > /dev/null 2>&1 
+	sync
 	sync
 	sync
 	umount $TMPDIR
 	\rm -rf $TMPDIR
 fi
 
-echo "Building RAMDISK partition /dev/${DRIVE}2 "
+echo "Building RAMDISK partition /dev/${DRIVE}3 "
 if [ -f $RAMDISKFILE ]; then
-	sudo dd if=$RAMDISKFILE of=/dev/${DRIVE}2 bs=128M
+	sudo ${DD} if=$RAMDISKFILE of=/dev/${DRIVE}3 bs=128M
 fi
 
-echo "Building IMAGE partition /dev/${DRIVE}3 - takes long time... "
+echo "Building IMAGE partition /dev/${DRIVE}5 - takes long time... "
 if [ -f $IMAGEFILE ]; then
-	sudo dd if=$IMAGEFILE  of=/dev/${DRIVE}3 bs=128M
+	sudo ${DD} if=$IMAGEFILE of=/dev/${DRIVE}5 bs=128M
 fi
 
-echo "Building UI partition /dev/${DRIVE}5 - takes long time... "
+echo "Building UI partition /dev/${DRIVE}6 - takes long time... "
 if [ -f $UIFILE ]; then
-	sudo dd if=$UIFILE  of=/dev/${DRIVE}5 bs=128M
+	sudo ${DD} if=$UIFILE of=/dev/${DRIVE}6 bs=128M
 fi
 
-echo "Building CFG partition /dev/${DRIVE}6"
+echo "Building CFG partition /dev/${DRIVE}7"
 if [ -f $CFGFILE ]; then
-	sudo dd if=$CFGFILE  of=/dev/${DRIVE}6 bs=128K
+	sudo ${DD} if=$CFGFILE of=/dev/${DRIVE}7 bs=128K
 fi
 

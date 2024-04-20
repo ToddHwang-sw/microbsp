@@ -29,7 +29,7 @@ prepare:
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		tar xvf source/$(FILENM) -C $(BUILDDIR) ;                  \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
-		cat ../../../patch/patch | patch -p 1;                     \
+		cat ../../../patch/patch.$(KERNELVER) | patch -p 1;        \
 		cp  ../../../patch/$(KERNELVER).config .config;            \
 		make ARCH=arm olddefconfig )
 
@@ -77,6 +77,10 @@ install:
 		$(LINUXMAKE) INSTALL_PATH=$(isodir)/kernel install; \
 		cp arch/arm/boot/zImage $(isodir)/kernel;           \
 		$(LINUXMAKE) INSTALL_DTBS_PATH=$(isodir)/kernel dtbs_install )
+	@[ ! -f $(isodir)/kernel/zImage ] || (            \
+		cd $(isodir)/kernel; \
+		tar zcvf ../../$(BDTARGZ) zImage rk3288-tinker.dtb > /dev/null  \
+		)
 
 uninstall:
 	@[ ! -f ../$(ROOTFSIMAGEFN) ] || \rm -rf ../$(ROOTFSIMAGEFN)

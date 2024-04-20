@@ -2,18 +2,16 @@
 
 case $1 in
 	"start")
-		echo "[WLAN] Loading all WLAN modules..."
-		modprobe 8192eu
-		modprobe 8812bu
+		echo "[ETH] Start..."
 
-		/etc/scripts/wlan_sta.sh start
+		ifconfig lo up
+		ifconfig eth0 up
+		dhcpc eth0 
 		;;
 	"stop")
-		echo "[WLAN] Unloading all WLAN modules..."
-		/etc/scripts/wlan_sta.sh stop
+		echo "[ETH] Stop..."
 
-		rmmod 8812bu
-		rmmod 8192eu
+		ifconfig eth0 down
 		;;
 	"*")
 		;;

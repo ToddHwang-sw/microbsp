@@ -5,7 +5,7 @@ EN=`$ASK mon/en`
 INTF=`$ASK mon/intf`
 
 case $1 in
-	"start")
+	"start_")
 		echo "[WLAN] WiFi Monitoring Start"
 
 		if [ "$EN" != "0" ]; then
@@ -14,7 +14,7 @@ case $1 in
 			tcpdump -i $INTF -c 99999 -w /var/tmp/$INTF_mon.pcap &
 		fi
 		;;
-	"stop")
+	"stop_")
 		echo "[WLAN] WiFi Monitoring Stop"
 		;;
 	"*")

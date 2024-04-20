@@ -19,7 +19,14 @@
 		6. [Bootable SD Card](#rpi3_sdcard)
 		7. [WLAN Configuration](#rpi3_wlan)
 		8. [Available Packages](#rpi3_packages)
-8. [MBSP VM](#qemu) 
+8. [ASUS Tinker](#tinker)
+	1. [Testbed components](#tinker_component)
+	2. [Booting Shot](#tinker_boot)
+	3. [Procedures](#tinker_procedures)
+		1. [Downloading sources](#tinker_download)
+		2. [Toolchain](#tinker_toolchain)
+		3. [Libraries, Applications, Extra Applications](#tinker_library)
+9. [MBSP VM](#qemu) 
 	1. [Testbed components](#qemu_component)
 	2. [Setup](#qemu_setup) 
 	3. [Booting Shot](#qemu_boot)
@@ -40,8 +47,8 @@
 		3. [NAT network configuration](#qemu_nat)
 		4. [DHCP/DNS configuration](#qemu_dns)
 		5. [Host Network Setup Script](#qemu_script)
-9. [Selective Compilation](#selective_compile)
-10. [How Python](#python)
+10. [Selective Compilation](#selective_compile)
+11. [How Python](#python)
 	1. [Setting up PIP](#python_pip)
 	2. [Upgrading PIP](#python_upgrade_pip)
 
@@ -1412,33 +1419,700 @@ bash-5.1# reboot -f
 
 ```
 
+
+## ASUS Tinker Board <a name="tinker"></a>
+
+
+### Poor man's gadgets <a name="tinker_component"></a>
+
+* [Wiki] (https://en.wikipedia.org/wiki/Asus_Tinker_Board)
+
+* [Resources] (https://tinker-board.asus.com/download-list.html?product=tinker-board)
+
+* [Rockchip Booting Information] (https://opensource.rock-chips.com/wiki_Boot_option)
+
+* [Rockchip Booting Example] (https://wiki.gentoo.org/wiki/User:Brendlefly62/Rockchip_RK3288_Asus_Tinker_Board_S/Build-Install-U-Boot/DIY_u-boot)
+
+* [Developer Guide] (https://github.com/TinkerBoard/TinkerBoard/wiki/Developer-Guide)
+
+* [Rockchip Firmwares] (https://github.com/rockchip-linux/rkbin)
+
+
+### Booting Shot <a name="tinker_boot"></a>
+
+  ```
+
+ DDR Version 1.11 20210818
+In
+Channel a: LPDDR3 400MHz
+MR0=0x58
+MR1=0x58
+MR2=0x58
+MR3=0x58
+MR4=0x2
+MR5=0x1
+MR6=0x5
+MR7=0x0
+MR8=0x1F
+MR9=0x1F
+MR10=0x1F
+MR11=0x1F
+MR12=0x1F
+MR13=0x1F
+MR14=0x1F
+MR15=0x1F
+MR16=0x1F
+Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Die Bus-Width=32 Size=1024MB
+Channel b: LPDDR3 400MHz
+MR0=0x58
+MR1=0x58
+MR2=0x58
+MR3=0x58
+MR4=0x2
+MR5=0x1
+MR6=0x5
+MR7=0x0
+MR8=0x1F
+MR9=0x1F
+MR10=0x1F
+MR11=0x1F
+MR12=0x1F
+MR13=0x1F
+MR14=0x1F
+MR15=0x1F
+MR16=0x1F
+Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Die Bus-Width=32 Size=1024MB
+Memory OK
+Memory OK
+OUT
+Boot1 Release Time: Jul 22 2021 09:08:57, version: 2.63
+ChipType = 0x8, 252
+mmc2:cmd1,400
+emmc reinit
+mmc2:cmd1,400
+emmc reinit
+mmc2:cmd1,400
+SdmmcInit=2 1
+mmc0:cmd5,20
+SdmmcInit=0 0
+BootCapSize=0
+UserCapSize=60906MB
+FwPartOffset=2000 , 0
+StorageInit ok = 103205
+SecureMode = 0
+SecureInit read PBA: 0x4
+SecureInit read PBA: 0x404
+SecureInit read PBA: 0x804
+SecureInit read PBA: 0xc04
+SecureInit read PBA: 0x1004
+SecureInit read PBA: 0x1404
+SecureInit read PBA: 0x1804
+SecureInit read PBA: 0x1c04
+SecureInit ret = 0, SecureMode = 0
+atags_set_bootdev: ret:(0)
+GPT 0x31443e0 signature is wrong
+recovery gpt...
+GPT 0x31443e0 signature is wrong
+recovery gpt fail!
+tag:LOADER error,addr:0x2000
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+LOADER Check OK! 0x4000, 194478
+tag:TOS    error,addr:0x4000
+hdr 033476cc + 0x0:0x44414f4c,0x20205245,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x6000
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x4800
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x6800
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x5000
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x7000
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x5800
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x7800
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x6000
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x8000
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x6800
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x8800
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x7000
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x9000
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+tag:TOS    error,addr:0x7800
+hdr 033476cc + 0x0:0x00000000,0x00000000,0x00000000,0x00000000,
+
+tag:TOS    error,addr:0x9800
+hdr 033476cc + 0x0:0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+
+Enter uboot 1000000 351246
+
+
+U-Boot 2023.10-dirty (Apr 20 2024 - 08:45:47 -0700)
+
+SoC: Rockchip rk3288
+Reset cause: POR
+Model: Tinker-RK3288
+DRAM:  2 GiB
+PMIC:  RK808
+Core:  206 devices, 22 uclasses, devicetree: separate
+MMC:   mmc@ff0c0000: 1
+Loading Environment from MMC... *** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Model: Tinker-RK3288
+Net:   eth0: ethernet@ff290000
+Hit any key to stop autoboot:  0
+switch to partitions #0, OK
+mmc1 is current device
+7328256 bytes read in 321 ms (21.8 MiB/s)
+40844 bytes read in 5 ms (7.8 MiB/s)
+Kernel image @ 0x2000000 [ 0x000000 - 0x6fd200 ]
+## Flattened Device Tree blob at 01f00000
+   Booting using the fdt blob at 0x1f00000
+Working FDT set to 1f00000
+   Loading Device Tree to 0fff3000, end 0fffff8b ... OK
+Working FDT set to fff3000
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x500
+[    0.000000] Linux version 5.15.113 (todd@todd-hppc) (arm-mbsp-linux-gnueabi-gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.38) #1 SMP Fri Apr 19 23:32:30 PDT 2024
+[    0.000000] CPU: ARMv7 Processor [410fc0d1] revision 1 (ARMv7), cr=30c5387d
+[    0.000000] CPU: div instructions available: patching division code
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] OF: fdt: Machine model: Rockchip RK3288 Asus Tinker Board
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] efi: UEFI not found.
+[    0.000000] cma: Reserved 64 MiB at 0x000000007c000000
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000000000-0x000000002fffffff]
+[    0.000000]   Normal   empty
+[    0.000000]   HighMem  [mem 0x0000000030000000-0x000000007fffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000000000-0x000000007fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000007fffffff]
+[    0.000000] percpu: Embedded 16 pages/cpu s33740 r8192 d23604 u65536
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 522752
+[    0.000000] Kernel command line: console=ttyS2,115200 root=/dev/mmcblk0p3 ro rootfstype=squashfs earlyprintk rootwait
+[    0.000000] Unknown kernel command line parameters "earlyprintk", will be passed to user space.
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 1993868K/2097152K available (12288K kernel code, 1404K rwdata, 2980K rodata, 2048K init, 273K bss, 37748K reserved, 65536K cma-reserved, 1245184K highmem)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] trace event string verifier disabled
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu:     RCU event tracing is enabled.
+[    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=16 to nr_cpu_ids=4.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000001] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.000027] Switching to timer-based delay loop, resolution 41ns
+[    0.002677] Console: colour dummy device 80x30
+[    0.002757] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=240000)
+[    0.002786] pid_max: default: 32768 minimum: 301
+[    0.003008] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+[    0.003043] Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+[    0.003852] CPU: Testing write buffer coherency: ok
+[    0.003924] CPU0: Spectre v2: using BPIALL workaround
+[    0.004236] CPU0: thread -1, cpu 0, socket 5, mpidr 80000500
+[    0.005525] Setting up static identity map for 0x200000 - 0x200060
+[    0.005719] rcu: Hierarchical SRCU implementation.
+[    0.006024] EFI services will not be available.
+[    0.006400] smp: Bringing up secondary CPUs ...
+[    0.008362] CPU1: thread -1, cpu 1, socket 5, mpidr 80000501
+[    0.008385] CPU1: Spectre v2: using BPIALL workaround
+[    0.010522] CPU2: thread -1, cpu 2, socket 5, mpidr 80000502
+[    0.010545] CPU2: Spectre v2: using BPIALL workaround
+[    0.012648] CPU3: thread -1, cpu 3, socket 5, mpidr 80000503
+[    0.012670] CPU3: Spectre v2: using BPIALL workaround
+[    0.012842] smp: Brought up 1 node, 4 CPUs
+[    0.012869] SMP: Total of 4 processors activated (192.00 BogoMIPS).
+[    0.012886] CPU: All CPU(s) started in SVC mode.
+[    0.013593] devtmpfs: initialized
+[    0.022812] VFP support v0.3: implementor 41 architecture 3 part 30 variant d rev 0
+[    0.023065] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.023102] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.025871] pinctrl core: initialized pinctrl subsystem
+[    0.026751] DMI not present or invalid.
+[    0.027628] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.030657] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.032557] thermal_sys: Registered thermal governor 'step_wise'
+[    0.033158] cpuidle: using governor menu
+[    0.033825] No ATAGs?
+[    0.034015] hw-breakpoint: found 5 (+1 reserved) breakpoint and 4 watchpoint registers.
+[    0.034039] hw-breakpoint: maximum watchpoint size is 4 bytes.
+[    0.034306] Serial: AMBA PL011 UART driver
+[    0.054132] platform ff980000.hdmi: Fixing up cyclic dependency with ff940000.vop
+[    0.054234] platform ff980000.hdmi: Fixing up cyclic dependency with ff930000.vop
+[    0.067306] rockchip-gpio ff750000.gpio0: probed /pinctrl/gpio0@ff750000
+[    0.068060] rockchip-gpio ff780000.gpio1: probed /pinctrl/gpio1@ff780000
+[    0.068802] rockchip-gpio ff790000.gpio2: probed /pinctrl/gpio2@ff790000
+[    0.069534] rockchip-gpio ff7a0000.gpio3: probed /pinctrl/gpio3@ff7a0000
+[    0.070408] rockchip-gpio ff7b0000.gpio4: probed /pinctrl/gpio4@ff7b0000
+[    0.071157] rockchip-gpio ff7c0000.gpio5: probed /pinctrl/gpio5@ff7c0000
+[    0.071880] rockchip-gpio ff7d0000.gpio6: probed /pinctrl/gpio6@ff7d0000
+[    0.072603] rockchip-gpio ff7e0000.gpio7: probed /pinctrl/gpio7@ff7e0000
+[    0.073312] rockchip-gpio ff7f0000.gpio8: probed /pinctrl/gpio8@ff7f0000
+[    0.096259] iommu: Default domain type: Translated
+[    0.096283] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.098713] SCSI subsystem initialized
+[    0.099519] usbcore: registered new interface driver usbfs
+[    0.099592] usbcore: registered new interface driver hub
+[    0.099657] usbcore: registered new device driver usb
+[    0.100551] pps_core: LinuxPPS API ver. 1 registered
+[    0.100570] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.100603] PTP clock support registered
+[    0.100641] EDAC MC: Ver: 3.0.0
+[    0.102558] clocksource: Switched to clocksource arch_sys_counter
+[    0.143668] VFS: Disk quotas dquot_6.6.0
+[    0.143783] VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    0.155004] NET: Registered PF_INET protocol family
+[    0.155295] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.156817] tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 6144 bytes, linear)
+[    0.156872] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.156899] TCP established hash table entries: 8192 (order: 3, 32768 bytes, linear)
+[    0.156987] TCP bind hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.157185] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.157300] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.157364] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.157600] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.158553] RPC: Registered named UNIX socket transport module.
+[    0.158577] RPC: Registered udp transport module.
+[    0.158589] RPC: Registered tcp transport module.
+[    0.158600] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    1.606841] hw perfevents: enabled with armv7_cortex_a12 PMU driver, 7 counters available
+[    1.608672] Initialise system trusted keyrings
+[    1.608975] workingset: timestamp_bits=30 max_order=19 bucket_order=0
+[    1.615622] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.616452] NFS: Registering the id_resolver key type
+[    1.616527] Key type id_resolver registered
+[    1.616544] Key type id_legacy registered
+[    1.616677] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    1.616698] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    1.616747] ntfs: driver 2.1.32 [Flags: R/O].
+[    1.617379] Key type asymmetric registered
+[    1.617402] Asymmetric key parser 'x509' registered
+[    1.617532] bounce: pool size: 64 pages
+[    1.617602] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+[    1.617622] io scheduler mq-deadline registered
+[    1.617635] io scheduler kyber registered
+[    1.625167] Driver 'scmi-clocks' was unable to register with bus_type 'scmi_protocol' because the bus was not initialized.
+[    1.627281] dma-pl330 ff250000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    1.627310] dma-pl330 ff250000.dma-controller:       DBUFF-128x8bytes Num_Chans-8 Num_Peri-20 Num_Events-16
+[    1.628228] dma-pl330 ffb20000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    1.628256] dma-pl330 ffb20000.dma-controller:       DBUFF-64x8bytes Num_Chans-5 Num_Peri-6 Num_Events-10
+[    1.631963] Driver 'scmi-reset' was unable to register with bus_type 'scmi_protocol' because the bus was not initialized.
+[    1.697777] Serial: 8250/16550 driver, 5 ports, IRQ sharing enabled
+[    1.700787] ff180000.serial: ttyS0 at MMIO 0xff180000 (irq = 38, base_baud = 1500000) is a 16550A
+[    1.702305] ff190000.serial: ttyS1 at MMIO 0xff190000 (irq = 39, base_baud = 1500000) is a 16550A
+[    1.703844] ff690000.serial: ttyS2 at MMIO 0xff690000 (irq = 40, base_baud = 1500000) is a 16550A
+[    2.655645] printk: console [ttyS2] enabled
+[    2.661748] ff1b0000.serial: ttyS3 at MMIO 0xff1b0000 (irq = 41, base_baud = 1500000) is a 16550A
+[    2.673201] ff1c0000.serial: ttyS4 at MMIO 0xff1c0000 (irq = 42, base_baud = 1500000) is a 16550A
+[    2.685291] STMicroelectronics ASC driver initialized
+[    2.704096] brd: module loaded
+[    2.715375] loop: module loaded
+[    2.725977] CAN device driver interface
+[    2.734452] pegasus: Pegasus/Pegasus II USB Ethernet driver
+[    2.740746] usbcore: registered new interface driver pegasus
+[    2.747194] usbcore: registered new interface driver asix
+[    2.753320] usbcore: registered new interface driver ax88179_178a
+[    2.760181] usbcore: registered new interface driver cdc_ether
+[    2.766798] usbcore: registered new interface driver smsc75xx
+[    2.773320] usbcore: registered new interface driver smsc95xx
+[    2.779791] usbcore: registered new interface driver net1080
+[    2.786197] usbcore: registered new interface driver cdc_subset
+[    2.792889] usbcore: registered new interface driver zaurus
+[    2.799217] usbcore: registered new interface driver cdc_ncm
+[    2.807000] dwc2 ff540000.usb: supply vusb_d not found, using dummy regulator
+[    2.815214] dwc2 ff540000.usb: supply vusb_a not found, using dummy regulator
+[    2.893016] dwc2 ff540000.usb: DWC OTG Controller
+[    2.898316] dwc2 ff540000.usb: new USB bus registered, assigned bus number 1
+[    2.906279] dwc2 ff540000.usb: irq 49, io mem 0xff540000
+[    2.913177] hub 1-0:1.0: USB hub found
+[    2.917436] hub 1-0:1.0: 1 port detected
+[    2.922759] dwc2 ff580000.usb: supply vusb_d not found, using dummy regulator
+[    2.930909] dwc2 ff580000.usb: supply vusb_a not found, using dummy regulator
+[    3.072624] dwc2 ff580000.usb: EPs: 10, dedicated fifos, 972 entries in SPRAM
+[    3.081514] dwc2 ff580000.usb: DWC OTG Controller
+[    3.086875] dwc2 ff580000.usb: new USB bus registered, assigned bus number 2
+[    3.094832] dwc2 ff580000.usb: irq 50, io mem 0xff580000
+[    3.101643] hub 2-0:1.0: USB hub found
+[    3.105954] hub 2-0:1.0: 1 port detected
+[    3.112134] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    3.119503] ehci-omap: OMAP-EHCI Host Controller driver
+[    3.125572] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    3.132505] ohci-platform: OHCI generic platform driver
+[    3.139425] usbcore: registered new interface driver usb-storage
+[    3.149627] i2c_dev: i2c /dev entries driver
+[    3.158454] rk808 0-001b: chip id: 0x0
+[    3.167035] vdd_arm: supplied by vcc_sys
+[    3.172415] vdd_gpu: supplied by vcc_sys
+[    3.177207] vcc_ddr: supplied by vcc_sys
+[    3.182239] vcc_io: supplied by vcc_sys
+[    3.187377] vcc18_ldo1: supplied by vcc_sys
+[    3.193278] vcc33_mipi: supplied by vcc_sys
+[    3.199184] vdd_10: supplied by vcc_sys
+[    3.204735] vcc18_codec: supplied by vcc_io
+[    3.210653] vccio_sd: supplied by vcc_io
+[    3.216303] vdd10_lcd: supplied by vcc_io
+[    3.222027] vcc_18: supplied by vcc_sys
+[    3.227551] vcc18_lcd: supplied by vcc_sys
+[    3.233076] vcc33_sd: supplied by vcc_io
+[    3.237805] vcc33_lan: supplied by vcc_io
+[    3.245160] Driver 'scmi-hwmon' was unable to register with bus_type 'scmi_protocol' because the bus was not initialized.
+[    3.262744] cpufreq: cpufreq_online: CPU0: Running at unlisted initial frequency: 500000 KHz, changing to: 600000 KHz
+[    3.275029] Driver 'scmi-cpufreq' was unable to register with bus_type 'scmi_protocol' because the bus was not initialized.
+[    3.288147] sdhci: Secure Digital Host Controller Interface driver
+[    3.295088] sdhci: Copyright(c) Pierre Ossman
+[    3.300346] Synopsys Designware Multimedia Card Interface Driver
+[    3.307821] sdhci-pltfm: SDHCI platform and OF driver helper
+[    3.308254] dwmmc_rockchip ff0c0000.mmc: IDMAC supports 32-bit address mode.
+[    3.308380] dwmmc_rockchip ff0d0000.mmc: IDMAC supports 32-bit address mode.
+[    3.316016] usb 1-1: new high-speed USB device number 2 using dwc2
+[    3.337226] dwmmc_rockchip ff0d0000.mmc: Using internal DMA controller.
+[    3.344632] dwmmc_rockchip ff0d0000.mmc: Version ID is 270a
+[    3.350879] dwmmc_rockchip ff0d0000.mmc: DW MMC controller at irq 35,32 bit host data width,256 deep fifo
+[    3.361816] ledtrig-cpu: registered to indicate activity on CPUs
+[    3.361836] dwmmc_rockchip ff0c0000.mmc: Using internal DMA controller.
+[    3.368759] Driver 'scmi-power-domain' was unable to register with bus_type 'scmi_protocol' because the bus was not initialized.
+[    3.375942] dwmmc_rockchip ff0c0000.mmc: Version ID is 270a
+[    3.375980] dwmmc_rockchip ff0c0000.mmc: DW MMC controller at irq 34,32 bit host data width,256 deep fifo
+[    3.389180] usbcore: registered new interface driver usbhid
+[    3.395286] mmc_host mmc0: card is polling.
+[    3.405800] usbhid: USB HID core driver
+[    3.421431] NET: Registered PF_INET6 protocol family
+[    3.424634] mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    3.427434] Segment Routing with IPv6
+[    3.441393] In-situ OAM (IOAM) with IPv6
+[    3.445808] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    3.452676] NET: Registered PF_PACKET protocol family
+[    3.458331] can: controller area network core
+[    3.463229] NET: Registered PF_CAN protocol family
+[    3.468583] can: raw protocol
+[    3.471895] can: broadcast manager protocol
+[    3.476577] can: netlink gateway - max_hops=1
+[    3.481548] Key type dns_resolver registered
+[    3.486365] Registering SWP/SWPB emulation handler
+[    3.491990] Loading compiled-in X.509 certificates
+[    3.505324] vcc_sd: supplied by vcc_io
+[    3.510235] rk_gmac-dwmac ff290000.ethernet: IRQ eth_lpi not found
+[    3.517211] rk_gmac-dwmac ff290000.ethernet: PTP uses main clock
+[    3.524031] rk_gmac-dwmac ff290000.ethernet: clock input or output? (input).
+[    3.531911] rk_gmac-dwmac ff290000.ethernet: TX delay(0x30).
+[    3.538242] rk_gmac-dwmac ff290000.ethernet: RX delay(0x10).
+[    3.544575] rk_gmac-dwmac ff290000.ethernet: integrated PHY? (no).
+[    3.551495] rk_gmac-dwmac ff290000.ethernet: cannot get clock clk_mac_speed
+[    3.559266] rk_gmac-dwmac ff290000.ethernet: clock input from PHY
+[    3.571079] rk_gmac-dwmac ff290000.ethernet: init for RGMII
+[    3.577432] rk_gmac-dwmac ff290000.ethernet: User ID: 0x10, Synopsys ID: 0x35
+[    3.585426] rk_gmac-dwmac ff290000.ethernet:         DWMAC1000
+[    3.591261] rk_gmac-dwmac ff290000.ethernet: DMA HW capability register supported
+[    3.594199] hub 1-1:1.0: USB hub found
+[    3.599619] rk_gmac-dwmac ff290000.ethernet: RX Checksum Offload Engine supported
+[    3.604085] hub 1-1:1.0: 4 ports detected
+[    3.612149] rk_gmac-dwmac ff290000.ethernet: COE Type 2
+[    3.622456] rk_gmac-dwmac ff290000.ethernet: TX Checksum insertion supported
+[    3.630330] rk_gmac-dwmac ff290000.ethernet: Wake-Up On Lan supported
+[    3.637552] rk_gmac-dwmac ff290000.ethernet: Normal descriptors
+[    3.644167] rk_gmac-dwmac ff290000.ethernet: Ring mode enabled
+[    3.650680] rk_gmac-dwmac ff290000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[    3.684136] mmc_host mmc0: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    3.695543] mmc0: new high speed SDXC card at address aaaa
+[    3.704079] mmcblk0: mmc0:aaaa SD64G 59.5 GiB
+[    3.712455]  mmcblk0: p1 p2 p3 p4 < p5 p6 p7 >
+[    4.727597] mdio_bus stmmac-0:00: attached PHY driver [unbound] (mii_bus:phy_addr=stmmac-0:00, irq=POLL)
+[    4.738282] mdio_bus stmmac-0:01: attached PHY driver [unbound] (mii_bus:phy_addr=stmmac-0:01, irq=POLL)
+[    4.750811] dwmmc_rockchip ff0d0000.mmc: IDMAC supports 32-bit address mode.
+[    4.751283] input: gpio-keys as /devices/platform/gpio-keys/input/input0
+[    4.767032] dwmmc_rockchip ff0d0000.mmc: Using internal DMA controller.
+[i[    4.774648] dw-apb-uart ff690000.serial: forbid DMA for kernel console
+[    4.774651] dwmmc_rockchip ff0d0000.mmc: DW MMC controller at irq 35,32 bit host data width,256 deep fifo
+[    4.793892] dwmmc_rockchip ff0d0000.mmc: IDMAC supports 32-bit address mode.
+[    4.796976] VFS: Mounted root (squashfs filesystem) readonly on device 179:3.
+[    4.809848] dwmmc_rockchip ff0d0000.mmc: Using internal DMA controller.
+[    4.811444] devtmpfs: mounted
+[    4.817254] dwmmc_rockchip ff0d0000.mmc: Version ID is 270a
+[    4.826796] dwmmc_rockchip ff0d0000.mmc: DW MMC controller at irq 35,32 bit host data width,256 deep fifo
+[    4.839275] Freeing unused kernel image (initmem) memory: 2048K
+[    4.884064] Run /sbin/init as init process
+[    5.281787] EXT4-fs (mmcblk0p5): recovery complete
+[    5.288364] EXT4-fs (mmcblk0p5): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
+mount: mounting /dev/mmcblk0p6 on /ui failed: Invalid argument
+Mounting...
+Device file system
+Change root !!
+chpasswd: password for 'root' changed
+
+XCFGD Configurator - wait 5
+
+mount: mounting /dev/mmcblk0p7 on /config failed: Invalid argument
+Waiting it for getting ready to work..
+Daemon Running...
+DBG:main                :649  TEMPORARY FILE - SYNC : /var/tmp/xcfgXvPkfTH
+DBG:main                :673  XML1 : /etc/config.xml
+DBG:main                :669  DEV : /config/db
+DBG:main                :665  STANDADLONE MODE
+DBG:main                :752  TEMPORARY DIRECTORY = (/var/tmp/122)
+MSG:xml_storage_open    :1222 /config/db Physical Information = ( 4 x 128 Kbytes + 2 x 1024 Kbytes ) 4
+DBG:xml_storage_open    :1253 /config/db has been opened
+MSG:xml_storage_open    :1262 FILE /config/db SIZE=2621440
+DBG:xml_storage_open    :1306 HEADER[ 0 ] FLAGS=0 DIRTY=1
+DBG:xml_storage_open    :1306 HEADER[ 1 ] FLAGS=0 DIRTY=0
+DBG:xml_storage_open    :1306 HEADER[ 2 ] FLAGS=0 DIRTY=0
+DBG:xml_storage_open    :1306 HEADER[ 3 ] FLAGS=0 DIRTY=0
+MSG:xml_storage_open    :1312 xml_storage_open : HEADER ANALSYS [4/4]
+MSG:xml_storage_open    :1320 xml_storage_open : HEADER LOCATION = ( 00000000 00020000 00040000 00060000 )
+MSG:xml_storage_open    :1351 DATA[ 0 ] has 8 blocks
+MSG:xml_storage_open    :1351 DATA[ 1 ] has 8 blocks
+MSG:xml_storage_open    :1364 xml_storage_open : DATA LOCATION =[    5.991193] random: xcfgd.cfg: uninitialized urandom read (4 bytes read)
+ ( 00080000 00180000 )
+DBG:xml_storage_open    :1386 /config/db configured and prepared before
+DBG:_xml_storage_header_print:[    6.007284] random: xcfgd.cfg: uninitialized urandom read (4 bytes read)
+862  [[DUMP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ][    6.020411] random: xcfgd.cfg: uninitialized urandom read (4 bytes read)
+=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[BROKEN FIXUP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY+ONDIRTY CHECK]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[RECOVER BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[FINALLY WRITTEN]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=1 flags=0 crc=afa8 size=c7b
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_fetch:767  DIRTY HEADER[ 0  ] START = 0x20000 / DATA OFFSET = 524288 FLAG=0000
+MSG:xml_storage_validate:1440 HEADER[0 ]::MAGIC=OK
+MSG:xml_storage_validate:1441 HEADER[0 ]::RSIZE=3195
+MSG:xml_storage_validate:1442 HEADER[0 ]::START=80000
+MSG:xml_storage_validate:1443 HEADER[0 ]::CRC  =afa8
+MSG:xml_storage_validate:1493 Temporary XML file name : (/var/tmp/122/config.xml)
+DBG:xml_storage_validate:1507 /etc/config.xml write 3195/3195
+MSG:xml_storage_validate:1519 STORAGE VALIDATED [0]
+DBG:config_xml_merge    :401  VERSION (1.0.0.1 vs 1.0.0.1)
+DBG:config_xml_merge    :404  CURRENTLY LATEST VERSION
+3
+2
+1
+
+
+DATE
+
+Wed Mar  1 12:00:00 UTC 2023
+
+Logging daemon
+
+
+USER
+
+chpasswd: password for 'todd' changed
+User [ todd/12345678 ] created
+
+GIT
+
+
+PYTHON
+
+
+QT Runtime environment
+
+
+SSH SERVER
+
+
+SSH key setup in /root/.ssh
+
+
+SSH daemon
+
+[   10.133277] random: sshd: uninitialized urandom read (4 bytes read)
+[   15.592521] random: crng init done
+[   15.596327] random: 1 urandom warning(s) missed due to ratelimiting
+
+LPPS
+
+
+INIT FILE STARTS ...
+
+[ETH] Start...
+[   15.795201] rk_gmac-dwmac ff290000.ethernet eth0: PHY [stmmac-0:00] driver [Generic PHY] (irq=POLL)
+[   15.802543] dwmmc_rockchip ff0d0000.mmc: IDMAC supports 32-bit address mode.
+[   15.813497] dwmmc_rockchip ff0d0000.mmc: Using internal DMA controller.
+[   15.820896] dwmmc_rockchip ff0d0000.mmc: Version ID is 270a
+[   15.827160] dwmmc_rockchip ff0d0000.mmc: DW MMC controller at irq 35,32 bit host data width,256 deep fifo
+[   15.838412] rk_gmac-dwmac ff290000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   15.852533] rk_gmac-dwmac ff290000.ethernet eth0: No Safety Features support found
+[   15.860999] rk_gmac-dwmac ff290000.ethernet eth0: PTP not supported by HW
+[   15.868887] rk_gmac-dwmac ff290000.ethernet eth0: configuring for phy/rgmii link mode
+QT initialization
+
+Linux Terminal ...
+
+
+NTP
+
+ERROR, no such host: Resource temporarily unavailable
+Shutting down DHCP
+cat: can't open '/var/run/dhcpc_v4_eth0.pid': No such file or directory
+kill: usage: kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]
+date: invalid date ''
+Starting DHCP
+[   20.074091] rk_gmac-dwmac ff290000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+[   20.083986] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+
+
+           _____ _    _  _____    _______ _       _
+    /\    / ____| |  | |/ ____|  |__   __(_)     | |
+   /  \  | (___ | |  | | (___       | |   _ _ __ | | _____ _ __
+  / /\ \  \___ \| |  | |\___ \      | |  | | '_ \| |/ / _ \ '__|
+ / ____ \ ____) | |__| |____) |     | |  | | | | |   <  __/ |
+/_/    \_\_____/ \____/|_____/      |_|  |_|_| |_|_|\_\___|_|
+
+
+
+
+
+bash-5.1#
+bash-5.1#
+bash-5.1#
+bash-5.1#
+bash-5.1# ifconfig
+eth0      Link encap:Ethernet  HWaddr 88:D7:F6:C2:D7:67
+          inet addr:100.5.5.50  Bcast:100.5.5.255  Mask:255.255.255.0
+          inet6 addr: fe80::8ad7:f6ff:fec2:d767/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:10 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:744 (744.0 B)  TX bytes:1312 (1.2 KiB)
+          Interrupt:46
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:304 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:304 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:22217 (21.6 KiB)  TX bytes:22217 (21.6 KiB)
+
+bash-5.1#
+bash-5.1#
+bash-5.1#
+bash-5.1#
+bash-5.1# ping www.google.com
+PING www.google.com (142.250.189.4): 56 data bytes
+64 bytes from 142.250.189.4: seq=0 ttl=114 time=5.026 ms
+64 bytes from 142.250.189.4: seq=1 ttl=114 time=5.340 ms
+64 bytes from 142.250.189.4: seq=2 ttl=114 time=6.539 ms
+64 bytes from 142.250.189.4: seq=3 ttl=114 time=5.064 ms
+^C
+--- www.google.com ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 5.026/5.492/6.539 ms
+bash-5.1#
+bash-5.1#
+bash-5.1#
+
+
+  ```
+
+### Procedures <a name="tinker_procedures"></a>
+
+
+#### Downloading sources <a name="tinker_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=tinker download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing the download user can release MBSP SDK as "tar.bz2".
+  * Currently, u-boot source basis SPL/TPL loading is not supported. 
+
+#### Toolchain <a name="tinker_toolchain"></a>
+
+- When user want to setup a toolchain under <strong>/opt/tinker</strong> folder.
+```
+  # sudo make TBOARD=tinker TOOLCHAIN_ROOT=/opt/tinker toolchain
+```
+- With the following command, the toolchain will be setup under <strong>./gnu/toolchain</strong> folder.
+```
+  # make TBOARD=tinker toolchain
+```
+
+ * "TBOARD" indicates type of board which is the name of folders in boards/ .
+ * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
+
+#### Libraries, Applications, Extra Applications <a name="tinker_library"></a>
+
+```
+  # make TBOARD=tinker lib app ext
+```
+
+
+
 ## MBSP VM <a name="qemu"></a>
 
 ### Testbed components <a name="qemu_component"></a>
 
 
 * [QEMU VM  Emulator](https://www.unixmen.com/how-to-install-and-configure-qemu-in-ubuntu/)
-* USB Storage stick with "image.ext4"
-
-```
-  # cd boards/vm
-
-  # sudo dmesg | grep "sd "
-    ..
-    [33889.430026] sd 7:0:0:0: [sdd] 30375936 512-byte logical blocks: (15.6 GB/14.5 GiB)
-    [33889.431021] sd 7:0:0:0: [sdd] Write Protect is off
-    [33889.431027] sd 7:0:0:0: [sdd] Mode Sense: 43 00 00 00
-    [33889.432009] sd 7:0:0:0: [sdd] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
-    [33889.458386] sd 7:0:0:0: [sdd] Attached SCSI removable disk
- 
-    We can know that USB disk is mounted as "sdd"
-
-  # sudo dd if=image.ext4 of=/dev/sdd bs=32M 
- 
-    <It might take a long time to flash 6G image into USB stick. >
-
-```
-
 
 ### Setup <a name="qemu_setup"></a>
 
@@ -1448,8 +2122,6 @@ bash-5.1# reboot -f
 
 
   ```
-  USB storage stick should be plugged in...
-
 
 #
 # make TBOARD=vm vmrun
