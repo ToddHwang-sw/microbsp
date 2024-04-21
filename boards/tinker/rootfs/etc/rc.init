@@ -175,7 +175,7 @@ echo ""
 echo ""
 echo "PYTHON  "
 echo ""
-[ ! -f /usr/bin/python_env.sh ] || source /usr/bin/python_env.sh / 
+## [ ! -f /usr/bin/python_env.sh ] || source /usr/bin/python_env.sh / 
 
 
 echo ""
@@ -254,13 +254,17 @@ if [ "$NTPEN" = "1" ]; then
     CTIME=`echo $CTIME | xargs`
 
     #
+    # Ethernet Interface --> Little bit different !! 
+    #
+    #
     # DHCP shutdown - DHCP client will get screw up due to time change.
     #
-    if [ "$NETMODE" = "dhcp" ]; then
-        echo "Shutting down DHCP"
-        /etc/scripts/dhcpc.sh stop $STAINT
-        sleep 1
-    fi
+    ## if [ "$NETMODE" = "dhcp" ]; then
+    ##    echo "Shutting down DHCP"
+    ##    /etc/scripts/dhcpc.sh stop $STAINT
+    ##    sleep 1
+    ## fi
+	#
 
     date -R -s "$CTIME"
 

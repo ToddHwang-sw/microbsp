@@ -201,21 +201,30 @@ fi
 
 echo "Building RAMDISK partition /dev/${DRIVE}3 "
 if [ -f $RAMDISKFILE ]; then
-	sudo ${DD} if=$RAMDISKFILE of=/dev/${DRIVE}3 bs=128M
+	sudo ${DD} if=$RAMDISKFILE of=/dev/${DRIVE}3 
 fi
 
 echo "Building IMAGE partition /dev/${DRIVE}5 - takes long time... "
 if [ -f $IMAGEFILE ]; then
-	sudo ${DD} if=$IMAGEFILE of=/dev/${DRIVE}5 bs=128M
+	sudo ${DD} if=$IMAGEFILE of=/dev/${DRIVE}5 
+	sync
+	sync
+	sync
 fi
 
 echo "Building UI partition /dev/${DRIVE}6 - takes long time... "
 if [ -f $UIFILE ]; then
-	sudo ${DD} if=$UIFILE of=/dev/${DRIVE}6 bs=128M
+	sudo ${DD} if=$UIFILE of=/dev/${DRIVE}6 
+	sync
+	sync
+	sync
 fi
 
 echo "Building CFG partition /dev/${DRIVE}7"
 if [ -f $CFGFILE ]; then
-	sudo ${DD} if=$CFGFILE of=/dev/${DRIVE}7 bs=128K
+	sudo ${DD} if=$CFGFILE of=/dev/${DRIVE}7 
+	sync
+	sync
+	sync
 fi
 
