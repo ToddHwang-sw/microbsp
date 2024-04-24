@@ -1449,7 +1449,7 @@ bash-5.1# reboot -f
 - Currently, built-in RTL8273BS controller is not configured.
 - RTL8189EU basis TP-Link WiFi Dongle is now configured in AP+STA concurrent mode.
 
-  ```
+```
 DDR Version 1.11 20210818
 In
 Channel a: LPDDR3 400MHz
@@ -2452,7 +2452,7 @@ bash-5.1#
 
 
 
-  ```
+```
 
 ### Procedures <a name="tinker_procedures"></a>
 
