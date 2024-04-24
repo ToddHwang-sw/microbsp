@@ -1,0 +1,23 @@
+diff -uNr iptables-1.8.5-original/extensions/libxt_hashlimit.c iptables-1.8.5/extensions/libxt_hashlimit.c
+--- iptables-1.8.5-original/extensions/libxt_hashlimit.c	2020-06-03 03:32:01.000000000 -0700
++++ iptables-1.8.5/extensions/libxt_hashlimit.c	2023-05-18 22:18:46.887936580 -0700
+@@ -21,6 +21,7 @@
+ #include <stdlib.h>
+ #include <errno.h>
+ #include <xtables.h>
++#include <linux/limits.h>
+ #include <linux/netfilter/x_tables.h>
+ #include <linux/netfilter/xt_hashlimit.h>
+ 
+diff -uNr iptables-1.8.5-original/libxtables/xtables.c iptables-1.8.5/libxtables/xtables.c
+--- iptables-1.8.5-original/libxtables/xtables.c	2020-06-03 03:32:01.000000000 -0700
++++ iptables-1.8.5/libxtables/xtables.c	2023-05-18 22:18:46.887936580 -0700
+@@ -44,7 +44,7 @@
+ #endif
+ 
+ #include <xtables.h>
+-#include <limits.h> /* INT_MAX in ip_tables.h/ip6_tables.h */
++#include <linux/limits.h> /* INT_MAX in ip_tables.h/ip6_tables.h */
+ #include <linux/netfilter_ipv4/ip_tables.h>
+ #include <linux/netfilter_ipv6/ip6_tables.h>
+ #include <libiptc/libxtc.h>
