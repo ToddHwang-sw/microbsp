@@ -33,7 +33,7 @@ DNSMASQ_LEASE=dnsmasq.leases
 [ -d $DNSMASQD ] || mkdir -p $DNSMASQD
 
 case $1 in
-    "start_")
+    "start")
         $IPTABLES -P INPUT ACCEPT
         $IPTABLES -F INPUT
         $IPTABLES -P OUTPUT ACCEPT
@@ -62,7 +62,7 @@ case $1 in
 
         /usr/sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
         ;;
-    "stop_")
+    "stop")
         ;;
 esac
 

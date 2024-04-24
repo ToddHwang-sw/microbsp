@@ -8,7 +8,7 @@ LAN=`$ASK lan/name`
 WAITIP=5
 
 case $1 in
-	"start_")
+	"start")
 		echo [IPV6] START .....
 		/etc/scripts/dhcpc6.sh start $WAN
 
@@ -37,7 +37,7 @@ case $1 in
 		cat /etc/resolv.conf
 		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		;;
-	"stop_")
+	"stop")
 		echo [IPV6] STOPPING.... 
 		/etc/scripts/dhcpc6.sh stop $WAN
 		;;

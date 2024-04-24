@@ -3,19 +3,13 @@
 ASK='xcfgcli.sh get '
 
 case $1 in
-	"start_")
-		echo "[WLAN] BRCM Loading modules..."
-		modprobe brcmutil
-		modprobe brcmfmac
-	
+	"start")
+		echo "[WLAN] Starting BRCM AP ..."
 		/etc/scripts/wlan_ap.sh start 		
 		;;
-	"stop_")
+	"stop")
 		/etc/scripts/wlan_ap.sh stop
-
-		echo "[WLAN] BRCM Unloading modules..."
-		rmmod brcmfmac
-		rmmod brcmutil
+		echo "[WLAN] Stopping BRCM AP ..."
 		;;
 	"*")
 		;;

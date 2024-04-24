@@ -3,20 +3,25 @@
 LOGFILE=/tmp/linuxrpi.rpi3.format_disk.log
 TMPDIR=/tmp/linuxrpi.rpi3.tmpdir
 
-DD=dd conv=sync
+export BLOCKSZ=4M
+
+DD=dd conv=sync bs=${BLOCKSZ}
 LOADERFILE=iso/boot/idbloader.img
 UBOOTFILE=iso/boot/u-boot.img
 
 ##
 ## Partition Size ...
 ##
-LOADERPSIZE=128M
+export LOADERPSIZE=128M
 BOOTPSIZE=128M
 RAMDISKPSIZE=1G
 ROOTPSIZE=16G
 OVRPSIZE=8G
 UIPSIZE=6G
 CFGPSIZE=10M
+
+##COUNT=`expr "${LOADERPSIZE/M/}" / "${BLOCKSZ/M/}"`
+COUNT=32
 
 ##
 ## BOOT Partition
@@ -172,7 +177,7 @@ if [ -f ${LOADERFILE} -a -f ${UBOOTFILE} ]; then
 	echo ""
     echo "Zeroing..."
 	echo ""
-	sudo ${DD} if=/dev/zero of=/dev/${DRIVE}1 bs=$BOOTPSIZE count=1
+	sudo ${DD} if=/dev/zero of=/dev/${DRIVE}1 count=${COUNT}
 
 	echo ""
     echo "Wring IDBLOADER"
@@ -214,7 +219,7 @@ fi
 
 echo "Building UI partition /dev/${DRIVE}6 - takes long time... "
 if [ -f $UIFILE ]; then
-	sudo ${DD} if=$UIFILE of=/dev/${DRIVE}6 
+	## sudo ${DD} if=$UIFILE of=/dev/${DRIVE}6 
 	sync
 	sync
 	sync

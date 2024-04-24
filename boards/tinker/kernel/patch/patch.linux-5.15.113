@@ -1,17 +1,14 @@
-diff -uNr linux-5.15.113-orig/drivers/firmware/arm_scmi/driver.c linux-5.15.113/drivers/firmware/arm_scmi/driver.c
---- linux-5.15.113-orig/drivers/firmware/arm_scmi/driver.c	2023-05-24 09:36:55.000000000 -0700
-+++ linux-5.15.113/drivers/firmware/arm_scmi/driver.c	2024-04-19 22:47:58.392660732 -0700
-@@ -2082,8 +2082,13 @@
- {
- 	int ret;
+diff -uNr linux-5.15.113-orig/drivers/base/firmware_loader/main.c linux-5.15.113/drivers/base/firmware_loader/main.c
+--- linux-5.15.113-orig/drivers/base/firmware_loader/main.c	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/drivers/base/firmware_loader/main.c	2024-04-23 16:42:54.450823608 -0700
+@@ -471,6 +471,10 @@
+ 	"/lib/firmware/updates",
+ 	"/lib/firmware/" UTS_RELEASE,
+ 	"/lib/firmware"
++/* Todd - for MSBP */
++/* File system is overlayed ~ */
++	,"/disk/lib/firmware"
++	,"/ovr/lib/firmware"
+ };
  
-+	/* Todd */
-+#if 0
- 	/* Bail out if no SCMI transport was configured */
- 	if (WARN_ON(!IS_ENABLED(CONFIG_ARM_SCMI_HAVE_TRANSPORT)))
-+#else
-+	if (!IS_ENABLED(CONFIG_ARM_SCMI_HAVE_TRANSPORT))
-+#endif
- 		return -EINVAL;
- 
- 	scmi_bus_init();
+ /*

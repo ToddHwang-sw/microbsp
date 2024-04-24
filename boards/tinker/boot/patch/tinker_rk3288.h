@@ -24,8 +24,11 @@
 	"stdout=serial\0" \
 	"stderr=serial\0"
 
+/*
+ * "rootwait" is not needed unlikely aarch64 booting. It will make regulator firmware loading get failed. 
+ */
 #define BOOTARGS  \
-	"console=ttyS2,115200 root=/dev/mmcblk0p3 ro rootfstype=squashfs earlyprintk rootwait"
+	"console=ttyS2,115200 root=/dev/mmcblk0p3 ro rootfstype=squashfs"
 
 /* FDT File */
 #define FDTFILE   "rk3288-tinker.dtb"

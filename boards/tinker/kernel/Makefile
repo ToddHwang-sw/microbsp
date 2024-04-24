@@ -15,12 +15,28 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
-EXTMDIRS=
+EXTMDIRS=rtl8192eu
 
 ##
 ## Files installed from linux kernel 
 ##
 KERNEL_FILES=vmlinuz System.map config
+
+##
+## Regulatory FWs
+##
+CRDAFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git
+CRDAFW0S=\
+	regulatory.bin \
+	sforshee.x509.pem \
+	sforshee.key.pub.pem
+CRDAFW1S=\
+	regulatory.db \
+	regulatory.db.p7s
+CRDAFWTMPDIR=\
+	/tmp/___tinker_linuxswtree_linux-crda_firmware____
+CRDATMPTMP=\
+	/tmp/___tinker_linuxswtree_linux-crda_signature___
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
@@ -59,6 +75,49 @@ clean:
 		$(LINUXMAKE) clean )
 
 dnfw:
+	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
+	@for f in $(CRDAFW0S); do \
+		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \
+			[ -d $(CRDAFWTMPDIR) ] || ( \
+				echo "" ;                                 \
+				echo "Copyiing Linux-Firmware from $(CRDAFWLOC)" ; \
+				echo "" ;                                \
+				mkdir -p $(CRDAFWTMPDIR);                \
+				$(eval __CURDIR:=${PWD})		         \
+				cd $(CRDAFWTMPDIR);                      \
+				git clone --single-branch $(CRDAFWLOC) ; \
+				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
+				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
+				git checkout -q `cat $(CRDATMPTMP)`;     \
+				\rm -rf $(CRDATMPTMP);                   \
+				cd $(__CURDIR);                          \
+				cd $(BDDIR)/kernel                       \
+			) ;                                          \
+			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/crda/$$f \
+		) ; \
+	done
+	@[ -d $(BDDIR)/rootfs/lib/firmware ] || mkdir -p $(BDDIR)/rootfs/lib/firmware
+	@for f in $(CRDAFW1S); do \
+		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
+			[ -d $(CRDAFWTMPDIR) ] || ( \
+				echo "" ;                                 \
+				echo "Copying Linux-Firmware from $(CRDAFWLOC)" ; \
+				echo "" ;                                \
+				mkdir -p $(CRDAFWTMPDIR);                \
+				$(eval __CURDIR:=${PWD})		         \
+				cd $(CRDAFWTMPDIR);                      \
+				git clone --single-branch $(CRDAFWLOC);  \
+				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
+				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
+				git checkout -q `cat $(CRDATMPTMP)`;     \
+				\rm -rf $(CRDATMPTMP);                   \
+				cd $(__CURDIR);                          \
+				cd $(BDDIR)/kernel                       \
+			) ;                                          \
+			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/firmware/$$f \
+		) ; \
+	done
+	@\rm -rf $(CRDAFWTMPDIR)
 
 install: 
 	[ ! -f $(BDDIR)/$(ROOTFSIMAGEFN) ] || \rm -rf $(BDDIR)/$(ROOTFSIMAGEFN)
