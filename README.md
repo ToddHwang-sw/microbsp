@@ -232,8 +232,6 @@ The following shows the structure of root file system constructed by overlay fil
 
 * [UART Cable for Raspberry PI](https://www.amazon.com/FEANTEEK-TTL232R-Raspberry-Serial-Windows/dp/B08HLSS5T4/ref=sr_1_1_sspa?keywords=raspberry+pi+3%2B+UART+cable&qid=1636520578&sr=8-1-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExTEFJTFcwNlNKT0lIJmVuY3J5cHRlZElkPUEwMjc5MjEwTjlUUDBEWEtNTzJTJmVuY3J5cHRlZEFkSWQ9QTA3NDE2NTBMV0xWUDdaRlZFV0gmd2lkZ2V0TmFtZT1zcF9hdGYmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl )
 
-* [TP-Link USB WiFi Dongle (11n 2.4G only - 8192eu)](https://www.amazon.com/TP-Link-TL-WN823N-Wireless-network-Raspberry/dp/B0088TKTY2/ref=sr_1_15?keywords=tp+link+usb+wifi+adapter&qid=1636520657&qsid=132-7915930-0137541&sr=8-15&sres=B08D72GSMS%2CB008IFXQFU%2CB07P6N2TZH%2CB08KHV7H1S%2CB07PB1X4CN%2CB07P5PRK7J%2CB00JBJ6VG8%2CB00YUU3KC6%2CB002SZEOLG%2CB00K11UIV4%2CB0088TKTY2%2CB01MR6M8EC%2CB00HC01KMS%2CB0799C35LV%2CB01NBMJGA9%2CB00A8GVNNY&srpt=NETWORK_INTERFACE_CONTROLLER_ADAPTER)
-
 * [TP-Link USB WiFi Dongle (11ac 5GHz support - 8812bu)](https://www.amazon.com/TP-Link-usb-wifi-adapter-pc/dp/B08D72GSMS/ref=sr_1_1_sspa?crid=3OBFCJQJBXJ6U&keywords=usb+wifi+dongle&qid=1684104205&s=electronics&sprefix=usb+wifi+dongle%2Celectronics%2C150&sr=1-1-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEzVkE1NUFQRlJIUFdXJmVuY3J5cHRlZElkPUEwMjkxMDU5MjROQTZPNU83OExBTCZlbmNyeXB0ZWRBZElkPUEwNTgyNjIyMUFFVU1NWEpNMkE1RCZ3aWRnZXROYW1lPXNwX2F0ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=)
 
 ### How it looks <a name="rpi3_look"></a>
@@ -247,7 +245,7 @@ The following shows the structure of root file system constructed by overlay fil
   - Ethernet : Built-in ethernet
   - WLAN1 : Raspberry PI Built-in WLAN (<strong>Broadcom BRCM43455</strong>)
 * WAN
-  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8823BU</strong>)
+  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8812BU</strong>)
 * UART baudrate = 921600bps (not 115200bps)
 
 ### Booting Shot <a name="rpi3_boot"></a>
@@ -1444,6 +1442,7 @@ bash-5.1# reboot -f
 
 * [Rockchip Firmwares] (https://github.com/rockchip-linux/rkbin)
 
+* [TP-Link USB WiFi Dongle (11n 2.4G only - 8192eu)](https://www.amazon.com/TP-Link-TL-WN823N-Wireless-network-Raspberry/dp/B0088TKTY2/ref=sr_1_15?keywords=tp+link+usb+wifi+adapter&qid=1636520657&qsid=132-7915930-0137541&sr=8-15&sres=B08D72GSMS%2CB008IFXQFU%2CB07P6N2TZH%2CB08KHV7H1S%2CB07PB1X4CN%2CB07P5PRK7J%2CB00JBJ6VG8%2CB00YUU3KC6%2CB002SZEOLG%2CB00K11UIV4%2CB0088TKTY2%2CB01MR6M8EC%2CB00HC01KMS%2CB0799C35LV%2CB01NBMJGA9%2CB00A8GVNNY&srpt=NETWORK_INTERFACE_CONTROLLER_ADAPTER)
 
 ### How it looks <a name="tinker_look"></a>
 
@@ -1454,15 +1453,16 @@ bash-5.1# reboot -f
 * Home Gateway
 * LAN
   - Ethernet : Built-in ethernet
-  - WLAN1 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8188EU</strong>)
+  - WLAN1 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8192EU</strong>)
 * WAN
-  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8188EU</strong>)
+  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8192EU</strong>)
 * UART baudrate = 115200bps (ttyS2 is connected)
 
 ### Booting Shot <a name="tinker_boot"></a>
 
 - Currently, built-in RTL8273BS controller is not configured.
-- RTL8189EU basis TP-Link WiFi Dongle is now configured in AP+STA concurrent mode.
+
+- RTL8192EU basis TP-Link WiFi Dongle is now configured in AP+STA concurrent mode.
 
 ```
 DDR Version 1.11 20210818
