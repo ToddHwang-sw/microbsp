@@ -21,8 +21,10 @@
 		8. [Available Packages](#rpi3_packages)
 8. [ASUS Tinker](#tinker)
 	1. [Testbed components](#tinker_component)
-	2. [Booting Shot](#tinker_boot)
-	3. [Procedures](#tinker_procedures)
+	2. [How it looks](#tinker_look)
+	3. [Device operation](#tinker_operation)
+	4. [Booting Shot](#tinker_boot)
+	5. [Procedures](#tinker_procedures)
 		1. [Downloading sources](#tinker_download)
 		2. [Toolchain](#tinker_toolchain)
 		3. [Libraries, Applications, Extra Applications](#tinker_library)
@@ -236,8 +238,7 @@ The following shows the structure of root file system constructed by overlay fil
 
 ### How it looks <a name="rpi3_look"></a>
 
-![](doc/rpi.png)
-
+<img src="./doc/rpi3.png" width=500 height=700 />
 
 ### Device operation <a name="rpi3_operation"></a>
 
@@ -246,7 +247,7 @@ The following shows the structure of root file system constructed by overlay fil
   - Ethernet : Built-in ethernet
   - WLAN1 : Raspberry PI Built-in WLAN (<strong>Broadcom BRCM43455</strong>)
 * WAN
-  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek</strong>)
+  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8823BU</strong>)
 * UART baudrate = 921600bps (not 115200bps)
 
 ### Booting Shot <a name="rpi3_boot"></a>
@@ -1443,6 +1444,20 @@ bash-5.1# reboot -f
 
 * [Rockchip Firmwares] (https://github.com/rockchip-linux/rkbin)
 
+
+### How it looks <a name="tinker_look"></a>
+
+<img src="./doc/tinker.png" width=500 height=800 />
+
+### Device operation <a name="tinker_operation"></a>
+
+* Home Gateway
+* LAN
+  - Ethernet : Built-in ethernet
+  - WLAN1 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8188EU</strong>)
+* WAN
+  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8188EU</strong>)
+* UART baudrate = 115200bps (ttyS2 is connected)
 
 ### Booting Shot <a name="tinker_boot"></a>
 
