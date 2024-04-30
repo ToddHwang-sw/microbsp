@@ -10,6 +10,8 @@ case "$MENU" in
 		FILENM=$4
 		COUNT=$5
 
+		[ ! -d $NDIR ] || \rm -rf $NDIR
+
 		##
 		## bs x count = G bytes image
 		##

@@ -374,15 +374,6 @@ UIDIR=\
 	qt
 SUBDIR+=$(UIDIR)
 
-# Component folders -
-#
-# "uix" folder is only useful for "rpi3" board. 
-#
-COMPDIR = libs apps exts
-ifeq ("$(TBOARD)","rpi3")
-COMPDIR += uix
-endif
-
 ## YOU CANNOT CHANGE THIS !! .. {apps,libs,uix}/<..>/source
 export MICBSRC=source
 
@@ -761,13 +752,15 @@ wipeout:
 ##
 extdisk:
 	@cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
-	@$(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS)
+	@$(call DO_EXCL_SINGLE,\
+	       $(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS) )
 	@[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(EXT4CFG) bs=1M count=$(CFGDISKBLKS)
 	@[ -z $(CFGDISKNM) ] || sudo mkfs.ext4 -j -F -L $(CFGVOLNM) $(EXT4CFG)
 
 
 extdisk_clean:
-	@$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
+	@$(call DO_EXCL_SINGLE, \
+		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM))
 	@[ -z $(CFGDISKNM) ] || ( [ ! -f $(BDDIR)/$(CFGDISKNM) ] || \rm -rf $(BDDIR)/$(CFGDISKNM) )
 			
 
@@ -776,12 +769,14 @@ extdisk_clean:
 ## uidisk_clean
 ##
 uidisk:
-	@[ "$(UIDISK)" = "" ] || \
-		$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)
+	@[ "$(UIDISK)" = "" ] ||  ( \
+		$(call DO_EXCL_SINGLE,\
+			$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)) )
 
 uidisk_clean:
-	@[ "$(UIDISK)" = "" ] || \
-		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(UIDISKNM)
+	@[ "$(UIDISK)" = "" ] ||  ( \
+		$(call DO_EXCL_SINGLE,\
+			$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(UIDISKNM) ) )
 			
 
 ##
@@ -890,9 +885,11 @@ cleanup:
 	@make -C $(BDDIR)        isodir=$(ISODIR) isoname=$(IMAGENAME) uninstall
 	@make -C $(BDDIR)/kernel uninstall
 	@cd $(BDDIR); \
-		[ ! -f $(BDDIR)/$(EXTDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM)
+		$(call DO_EXCL_SINGLE,\
+			[ ! -f $(BDDIR)/$(EXTDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM) )
 	@cd $(BDDIR); \
-		[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM)
+		$(call DO_EXCL_SINGLE,\
+			[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM) )
 
 toolchain:
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
