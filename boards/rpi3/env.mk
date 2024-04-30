@@ -14,6 +14,9 @@ export KERNELVER=linux-rpi-5.15.y
 ## Linux Kernel compile
 export KERNELMAKE=make ARCH=arm64 V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"
 
+## Components
+export COMPDIR=libs apps exts uix
+
 ##
 ## folders to be included
 ##

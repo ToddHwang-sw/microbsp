@@ -17,6 +17,9 @@ export KERNELVER=linux-5.15.113
 ## Linux Kernel compile
 export KERNELMAKE=make ARCH=arm V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"
 
+## Components
+export COMPDIR=libs apps exts
+
 ##
 ## folders to be included
 ##
