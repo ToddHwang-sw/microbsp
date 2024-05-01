@@ -9,6 +9,9 @@ endif
 ifeq ($(_CORE_),x86_64)
 	HOSTINFO="X86_64-LINUX"
 endif
+ifeq ($(_CORE_),arm)
+	HOSTINFO="ARM-LINUX"
+endif
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
