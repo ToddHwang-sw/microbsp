@@ -414,7 +414,7 @@ installcomps:
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
 		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
 		python3-xcbgen      python2               xorriso         mtools            \
-		device-tree-compiler
+		device-tree-compiler swig
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
 	@pip install pkgconfig mako Jinja2
