@@ -2,6 +2,8 @@
 
 LOGFILE=/tmp/linuxrpi.grub.format_disk.log
 
+DDCMD=dd conv=sync bs=2M
+
 ##
 ## Partition Size ...
 ##
@@ -130,7 +132,7 @@ echo "-----------------------------------------------------"
 
 echo "Building BOOT partition /dev/${DRIVE}1"
 if [ -f $BOOTFILE ]; then
-	sudo dd if=$BOOTFILE of=/dev/${DRIVE}1 bs=128M
+	sudo ${DDCMD} if=$BOOTFILE of=/dev/${DRIVE}1
 fi
 
 sync
@@ -141,7 +143,7 @@ echo "-----------------------------------------------------"
 
 echo "Building CONFIG partition /dev/${DRIVE}2 "
 if [ -f $CFGFILE ]; then
-	sudo dd if=$CFGFILE of=/dev/${DRIVE}2 bs=128M
+	sudo ${DDCMD} if=$CFGFILE of=/dev/${DRIVE}2
 fi
 
 sync
@@ -152,7 +154,7 @@ echo "-----------------------------------------------------"
 
 echo "Building IMAGE partition /dev/${DRIVE}3 - takes long time... "
 if [ -f $IMAGEFILE ]; then
-	sudo dd if=$IMAGEFILE  of=/dev/${DRIVE}3 bs=128M
+	sudo ${DDCMD} if=$IMAGEFILE  of=/dev/${DRIVE}3
 fi
 
 sync
