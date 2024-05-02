@@ -5,7 +5,7 @@ diff -uNr iptables-1.8.5-original/extensions/libxt_CONNMARK.c iptables-1.8.5/ext
  	uint8_t mode;
  };
  
-+#if 0
++#ifndef _XT_CONNMARK_H
  enum {
  	D_SHIFT_LEFT = 0,
  	D_SHIFT_RIGHT,
