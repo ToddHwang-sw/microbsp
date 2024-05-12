@@ -5,6 +5,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_DEPENDS = zlib libpng libpng16
 
+MICB_CONFIGURE_OPTS += --without-harfbuzz
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
