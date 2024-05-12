@@ -553,9 +553,9 @@ app_%: checkfirst
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
 				if [ "$(subst app_,,$@)" = "prepare" ]; then                        \
-					$(call DO_EXCL,$$dir,$(subst app_,,$@),lib,$(INSTALLDIR)) ;     \
+					$(call DO_EXCL,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;     \
 				elif [ "$(subst app_,,$@)" = "download" ]; then                     \
-					$(call DO_EXCL_DN,$$dir,$(subst app_,,$@),lib,$(INSTALLDIR)) ;  \
+					$(call DO_EXCL_DN,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;  \
 				else                                                                \
 					$(call DO_NORM,$$dir,$(subst app_,,$@),app,$(INSTALLDIR)) ;     \
 				fi && \
@@ -586,9 +586,9 @@ ext_%: checkfirst
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
 				if [ "$(subst ext_,,$@)" = "prepare" ]; then                        \
-					$(call DO_EXCL,$$dir,$(subst ext_,,$@),lib,$(EXTINSTDIR)) ;     \
+					$(call DO_EXCL,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;     \
 				elif [ "$(subst ext_,,$@)" = "download" ]; then                     \
-					$(call DO_EXCL_DN,$$dir,$(subst ext_,,$@),lib,$(EXTINSTDIR)) ;  \
+					$(call DO_EXCL_DN,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;  \
 				else                                                                \
 					$(call DO_NORM,$$dir,$(subst ext_,,$@),ext,$(EXTINSTDIR)) ;     \
 				fi && \
@@ -623,9 +623,9 @@ ui_%: checkfirst llvm_okay
 				[ ! -d $$dir ] ||  (                     \
 					$(call SETUP_BUILDOUT,$$dir)      && \
 					if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
-						$(call DO_EXCL,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;     \
+						$(call DO_EXCL,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;     \
 					elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
-						$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),lib,$(UIXINSTDIR)) ;  \
+						$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
 					else                                                               \
 						$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
 					fi &&  \
