@@ -17,6 +17,10 @@ BOOTFILE=boot.ext2
 BOOTPNAME=boot
 
 ##
+## Temporary for installing grub 
+TMPFOLDER=./__grub_install_tmp
+
+##
 ## IMAGE Partition 
 IMAGEFILE=image.ext4
 
@@ -133,6 +137,19 @@ echo "-----------------------------------------------------"
 echo "Building BOOT partition /dev/${DRIVE}1"
 if [ -f $BOOTFILE ]; then
 	sudo ${DDCMD} if=$BOOTFILE of=/dev/${DRIVE}1
+	sync
+	sync
+	sync
+
+	echo ""
+	echo "GRUB installation into /dev/${DRIVE}1"
+	echo ""
+	[ ! -f ${TMPFOLDER} ] || sudo \rm -rf ${TMPFOLDER}
+	sudo mkdir ${TMPFOLDER}
+	sudo mount -t ext2 /dev/${DRIVE}1 ${TMPFOLDER}
+	sudo grub-install --target=i386-pc --boot-directory=${TMPFOLDER}/boot --force /dev/${DRIVE}
+	sudo umount ${TMPFOLDER}
+	sudo \rm -rf ${TMPFOLDER}
 fi
 
 sync
