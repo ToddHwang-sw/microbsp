@@ -53,8 +53,16 @@
 		3. [NAT network configuration](#qemu_nat)
 		4. [DHCP/DNS configuration](#qemu_dns)
 		5. [Host Network Setup Script](#qemu_script)
-10. [Selective Compilation](#selective_compile)
-11. [How Python](#python)
+10. [MilkV RiscV Duo](#milkv)
+	1. [Testbed components](#milkv_component)
+	2. [Setup](#milkv_setup)
+	3. [Booting Shot](#milkv_boot)
+	4. [Procedures](#milk_procedures)
+		1. [Downloading sources](#milkv_download)
+		2. [Toolchain](#milkv_toolchain)
+		3. [Libraries, Applications, Extra Applications](#milkv_library)
+11. [Selective Compilation](#selective_compile)
+12. [How Python](#python)
 	1. [Setting up PIP](#python_pip)
 	2. [Upgrading PIP](#python_upgrade_pip)
 
@@ -147,6 +155,11 @@
 |                  |                      |
 | MBSP VM          |  5.17.7              |
 |                  |  6.6.22              |
+|                  |                      |
+| ASUS Tinker      |  5.15.113            |
+|                  |                      |
+| Milkv Duo        |  6.8.9               |
+|                  |                      |
 
 * MicroBSP has **Overlay File System** basis booting policy. 
 * Total booting disk image has the following hierarchy. 
@@ -4372,6 +4385,52 @@ sudo systemctl restart dnsmasq
 
 ```
 
+## MilkV RiscV Duo <a name="milkv"></a>
+
+### Testbed components <a name="milkv_component"></a>
+
+* [MilkV RiscV](https://www.amazon.com/gp/product/B0CX3Z2W34/ref=ox_sc_act_title_2?smid=A23DY77R9ZLPOO&psc=1)
+
+### Setup <a name="milkv_setup"></a>
+
+* Just bash shell
+
+### Booting Shot<a name="milv_boot"></a>
+
+
+
+### Procedures <a name="milkv_procedures"></a>
+
+
+#### Downloading sources <a name="milkv_download"></a>
+
+- Next step is to download sources from URLS described in many of Makefile in each of library/application source folders.
+```
+  # make TBOARD=milkv download
+```
+
+  * Linux kernel sources will be downloaded. 
+  * Completing such a download user can release MBSP SDK as "tar.bz2".
+
+#### Toolchain <a name="milkv_toolchain"></a>
+
+- When user want to setup a toolchain under <strong>/opt/qvm</strong> folder.
+```
+  # sudo make TBOARD=milkv TOOLCHAIN_ROOT=/opt/qvm toolchain
+```
+- With the following command, the toolchain will be setup under <strong>./gnu/toolchain</strong> folder.
+```
+  # make TBOARD=milkv toolchain
+```
+
+ * "TBOARD" indicates type of board which is the name of folders in boards/ .
+ * "TOOLCHAIN_ROOT" indicates the location of cross toolchain.
+
+#### Libraries, Applications, Extra Applications <a name="milkv_library"></a>
+
+```
+  # make TBOARD=milkv lib app
+```
 
 ## Selective Compilation <a name="selective_compile"></a>
 
