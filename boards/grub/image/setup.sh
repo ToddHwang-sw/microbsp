@@ -13,7 +13,7 @@ MNTPT=$TMPDIR/__vm_grub_mntpt
 
 ##
 ## ext2 disk 
-E2TMPFN=$1
+E2DISKFN=$1
 E2MNTPT=$TMPDIR/__vm_grub_ext2_mntpt
 
 KERNEL=$2
@@ -59,13 +59,16 @@ sudo cp -fr ../iso/boot/$KERNEL $DISK/$BOOTD/
 
 ##
 ## EXT2 image creation 
-sudo dd if=/dev/zero of=$E2TMPFN bs=4k count=100k
-sudo mkfs.ext2 -L boot $E2TMPFN
-sudo mount -o loop $E2TMPFN $E2MNTPT
+sudo dd if=/dev/zero of=$E2DISKFN bs=4k count=50k
+sudo mkfs.ext2 -L boot $E2DISKFN
+sudo mount -o loop $E2DISKFN $E2MNTPT
 sudo cp -rf $DISK/* $E2MNTPT/
 sync
 sync
 sync
 sync
 sudo umount $E2MNTPT
+sync
+sync
+sync
 

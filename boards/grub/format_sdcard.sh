@@ -7,14 +7,13 @@ DDCMD=dd conv=sync bs=2M
 ##
 ## Partition Size ...
 ##
-BOOTPSIZE=500M
-CFGPSIZE=100M
+BIOSPSIZE=4G
+CFGPSIZE=10M
 EXT4SIZE=10G
 
 ##
 ## BOOT Partition
 BOOTFILE=boot.ext2
-BOOTPNAME=boot
 
 ##
 ## Temporary for installing grub 
@@ -99,57 +98,62 @@ sleep 1
 echo "-----------------------------------------------------"
 
 ##
+## Destroying GPT/MBR ... 
+##
+echo "Destroying partitions in /dev/$DRIVE "
+sudo dd if=/dev/zero of=/dev/$DRIVE bs=1M count=32
+
+##
+## Setting GPT table
+##
+echo "Creating GPT in /dev/$DRIVE "
+sudo sh -c " gdisk /dev/$DRIVE <<END
+2
+2
+w
+y
+END " &>> $LOGFILE
+
+sync
+sync
+sync
+
+echo "-----------------------------------------------------"
+sleep 5
+
+##
 ## Making partitions 
 ##
 echo "Making partitions in /dev/$DRIVE "
 sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
 n
-p
 
 
-+$BOOTPSIZE
++$BIOSPSIZE
 n
-p
 
 
 +$CFGPSIZE
 n
-p
 
 
 +$EXT4SIZE
 w
 END " &>> $LOGFILE
 
-sleep 1
-echo "-----------------------------------------------------"
+sync
+sync
+sync
 
-echo "Turning on Bootable Flag"
-sudo sh -c " fdisk --wipe-partitions always /dev/$DRIVE <<END
-a
-1
-w
-END " &>> $LOGFILE
-
-sleep 1
 echo "-----------------------------------------------------"
+sleep 2
 
 echo "Building BOOT partition /dev/${DRIVE}1"
-if [ -f $BOOTFILE ]; then
-	sudo ${DDCMD} if=$BOOTFILE of=/dev/${DRIVE}1
+if [ -f ${BOOTFILE} ]; then
+	sudo ${DDCMD} if=${BOOTFILE} of=/dev/${DRIVE}1
 	sync
 	sync
 	sync
-
-	echo ""
-	echo "GRUB installation into /dev/${DRIVE}1"
-	echo ""
-	[ ! -f ${TMPFOLDER} ] || sudo \rm -rf ${TMPFOLDER}
-	sudo mkdir ${TMPFOLDER}
-	sudo mount -t ext2 /dev/${DRIVE}1 ${TMPFOLDER}
-	sudo grub-install --target=i386-pc --boot-directory=${TMPFOLDER}/boot --force /dev/${DRIVE}
-	sudo umount ${TMPFOLDER}
-	sudo \rm -rf ${TMPFOLDER}
 fi
 
 sync
@@ -159,8 +163,11 @@ sleep 1
 echo "-----------------------------------------------------"
 
 echo "Building CONFIG partition /dev/${DRIVE}2 "
-if [ -f $CFGFILE ]; then
-	sudo ${DDCMD} if=$CFGFILE of=/dev/${DRIVE}2
+if [ -f ${CFGFILE} ]; then
+	sudo ${DDCMD} if=${CFGFILE} of=/dev/${DRIVE}2
+	sync
+	sync
+	sync
 fi
 
 sync
@@ -172,6 +179,9 @@ echo "-----------------------------------------------------"
 echo "Building IMAGE partition /dev/${DRIVE}3 - takes long time... "
 if [ -f $IMAGEFILE ]; then
 	sudo ${DDCMD} if=$IMAGEFILE  of=/dev/${DRIVE}3
+	sync
+	sync
+	sync
 fi
 
 sync
@@ -179,4 +189,23 @@ sync
 sync
 sleep 1
 echo "-----------------------------------------------------"
+
+echo ""
+echo "GRUB installation into /dev/${DRIVE}1"
+echo ""
+[ ! -f ${TMPFOLDER} ] || sudo \rm -rf ${TMPFOLDER}
+sudo mkdir -p ${TMPFOLDER}
+echo ""
+echo "Mount  /dev/${DRIVE}1"
+echo ""
+sudo mount -t ext2 /dev/${DRIVE}1 ${TMPFOLDER}
+echo ""
+echo "Grub-install"
+echo ""
+sudo grub-install --target=i386-pc --boot-directory=${TMPFOLDER}/boot /dev/${DRIVE}
+echo ""
+echo "Unmounting /dev/${DRIVE}1"
+echo ""
+sudo umount ${TMPFOLDER}
+sudo \rm -rf ${TMPFOLDER}
 
