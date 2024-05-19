@@ -4,12 +4,9 @@ LOC=https://github.com/richardcochran
 include $(TOPDIR)/scripts/extenv.mk
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR) ; \
-		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git  )
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); \
-		[ ! -f ../../../$(MICB_PATCH_FN) ] || (cat ../../../$(MICB_PATCH_FN) | patch -p 1) )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@$(MICB_DUP_SOURCES)
 
 prepare:
 

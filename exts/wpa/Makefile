@@ -9,13 +9,11 @@ MICB_CONFIGURE_MAKEOPTS += \
 MICB_DEPENDS = openssl libnl-cli-3.0 ncurses
 
 download:
-	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || wget -P $(MICBSRC) $(LOC)/$(DIR).tar.gz
-	@[ -d $(BUILDDIR)/$(DIR) ] || tar zxvf $(MICBSRC)/$(DIR).tar.gz -C $(BUILDDIR)
-	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-		cd $(BUILDDIR)/$(DIR); \
-		cat ../../../$(MICB_PATCH_FN) | patch -p 1; \
-		cp  -rf ../../../patch/defconfig wpa_supplicant/.config )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
+	@$(MICB_DUP_SOURCES)
+	@[ -f $(BUILDDIR)/$(DIR)/wpa_supplicant/.config ] || \
+		cp patch/defconfig $(BUILDDIR)/$(DIR)/wpa_supplicant/.config 
 
 prepare:
 

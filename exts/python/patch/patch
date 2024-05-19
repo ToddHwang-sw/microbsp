@@ -1,6 +1,6 @@
 diff -uNr Python-3.10.8-orig/configure Python-3.10.8/configure
 --- Python-3.10.8-orig/configure	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/configure	2024-03-26 23:08:48.326563139 -0700
++++ Python-3.10.8/configure	2024-05-03 20:02:38.638248819 -0700
 @@ -919,7 +919,7 @@
  localstatedir='${prefix}/var'
  runstatedir='${localstatedir}/run'
@@ -78,7 +78,7 @@ diff -uNr Python-3.10.8-orig/configure Python-3.10.8/configure
  ac_clean_files=$ac_clean_files_save
 diff -uNr Python-3.10.8-orig/Makefile.pre.in Python-3.10.8/Makefile.pre.in
 --- Python-3.10.8-orig/Makefile.pre.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Makefile.pre.in	2024-03-26 23:08:48.326563139 -0700
++++ Python-3.10.8/Makefile.pre.in	2024-05-03 20:41:39.029636316 -0700
 @@ -1270,7 +1270,7 @@
  			upgrade) ensurepip="--upgrade" ;; \
  			install|*) ensurepip="" ;; \
@@ -97,7 +97,17 @@ diff -uNr Python-3.10.8-orig/Makefile.pre.in Python-3.10.8/Makefile.pre.in
  			$$ensurepip --root=$(DESTDIR)/ ; \
  	fi
  
-@@ -1601,37 +1601,29 @@
+@@ -1451,6 +1451,9 @@
+ 		$(XMLLIBSUBDIRS) \
+ 		xmlrpc \
+ 		zoneinfo
++LIBSUBDIRS+=\
++		lxml/src/lxml
++
+ TESTSUBDIRS=	ctypes/test \
+ 		distutils/tests \
+ 		idlelib/idle_test \
+@@ -1601,37 +1604,29 @@
  		$(INSTALL_DATA) $(srcdir)/Modules/xxmodule.c \
  			$(DESTDIR)$(LIBDEST)/distutils/tests ; \
  	fi
@@ -145,7 +155,7 @@ diff -uNr Python-3.10.8-orig/Makefile.pre.in Python-3.10.8/Makefile.pre.in
  # from $(srcdir)Misc/python-config.sh.in.
 diff -uNr Python-3.10.8-orig/Misc/python-embed.pc.in Python-3.10.8/Misc/python-embed.pc.in
 --- Python-3.10.8-orig/Misc/python-embed.pc.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Misc/python-embed.pc.in	2024-03-26 23:08:48.326563139 -0700
++++ Python-3.10.8/Misc/python-embed.pc.in	2024-05-03 20:02:38.638248819 -0700
 @@ -8,6 +8,6 @@
  Description: Embed Python into an application
  Requires:
@@ -156,7 +166,7 @@ diff -uNr Python-3.10.8-orig/Misc/python-embed.pc.in Python-3.10.8/Misc/python-e
  Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
 diff -uNr Python-3.10.8-orig/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
 --- Python-3.10.8-orig/Misc/python.pc.in	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/Misc/python.pc.in	2024-03-26 23:08:48.326563139 -0700
++++ Python-3.10.8/Misc/python.pc.in	2024-05-03 20:02:38.638248819 -0700
 @@ -8,6 +8,6 @@
  Description: Build a C extension for Python
  Requires:
@@ -167,7 +177,7 @@ diff -uNr Python-3.10.8-orig/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
  Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
 diff -uNr Python-3.10.8-orig/setup.py Python-3.10.8/setup.py
 --- Python-3.10.8-orig/setup.py	2022-10-11 04:21:44.000000000 -0700
-+++ Python-3.10.8/setup.py	2024-03-26 23:09:42.846115311 -0700
++++ Python-3.10.8/setup.py	2024-05-03 20:02:38.638248819 -0700
 @@ -679,12 +679,12 @@
          finally:
              os.unlink(tmpfile)

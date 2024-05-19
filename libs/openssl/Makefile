@@ -3,14 +3,16 @@ LOC=-b openssl-3.1 https://github.com/openssl
 
 include $(TOPDIR)/scripts/env.mk
 
+_TARGET=linux-$(_CORE_)
 ifeq ($(_CORE_),arm)
-	_ARCH=armv4
-else
-	_ARCH=$(_CORE_)
+	_TARGET=linux-armv4
+endif
+ifeq ($(_CORE_),riscv64)
+	_TARGET=linux64-riscv64
 endif
 
 MICB_CONFIGURE_CMD=../../../$(MICBSRC)/$(DIR)/Configure 
-MICB_CONFIGURE_OPTS=--prefix=/ --openssldir=/etc/openssl shared no-async linux-$(_ARCH)
+MICB_CONFIGURE_OPTS=--prefix=/ --openssldir=/etc/openssl shared no-async $(_TARGET)
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS)
 
 download:

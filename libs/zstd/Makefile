@@ -8,12 +8,9 @@ MICB_CONFIGURE_MAKEOPTS += VERBOSE=1 $(COMP_CMDS) OS=linux prefix=/usr
 MICB_DEPENDS = zlib
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
-		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git; \
-		[ ! -f $(MICB_PATCH_FN) ] || ( \
-			cd $(BUILDDIR)/$(DIR); cat ../../../$(MICB_PATCH_FN) | patch -p 1 ) \
-	)
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
+	@$(MICB_DUP_SOURCES)
 
 prepare:
 

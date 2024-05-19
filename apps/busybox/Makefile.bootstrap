@@ -21,7 +21,8 @@ prepare:
 	@cd $(BBBS_BDIR)/$(DIR); \
 		echo "CROSS_COMPILE=$(CROSS_COMP_PREFIX)"      > .compile_cmds; \
 		echo "CFLAGS=\"$(CROSS_COMP_FLAGS)\""         >> .compile_cmds; \
-		cp  ../../../patch/config.bootstrap .config;                    \
+		cp  ../../../patch/config.bootstrap           .config;	        \
+		[ ! -f ../../../patch/config.$(TBOARD) ] || cp  ../../../patch/config.$(TBOARD) .config;	\
 		make KBUILD_SRC=../../../$(MICBSRC)/$(DIR) -f ../../../$(MICBSRC)/$(DIR)/Makefile oldconfig
 
 all install clean:
