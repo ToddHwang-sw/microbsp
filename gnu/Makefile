@@ -1,15 +1,5 @@
 RP=../../..
 
-ifeq ($(_CORE_),x86_64)
-	KARCH=x86_64
-endif
-ifeq ($(_CORE_),aarch64)
-	KARCH=arm64
-endif
-ifeq ($(_CORE_),arm)
-	KARCH=arm
-endif
-
 download:
 	@[ -f $(BINUTILS).tar.bz2 ] || wget https://ftp.gnu.org/pub/gnu/binutils/$(BINUTILS).tar.bz2
 	@[ -f $(GCC).tar.gz       ] || wget https://ftp.gnu.org/pub/gnu/gcc/$(GCC)/$(GCC).tar.gz
@@ -18,18 +8,18 @@ download:
 config_binutils:
 	@[ -d $(RP)/$(BINUTILS) ] || tar jxvf $(RP)/../sources/$(BINUTILS).tar.bz2 -C $(RP)
 	$(RP)/$(BINUTILS)/configure --prefix=$(TOOLCHAIN_ROOT) --program-prefix=$(PLATFORM)- --target=$(PLATFORM) --build=$(PLATFORM) \
-			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib
+			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib $(BINUTILS_ARCH_OPTIONS)
 
 setup_binutils:
 	@make
 	@make install
 
 setup_headers:
-	@make ARCH=$(KARCH) INSTALL_HDR_PATH=$(hdrpath) -C $(KERNDIR)/$(KERNELVER) headers_install
+	@$(KERNELMAKE) INSTALL_HDR_PATH=$(hdrpath) -C $(KERNDIR)/$(KERNELVER) headers_install
 
 config_gcc:
-	[ -d $(RP)/$(GCC) ] || tar zxvf $(RP)/../sources/$(GCC).tar.gz -C $(RP)
-	cd $(RP)/$(GCC);  \
+	@[ -d $(RP)/$(GCC) ] || tar zxvf $(RP)/../sources/$(GCC).tar.gz -C $(RP)
+	@cd $(RP)/$(GCC);  \
 		[ -f PATCHED ] || cat ../patch/gcc.host.patch_$(GCC) | patch -p1
 	AR=ar \
 	$(RP)/$(GCC)/configure --prefix=$(TOOLCHAIN_ROOT) -target=$(PLATFORM) \
@@ -37,7 +27,8 @@ config_gcc:
 			--disable-multiarch \
 			--enable-libstdcxx \
 			--enable-languages=$(SUPPORTED_LANGUAGES) \
-			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib
+			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib \
+			$(GCC_ARCH_OPTIONS)
 
 setup_gcc:
 	make all-gcc
