@@ -90,7 +90,7 @@ prepare:
 		cat ../../../patch/patch-$(BRANCH)  | patch -p 1;          \
 		cat ../../../patch/natbyp-$(BRANCH) | patch -p 1;          \
 		cp ../../../patch/$(KERNELVER).config .config;             \
-		make ARCH=arm64 olddefconfig )
+		$(LINUXMAKE) olddefconfig )
 
 all:
 	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \

@@ -47,7 +47,7 @@ prepare:
 		cd $(BUILDDIR)/$(KERNELVER);                               \
 		cat ../../../patch/patch.$(KERNELVER) | patch -p 1;        \
 		cp  ../../../patch/$(KERNELVER).config .config;            \
-		make ARCH=arm olddefconfig )
+		$(LINUXMAKE) olddefconfig )
 
 all:
 	@[ ! -d $(BUILDDIR)/$(KERNELVER) ] || ( \

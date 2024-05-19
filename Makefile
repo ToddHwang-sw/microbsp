@@ -13,6 +13,9 @@ export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}
 # Patch file name 
 export DEV_PATCH_FILE=patch.develop
 
+# direcoty list
+include $(TOPDIR)/dir.inc
+
 # board specific environment 
 include $(BDDIR)/env.mk
 
@@ -193,186 +196,25 @@ include arch/$(_ARCH_)/env.mk
 ## Toolchain options...
 CHECK_TOOLCHAIN=`command -v $(CC) | wc -l`
 
-## Libraries
-LIBDIR=\
-	zlib \
-	pcre \
-	lzo \
-	liblzma \
-	bzip2 \
-	lz4 \
-	zstd \
-	gmp \
-	mpfr \
-	mpc  \
-	isl \
-	libffi \
-	libnl \
-	ncurses \
-	readline \
-	libcap \
-	util-linux \
-	e2fsprogs \
-	libparted \
-	openssl \
-	libssh2 \
-	nettle \
-	flex \
-	lsjson  \
-	pcre2   \
-	libxml  \
-	libxslt \
-	expat \
-	libpam \
-	libpcap \
-	libev \
-	gnulib \
-	libtasn1 \
-	libtool \
-	libattr
-SUBDIR+=$(LIBDIR)
+## Library directories
+ifneq (,$(findstring libs,$(COMPDIR)))
+SUBDIR+=$(_LIBDIR_)
+endif
 
-## Applications 
-APPDIR=\
-	busybox \
-	bash \
-	vim \
-	glibc
-SUBDIR+=$(APPDIR)
+## Application directories
+ifneq (,$(findstring apps,$(COMPDIR)))
+SUBDIR+=$(_APPDIR_)
+endif
 
-# External disk 
-EXTDIR=\
-	cpu \
-	btrfs \
-	binutils \
-	libbind \
-	fdisk \
-	iperf \
-	ncftp \
-	ntpclient \
-	sqlite \
-	iconv \
-	autoconf \
-	automake \
-	proxy-libintl \
-	m4 \
-	make \
-	gettext \
-	glib \
-	pkg-config \
-	module-tools \
-	procps \
-	strace \
-	openssh \
-	gcc \
-	gdb \
-	gdbm \
-	perl \
-	python \
-	pciaccess \
-	drm    \
-	gobject-introspection \
-	libidn \
-	gnutls \
-	curl \
-	git \
-	xconfig \
-	http/fastcgi \
-	http/lighttpd \
-	tcpdump \
-	json \
-	jq \
-	texinfo \
-	help2man  \
-	mtdev \
-	ethtool \
-	linuxptp \
-	pciutils \
-	i2ctools \
-	spitools \
-	gpio \
-	lpps
-SUBDIR+=$(EXTDIR)
+# External application directories
+ifneq (,$(findstring exts,$(COMPDIR)))
+SUBDIR+=$(_EXTDIR_)
+endif
 
-## required library application folders
-SUBDIR+=$(extra_SUBDIR)
-
-##
-##
-## UI-related Materials - excluded from SUBDIR set. 
-##
-##
-UIDIR=\
-	libjpeg                \
-	libpng	               \
-	freetype2              \
-	fontconfig             \
-	libgpg-error           \
-	libgcrypt              \
-	libdbus	               \
-	sndfile	               \
-	X11/xorg-macros        \
-	X11/xorg-doctools      \
-	X11/xorg-x11proto      \
-	X11/xorg-xtrans        \
-	X11/xorg-kbproto       \
-	X11/libXau             \
-	X11/xorg-xcbproto      \
-	X11/xorg-libxcb        \
-	X11/xorg-proto         \
-	X11/libX11             \
-	X11/libICE             \
-	X11/xorg-libsm         \
-	X11/libXt              \
-	X11/libXext            \
-	X11/libXmu             \
-	X11/libXpm             \
-	X11/libXaw             \
-	X11/libXrender         \
-	X11/libXfixes          \
-	X11/libXinput          \
-	X11/libXdamage         \
-	X11/libXcursor         \
-	X11/xorg-libxtst       \
-	X11/xshmfence          \
-	X11/libXxf86vm         \
-	X11/libXrandr          \
-	libseccomp             \
-	systemd                \
-	libevdev               \
-	wayland-host           \
-	wayland                \
-	wayland-protocols      \
-	xkbcommon              \
-	pixman                 \
-	mesa                   \
-	cairo                  \
-	fribidi                \
-	harfbuzz               \
-	gdk-pixbuf             \
-	pango                  \
-	epoxy                  \
-	graphene               \
-	gtk                    \
-	libinput               \
-	libva                  \
-	weston                 \
-	libalsa                \
-	libSDL                 \
-	ffmpeg                 \
-	pygobject              \
-	gstreamer/base         \
-	gstreamer/plugin-base  \
-	gstreamer/plugin-good  \
-	gstreamer/plugin-bad   \
-	gstreamer/plugin-ugly  \
-	gstreamer/libav        \
-	gstreamer/python       \
-	gstreamer/vaapi        \
-	pulseaudio             \
-	microwindows	       \
-	qt
-SUBDIR+=$(UIDIR)
+# UI directories
+ifneq (,$(findstring uix,$(COMPDIR)))
+SUBDIR+=$(_UIDIR_)
+endif
 
 ## YOU CANNOT CHANGE THIS !! .. {apps,libs,uix}/<..>/source
 export MICBSRC=source
@@ -597,42 +439,38 @@ ext_%: checkfirst
 		done
 
 ##
-## uix - only raspberry PI 3 board
+## uix
 ##
 ui: checkfirst llvm_okay
-	@[ "$(TBOARD)" != "rpi3" ] || ( \
-		cd uix && \
-			for dir in $(SUBDIR); do         \
-				[ ! -d $$dir ] || (          \
-					$(call SETUP_BUILDOUT,$$dir)                     && \
-					$(call DO_EXCL,$$dir,prepare,ui,$(UNIXINSTDIR))  && \
-					$(call DO_NORM,$$dir,all,ui,$(UIXINSTDIR))       && \
-					$(call DO_NORM,$$dir,install,ui,$(UIXINSTDIR))   && \
-					$(CLEAN_LIBLA) ) \
-			done \
-		)
+	@cd uix && \
+		for dir in $(SUBDIR); do         \
+			[ ! -d $$dir ] || (          \
+				$(call SETUP_BUILDOUT,$$dir)                     && \
+				$(call DO_EXCL,$$dir,prepare,ui,$(UNIXINSTDIR))  && \
+				$(call DO_NORM,$$dir,all,ui,$(UIXINSTDIR))       && \
+				$(call DO_NORM,$$dir,install,ui,$(UIXINSTDIR))   && \
+				$(CLEAN_LIBLA) ) \
+		done
 
 
 ##
-## ui_[prepare/all/install] - only raspberry PI 3 board
+## ui_[prepare/all/install]
 ##
 ui_%: checkfirst llvm_okay
-	@[ "$(TBOARD)" != "rpi3" ] || ( \
-		cd uix; \
-			for dir in $(SUBDIR); do                     \
-				[ ! -d $$dir ] ||  (                     \
-					$(call SETUP_BUILDOUT,$$dir)      && \
-					if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
-						$(call DO_EXCL,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;     \
-					elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
-						$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
-					else                                                               \
-						$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
-					fi &&  \
-					[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
-				) ;	\
-			done \
-		)
+	@cd uix; \
+		for dir in $(SUBDIR); do                     \
+			[ ! -d $$dir ] ||  (                     \
+				$(call SETUP_BUILDOUT,$$dir)      && \
+				if [ "$(subst ui_,,$@)" = "prepare" ]; then                        \
+					$(call DO_EXCL,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;     \
+				elif [ "$(subst ui_,,$@)" = "download" ]; then                     \
+					$(call DO_EXCL_DN,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;  \
+				else                                                               \
+					$(call DO_NORM,$$dir,$(subst ui_,,$@),ui,$(UIXINSTDIR)) ;      \
+				fi &&  \
+				[ "$(subst ui_,,$@)" != "install" ] || $(CLEAN_LIBLA)  \
+			) ;	\
+		done
 
 ##
 ## projects
@@ -725,7 +563,7 @@ download_epilogue:
 		cd .. ;                                \
 	done
 
-download: download_prologue lib_download app_download ext_download ui_download download_epilogue
+download: compiler_check download_prologue lib_download app_download ext_download ui_download download_epilogue
 
 ##
 ## cleanup everything 
@@ -750,7 +588,7 @@ wipeout:
 ## extdisk
 ## extdisk_clean
 ##
-extdisk:
+extdisk: compiler_check
 	@cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
 	@$(call DO_EXCL_SINGLE,\
 	       $(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS) )
@@ -758,7 +596,7 @@ extdisk:
 	@[ -z $(CFGDISKNM) ] || sudo mkfs.ext4 -j -F -L $(CFGVOLNM) $(EXT4CFG)
 
 
-extdisk_clean:
+extdisk_clean: compiler_check 
 	@$(call DO_EXCL_SINGLE, \
 		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM))
 	@[ -z $(CFGDISKNM) ] || ( [ ! -f $(BDDIR)/$(CFGDISKNM) ] || \rm -rf $(BDDIR)/$(CFGDISKNM) )
@@ -768,19 +606,19 @@ extdisk_clean:
 ## uidisk
 ## uidisk_clean
 ##
-uidisk:
+uidisk: compiler_check 
 	@[ "$(UIDISK)" = "" ] ||  ( \
 		$(call DO_EXCL_SINGLE,\
 			$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)) )
 
-uidisk_clean:
+uidisk_clean: compiler_check 
 	@[ "$(UIDISK)" = "" ] ||  ( \
 		$(call DO_EXCL_SINGLE,\
 			$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(UIDISKNM) ) )
 			
 
 ##
-## BUILDUP_ROOTFS --> Please refer to boards/rpi3/env.mk 
+## BUILDUP_ROOTFS --> Please refer to boards/$(TBOARD)/env.mk 
 ##
 run_bootstrap: checkfirst
 	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
@@ -790,13 +628,13 @@ run_bootstrap: checkfirst
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
 
-boot_%:
+boot_%: checkfist
 	@echo ""
 	@echo "Bootloader configuration/cleanup"
 	@echo ""
 	@make -C $(BDDIR)/boot isodir=$(ISODIR) $(subst boot_,,$@)
 
-kernel_%:
+kernel_%: checkfirst
 	@echo ""
 	@echo "Kernel configuration/cleanup"
 	@echo ""
@@ -808,11 +646,19 @@ kernel_%:
 	       	make -C $(BDDIR) clean       ; \
 	fi
 
-modules_%:
+modules_%: checkfirst
 	@if [ "$(subst mod_,,$@)" = "install" ] ; then \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) install ;              \
 		make -C $(BDDIR)        destination=$(INSTALLDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install ; \
 	fi
+
+boardt: 
+	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
+	@touch $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@echo "Preparing board ..."                                               | tee -a $(BOARD_BUILDOUT)
+	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	@make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare                    2>&1 | tee -a $(BOARD_BUILDOUT)
 
 board: run_bootstrap
 	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
@@ -865,7 +711,7 @@ board: run_bootstrap
 	@[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || \
 		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib
 
-ramdisk:
+ramdisk: checkfirst
 	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
 	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
 	@echo "Compiling kernel and combining squash image ..."                                 2>&1 | tee -a $(BOARD_BUILDOUT)
@@ -968,29 +814,30 @@ toolchain:
 
 #########################################################################################################################
 #
+#  VM execution 
 #
-#  x86_64 VM execution ... TBOARD=vm option only 
-#
-#  # make TBOARD=vm [vmrun|vmstop] 
-#
+#  May/19/2024 : Only x86_64 VM mode (TBOARD=vm) is available for this option. 
+#                Plese refer to board/vm/Makefile. It depends on qemu-system-x86 package. 
+#                # make TBOARD=vm [vmrun|vmstop] 
 #
 #########################################################################################################################
 
 vm%:
-	@[ "$(TBOARD)" = "vm" ] || ( echo "Only \"TBOARD=vm\" option is eligible for QEMU based VM"; exit 1 )
-	@if [ "$(subst vm,,$@)" = "run" ]; then           \
+	@if [ "$(subst vm,,$@)" = "run" ]; then                                \
 		make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) run ;       \
-	elif [ "$(subst vm,,$@)" = "stop" ]; then         \
+	elif [ "$(subst vm,,$@)" = "stop" ]; then                              \
 		make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) stop ;      \
-	else                                              \
-		echo "Only two commands; vmrun top " ;        \
+	else                                                                   \
+		echo "Only two commands; vmrun vmstop " ;                          \
 	fi
 
 pkglist:
 	@for dir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 	\
-		for subdir in $(LIBSSUBDIR) ; do 			\
-	    		[ ! -d $$dir$$subdir/pkgconfig ] || 		\
-				find $$dir$$subdir -name "*.pc" ; 	\
-			done ;						\
+		for subdir in $(LIBSSUBDIR) ; do 			            \
+	    		[ ! -d $$dir$$subdir/pkgconfig ] || 		    \
+				find $$dir$$subdir -name "*.pc" ; 	            \
+			done ;						                        \
 		done
 
+folders:
+	@echo $(SUBDIR)

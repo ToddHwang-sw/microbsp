@@ -22,11 +22,6 @@ export KERNELMAKE=make ARCH=$(_CORE_) CROSS_COMPILE=$(CROSS_COMP_PREFIX)
 export COMPDIR=libs apps exts
 
 ##
-## folders to be included
-##
-export extra_SUBDIR=
-
-##
 ## external disk volume name 
 ##
 export EXTDISK=apps

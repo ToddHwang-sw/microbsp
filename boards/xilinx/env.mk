@@ -13,7 +13,8 @@ export KERNELVER=linux-xlnx-master
 ##
 ## folders to be included
 ##
-export extra_SUBDIR=tcpdump
+export EXTDIR+=\
+			tcpdump
 
 ##
 ## external disk for editable parttition 
