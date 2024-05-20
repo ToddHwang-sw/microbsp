@@ -1,5 +1,5 @@
 DIR=xorgproto
-LOC=git://anongit.freedesktop.org/git/xorg/proto
+LOC=-b xorgproto-2022.1 https://gitlab.freedesktop.org/xorg/proto
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
