@@ -652,14 +652,6 @@ modules_%: checkfirst
 		make -C $(BDDIR)        destination=$(INSTALLDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install ; \
 	fi
 
-boardt: 
-	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
-	@touch $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Preparing board ..."                                               | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare                    2>&1 | tee -a $(BOARD_BUILDOUT)
-
 board: run_bootstrap
 	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
 	@touch $(BOARD_BUILDOUT)
