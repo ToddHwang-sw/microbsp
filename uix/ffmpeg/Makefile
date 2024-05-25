@@ -1,5 +1,5 @@
-DIR=ffmpeg
-LOC=-b release/4.4 https://git.ffmpeg.org
+DIR=ffmpeg-4.4
+LOC=https://ffmpeg.org/releases/
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -44,7 +44,7 @@ MICB_DEPENDS = sdl2 \
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@[ -f $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz; $(MICB_PATCH) )
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \
