@@ -23,7 +23,7 @@ export COMPDIR=libs apps exts
 ##
 ## folders to be included
 ##
-export EXTDIR+=\
+export _EXTDIR_+=\
 		wpa \
 		wtools \
 		hostapd \

@@ -19,7 +19,7 @@ export KERNELMAKE=make ARCH=riscv V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_
 ## Components
 export COMPDIR=libs apps
 
-export LIBDIR=\
+export _LIBDIR_=\
 	zlib       \
 	bzip2      \
 	ncurses    \
