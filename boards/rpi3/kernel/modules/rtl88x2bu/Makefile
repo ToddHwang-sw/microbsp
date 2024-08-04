@@ -6,7 +6,7 @@ KERNVER=`cat $(KERNSRC)/include/config/kernel.release`
 
 prepare:
 	@[ -d $(DIR) ] || ( \
-		git clone $(LOC)/$(DIR); \
+		$(TOPDIR)/scripts/gitclone.sh "" "$(LOC)/$(DIR)" ; \
 		cd $(DIR); \
 		[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
 

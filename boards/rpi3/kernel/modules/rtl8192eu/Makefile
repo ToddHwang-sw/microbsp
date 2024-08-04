@@ -1,12 +1,12 @@
-DIR=rtl8192eu
-LOC=-b 5.11.2.1 https://github.com/clnhub/rtl8192eu-linux.git
+DIR=rtl8192eu-linux
+LOC=-b 5.11.2.1 https://github.com/clnhub/$(DIR).git
 
 RTLMAKE=$(LINUXMAKE) KSRC=$(KERNSRC) CROSS_COMPILE=$(CROSS_COMP_PREFIX) ARCH=arm64 V=1
 KERNVER=`cat $(KERNSRC)/include/config/kernel.release`
 
 prepare:
 	@[ -d $(DIR) ] || ( \
-		git clone $(LOC) $(DIR); \
+		$(TOPDIR)/scripts/gitclone.sh "" "$(LOC)" ; \
 		cd $(DIR); \
 			[ ! -f ../patch/patch ] || cat ../patch/patch | patch -p 1 )
 

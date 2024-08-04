@@ -35,8 +35,6 @@ CRDAFW1S=\
 	regulatory.db.p7s
 CRDAFWTMPDIR=\
 	/tmp/___tinker_linuxswtree_linux-crda_firmware____
-CRDATMPTMP=\
-	/tmp/___tinker_linuxswtree_linux-crda_signature___
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
@@ -45,7 +43,8 @@ prepare:
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		tar xvf source/$(FILENM) -C $(BUILDDIR) ;                  \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
-		cat ../../../patch/patch.$(KERNELVER) | patch -p 1;        \
+		cat ../../../patch/patch.$(KERNELVER)  | patch -p 1;       \
+		cat ../../../patch/natbyp.$(KERNELVER) | patch -p 1;       \
 		cp  ../../../patch/$(KERNELVER).config .config;            \
 		$(LINUXMAKE) olddefconfig )
 
@@ -85,11 +84,7 @@ dnfw:
 				mkdir -p $(CRDAFWTMPDIR);                \
 				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
-				git clone --single-branch $(CRDAFWLOC) ; \
-				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
-				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
-				git checkout -q `cat $(CRDATMPTMP)`;     \
-				\rm -rf $(CRDATMPTMP);                   \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)" ; \
 				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
@@ -106,11 +101,7 @@ dnfw:
 				mkdir -p $(CRDAFWTMPDIR);                \
 				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
-				git clone --single-branch $(CRDAFWLOC);  \
-				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
-				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
-				git checkout -q `cat $(CRDATMPTMP)`;     \
-				\rm -rf $(CRDATMPTMP);                   \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)" ; \
 				cd $(__CURDIR);                          \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \

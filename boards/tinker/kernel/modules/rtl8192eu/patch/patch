@@ -1,24 +1,3 @@
-diff -uNr rtl8192eu-orig/core/rtw_ieee80211.c rtl8192eu/core/rtw_ieee80211.c
---- rtl8192eu-orig/core/rtw_ieee80211.c	2024-04-23 09:17:19.995137675 -0700
-+++ rtl8192eu/core/rtw_ieee80211.c	2024-04-23 08:58:20.169903580 -0700
-@@ -2145,7 +2145,7 @@
- 	return 0;
- }
- 
--static void dump_p2p_ie(void *sel, const u8 *ie, u32 ie_len)
-+void dump_p2p_ie(void *sel, const u8 *ie, u32 ie_len)
- {
- 	const u8 *pos = ie;
- 	u8 id;
-@@ -2597,7 +2597,7 @@
- }
- 
- #ifdef CONFIG_WFD
--static void dump_wfd_ie(void *sel, const u8 *ie, u32 ie_len)
-+void dump_wfd_ie(void *sel, const u8 *ie, u32 ie_len)
- {
- 	const u8 *pos = ie;
- 	u8 id;
 diff -uNr rtl8192eu-orig/core/rtw_mlme.c rtl8192eu/core/rtw_mlme.c
 --- rtl8192eu-orig/core/rtw_mlme.c	2024-04-23 09:17:19.999137748 -0700
 +++ rtl8192eu/core/rtw_mlme.c	2024-04-23 08:54:22.806582725 -0700
@@ -40,17 +19,6 @@ diff -uNr rtl8192eu-orig/core/rtw_mlme.c rtl8192eu/core/rtw_mlme.c
 diff -uNr rtl8192eu-orig/Makefile rtl8192eu/Makefile
 --- rtl8192eu-orig/Makefile	2024-04-23 09:17:19.987137526 -0700
 +++ rtl8192eu/Makefile	2024-04-23 09:18:07.760006555 -0700
-@@ -5,8 +5,8 @@
- #EXTRA_CFLAGS += -Werror
- #EXTRA_CFLAGS += -pedantic
- #EXTRA_CFLAGS += -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes
--EXTRA_CFLAGS += -Wmissing-prototypes
--EXTRA_CFLAGS += -Werror=missing-prototypes
-+#EXTRA_CFLAGS += -Wmissing-prototypes
-+#EXTRA_CFLAGS += -Werror=missing-prototypes
- 
- EXTRA_CFLAGS += -Wno-unused-variable
- #EXTRA_CFLAGS += -Wno-unused-value
 @@ -54,12 +54,12 @@
  CONFIG_AP_MODE = y
  CONFIG_P2P = y
@@ -113,7 +81,7 @@ diff -uNr rtl8192eu-orig/Makefile rtl8192eu/Makefile
 +EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_PLATFORM_ROCKCHIPS
 +# default setting for Android 4.1, 4.2, 4.3, 4.4
 +EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
-+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
++EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE -DCONFIG_NET_NATBYP
 +ARCH := arm
 +CROSS_COMPILE := $(CROSS_COMP_PREFIX)
 +KSRC := $(KERNDIR)
@@ -123,3 +91,76 @@ diff -uNr rtl8192eu-orig/Makefile rtl8192eu/Makefile
  ifeq ($(CONFIG_PLATFORM_ARM_RK3066), y)
  EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_RK3066
  EXTRA_CFLAGS += -DRTW_ENABLE_WIFI_CONTROL_FUNC
+diff -uNr rtl8192eu-linux-orig/core/rtw_xmit.c rtl8192eu-linux/core/rtw_xmit.c
+--- rtl8192eu-linux-orig/core/rtw_xmit.c	2024-07-28 14:35:10.454861930 -0700
++++ rtl8192eu-linux/core/rtw_xmit.c	2024-07-28 14:36:09.626978550 -0700
+@@ -17,6 +17,10 @@
+ #include <drv_types.h>
+ #include <hal_data.h>
+ 
++#ifdef CONFIG_NET_NATBYP
++#include <net/natbyp.h>
++#endif
++
+ static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
+ static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
+ 
+@@ -4996,6 +5000,11 @@
+ 	if (rtw_linked_check(padapter) == _FALSE)
+ 		return -1;
+ 
++#ifdef CONFIG_NET_NATBYP
++	if (*ppkt)
++		natbyp_egress(*ppkt);
++#endif
++
+ 	if (start == 0)
+ 		start = rtw_get_current_time();
+ 
+diff -uNr rtl8192eu-linux-orig/os_dep/osdep_service.c rtl8192eu-linux/os_dep/osdep_service.c
+--- rtl8192eu-linux-orig/os_dep/osdep_service.c	2024-07-28 14:35:10.474863388 -0700
++++ rtl8192eu-linux/os_dep/osdep_service.c	2024-07-28 14:36:09.630978815 -0700
+@@ -18,6 +18,10 @@
+ 
+ #include <drv_types.h>
+ 
++#ifdef CONFIG_NET_NATBYP
++#include <net/natbyp.h>
++#endif
++
+ #define RT_TAG	'1178'
+ 
+ #ifdef DBG_MEMORY_LEAK
+@@ -331,6 +335,10 @@
+ {
+ #if defined(PLATFORM_LINUX)
+ 	skb->dev = ndev;
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return netif_rx(skb);
+ #elif defined(PLATFORM_FREEBSD)
+ 	return (*ndev->if_input)(ndev, skb);
+@@ -345,6 +353,10 @@
+ {
+ #if defined(PLATFORM_LINUX)
+ 	skb->dev = ndev;
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return netif_receive_skb(skb);
+ #else
+ 	rtw_warn_on(1);
+@@ -356,6 +368,10 @@
+ inline gro_result_t _rtw_napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+ {
+ #if defined(PLATFORM_LINUX)
++#ifdef CONFIG_NET_NATBYP
++	if (natbyp_ingress(skb) == NATBYP_BYPASSED)
++		return NET_RX_SUCCESS;
++#endif
+ 	return napi_gro_receive(napi, skb);
+ #else
+ 	rtw_warn_on(1);

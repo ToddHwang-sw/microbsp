@@ -1,27 +1,6 @@
-diff -uNr rtl8192eu-original/core/rtw_ieee80211.c rtl8192eu/core/rtw_ieee80211.c
---- rtl8192eu-original/core/rtw_ieee80211.c	2024-04-06 23:05:11.661036795 -0700
-+++ rtl8192eu/core/rtw_ieee80211.c	2024-04-06 23:06:30.650609384 -0700
-@@ -2145,7 +2145,7 @@
- 	return 0;
- }
- 
--static void dump_p2p_ie(void *sel, const u8 *ie, u32 ie_len)
-+void dump_p2p_ie(void *sel, const u8 *ie, u32 ie_len)
- {
- 	const u8 *pos = ie;
- 	u8 id;
-@@ -2597,7 +2597,7 @@
- }
- 
- #ifdef CONFIG_WFD
--static void dump_wfd_ie(void *sel, const u8 *ie, u32 ie_len)
-+void dump_wfd_ie(void *sel, const u8 *ie, u32 ie_len)
- {
- 	const u8 *pos = ie;
- 	u8 id;
-diff -uNr rtl8192eu-original/core/rtw_xmit.c rtl8192eu/core/rtw_xmit.c
---- rtl8192eu-original/core/rtw_xmit.c	2024-04-06 23:05:11.685036057 -0700
-+++ rtl8192eu/core/rtw_xmit.c	2024-04-06 23:05:22.992688710 -0700
+diff -uNr rtl8192eu-linux-orig/core/rtw_xmit.c rtl8192eu-linux/core/rtw_xmit.c
+--- rtl8192eu-linux-orig/core/rtw_xmit.c	2024-07-28 14:35:10.454861930 -0700
++++ rtl8192eu-linux/core/rtw_xmit.c	2024-07-28 14:36:09.626978550 -0700
 @@ -17,6 +17,10 @@
  #include <drv_types.h>
  #include <hal_data.h>
@@ -45,21 +24,10 @@ diff -uNr rtl8192eu-original/core/rtw_xmit.c rtl8192eu/core/rtw_xmit.c
  	if (start == 0)
  		start = rtw_get_current_time();
  
-diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
---- rtl8192eu-original/Makefile	2024-04-06 23:05:11.637037531 -0700
-+++ rtl8192eu/Makefile	2024-04-06 23:05:22.992688710 -0700
-@@ -5,8 +5,8 @@
- #EXTRA_CFLAGS += -Werror
- #EXTRA_CFLAGS += -pedantic
- #EXTRA_CFLAGS += -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes
--EXTRA_CFLAGS += -Wmissing-prototypes
--EXTRA_CFLAGS += -Werror=missing-prototypes
-+#EXTRA_CFLAGS += -Wmissing-prototypes
-+#EXTRA_CFLAGS += -Werror=missing-prototypes
- 
- EXTRA_CFLAGS += -Wno-unused-variable
- #EXTRA_CFLAGS += -Wno-unused-value
-@@ -54,12 +54,12 @@
+diff -uNr rtl8192eu-linux-orig/Makefile rtl8192eu-linux/Makefile
+--- rtl8192eu-linux-orig/Makefile	2024-07-28 14:35:10.442861054 -0700
++++ rtl8192eu-linux/Makefile	2024-07-28 14:39:07.921307701 -0700
+@@ -52,12 +52,12 @@
  CONFIG_AP_MODE = y
  CONFIG_P2P = y
  CONFIG_MP_INCLUDED = y
@@ -74,7 +42,7 @@ diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
  CONFIG_WAPI_SUPPORT = n
  CONFIG_EFUSE_CONFIG_FILE = y
  CONFIG_EXT_CLK = n
-@@ -77,7 +77,7 @@
+@@ -75,7 +75,7 @@
  CONFIG_REDUCE_TX_CPU_LOADING = n
  CONFIG_BR_EXT = y
  CONFIG_TDLS = n
@@ -83,7 +51,7 @@ diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
  CONFIG_MCC_MODE = n
  CONFIG_APPEND_VENDOR_IE_ENABLE = n
  CONFIG_RTW_NAPI = y
-@@ -101,13 +101,13 @@
+@@ -99,13 +99,13 @@
  endif
  
  ########################## Debug ###########################
@@ -100,7 +68,7 @@ diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
  
  ######################## Wake On Lan ##########################
  CONFIG_WOWLAN = n
-@@ -133,9 +133,9 @@
+@@ -131,9 +131,9 @@
  ###################### MP HW TX MODE FOR VHT #######################
  CONFIG_MP_VHT_HW_TX_MODE = n
  ###################### Platform Related #######################
@@ -112,7 +80,7 @@ diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
  CONFIG_PLATFORM_ARM_RPI = n
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
-@@ -1348,6 +1348,7 @@
+@@ -1346,6 +1346,7 @@
  
  ifeq ($(CONFIG_PLATFORM_ARM_AARCH64), y)
  EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
@@ -120,9 +88,9 @@ diff -uNr rtl8192eu-original/Makefile rtl8192eu/Makefile
  EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
  ARCH := arm64
  CROSS_COMPILE :=
-diff -uNr rtl8192eu-original/os_dep/osdep_service.c rtl8192eu/os_dep/osdep_service.c
---- rtl8192eu-original/os_dep/osdep_service.c	2024-04-06 23:05:11.761033723 -0700
-+++ rtl8192eu/os_dep/osdep_service.c	2024-04-06 23:05:22.992688710 -0700
+diff -uNr rtl8192eu-linux-orig/os_dep/osdep_service.c rtl8192eu-linux/os_dep/osdep_service.c
+--- rtl8192eu-linux-orig/os_dep/osdep_service.c	2024-07-28 14:35:10.474863388 -0700
++++ rtl8192eu-linux/os_dep/osdep_service.c	2024-07-28 14:36:09.630978815 -0700
 @@ -18,6 +18,10 @@
  
  #include <drv_types.h>

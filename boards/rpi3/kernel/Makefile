@@ -35,39 +35,45 @@ EXTMDIRS=\
 
 ##
 ## Broadcom WiFi FWs required.... 
+## Cypress  Power regulartor FWs also required....
 ##
 ##    https://www.linuxquestions.org/questions/slackware-arm-108/raspberry-pi-3-b-wifi-nic-not-found-4175627137/
 ##
+BRCMFWDIR=brcm
+CYPRESSFWDIR=cypress
 BRCMFWFN=firmware-brcm80211_20210315-3+rpt7_all.deb
 BRCMFWLOC=https://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/$(BRCMFWFN)
 BRCMFWS=\
-	brcm/bcm43xx-0.fw \
-	brcm/bcm43xx_hdr-0.fw \
-	brcm/brcmfmac43455-sdio.bin \
-	brcm/brcmfmac43455-sdio.txt \
-	brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt \
-	brcm/brcmfmac43455-sdio.clm_blob \
-	cypress/cyfmac43455-sdio-standard.bin \
-	cypress/cyfmac43455-sdio.clm_blob
+	$(BRCMFWDIR)/bcm43xx-0.fw \
+	$(BRCMFWDIR)/bcm43xx_hdr-0.fw \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.bin \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.txt \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.clm_blob \
+	$(CYPRESSFWDIR)/cyfmac43455-sdio-standard.bin \
+	$(CYPRESSFWDIR)/cyfmac43455-sdio.clm_blob
 BRCMFWTMPDIR=\
 	/tmp/___rpi_linuxswtree_linux-broadcom_firmware___
 
 ##
 ## Realtek WiFi FWs required....
 ##
-RTLFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git 
-RTLFWTAG=tags/20191215
-RTLFWS=\
-	rtlwifi/rtl8192eu_ap_wowlan.bin \
-	rtlwifi/rtl8192eu_nic.bin \
-	rtlwifi/rtl8192eu_wowlan.bin
-RTLFWTMPDIR=\
+LINFWNM=linux-firmware
+RTKWIFIDIR=rtlwifi
+RTKFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/firmware/$(LINFWNM).git 
+RTKFWTAG=tags/20191215
+RTKFWS=\
+	$(RTKWIFIDIR)/rtl8192eu_ap_wowlan.bin \
+	$(RTKWIFIDIR)/rtl8192eu_nic.bin \
+	$(RTKWIFIDIR)/rtl8192eu_wowlan.bin
+RTKFWTMPDIR=\
 	/tmp/___rpi_linuxswtree_linux-realtek_firmware____
 
 ##
 ## Regulatory FWs
 ##
-CRDAFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git
+CRDAFWNM=wireless-regdb
+CRDAFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/$(CRDAFWNM).git
 CRDAFW0S=\
 	regulatory.bin \
 	sforshee.x509.pem \
@@ -121,32 +127,32 @@ dnfw:
 	@echo ""
 	@echo "Downloading Firmwares"
 	@echo ""
-	@[ -d $(BDDIR)/rootfs/lib/firmware/rtlwifi ] || mkdir -p $(BDDIR)/rootfs/lib/firmware/rtlwifi
-	@for f in $(RTLFWS); do \
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(RTKWIFIDIR) ] || mkdir -p $(BDDIR)/rootfs/lib/firmware/$(RTKWIFIDIR)
+	@for f in $(RTKFWS); do \
 		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
-			[ -d $(RTLFWTMPDIR) ] || ( \
+			[ -d $(RTKFWTMPDIR) ] || ( \
 				echo "" ;                                   \
-				echo "Cloning Linux-Firmware from $(RTLFWLOC)" ; \
+				echo "Cloning $(LINFWNM) from $(RTKFWLOC)" ;\
 				echo "" ;                                   \
-				mkdir -p $(RTLFWTMPDIR);                    \
-				$(eval __CURDIR:=${PWD})					\
-				cd $(RTLFWTMPDIR);                          \
-				git clone --single-branch $(RTLFWLOC) $(RTLFWTMPDIR);  \
-				cd $(__CURDIR);                             \
-				git checkout $(RTLFWTAG) > /dev/null        \
+				mkdir -p $(RTKFWTMPDIR);                    \
+				cd $(RTKFWTMPDIR);                          \
+				$(TOPDIR)/scripts/gitclone.sh "" "$(RTKFWLOC)" "" "$(RTKFWTAG)" ;  \
 			) ;                                             \
-			cp -rf $(RTLFWTMPDIR)/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
+			cp -rf $(RTKFWTMPDIR)/$(LINFWNM)/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
 		) ; \
 	done
-	@\rm -rf $(RTLFWTMPDIR)
-	@[ -d $(BDDIR)/rootfs/lib/firmware/brcm ] || ( \
-			mkdir -p $(BDDIR)/rootfs/lib/firmware/brcm ; \
-			mkdir -p $(BDDIR)/rootfs/lib/firmware/cypress )
+	@\rm -rf $(RTKFWTMPDIR)
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ] || ( \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ; \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR) )
+	@echo ""
+	@echo "Moving $(BRCMFWDIR) binary file "
+	@echo ""
 	@for f in $(BRCMFWS); do \
 		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
 			[ -d $(BRCMFWTMPDIR) ] || ( \
-				echo "" ;                                 \
-				echo "Copyiing Linux-Firmware from $(BRCMFWLOC)" ; \
+				echo "" ;                                \
+				echo "Copying $(BRCMFWLOC)" ;            \
 				echo "" ;                                \
 				mkdir -p $(BRCMFWTMPDIR);                \
 				cd $(BRCMFWTMPDIR);                      \
@@ -159,30 +165,24 @@ dnfw:
 		) ; \
 	done
 	@echo ""
-	@echo "Moving cypress binary file "
+	@echo "Moving $(CYPRESSFWDIR) binary file "
 	@echo ""
-	@mv $(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio-standard.bin \
-		$(BDDIR)/rootfs/lib/firmware/cypress/cyfmac43455-sdio.bin
+	@mv $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR)/cyfmac43455-sdio-standard.bin \
+		$(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR)/cyfmac43455-sdio.bin
 	@\rm -rf $(BRCMFWTMPDIR)
 	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
 	@for f in $(CRDAFW0S); do \
 		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \
 			[ -d $(CRDAFWTMPDIR) ] || ( \
 				echo "" ;                                 \
-				echo "Copyiing Linux-Firmware from $(CRDAFWLOC)" ; \
+				echo "Copyiing $(CRDAFWNM) from $(CRDAFWLOC)" ; \
 				echo "" ;                                \
 				mkdir -p $(CRDAFWTMPDIR);                \
-				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
-				git clone --single-branch $(CRDAFWLOC) ; \
-				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
-				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
-				git checkout -q `cat $(CRDATMPTMP)`;     \
-				\rm -rf $(CRDATMPTMP);                   \
-				cd $(__CURDIR);                          \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)" ; \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
-			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/crda/$$f \
+			cp -rf $(CRDAFWTMPDIR)/$(CRDAFWNM)/$$f $(BDDIR)/rootfs/lib/crda/$$f \
 		) ; \
 	done
 	@[ -d $(BDDIR)/rootfs/lib/firmware ] || mkdir -p $(BDDIR)/rootfs/lib/firmware
@@ -190,20 +190,14 @@ dnfw:
 		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
 			[ -d $(CRDAFWTMPDIR) ] || ( \
 				echo "" ;                                 \
-				echo "Copyiing Linux-Firmware from $(CRDAFWLOC)" ; \
+				echo "Copyiing $(CRDAFWNM) from $(CRDAFWLOC)" ; \
 				echo "" ;                                \
 				mkdir -p $(CRDAFWTMPDIR);                \
-				$(eval __CURDIR:=${PWD})		         \
 				cd $(CRDAFWTMPDIR);                      \
-				git clone --single-branch $(CRDAFWLOC);  \
-				cd $(CRDAFWTMPDIR)/wireless-regdb;       \
-				git rev-list -n 1 --until=\"$(shell cat $(TOPDIR)/date.inc)\" master > $(CRDATMPTMP) ; \
-				git checkout -q `cat $(CRDATMPTMP)`;     \
-				\rm -rf $(CRDATMPTMP);                   \
-				cd $(__CURDIR);                          \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)";  \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
-			cp -rf $(CRDAFWTMPDIR)/wireless-regdb/$$f $(BDDIR)/rootfs/lib/firmware/$$f \
+			cp -rf $(CRDAFWTMPDIR)/$(CRDAFWNM)/$$f $(BDDIR)/rootfs/lib/firmware/$$f \
 		) ; \
 	done
 	@\rm -rf $(CRDAFWTMPDIR)

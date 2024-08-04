@@ -23,7 +23,7 @@ RP=../../..
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR)      ] || mkdir -p $(BUILDDIR)/$(DIR) 
 	@[ -f $(BUILDDIR)/$(DIR)/.git ] || ( cd $(BUILDDIR); \
-		git clone --depth 1 $(LOC)/$(DIR).git;       \
+		$(TOPDIR)/scripts/gitclone.sh "--depth 1" "$(LOC)/$(DIR).git" ; \
 		cd $(DIR);                         \
 		[ ! -f $(RP)/patch/patch           ] || cat $(RP)/patch/patch | patch -p 1 ;     \
 		[ ! -f $(RP)/patch/uboot.config    ] || cp  $(RP)/patch/uboot.config .config ;   \
@@ -40,7 +40,7 @@ all clean:
 install:
 	@[ -d $(BUILDDIR)/$(RKBIN)  ] || (               \
 		cd $(BUILDDIR);                              \
-		git clone $(RKBINLOC)/$(RKBIN).git $(RKBIN)  )
+		$(TOPDIR)/scripts/gitclone.sh "" "$(RKBINLOC)/$(RKBIN).git" )
 	@[ ! -d $(BUILDDIR)/$(RKBIN)  ] || (             \
 		cd $(BUILDDIR)/$(RKBIN) ;                    \
 		./tools/mkimage -n rk3288 -T rksd -d $(RKBINDDR) $(isodir)/boot/$(IDBLOADER) ;        \

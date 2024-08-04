@@ -1,6 +1,6 @@
 diff -uNr 88x2bu-20210702-orig/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
---- 88x2bu-20210702-orig/core/rtw_xmit.c	2024-04-07 09:31:00.702967844 -0700
-+++ 88x2bu-20210702/core/rtw_xmit.c	2024-04-07 09:31:12.587182404 -0700
+--- 88x2bu-20210702-orig/core/rtw_xmit.c	2024-07-28 14:22:58.831128916 -0700
++++ 88x2bu-20210702/core/rtw_xmit.c	2024-07-28 13:54:27.485198224 -0700
 @@ -17,6 +17,10 @@
  #include <drv_types.h>
  #include <hal_data.h>
@@ -25,24 +25,15 @@ diff -uNr 88x2bu-20210702-orig/core/rtw_xmit.c 88x2bu-20210702/core/rtw_xmit.c
  		start = rtw_get_current_time();
  
 diff -uNr 88x2bu-20210702-orig/Makefile 88x2bu-20210702/Makefile
---- 88x2bu-20210702-orig/Makefile	2024-04-07 09:31:00.658966864 -0700
-+++ 88x2bu-20210702/Makefile	2024-04-07 09:31:31.863355296 -0700
-@@ -19,11 +19,11 @@
- EXTRA_CFLAGS += -Wno-implicit-fallthrough
- #EXTRA_CFLAGS += -Wno-return-type
- #EXTRA_CFLAGS += -Wno-discarded-qualifiers
--EXTRA_CFLAGS += -Wno-missing-prototypes
--EXTRA_CFLAGS += -Wno-missing-declarations
-+#EXTRA_CFLAGS += -Wno-missing-prototypes
-+#EXTRA_CFLAGS += -Wno-missing-declarations
- 
- # Activates Concurrent Mode if uncommented
--#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
-+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE -DCONFIG_NET_NATBYP
- 
- # LED Control
- EXTRA_CFLAGS += -DCONFIG_LED_CONTROL
-@@ -111,7 +111,7 @@
+--- 88x2bu-20210702-orig/Makefile	2024-07-28 14:22:59.047129326 -0700
++++ 88x2bu-20210702/Makefile	2024-07-28 14:20:49.566930988 -0700
+@@ -93,12 +93,12 @@
+ CONFIG_AP_MODE = y
+ CONFIG_P2P = y
+ CONFIG_MP_INCLUDED = n
+-CONFIG_POWER_SAVING = y
++CONFIG_POWER_SAVING = n
+ CONFIG_IPS_MODE = default
  CONFIG_LPS_MODE = default
  CONFIG_USB_AUTOSUSPEND = n
  CONFIG_HW_PWRP_DETECTION = n
@@ -51,9 +42,19 @@ diff -uNr 88x2bu-20210702-orig/Makefile 88x2bu-20210702/Makefile
  CONFIG_WAPI_SUPPORT = n
  CONFIG_EFUSE_CONFIG_FILE = n
  CONFIG_EXT_CLK = n
+@@ -1374,6 +1374,9 @@
+ EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+ EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+ 
++EXTRA_CFLAGS += -DCONFIG_NET_NATBYP
++EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
++
+ SUBARCH := $(shell uname -m)
+ 
+ ifeq ($(SUBARCH), aarch64)
 diff -uNr 88x2bu-20210702-orig/os_dep/osdep_service.c 88x2bu-20210702/os_dep/osdep_service.c
---- 88x2bu-20210702-orig/os_dep/osdep_service.c	2024-04-07 09:31:00.826970605 -0700
-+++ 88x2bu-20210702/os_dep/osdep_service.c	2024-04-07 09:31:12.587182404 -0700
+--- 88x2bu-20210702-orig/os_dep/osdep_service.c	2024-07-28 14:22:58.935129113 -0700
++++ 88x2bu-20210702/os_dep/osdep_service.c	2024-07-28 13:54:27.489198281 -0700
 @@ -18,6 +18,10 @@
  
  #include <drv_types.h>
