@@ -7,8 +7,6 @@ MICB_CONFIGURE_AUTOCONF_CMD = \
 	autoreconf --install -v -I$(INSTALLDIR) -I$(EXTINSTDIR) 
 
 MICB_CONFIGURE_RUNENV += \
-	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-	$(COMP_CMDS) \
 	ac_cv_func_malloc_0_nonnull=yes \
 	ac_cv_func_realloc_0_nonnull=yes
 

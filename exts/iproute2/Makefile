@@ -22,5 +22,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) LDFLAGS+=$(iproute2_EXTRA_OPT) $@ )
+		cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) LDFLAGS+=$(iproute2_EXTRA_OPT) $@ )
 

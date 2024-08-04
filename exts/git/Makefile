@@ -7,17 +7,9 @@ MICB_CONFIGURE_RUNENV += \
 	ac_cv_fread_reads_directories=yes \
 	ac_cv_snprintf_returns_bogus=yes
 
-MICB_CONFIGURE_OPTS += \
-	--with-zlib=$(INSTALLDIR) 	\
-	--with-expat=$(INSTALLDIR) 	\
-	--with-openssl=$(INSTALLDIR) 	\
-	--with-libpcre2=$(INSTALLDIR) 	\
-	--with-curl=$(EXTINSTDIR)	\
-	--with-iconv=$(EXTINSTDIR)
-
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_DEPENDS = openssl libssh2 libtasn1 nettle zlib expat iconv libcurl
+MICB_DEPENDS = openssl libssh2 libtasn1 nettle zlib expat iconv libcurl libpcre2
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
