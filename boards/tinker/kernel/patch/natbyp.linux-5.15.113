@@ -1,6 +1,6 @@
 diff -uNr linux-5.15.113-orig/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c linux-5.15.113/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 --- linux-5.15.113-orig/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2023-05-24 09:36:55.000000000 -0700
-+++ linux-5.15.113/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2024-07-28 23:10:50.641273425 -0700
++++ linux-5.15.113/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2024-08-04 15:23:08.054442035 -0700
 @@ -49,6 +49,9 @@
  #include "dwmac1000.h"
  #include "dwxgmac2.h"
@@ -22,46 +22,42 @@ diff -uNr linux-5.15.113-orig/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c 
  	tx_q = &priv->tx_queue[queue];
  	first_tx = tx_q->cur_tx;
  
-@@ -4856,6 +4863,17 @@
- 	else
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 
-+#ifdef CONFIG_NET_NATBYP
-+	{
-+		int rc = natbyp_ingress(skb);
-+		if (rc == NATBYP_BYPASSED) {
-+			priv->dev->stats.rx_packets++;
-+			priv->dev->stats.rx_bytes += len;
-+			return ;
-+		}
-+	}
-+#endif
-+
- 	if (!stmmac_get_rx_hash(priv, p, &hash, &hash_type))
+@@ -4860,7 +4867,17 @@
  		skb_set_hash(skb, hash, hash_type);
  
-@@ -5360,6 +5378,21 @@
- 		if (!stmmac_get_rx_hash(priv, p, &hash, &hash_type))
- 			skb_set_hash(skb, hash, hash_type);
- 
+ 	skb_record_rx_queue(skb, queue);
++
 +#ifdef CONFIG_NET_NATBYP
 +	{
 +		int rc = natbyp_ingress(skb);
-+		if (rc == NATBYP_BYPASSED) {
-+			priv->dev->stats.rx_packets++;
-+			priv->dev->stats.rx_bytes += len;
-+
-+			++count;
-+
-+			priv->xstats.rx_pkt_n += count;
-+			priv->xstats.rxq_stats[queue].rx_pkt_n += count;
-+			return count ;
-+		}
++		if (rc != NATBYP_BYPASSED) {
++			napi_gro_receive(&ch->rxtx_napi, skb);
++		} 
 +	}
++#else
+ 	napi_gro_receive(&ch->rxtx_napi, skb);
 +#endif
+ 
+ 	priv->dev->stats.rx_packets++;
+ 	priv->dev->stats.rx_bytes += len;
+@@ -5361,7 +5378,17 @@
+ 			skb_set_hash(skb, hash, hash_type);
+ 
  		skb_record_rx_queue(skb, queue);
++
++#ifdef CONFIG_NET_NATBYP
++		{
++			int rc = natbyp_ingress(skb);
++			if (rc != NATBYP_BYPASSED) {
++				napi_gro_receive(&ch->rx_napi, skb);
++			}
++		}
++#else
  		napi_gro_receive(&ch->rx_napi, skb);
++#endif
  		skb = NULL;
+ 
+ 		priv->dev->stats.rx_packets++;
 diff -uNr linux-5.15.113-orig/include/linux/skbuff.h linux-5.15.113/include/linux/skbuff.h
 --- linux-5.15.113-orig/include/linux/skbuff.h	2023-05-24 09:36:55.000000000 -0700
 +++ linux-5.15.113/include/linux/skbuff.h	2024-07-28 21:19:13.469672624 -0700
