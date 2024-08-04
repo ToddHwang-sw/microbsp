@@ -5,7 +5,8 @@ TMPDIR=/tmp/linuxrpi.rpi3.tmpdir
 
 export BLOCKSZ=4M
 
-DD=dd conv=sync bs=${BLOCKSZ}
+DD="dd conv=fsync bs=${BLOCKSZ} status=progress"
+
 LOADERFILE=iso/boot/idbloader.img
 UBOOTFILE=iso/boot/u-boot.img
 
@@ -177,17 +178,17 @@ if [ -f ${LOADERFILE} -a -f ${UBOOTFILE} ]; then
 	echo ""
     echo "Zeroing..."
 	echo ""
-	sudo ${DD} if=/dev/zero of=/dev/${DRIVE}1 count=${COUNT}
+	sudo dd if=/dev/zero of=/dev/${DRIVE}1 count=${COUNT}
 
 	echo ""
     echo "Wring IDBLOADER"
 	echo ""
-	sudo ${DD} if=${LOADERFILE} of=/dev/${DRIVE}1 seek=64
+	sudo dd if=${LOADERFILE} of=/dev/${DRIVE}1 seek=64
 
 	echo ""
     echo "Wring BOOTLOADER"
 	echo ""
-	sudo ${DD} if=${UBOOTFILE}  of=/dev/${DRIVE}1 seek=16384
+	sudo dd if=${UBOOTFILE}  of=/dev/${DRIVE}1 seek=16384
 fi
 
 echo "Building BOOT partition /dev/${DRIVE}2 "
