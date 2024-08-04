@@ -628,7 +628,7 @@ run_bootstrap: checkfirst
 	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
 	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
 
-boot_%: checkfist
+boot_%: checkfirst
 	@echo ""
 	@echo "Bootloader configuration/cleanup"
 	@echo ""
