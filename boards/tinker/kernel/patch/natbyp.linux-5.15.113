@@ -1,46 +1,71 @@
-diff -uNr linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c linux-rpi-5.15.y/drivers/net/usb/lan78xx.c
---- linux-rpi-5.15.y-original/drivers/net/usb/lan78xx.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/drivers/net/usb/lan78xx.c	2023-05-21 19:43:47.226743091 -0700
-@@ -29,6 +29,9 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include "lan78xx.h"
+diff -uNr linux-5.15.113-orig/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c linux-5.15.113/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+--- linux-5.15.113-orig/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2024-07-28 23:10:50.641273425 -0700
+@@ -49,6 +49,9 @@
+ #include "dwmac1000.h"
+ #include "dwxgmac2.h"
+ #include "hwif.h"
 +#ifdef CONFIG_NET_NATBYP
 +#include <net/natbyp.h>
 +#endif
  
- #define DRIVER_AUTHOR	"WOOJUNG HUH <woojung.huh@microchip.com>"
- #define DRIVER_DESC	"LAN78XX USB 3.0 Gigabit Ethernet Devices"
-@@ -3245,6 +3248,10 @@
- 	struct lan78xx_net *dev = netdev_priv(net);
- 	struct sk_buff *skb2 = NULL;
+ /* As long as the interface is active, we keep the timestamping counter enabled
+  * with fine resolution and binary rollover. This avoid non-monotonic behavior
+@@ -4272,6 +4275,10 @@
+ 	int entry, first_tx;
+ 	dma_addr_t des;
  
 +#ifdef CONFIG_NET_NATBYP
 +	natbyp_egress(skb);
 +#endif
 +
- 	if (test_bit(EVENT_DEV_ASLEEP, &dev->flags))
- 		schedule_delayed_work(&dev->wq, 0);
+ 	tx_q = &priv->tx_queue[queue];
+ 	first_tx = tx_q->cur_tx;
  
-@@ -3425,6 +3432,14 @@
- 	if (skb_defer_rx_timestamp(skb))
- 		return;
+@@ -4856,6 +4863,17 @@
+ 	else
+ 		skb->ip_summed = CHECKSUM_UNNECESSARY;
  
 +#ifdef CONFIG_NET_NATBYP
 +	{
 +		int rc = natbyp_ingress(skb);
-+		if (rc == NATBYP_BYPASSED)
-+			return;
++		if (rc == NATBYP_BYPASSED) {
++			priv->dev->stats.rx_packets++;
++			priv->dev->stats.rx_bytes += len;
++			return ;
++		}
 +	}
 +#endif
 +
- 	status = netif_rx(skb);
- 	if (status != NET_RX_SUCCESS)
- 		netif_dbg(dev, rx_err, dev->net,
-diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/include/linux/skbuff.h
---- linux-rpi-5.15.y-original/include/linux/skbuff.h	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/include/linux/skbuff.h	2023-05-21 19:43:47.230743120 -0700
-@@ -958,6 +958,16 @@
+ 	if (!stmmac_get_rx_hash(priv, p, &hash, &hash_type))
+ 		skb_set_hash(skb, hash, hash_type);
+ 
+@@ -5360,6 +5378,21 @@
+ 		if (!stmmac_get_rx_hash(priv, p, &hash, &hash_type))
+ 			skb_set_hash(skb, hash, hash_type);
+ 
++#ifdef CONFIG_NET_NATBYP
++	{
++		int rc = natbyp_ingress(skb);
++		if (rc == NATBYP_BYPASSED) {
++			priv->dev->stats.rx_packets++;
++			priv->dev->stats.rx_bytes += len;
++
++			++count;
++
++			priv->xstats.rx_pkt_n += count;
++			priv->xstats.rxq_stats[queue].rx_pkt_n += count;
++			return count ;
++		}
++	}
++#endif
+ 		skb_record_rx_queue(skb, queue);
+ 		napi_gro_receive(&ch->rx_napi, skb);
+ 		skb = NULL;
+diff -uNr linux-5.15.113-orig/include/linux/skbuff.h linux-5.15.113/include/linux/skbuff.h
+--- linux-5.15.113-orig/include/linux/skbuff.h	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/include/linux/skbuff.h	2024-07-28 21:19:13.469672624 -0700
+@@ -959,6 +959,16 @@
  	__u16			network_header;
  	__u16			mac_header;
  
@@ -57,9 +82,9 @@ diff -uNr linux-rpi-5.15.y-original/include/linux/skbuff.h linux-rpi-5.15.y/incl
  #ifdef CONFIG_KCOV
  	u64			kcov_handle;
  #endif
-diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/include/net/natbyp.h
---- linux-rpi-5.15.y-original/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/include/net/natbyp.h	2023-05-21 19:43:47.230743120 -0700
+diff -uNr linux-5.15.113-orig/include/net/natbyp.h linux-5.15.113/include/net/natbyp.h
+--- linux-5.15.113-orig/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
++++ linux-5.15.113/include/net/natbyp.h	2024-07-28 21:28:50.481532067 -0700
 @@ -0,0 +1,35 @@
 +#ifndef __NATBYP_HEADERS__
 +
@@ -96,17 +121,17 @@ diff -uNr linux-rpi-5.15.y-original/include/net/natbyp.h linux-rpi-5.15.y/includ
 +extern void natbyp_fastev( int evt , void * param);
 +
 +#endif /* __NATBYP_HEADERS__ */
-diff -uNr linux-rpi-5.15.y-original/net/core/Makefile linux-rpi-5.15.y/net/core/Makefile
---- linux-rpi-5.15.y-original/net/core/Makefile	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/Makefile	2023-05-21 19:43:47.234743148 -0700
+diff -uNr linux-5.15.113-orig/net/core/Makefile linux-5.15.113/net/core/Makefile
+--- linux-5.15.113-orig/net/core/Makefile	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/net/core/Makefile	2024-07-28 21:20:02.162493063 -0700
 @@ -37,3 +37,4 @@
  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
  obj-$(CONFIG_OF)	+= of_net.o
 +obj-$(CONFIG_NET_NATBYP)	+= natbyp.o
-diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/natbyp.c
---- linux-rpi-5.15.y-original/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/natbyp.c	2024-08-03 21:49:47.244117144 -0700
+diff -uNr linux-5.15.113-orig/net/core/natbyp.c linux-5.15.113/net/core/natbyp.c
+--- linux-5.15.113-orig/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
++++ linux-5.15.113/net/core/natbyp.c	2024-08-03 21:49:47.244117144 -0700
 @@ -0,0 +1,2596 @@
 +/*
 + * Formatting: astyle --style=linux -A4 --unpad-paren --pad-oper --pad-first-paren-out <this file>
@@ -2704,9 +2729,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/natbyp.c linux-rpi-5.15.y/net/core/
 +MODULE_LICENSE ("GPL");
 +
 +#endif /* defined(CONFIG_NETFILTER) */
-diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/skbuff.c
---- linux-rpi-5.15.y-original/net/core/skbuff.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/core/skbuff.c	2023-05-21 19:43:47.238743177 -0700
+diff -uNr linux-5.15.113-orig/net/core/skbuff.c linux-5.15.113/net/core/skbuff.c
+--- linux-5.15.113-orig/net/core/skbuff.c	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/net/core/skbuff.c	2024-07-28 21:17:41.772101760 -0700
 @@ -71,6 +71,9 @@
  #include <net/mpls.h>
  #include <net/mptcp.h>
@@ -2745,9 +2770,9 @@ diff -uNr linux-rpi-5.15.y-original/net/core/skbuff.c linux-rpi-5.15.y/net/core/
  	atomic_inc(&(skb_shinfo(skb)->dataref));
  	skb->cloned = 1;
  
-diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
---- linux-rpi-5.15.y-original/net/Kconfig	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/Kconfig	2023-05-21 19:43:47.238743177 -0700
+diff -uNr linux-5.15.113-orig/net/Kconfig linux-5.15.113/net/Kconfig
+--- linux-5.15.113-orig/net/Kconfig	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/net/Kconfig	2024-07-28 21:21:01.527482012 -0700
 @@ -174,6 +174,13 @@
  
  if NETFILTER
@@ -2762,9 +2787,9 @@ diff -uNr linux-rpi-5.15.y-original/net/Kconfig linux-rpi-5.15.y/net/Kconfig
  config NETFILTER_ADVANCED
  	bool "Advanced netfilter configuration"
  	depends on NETFILTER
-diff -uNr linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c
---- linux-rpi-5.15.y-original/net/netfilter/nf_conntrack_proto_tcp.c	2023-02-08 08:47:50.000000000 -0800
-+++ linux-rpi-5.15.y/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-21 19:43:47.242743205 -0700
+diff -uNr linux-5.15.113-orig/net/netfilter/nf_conntrack_proto_tcp.c linux-5.15.113/net/netfilter/nf_conntrack_proto_tcp.c
+--- linux-5.15.113-orig/net/netfilter/nf_conntrack_proto_tcp.c	2023-05-24 09:36:55.000000000 -0700
++++ linux-5.15.113/net/netfilter/nf_conntrack_proto_tcp.c	2024-07-28 21:22:40.181101452 -0700
 @@ -1156,11 +1156,20 @@
  		break;
  	}
