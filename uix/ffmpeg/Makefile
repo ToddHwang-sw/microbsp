@@ -1,5 +1,5 @@
-DIR=ffmpeg-4.4
-LOC=https://ffmpeg.org/releases/
+DIR=FFmpeg
+LOC=-b release/4.4 https://github.com/FFmpeg
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -18,7 +18,6 @@ MICB_CONFIGURE_OPTS = \
 	--enable-avcodec \
 	--enable-avdevice \
 	--enable-avformat \
-	--enable-avresample \
 	--enable-avutil \
 	--enable-postproc \
 	--enable-swresample \
@@ -44,7 +43,7 @@ MICB_DEPENDS = sdl2 \
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \

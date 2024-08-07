@@ -1,6 +1,6 @@
-diff -uNr ffmpeg-original/configure ffmpeg/configure
---- ffmpeg-original/configure	2022-11-09 20:23:36.100929280 -0800
-+++ ffmpeg/configure	2022-11-09 20:37:04.042450046 -0800
+diff -uNr FFmpeg-orig/configure FFmpeg/configure
+--- FFmpeg-orig/configure	2024-08-06 17:34:45.237350852 -0700
++++ FFmpeg/configure	2024-08-06 17:30:44.381845995 -0700
 @@ -5445,19 +5445,19 @@
          SLIBNAME_WITH_VERSION='$(SLIBPREF)$(FULLNAME)-$(LIBVERSION)$(SLIBSUF)'
          SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
@@ -77,7 +77,7 @@ diff -uNr ffmpeg-original/configure ffmpeg/configure
          SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
          SLIB_INSTALL_LINKS=
          SLIB_INSTALL_EXTRA_LIB='$(LIBPREF)$(FULLNAME)_dll.a $(LIBPREF)$(FULLNAME)_dll.lib'
-@@ -6904,7 +6904,7 @@
+@@ -6907,7 +6907,7 @@
  if enabled proper_dce; then
      echo "X { local: *; };" > $TMPV
      if test_ldflags -Wl,${version_script},$TMPV; then
@@ -86,9 +86,9 @@ diff -uNr ffmpeg-original/configure ffmpeg/configure
          quotes='""'
          test_cc <<EOF && enable symver_asm_label
  void ff_foo(void) __asm__ ("av_foo@VERSION");
-diff -uNr ffmpeg-original/ffbuild/common.mak ffmpeg/ffbuild/common.mak
---- ffmpeg-original/ffbuild/common.mak	2022-11-09 20:23:36.124929332 -0800
-+++ ffmpeg/ffbuild/common.mak	2022-11-09 20:38:05.206554462 -0800
+diff -uNr FFmpeg-orig/ffbuild/common.mak FFmpeg/ffbuild/common.mak
+--- FFmpeg-orig/ffbuild/common.mak	2024-08-06 17:34:44.281440213 -0700
++++ FFmpeg/ffbuild/common.mak	2024-08-06 17:31:52.281887892 -0700
 @@ -10,7 +10,7 @@
  X86ASMD=
  endif
@@ -129,9 +129,9 @@ diff -uNr ffmpeg-original/ffbuild/common.mak ffmpeg/ffbuild/common.mak
  HOBJS        = $(filter-out $(SKIPHEADERS:.h=.h.o),$(ALLHEADERS:.h=.h.o))
  PTXOBJS      = $(filter %.ptx.o,$(OBJS))
  $(HOBJS):     CCFLAGS += $(CFLAGS_HEADERS)
-diff -uNr ffmpeg-original/ffbuild/library.mak ffmpeg/ffbuild/library.mak
---- ffmpeg-original/ffbuild/library.mak	2022-11-09 20:23:36.128929341 -0800
-+++ ffmpeg/ffbuild/library.mak	2022-11-09 20:38:31.806599635 -0800
+diff -uNr FFmpeg-orig/ffbuild/library.mak FFmpeg/ffbuild/library.mak
+--- FFmpeg-orig/ffbuild/library.mak	2024-08-06 17:34:44.281440213 -0700
++++ FFmpeg/ffbuild/library.mak	2024-08-06 17:32:46.167877991 -0700
 @@ -1,7 +1,7 @@
  include $(SRC_PATH)/ffbuild/common.mak
  
@@ -247,9 +247,9 @@ diff -uNr ffmpeg-original/ffbuild/library.mak ffmpeg/ffbuild/library.mak
 +$(TESTPROGS): $(DEP_LIBS) $(FFMPEG_SUBDIR)$(LIBNAME)
  
  testprogs: $(TESTPROGS)
-diff -uNr ffmpeg-original/libavcodec/Makefile ffmpeg/libavcodec/Makefile
---- ffmpeg-original/libavcodec/Makefile	2022-11-09 20:23:36.136929358 -0800
-+++ ffmpeg/libavcodec/Makefile	2022-11-09 20:37:43.726517883 -0800
+diff -uNr FFmpeg-orig/libavcodec/Makefile FFmpeg/libavcodec/Makefile
+--- FFmpeg-orig/libavcodec/Makefile	2024-08-06 17:34:44.289439463 -0700
++++ FFmpeg/libavcodec/Makefile	2024-08-06 17:31:21.418365010 -0700
 @@ -1257,19 +1257,19 @@
  
  CLEANFILES = *_tables.c *_tables.h *_tablegen$(HOSTEXESUF)
@@ -315,27 +315,27 @@ diff -uNr ffmpeg-original/libavcodec/Makefile ffmpeg/libavcodec/Makefile
 +$(FFMPEG_SUBDIR)qdm2.o: $(FFMPEG_SUBDIR)qdm2_tables.h
 +$(FFMPEG_SUBDIR)sinewin.o: $(FFMPEG_SUBDIR)sinewin_tables.h
  endif
-diff -uNr ffmpeg-original/libavutil/Makefile ffmpeg/libavutil/Makefile
---- ffmpeg-original/libavutil/Makefile	2022-11-09 20:23:36.740930665 -0800
-+++ ffmpeg/libavutil/Makefile	2022-11-09 20:38:46.158623950 -0800
+diff -uNr FFmpeg-orig/libavutil/Makefile FFmpeg/libavutil/Makefile
+--- FFmpeg-orig/libavutil/Makefile	2024-08-06 17:34:44.681402708 -0700
++++ FFmpeg/libavutil/Makefile	2024-08-06 17:29:20.097665260 -0700
 @@ -261,4 +261,4 @@
  tools/crypto_bench$(EXESUF): ELIBS += $(if $(VERSUS),$(subst +, -l,+$(VERSUS)),)
  tools/crypto_bench$(EXESUF): CFLAGS += -DUSE_EXT_LIBS=0$(if $(VERSUS),$(subst +,+USE_,+$(VERSUS)),)
  
 -$(SUBDIR)tests/lzo$(EXESUF): ELIBS = -llzo2
 +$(FFMPEG_SUBDIR)tests/lzo$(EXESUF): ELIBS = -llzo2
-diff -uNr ffmpeg-original/libswscale/x86/Makefile ffmpeg/libswscale/x86/Makefile
---- ffmpeg-original/libswscale/x86/Makefile	2022-11-09 20:23:36.792930778 -0800
-+++ ffmpeg/libswscale/x86/Makefile	2022-11-09 20:39:05.018655842 -0800
+diff -uNr FFmpeg-orig/libswscale/x86/Makefile FFmpeg/libswscale/x86/Makefile
+--- FFmpeg-orig/libswscale/x86/Makefile	2024-08-06 17:34:44.713399708 -0700
++++ FFmpeg/libswscale/x86/Makefile	2024-08-06 17:28:58.749555653 -0700
 @@ -1,4 +1,4 @@
 -$(SUBDIR)x86/swscale_mmx.o: CFLAGS += $(NOREDZONE_FLAGS)
 +$(FFMPEG_SUBDIR)x86/swscale_mmx.o: CFLAGS += $(NOREDZONE_FLAGS)
  
  OBJS                            += x86/rgb2rgb.o                        \
                                     x86/swscale.o                        \
-diff -uNr ffmpeg-original/Makefile ffmpeg/Makefile
---- ffmpeg-original/Makefile	2022-11-09 20:23:36.092929263 -0800
-+++ ffmpeg/Makefile	2022-11-09 20:36:26.262385123 -0800
+diff -uNr FFmpeg-orig/Makefile FFmpeg/Makefile
+--- FFmpeg-orig/Makefile	2024-08-06 17:34:44.245443590 -0700
++++ FFmpeg/Makefile	2024-08-06 17:28:01.312759925 -0700
 @@ -97,7 +97,7 @@
  
  define DOSUBDIR
