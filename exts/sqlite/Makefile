@@ -1,14 +1,15 @@
 DIR=sqlite
-LOC=http://www.sqlite.org/src/tarball/
+LOC=https://github.com/sqlite/
 
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_OPTS += \
-	--disable-tcl --enable-threadsafe
+	--disable-tcl      \
+	--enable-threadsafe
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
 	@cd $(BUILDDIR)/$(DIR); \
