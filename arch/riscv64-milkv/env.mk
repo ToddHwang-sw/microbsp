@@ -1,8 +1,5 @@
 export CROSS_COMP_PREFIX=$(PLATFORM)-
-export CROSS_COMP_FLAGS=-mabi=lp64 -march=rv64imac_zicsr_zifencei -mno-save-restore -mcmodel=medany -mstrict-align
-
-## flags for toolchain build
-export RISCV_ARCH_COMMON=--with-abi=lp64 --with-arch=rv64imac_zicsr_zifencei
+export CROSS_COMP_FLAGS=-mabi=lp64d -march=rv64imafdcv0p7xtheadp2 -mcmodel=medany -mstrict-align -mno-save-restore
 
 CC=$(CROSS_COMP_PREFIX)gcc
 CXX=$(CROSS_COMP_PREFIX)g++
@@ -43,6 +40,5 @@ export GCC=gcc-13.2.0
 export GLIBC_VER=2.38
 export GLIBC=glibc-$(GLIBC_VER)
 export GLIBC_ARCH_OPTIONS=--enable-crypt
-export GCC_ARCH_OPTIONS=$(RISCV_ARCH_COMMON)
-export BINUTILS_ARCH_OPTIONS=$(RISCV_ARCH_COMMON)
-
+export GCC_ARCH_OPTIONS=
+export BINUTILS_ARCH_OPTIONS=
