@@ -32,3 +32,24 @@ index c3af0f4..6ad042e 100644
  
  
  /* This is the function that sets UICalls */
+diff -uNr fdisk-1.3.0a-orig/autotools/config.sub fdisk-1.3.0a/autotools/config.sub
+--- fdisk-1.3.0a-orig/autotools/config.sub	2011-02-19 06:21:44.000000000 -0800
++++ fdisk-1.3.0a/autotools/config.sub	2024-08-12 16:53:49.367224099 -0700
+@@ -227,6 +227,8 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
++	| aarch64 \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+ 	| am33_2.0 \
+@@ -293,6 +295,8 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| aarch64-* \
++	| riscv64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+ 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* \

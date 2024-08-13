@@ -1,4 +1,4 @@
-DIR=mpc-1.1.0
+DIR=mpc-1.3.1
 LOC=https://ftp.gnu.org/pub/gnu/mpc
 
 include $(TOPDIR)/scripts/env.mk

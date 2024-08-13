@@ -1,0 +1,19 @@
+diff -uNr liblzma-orig/build-aux/config.sub liblzma/build-aux/config.sub
+--- liblzma-orig/build-aux/config.sub	2024-08-12 16:27:39.260681827 -0700
++++ liblzma/build-aux/config.sub	2024-08-12 16:26:34.623266899 -0700
+@@ -255,6 +255,7 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
+ 	| aarch64 | aarch64_be \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+@@ -367,6 +368,7 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
+ 	| aarch64-* | aarch64_be-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \

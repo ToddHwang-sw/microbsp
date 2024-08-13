@@ -1,0 +1,19 @@
+diff -uNr gdbm-1.23-orig/build-aux/config.sub gdbm-1.23/build-aux/config.sub
+--- gdbm-1.23-orig/build-aux/config.sub	2018-04-21 11:30:10.000000000 -0700
++++ gdbm-1.23/build-aux/config.sub	2024-08-12 20:04:34.505651041 -0700
+@@ -248,6 +248,7 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
+ 	| aarch64 | aarch64_be \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+@@ -370,6 +371,7 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
+ 	| aarch64-* | aarch64_be-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \

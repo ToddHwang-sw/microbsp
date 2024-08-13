@@ -3,10 +3,6 @@ LOC=https://iperf.fr/download/source
 
 include $(TOPDIR)/scripts/extenv.mk
 
-ifeq ($(_CORE_),aarch64)
-	MICB_CONFIGURE_PLATFORM=arm-linux
-endif
-
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_func_malloc_0_nonnull=yes
 

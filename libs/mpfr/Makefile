@@ -1,4 +1,4 @@
-DIR=mpfr-4.0.1
+DIR=mpfr-4.2.1
 LOC=https://ftp.gnu.org/pub/gnu/mpfr
 
 include $(TOPDIR)/scripts/env.mk

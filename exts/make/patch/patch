@@ -21,3 +21,22 @@ diff -uNr make-4.1-original/glob/glob.c make-4.1/glob/glob.c
  /* Some system header files erroneously define these.
     We want our own definitions from <fnmatch.h> to take precedence.  */
  #ifndef __GNU_LIBRARY__
+diff -uNr make-4.1-orig/config/config.sub make-4.1/config/config.sub
+--- make-4.1-orig/config/config.sub	2014-10-05 09:25:13.000000000 -0700
++++ make-4.1/config/config.sub	2024-08-13 08:18:41.905132641 -0700
+@@ -248,6 +248,7 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
+ 	| aarch64 | aarch64_be \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+@@ -369,6 +370,7 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
+ 	| aarch64-* | aarch64_be-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \

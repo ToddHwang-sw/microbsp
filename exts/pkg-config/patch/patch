@@ -30,3 +30,22 @@ diff -uNr pkg-config-0.29.1-original/glib/glib/gdate.c pkg-config-0.29.1/glib/gl
  }
 +
 +#pragma GCC diagnostic pop
+diff -uNr pkg-config-0.29.1-orig/config.sub pkg-config-0.29.1/config.sub
+--- pkg-config-0.29.1-orig/config.sub	2015-09-27 07:07:23.000000000 -0700
++++ pkg-config-0.29.1/config.sub	2024-08-13 08:30:47.654152918 -0700
+@@ -248,6 +248,7 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
+ 	| aarch64 | aarch64_be \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+@@ -370,6 +371,7 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
+ 	| aarch64-* | aarch64_be-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \

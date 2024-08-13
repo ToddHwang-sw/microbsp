@@ -3,10 +3,6 @@ LOC=https://ftp.gnu.org/gnu/fdisk
 
 include $(TOPDIR)/scripts/extenv.mk
 
-ifeq ($(_CORE_),aarch64)
-	MICB_CONFIGURE_PLATFORM=arm-linux
-endif
-
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_lib_readline_readline=yes
 

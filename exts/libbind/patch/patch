@@ -10,3 +10,64 @@ index d9127cd..621f8cf 100644
  #endif
  #ifdef HAVE_ZLIB
  #include <zlib.h>
+diff -uNr bind-9.11.36-orig/config.sub bind-9.11.36/config.sub
+--- bind-9.11.36-orig/config.sub	2021-10-11 12:35:49.000000000 -0700
++++ bind-9.11.36/config.sub	2024-08-13 08:36:04.985452058 -0700
+@@ -248,6 +248,7 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
+ 	| aarch64 | aarch64_be \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+@@ -364,6 +365,7 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
+ 	| aarch64-* | aarch64_be-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+diff -uNr bind-9.11.36-orig/contrib/dnsperf-2.1.0.0-1/config.sub bind-9.11.36/contrib/dnsperf-2.1.0.0-1/config.sub
+--- bind-9.11.36-orig/contrib/dnsperf-2.1.0.0-1/config.sub	2021-10-11 12:35:49.000000000 -0700
++++ bind-9.11.36/contrib/dnsperf-2.1.0.0-1/config.sub	2024-08-13 08:34:42.346599820 -0700
+@@ -227,6 +227,8 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
++	| aarch64 \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+ 	| am33_2.0 \
+@@ -293,6 +295,8 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
++	| aarch64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+ 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* \
+diff -uNr bind-9.11.36-orig/contrib/idn/idnkit-1.0-src/config.sub bind-9.11.36/contrib/idn/idnkit-1.0-src/config.sub
+--- bind-9.11.36-orig/contrib/idn/idnkit-1.0-src/config.sub	2021-10-11 12:35:49.000000000 -0700
++++ bind-9.11.36/contrib/idn/idnkit-1.0-src/config.sub	2024-08-13 08:35:24.844073176 -0700
+@@ -225,6 +225,8 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
++	| aarch64 \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| arc | arm | arm[bl]e | arme[lb] | armv[2345] | armv[345][lb] | avr \
+ 	| c4x | clipper \
+@@ -277,6 +279,8 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
++	| aarch64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alphapca5[67]-* | arc-* \
+ 	| arm-*  | armbe-* | armle-* | armv*-* \

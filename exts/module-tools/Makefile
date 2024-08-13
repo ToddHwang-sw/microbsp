@@ -2,9 +2,6 @@ DIR=module-init-tools-3.15
 LOC=https://mirrors.edge.kernel.org/pub/linux/utils/kernel/module-init-tools/
 
 include $(TOPDIR)/scripts/extenv.mk
-ifeq ($(_CORE_),aarch64)
-	MICB_CONFIGURE_PLATFORM=arm-linux
-endif
 
 MICB_CONFIGURE_OPTS += \
 	--disable-static-utils 

@@ -3,7 +3,6 @@ LOC=https://ftp.gnu.org/gnu/parted
 
 include $(TOPDIR)/scripts/env.mk
 
-HOSTOPT=$(PLATFORM)
 ifeq ($(_CORE_),aarch64)
 	MICB_CONFIGURE_PLATFORM=arm-linux
 endif

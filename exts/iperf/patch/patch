@@ -34,3 +34,24 @@ diff -uNr iperf-2.0.5-origin/src/main.cpp iperf-2.0.5/src/main.cpp
          sThread = thread_getid();
      } else if ( thread_equalid( sThread, thread_getid() ) ) {
          sig_exit( inSigno );
+diff -uNr iperf-2.0.4-orig/config.sub iperf-2.0.4/config.sub
+--- iperf-2.0.4-orig/config.sub	2007-08-29 15:06:19.000000000 -0700
++++ iperf-2.0.4/config.sub	2024-08-13 08:25:52.206417463 -0700
+@@ -227,6 +227,8 @@
+ 	# Some are omitted here because they have special meanings below.
+ 	1750a | 580 \
+ 	| a29k \
++	| riscv64 \
++	| aarch64 \
+ 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
+ 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
+ 	| am33_2.0 \
+@@ -293,6 +295,8 @@
+ 	# Recognize the basic CPU types with company name.
+ 	580-* \
+ 	| a29k-* \
++	| riscv64-* \
++	| aarch64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+ 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* \

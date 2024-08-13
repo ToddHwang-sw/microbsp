@@ -6,8 +6,7 @@ include $(TOPDIR)/scripts/env.mk
 MICB_CONFIGURE_OPTS += \
 	--enable-pcre2-8 \
 	--enable-pcre2-16 \
-	--enable-pcre2-32 \
-	--enable-jit
+	--enable-pcre2-32
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

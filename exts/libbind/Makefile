@@ -3,10 +3,6 @@ LOC=https://downloads.isc.org/isc/bind9/9.11.36
 
 include $(TOPDIR)/scripts/extenv.mk
 
-ifeq ($(_CORE_),aarch64)
-        MICB_CONFIGURE_PLATFORM=arm-linux
-endif
-
 MICB_CONFIGURE_RUNENV += \
 	BUILD_CC=gcc
 
