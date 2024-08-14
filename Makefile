@@ -256,7 +256,7 @@ installcomps:
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
 		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
 		python3-xcbgen      python2               xorriso         mtools            \
-		device-tree-compiler swig
+		device-tree-compiler swig                 triehash
 	@sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop 
 	@pip install pkgconfig mako Jinja2
@@ -525,10 +525,10 @@ distclean: checkfirst
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
-				[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR)/*      ; \
-				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)         ; \
-				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME); \
-				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME); \
+				[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR)/*        ; \
+				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)           ; \
+				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME)  ; \
+				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME)  ; \
 			)                                  \
 		done ;                                 \
 		cd .. ;                                \
