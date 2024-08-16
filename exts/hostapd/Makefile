@@ -11,11 +11,11 @@ MICB_DEPENDS = openssl libnl-cli-3.0 ncurses
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+
+prepare:
 	@$(MICB_DUP_SOURCES) 
 	@[ -f $(BUILDDIR)/$(DIR)/hostapd/.config ] || \
 		cp patch/config $(BUILDDIR)/$(DIR)/hostapd/.config 
-
-prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

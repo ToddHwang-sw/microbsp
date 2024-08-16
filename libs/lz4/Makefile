@@ -6,11 +6,11 @@ include $(TOPDIR)/scripts/env.mk
 MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
-		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
-prepare: 
+prepare:
+	@$(MICB_DUP_SOURCES)
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

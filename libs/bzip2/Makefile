@@ -10,9 +10,9 @@ MICB_CONFIGURE_MAKEOPTS += PREFIX=$(MICB_INSTALL_PLACE) $(COMP_CMDS)
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
-	@$(MICB_DUP_SOURCES)
 
 prepare:
+	@$(MICB_DUP_SOURCES)
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

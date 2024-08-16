@@ -8,9 +8,9 @@ MICB_CONFIGURE_MAKEOPTS += $(COMP_CMDS) PREFIX=$(USRNODE)
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)
 	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
-	@$(MICB_DUP_SOURCES)
 
 prepare:
+	@$(MICB_DUP_SOURCES)
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

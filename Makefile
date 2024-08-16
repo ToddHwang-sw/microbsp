@@ -525,7 +525,8 @@ distclean: checkfirst
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
-				[ ! -d $$dir/$(BUILDDIR) ] || \rm -rf $$dir/$(BUILDDIR)/*        ; \
+				[ ! -d $$dir/$(BUILDDIR) ] ||  \
+					\rm -rf $$dir/$(BUILDDIR)/`cat $$dir/Makefile | grep "DIR=" | head -n 1 | sed "s/DIR=//"`/* ; \
 				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)           ; \
 				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME)  ; \
 				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME)  ; \

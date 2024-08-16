@@ -17,11 +17,12 @@ ifeq ($(_CORE_),riscv64)
 endif
 
 download:
-	@[ -d $(BUILDDIR)/$(DIR) ] || ( \
-		[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR); \
-		$(TOPDIR)/scripts/setupsrcs.sh $(BUILDDIR)/$(DIR) $(LOC)/$(DIR).git )
+	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
+	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare:
+	@$(MICB_DUP_SOURCES)
+
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \

@@ -14,9 +14,9 @@ MICB_DEPENDS = openssl libssh2 libtasn1 nettle zlib expat iconv libcurl libpcre2
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz ; $(MICB_PATCH) )
-	@$(MICB_DUP_SOURCES)
 
 prepare:
+	@$(MICB_DUP_SOURCES)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

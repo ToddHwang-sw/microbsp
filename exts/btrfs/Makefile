@@ -27,11 +27,11 @@ download:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || \rm -rf $(BUILDDIR)/$(DIR)
 	@mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+
+prepare:
 	@$(MICB_DUP_SOURCES)
 	@cd $(BUILDDIR)/$(DIR); \
 		[ ! -f $(BTRFS_TAILOR_DELETE) ] || \rm -rf $(BTRFS_TAILOR_DELETE)
-
-prepare:
 	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

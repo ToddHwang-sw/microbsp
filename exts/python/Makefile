@@ -26,9 +26,9 @@ MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3
 download:
 	@[ -d $(BUILDDIR)/$(DIR)   ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(FILENM) ] || ( $(UNCOMPRESS) $(LOC)/$(FILENM) ; $(MICB_PATCH) )
-	@$(MICB_DUP_SOURCES)
 
 prepare:
+	@$(MICB_DUP_SOURCES)
 	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
