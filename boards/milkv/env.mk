@@ -17,15 +17,8 @@ export KERNELVER=linux-6.8.9
 export KERNELMAKE=make ARCH=riscv V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_KERNEL="$(CROSS_COMP_FLAGS)" CFLAGS_MODULE="$(CROSS_COMP_FLAGS)"
 
 ## Components
-export COMPDIR=libs apps
+export COMPDIR=libs apps exts
 
-export _LIBDIR_=\
-	zlib       \
-	bzip2      \
-	ncurses    \
-	readline   \
-	openssl
-		
 ##
 ## external disk volume name 
 ##
