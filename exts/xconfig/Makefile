@@ -2,6 +2,8 @@ DIR=xconfig
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 ## 2 GBytes 
 CROSS_USER_CFLAGS += \
 	-DSSIZE_MAX=2147483647

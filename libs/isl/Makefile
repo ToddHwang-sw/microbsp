@@ -3,6 +3,8 @@ LOC=https://github.com/Meinersbur
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 MICB_DEPENDS = gmp
 
 download:

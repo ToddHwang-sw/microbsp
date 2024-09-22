@@ -1,10 +1,9 @@
 
 include $(TOPDIR)/scripts/env.mk
 
-export MICB_CONFIGURE_AUTOCONF_CMD=\
-		autoreconf --install -v -I$(INSTALLDIR) -I$(EXTINSTDIR)
-
 export MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(EXTINSTDIR)/lib/pkgconfig
+
+export MICB_CONFIGURE_ACLOCAL_FLAGS="-I$(INSTALLDIR) -I$(EXTINSTDIR)"
 
 ##
 ## Overriding...

@@ -3,8 +3,10 @@ LOC=https://github.com/GNOME
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD=\
-	NOCONFIGURE=0 ./autogen.sh 
+	NOCONFIGURE=1 ./autogen.sh 
 
 MICB_CONFIGURE_OPTS += \
 	--without-python

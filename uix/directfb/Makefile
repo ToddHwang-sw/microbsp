@@ -7,6 +7,8 @@ FLUXCOMPAPP=$(TOPDIR)/uix/directfb/$(BUILDDIR)/$(FLUXDIR)/src/fluxcomp
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_path_FLUXCOMP=$(FLUXCOMPAPP)
 
@@ -15,13 +17,15 @@ MICB_CONFIGURE_OPTS += \
 	--enable-mesa \
 	--enable-gstreamer \
 	--enable-ffmpeg \
-	--disable-egl \
-	--disable-idirectfbgl-egl
+	--enable-egl \
+	--enable-idirectfbgl-egl
 
-MICB_DEPENDS = expat intl iconv gio-unix-2.0 gstreamer-1.0 x11 xext libdrm libxml-2.0 libpng libpng16 freetype2 \
-	       wayland-client wayland-server gl egl xcb xshmfence xcb-present xcb-dri3 
+MICB_DEPENDS = expat intl iconv gio-unix-2.0 gstreamer-1.0 \
+	       x11-xcb x11 xext libdrm libxml-2.0 libpng libpng16 freetype2 \
+	       wayland-client wayland-server gl egl xcb xshmfence xcb-present xcb-dri2 xcb-dri3 \
+		   gbm ncursesw menuw formw panelw 
 
-CROSS_USER_CFLAGS += -lglapi
+CROSS_LFLAG_EXTRA += -lglapi
 
 download:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)

@@ -3,6 +3,8 @@ LOC=https://git.lysator.liu.se/nettle
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--enable-pic \
 	--enable-openssl \

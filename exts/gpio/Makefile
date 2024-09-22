@@ -3,6 +3,8 @@ LOC=https://git.kernel.org/pub/scm/libs/libgpiod/
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_CONFIGURE_RUNENV += \
@@ -20,8 +22,7 @@ download:
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare:
-	@$(MICB_DUP_SOURCES) 
-	@$(MICB_CONFIGURE_BUILDDIR_AUTOCONF)
+	@$(MICB_CONFIGURE_AUTOCONF)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

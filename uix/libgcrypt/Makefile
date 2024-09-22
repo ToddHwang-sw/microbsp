@@ -3,6 +3,8 @@ LOC=https://gnupg.org/ftp/gcrypt/libgcrypt/
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--disable-doc --disable-tests --disable-rpath --disable-nls \
 	--disable-large-data-tests \

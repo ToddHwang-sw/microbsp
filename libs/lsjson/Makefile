@@ -2,6 +2,8 @@ DIR=lsjson
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 

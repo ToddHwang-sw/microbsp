@@ -3,6 +3,8 @@ LOC=https://github.com/stedolan
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD = \
 	git submodule update --init ; autoreconf --install -v 
 

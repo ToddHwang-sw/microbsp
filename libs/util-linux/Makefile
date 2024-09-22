@@ -3,6 +3,8 @@ LOC=-b stable/v2.37 https://github.com/util-linux
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 MICB_CONFIGURE_OPTS +=\
 	--enable-largefile  \
 	--enable-libuuid \

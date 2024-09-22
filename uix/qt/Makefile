@@ -1,5 +1,8 @@
 VER=5.12
-DIR=qt-everywhere-src-$(VER).12
+DIR=qt-everywhere-src-5.12.12
+##
+## We cannot use a symbol like "DIR=qt-everywhere-src-$(VER).12" - conflicts with 'distclean' rule.
+##
 LOC=https://download.qt.io/archive/qt/$(VER)/$(VER).12/single/
 
 ## Ubuntu 22.04 

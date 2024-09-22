@@ -3,6 +3,8 @@ LOC=-b dbus-1.12 https://gitlab.freedesktop.org/dbus
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--disable-xml-docs \
 	--disable-doxygen-docs \

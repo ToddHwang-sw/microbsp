@@ -3,6 +3,8 @@ LOC=-b kbproto-1.0.7 https://gitlab.freedesktop.org/xorg/proto
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

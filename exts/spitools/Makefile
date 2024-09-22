@@ -3,6 +3,8 @@ LOC=https://github.com/cpb-
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

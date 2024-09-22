@@ -3,6 +3,8 @@ LOC=https://github.com/rydberg
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_RUNENV += \
 	PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
 

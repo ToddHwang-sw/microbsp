@@ -37,6 +37,7 @@ MICB_CONFIGURE_OPTS = \
 MICB_DEPENDS = sdl2 \
 	x11 xext xfixes xi iconv \
 	x11-xcb blkid zlib \
+	gio-2.0 gobject-2.0 gmodule-2.0 libxml-2.0 mount libpcre-2.0 \
 	libdrm libdrm_freedreno libdrm_nouveau \
 	expat libffi intl ncursesw tinfow formw menuw panelw uuid \
 	xcb-dri2 xcb-dri3 xcb-randr xcb-sync xcb-fixies xcb-input xcb-present xcb-shape xcb-xinput xshmfence

@@ -3,6 +3,8 @@ LOC=https://github.com/gnutls
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 MICB_CONFIGURE_OPTS += \
   --disable-fuzzing \
   --disable-doc \

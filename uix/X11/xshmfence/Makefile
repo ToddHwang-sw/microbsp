@@ -3,6 +3,8 @@ LOC=https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_RUNENV += \
 	ac_cv_func_memfd_create=no
 

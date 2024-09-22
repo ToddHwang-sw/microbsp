@@ -10,14 +10,12 @@ MICB_MESON_OPTS +=\
 MICB_DEPENDS = glib-2.0 gobject-2.0 gio-2.0 \
 		harfbuzz-gobject libmount blkid fribidi freetype2 libdrm cairo-ft cairo
 
-CROSS_USER_LFLAGS += -lglapi
-
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
-	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 
 prepare:
+	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 

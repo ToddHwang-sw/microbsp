@@ -3,6 +3,8 @@ LOC=-b V_9_1 https://github.com/openssh
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 CROSS_USER_CFLAGS += -DMB_LEN_MAX=16
 
 MICB_CONFIGURE_OPTS += --disable-strip --with-pam

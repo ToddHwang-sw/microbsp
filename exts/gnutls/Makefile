@@ -19,17 +19,19 @@ MICB_CONFIGURE_OPTS += \
 	--enable-local-libopts \
 	--disable-silent-rules
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD)
 
-MICB_DEPENDS = nettle hogweed libtasn1 libidn2 gmp
+MICB_DEPENDS = nettle hogweed libidn2 gmp libtasn1
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
 
 prepare:
-	@$(MICB_CONFIGURE_AUTOCONF) 
-	@cd $(BUILDDIR)/$(DIR); \
+	$(MICB_CONFIGURE_AUTOCONF) 
+	cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 

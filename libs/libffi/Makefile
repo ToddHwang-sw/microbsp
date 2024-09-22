@@ -3,7 +3,7 @@ LOC=https://github.com/libffi
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_AUTOCONF_CMD = ./autogen.sh
+MICB_CONFIGURE_PRG=./configure
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

@@ -3,6 +3,8 @@ LOC=-b ethtool-3.4.y https://kernel.googlesource.com/pub/scm/network/ethtool/
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD=./autogen.sh
 
 MICB_DEPENDS = libmnl

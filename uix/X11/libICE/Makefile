@@ -3,6 +3,8 @@ LOC=-b libICE-1.1.1 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )

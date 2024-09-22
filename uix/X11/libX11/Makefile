@@ -3,6 +3,8 @@ LOC=https://github.com/mirror
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--with-keysymdefdir=$(X11INSTDIR)/include/X11
 

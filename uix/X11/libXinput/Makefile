@@ -3,6 +3,8 @@ LOC=https://www.x.org/releases/individual/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_DEPENDS = x11 xfixies
 
 download:

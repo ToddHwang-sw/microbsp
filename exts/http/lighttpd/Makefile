@@ -3,6 +3,8 @@ LOC=https://github.com/lighttpd
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--without-lua \
 	--without-libunwind \

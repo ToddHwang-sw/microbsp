@@ -3,6 +3,8 @@ LOC=-b libXdamage-1.1.6 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_DEPENDS = x11 xfixies 
 
 download:

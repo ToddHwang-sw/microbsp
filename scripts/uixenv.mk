@@ -15,10 +15,7 @@ export WAYLAND_BINARIES = $(WAYLAND_LOCATION)/bin
 ## Wayland host tool included 
 export MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(UIXINSTDIR)/lib/pkgconfig:$(UIXINSTDIR)/share/pkgconfig:$(UIXINSTDIR)/local/lib/pkgconfig:$(UIXINSTDIR)/local/share/pkgconfig:$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
-##
-## Probing autogen.sh first...
-export MICB_CONFIGURE_AUTOCONF_CMD = \
-	autoreconf --install -v -I$(INSTALLDIR) -I$(EXTINSTDIR) -I$(UIXINSTDIR)
+export MICB_CONFIGURE_ACLOCAL_FLAGS="-I$(INSTALLDIR) -I$(EXTINSTDIR) -I$(UIXINSTDIR)"
 
 ## Wayland Access - MESON
 export MICB_MESON_RUNENV += \

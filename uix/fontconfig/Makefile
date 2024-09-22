@@ -6,6 +6,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_CONFIGURE_RUNENV += \
 	CC_FOR_BUILD=gcc 
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--enable-largefile \
 	--disable-docs 

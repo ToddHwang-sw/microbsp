@@ -3,7 +3,10 @@ LOC=https://github.com/frida
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD) --skip-git
+
 MICB_CONFIGURE_OPTS += 
 
 download:

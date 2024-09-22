@@ -53,6 +53,17 @@ define SETUP_BUILDOUT
 endef
 
 ##
+## Cleanup for "distclean" - parsing 'DIR=' string in Makefile.
+##
+define CLEANUP_BUILDDIR
+	$(eval TDIR := $$(1))                                                             \
+	$(eval XDIR := `cat $$(1)/Makefile | grep "DIR=" | head -n 1 | sed "s/DIR=//"`)   \
+	[ ! -d $(TDIR)/$(BUILDDIR)/$(XDIR) ] || (                                         \
+		\rm -rf $(TDIR)/$(BUILDDIR)/$(XDIR)/*    &&                                   \
+		\rm -rf $(TDIR)/$(BUILDDIR)/$(XDIR)/.*   )
+endef
+
+##
 ## Build lock folder
 ##
 export BUILD_FOLDER=/var/tmp/microbsp
@@ -525,8 +536,7 @@ distclean: checkfirst
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
-				[ ! -d $$dir/$(BUILDDIR) ] ||  \
-					\rm -rf $$dir/$(BUILDDIR)/`cat $$dir/Makefile | grep "DIR=" | head -n 1 | sed "s/DIR=//"`/* ; \
+				$(call CLEANUP_BUILDDIR,$$dir)                                   ; \
 				[ ! -f $$dir/$(BUILDOUT) ] || \rm -f $$dir/$(BUILDOUT)           ; \
 				[ ! -f $$dir/$(LIBFLAGS_NAME) ] || rm -f $$dir/$(LIBFLAGS_NAME)  ; \
 				[ ! -f $$dir/$(INCFLAGS_NAME) ] || rm -f $$dir/$(INCFLAGS_NAME)  ; \

@@ -3,6 +3,8 @@ LOC=-b libXt-1.3.0 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--disable-unit-tests
 

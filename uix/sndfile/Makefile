@@ -3,6 +3,8 @@ LOC=https://github.com/libsndfile
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD = \
     aclocal ; autoreconf --install -v
 

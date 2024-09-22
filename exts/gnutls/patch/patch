@@ -19,15 +19,34 @@ diff -uNr gnutls-original/bootstrap.conf gnutls/bootstrap.conf
 -  devel/import-from-nettle.sh
 -  devel/import-minitasn1.sh
  }
+diff -uNr gnutls-original/m4/hooks.m4 gnutls/m4/hooks.m4
+--- gnutls-original/m4/hooks.m4	2024-08-17 20:12:58.952329918 -0700
++++ gnutls/m4/hooks.m4	2024-08-17 20:35:34.427039337 -0700
+@@ -112,15 +112,6 @@
+     AS_HELP_STRING([--with-included-libtasn1], [use the included libtasn1]),
+       included_libtasn1=$withval,
+       included_libtasn1=no)
+-  if test "$included_libtasn1" = "no"; then
+-    PKG_CHECK_MODULES(LIBTASN1, [libtasn1 >= $LIBTASN1_MINIMUM], [], [included_libtasn1=yes])
+-    if test "$included_libtasn1" = yes; then
+-      AC_MSG_ERROR([[
+-  ***
+-  *** Libtasn1 $LIBTASN1_MINIMUM was not found. To use the included one, use --with-included-libtasn1
+-  ]])
+-    fi
+-  fi
+   AC_MSG_CHECKING([whether to use the included minitasn1])
+   AC_MSG_RESULT($included_libtasn1)
+   AM_CONDITIONAL(ENABLE_MINITASN1, test "$included_libtasn1" = "yes")
 diff -uNr gnutls-original/configure.ac gnutls/configure.ac
---- gnutls-original/configure.ac	2023-09-30 21:42:23.874722320 -0700
-+++ gnutls/configure.ac	2023-09-30 21:43:28.623184854 -0700
+--- gnutls-original/configure.ac	2024-08-17 20:12:58.568311736 -0700
++++ gnutls/configure.ac	2024-08-18 13:27:50.668807134 -0700
 @@ -20,7 +20,7 @@
  # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
  # USA
  
 -AC_PREREQ(2.63)
-+AC_PREREQ([2.64])
++##AC_PREREQ(2.63)
  
  dnl when updating version also update LT_REVISION in m4/hooks.m4
  AC_INIT([GnuTLS], [3.6.16], [bugs@gnutls.org])

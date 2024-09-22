@@ -27,9 +27,9 @@ MICB_CONFIGURE_MAKEOPTS += \
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
-	@$(MICB_DUP_SOURCES)
 
 prepare: 
+	@$(MICB_DUP_SOURCES)
 
 all:
 	@[ ! -d $(BUILDDIR)/$(DIR)/src ] || ( \

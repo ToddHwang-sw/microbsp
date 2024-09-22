@@ -1,8 +1,36 @@
-diff --git a/meson.build b/meson.build
-index a5263215c..1bbf3a75f 100644
---- a/meson.build
-+++ b/meson.build
-@@ -699,7 +699,7 @@ check_dep = dependency('check', version : '>= 0.9.10', required : get_option('te
+diff -uNr pulseaudio-original/meson.build pulseaudio/meson.build
+--- pulseaudio-original/meson.build	2024-09-21 23:26:59.341451104 -0700
++++ pulseaudio/meson.build	2024-09-21 23:29:07.098389431 -0700
+@@ -263,7 +263,6 @@
+   'mlock',
+   'nanosleep',
+   'open64',
+-  'paccept',
+   'pipe',
+   'pipe2',
+   'posix_fadvise',
+@@ -279,7 +278,6 @@
+   'setresuid',
+   'setreuid',
+   'setsid',
+-  'sig2str',
+   'sigaction',
+   'strerror_r',
+   'strtod_l',
+@@ -290,10 +288,10 @@
+ ]
+ 
+ foreach f : check_functions
+-  if cc.has_function(f)
++  ## if cc.has_function(f)
+     define = 'HAVE_' + f.underscorify().to_upper()
+     cdata.set(define, 1)
+-  endif
++  ## endif
+ endforeach
+ 
+ if cc.has_header_symbol('sys/syscall.h', 'SYS_memfd_create')
+@@ -699,7 +697,7 @@
  
  # Subdirs
  

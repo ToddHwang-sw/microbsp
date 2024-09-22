@@ -3,6 +3,8 @@ LOC=https://github.com/PhilipHazel
 
 include $(TOPDIR)/scripts/env.mk
 
+MICB_CONFIGURE_PRG=./configure
+
 MICB_CONFIGURE_OPTS += \
 	--enable-pcre2-8 \
 	--enable-pcre2-16 \

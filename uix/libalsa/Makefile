@@ -3,6 +3,8 @@ LOC=-b ucm2 https://github.com/alsa-project
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS +=\
 	--disable-debug \
 	--enable-mixer \

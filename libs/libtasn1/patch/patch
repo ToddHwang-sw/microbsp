@@ -96,3 +96,45 @@ index c58ae22..116d6de 100644
  #  else
  #   define ASN1_DATA_NODE asn1_data_node_st
  #  endif
+diff -uNr libtasn1-orignal/autogen.sh libtasn1/autogen.sh
+--- libtasn1-orignal/autogen.sh	2024-08-17 17:02:03.852072610 -0700
++++ libtasn1/autogen.sh	2024-08-17 17:03:21.194032987 -0700
+@@ -114,10 +114,6 @@
+ test -z "$GNULIB_SRCDIR" || test -d "$GNULIB_SRCDIR" \
+   || die "Error: \$GNULIB_SRCDIR environment variable or --gnulib-srcdir option is specified, but does not denote a directory"
+ 
+-if test -n "$checkout_only_file" && test ! -r "$checkout_only_file"; then
+-  die "Running this script from a non-checked-out distribution is risky."
+-fi
+-
+ if $use_gnulib; then
+   if test -z "$GNULIB_SRCDIR"; then
+     gnulib_path=$(test -f .gitmodules && git config --file .gitmodules submodule.gnulib.path)
+diff -uNr libtasn1-orignal/autopull.sh libtasn1/autopull.sh
+--- libtasn1-orignal/autopull.sh	2024-08-17 17:02:03.852072610 -0700
++++ libtasn1/autopull.sh	2024-08-17 17:03:28.257847379 -0700
+@@ -151,10 +151,6 @@
+ test -z "$GNULIB_SRCDIR" || test -d "$GNULIB_SRCDIR" \
+   || die "Error: \$GNULIB_SRCDIR environment variable or --gnulib-srcdir option is specified, but does not denote a directory"
+ 
+-if test -n "$checkout_only_file" && test ! -r "$checkout_only_file"; then
+-  die "Running this script from a non-checked-out distribution is risky."
+-fi
+-
+ check_build_prerequisites $use_git
+ 
+ if $use_gnulib || $bootstrap_sync; then
+diff -uNr libtasn1-orignal/bootstrap libtasn1/bootstrap
+--- libtasn1-orignal/bootstrap	2024-08-17 17:02:03.852072610 -0700
++++ libtasn1/bootstrap	2024-08-17 17:03:10.762307286 -0700
+@@ -162,10 +162,6 @@
+ test -z "$GNULIB_SRCDIR" || test -d "$GNULIB_SRCDIR" \
+   || die "Error: \$GNULIB_SRCDIR environment variable or --gnulib-srcdir option is specified, but does not denote a directory"
+ 
+-if test -n "$checkout_only_file" && test ! -r "$checkout_only_file"; then
+-  die "Bootstrapping from a non-checked-out distribution is risky."
+-fi
+-
+ check_build_prerequisites $use_git
+ 
+ if ! test -f "$medir"/bootstrap-funclib.sh; then

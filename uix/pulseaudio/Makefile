@@ -23,15 +23,12 @@ MICB_DEPENDS = dbus-1 alsa sndfile x11-xcb x11 xcb xau libudev uuid   \
 		gstreamer-audio-1.0        \
 		gstreamer-bad-audio-1.0 
 
-CROSS_USER_LFLAGS += -lcairo-script-interpreter
-CROSS_USER_LFLAGS += -lglapi 
-
 download:
 	@[ -d $(BUILDDIR)/$(DIR)  ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)   ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git ; $(MICB_PATCH) )
-	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 
 prepare:
+	@[ ! -d $(MICBSRC)/$(DIR) ] || $(MICB_MESON_CROSSBUILD_FILE)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(MICB_MESON_CMD) $(MICB_MESON_OPTS)
 

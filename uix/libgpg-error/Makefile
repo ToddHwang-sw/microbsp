@@ -3,6 +3,8 @@ LOC=https://gnupg.org/ftp/gcrypt/libgpg-error/
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_OPTS += \
 	--disable-doc --disable-tests
 

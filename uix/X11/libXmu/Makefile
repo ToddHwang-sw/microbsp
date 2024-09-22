@@ -3,6 +3,8 @@ LOC=-b libXmu-1.1.4 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_DEPENDS = xt x11-xcb uuid
 
 download:

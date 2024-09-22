@@ -3,6 +3,8 @@ LOC=-b libXrender-0.9.11 https://gitlab.freedesktop.org/xorg/lib
 
 include $(TOPDIR)/scripts/x11uixenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_DEPENDS = x11
 
 download:

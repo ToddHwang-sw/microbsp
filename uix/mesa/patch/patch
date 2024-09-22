@@ -1,6 +1,6 @@
 diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
 --- mesa-21.2.2-orig/meson.build	2021-09-21 09:54:05.946658600 -0700
-+++ mesa-21.2.2/meson.build	2023-04-28 07:00:24.192994573 -0700
++++ mesa-21.2.2/meson.build	2024-09-21 16:17:09.175759698 -0700
 @@ -195,7 +195,7 @@
  with_dri_r200 = dri_drivers.contains('r200')
  with_dri_nouveau = dri_drivers.contains('nouveau')
@@ -27,7 +27,7 @@ diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
 -  dep_wl_scanner = dependency('wayland-scanner', native: true)
 -  prog_wl_scanner = find_program(dep_wl_scanner.get_pkgconfig_variable('wayland_scanner'))
 +  dep_wl_scanner = dependency('wayland-scanner-host')
-+  prog_wl_scanner = find_program('wayland-scanner')
++  prog_wl_scanner = find_program(dep_wl_scanner.get_pkgconfig_variable('wayland_scanner_host'))
    if dep_wl_scanner.version().version_compare('>= 1.15')
      wl_scanner_arg = 'private-code'
    else
@@ -51,7 +51,7 @@ diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
    )
 diff -uNr mesa-21.2.2-orig/meson_options.txt mesa-21.2.2/meson_options.txt
 --- mesa-21.2.2-orig/meson_options.txt	2021-09-21 09:54:05.946658600 -0700
-+++ mesa-21.2.2/meson_options.txt	2023-04-28 07:00:24.196994595 -0700
++++ mesa-21.2.2/meson_options.txt	2024-09-21 16:16:02.009647351 -0700
 @@ -45,6 +45,13 @@
  )
  

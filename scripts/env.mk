@@ -33,7 +33,7 @@ export DEPLOYED_LIBFLAGS=\
 
 ##
 ## LFLAG
-export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS)
+export CROSS_USER_LFLAGS += $(DEPLOYED_LIBFLAGS) 
 
 COLLECT_INCS = \
 	$(eval _CDIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))) \
@@ -67,20 +67,16 @@ export MICB_PATCH=[ ! -f $(MICB_PATCH_FN) ] || (cd $(MICBSRC)/$(DIR) && cat ../.
 ## Duplicate sources ... 
 export MICB_DUP_SOURCES=[ ! -d $(MICBSRC)/$(DIR) ] || ( \
 				[ -d $(BUILDDIR)/$(DIR) ] || \rm -rf $(BUILDDIR)/$(DIR) ; \
-				rsync -r --exclude=".git*" $(MICBSRC)/$(DIR) $(BUILDDIR) )
+				cp -rf $(MICBSRC)/$(DIR) $(BUILDDIR) )
 
 ## /usr/bin/pkg-config search path 
 export MICB_PKGCONFIG_PATH=$(INSTALLDIR)/lib/pkgconfig:$(INSTALLDIR)/usr/lib/pkgconfig:$(INSTALLDIR)/usr/local/lib/pkgconfig
 
 ## system architecture option selection 
-ifeq ($(_CORE_),x86_64)
-	KARCH=x86_64
-endif
 ifeq ($(_CORE_),aarch64)
 	KARCH=arm64
-endif
-ifeq ($(_CORE_),arm)
-	KARCH=arm
+else
+	KARCH=$(_CORE_)
 endif
 
 ## Source decompressor
@@ -113,13 +109,20 @@ export MICB_INSTALL_PLACE = $(destination)
 ##  C O N F I G U R E 
 ##
 ##
+export MICB_CONFIGURE_ACLOCAL_FLAGS="-I$(INSTALLDIR)"
+
 export MICB_CONFIGURE_AUTOCONF_CMD=\
-		autoreconf --install -v -I$(INSTALLDIR)
-export MICB_CONFIGURE_AUTOCONF=[ ! -d $(MICBSRC)/$(DIR) ] || ( cd $(MICBSRC)/$(DIR); $(MICB_CONFIGURE_AUTOCONF_CMD) )
-export MICB_CONFIGURE_BUILDDIR_AUTOCONF=[ ! -d $(BUILDDIR)/$(DIR) ] || ( cd $(BUILDDIR)/$(DIR); $(MICB_CONFIGURE_AUTOCONF_CMD) )
+		autoreconf --install -v $(MICB_CONFIGURE_ACLOCAL_FLAGS)
+
+## New AUTOCONF --> DUP_SOURCE is included and configuration happens in $(BUILDDIR)/$(DIR)
+export MICB_CONFIGURE_AUTOCONF=\
+		[ ! -d $(MICBSRC)/$(DIR) ] || ( \
+				$(MICB_DUP_SOURCES);                  \
+				cd $(BUILDDIR)/$(DIR);                \
+				ACLOCAL_CFLAGS=$(MICB_CONFIGURE_ACLOCAL_FLAGS) $(MICB_CONFIGURE_AUTOCONF_CMD) )
 export MICB_CONFIGURE_RUNENV=\
 		PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH) \
-		LIBS="$(DEPLOYED_LIBFLAGS)"
+		LIBS="$(CROSS_USER_LFLAGS) $(CROSS_LFLAG_EXTRA)"
 export MICB_CONFIGURE_LIBOPTS=--enable-shared --disable-static
 export MICB_CONFIGURE_OPTS=$(MICB_CONFIGURE_LIBOPTS)
 export MICB_CONFIGURE_PRG=../../../$(MICBSRC)/$(DIR)/configure
@@ -137,6 +140,8 @@ export MICB_MESON_CROSSBUILD_FN=cross_build.txt
 export MICB_MESON_PKG_CONFIG="$(TOPDIR)/scripts/pkg-config"
 
 export MICB_MESON_CROSSBUILD_FILE=\
+	( \
+	[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)                                                  && \
 	echo ""                                                        >  $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "[host_machine]"                                          >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "system = 'linux'"                                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
@@ -161,7 +166,7 @@ export MICB_MESON_CROSSBUILD_FILE=\
 	echo "[properties]"                                            >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo "needs_exe_wrapper = 'true'"                              >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
 	echo ""                                                        >> $(BUILDDIR)/$(MICB_MESON_CROSSBUILD_FN) && \
-	echo "Cross build done!!" > /dev/null
+	echo "Cross build done!!" > /dev/null )
 
 export MICB_MESON_COMMON_OPTS=\
 	-D c_args="$(CROSS_COMP_FLAGS) $(CROSS_USER_CFLAGS)"          				\
@@ -205,4 +210,6 @@ export MICB_CMAKE_COMMON_OPTS=\
 ##
 ##   gnulib folder location - libs/gnulib
 ##
-export MICB_BOOTSTRAP_CMD=./bootstrap --no-git --skip-po --copy --gnulib-srcdir=$(TOPDIR)/libs/gnulib/$(MICBSRC)/gnulib
+export MICB_BOOTSTRAP_CMD=\
+	ACLOCAL_FLAGS=$(MICB_CONFIGURE_ACLOCAL_FLAGS) \
+		./bootstrap --no-git --skip-po --copy --gnulib-srcdir=$(TOPDIR)/libs/gnulib/$(MICBSRC)/gnulib

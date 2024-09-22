@@ -10,6 +10,8 @@ MICB_CONFIGURE_MAKEOPTS += \
 	XCBPROTO_XCBINCLUDEDIR=$(X11INSTDIR)/share/xcb \
 	XCBPROTO_XCBPYTHONDIR=$(X11INSTDIR)/lib/python$(PYTHON_SYSVER)/site-packages
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_DEPENDS = xproto xau
 
 download:

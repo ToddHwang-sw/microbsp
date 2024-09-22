@@ -137,3 +137,14 @@ diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
  
  fi
  
+diff -uNr linux-pam-orig/Makefile.am linux-pam/Makefile.am
+--- linux-pam-orig/Makefile.am	2024-08-17 21:55:08.206173686 -0700
++++ linux-pam/Makefile.am	2024-08-17 21:56:48.011274934 -0700
+@@ -46,6 +46,7 @@
+ 		rm -f $(distdir)/ChangeLog &&				\
+ 		mv $(distdir)/ChangeLog.new $(distdir)/ChangeLog;	\
+ 	fi
++	touch $(distdir)/ChangeLog
+ 
+ dist-hook: gen-ChangeLog
+ .PHONY: gen-ChangeLog

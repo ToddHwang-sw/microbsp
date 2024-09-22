@@ -3,6 +3,8 @@ LOC=https://gitlab.com/libidn
 
 include $(TOPDIR)/scripts/extenv.mk
 
+MICB_CONFIGURE_PRG = ./configure
+
 MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD)
 
 MICB_CONFIGURE_OPTS += \
