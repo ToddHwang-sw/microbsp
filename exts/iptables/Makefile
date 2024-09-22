@@ -5,6 +5,9 @@ include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_PRG = ./configure 
 
+MICB_CONFIGURE_OPTS += \
+	--with-kernel=$(KERNDIR)/$(KERNELVER) 
+
 MICB_DEPENDS = libnftnl
 
 download:
