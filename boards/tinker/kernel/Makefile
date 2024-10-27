@@ -23,6 +23,17 @@ EXTMDIRS=rtl8192eu
 KERNEL_FILES=vmlinuz System.map config
 
 ##
+## Realtek WiFi FWs required....
+##
+LINFWNM=linux-firmware
+RaLINKFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/firmware/$(LINFWNM).git
+RaLINKFWTAG=tags/20191215
+RaLINKFWS=\
+	rt2870.bin
+RaLINKFWTMPDIR=\
+	/tmp/___rpi_linuxswtree_linux-realtek_firmware____
+
+##
 ## Regulatory FWs
 ##
 CRDAFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git
@@ -74,6 +85,22 @@ clean:
 		$(LINUXMAKE) clean )
 
 dnfw:
+	@echo ""
+	@echo "Downloading Firmwares"
+	@echo ""
+	@[ -d $(BDDIR)/rootfs/lib/firmware ] || mkdir -p $(BDDIR)/rootfs/lib/firmware
+	@for f in $(RaLINKFWS); do \
+		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
+			echo "" ;                                   \
+			echo "Cloning $(LINFWNM) from $(RaLINKFWLOC)" ;\
+			echo "" ;                                   \
+			mkdir -p $(RaLINKFWTMPDIR);                    \
+			cd $(RaLINKFWTMPDIR);                          \
+			$(TOPDIR)/scripts/gitclone.sh "" "$(RaLINKFWLOC)" "" "$(RaLINKFWTAG)" ;  \
+			cp -rf $(RaLINKFWTMPDIR)/$(LINFWNM)/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
+		) ; \
+	done
+	@\rm -rf $(RaLINKFWTMPDIR)
 	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
 	@for f in $(CRDAFW0S); do \
 		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \

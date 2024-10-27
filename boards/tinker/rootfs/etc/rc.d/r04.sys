@@ -4,12 +4,23 @@ case $1 in
         "start")
 			echo "[WLAN] Starting BRCM STATION ..."
 			modprobe rtl8192eu
+
+			modprobe rt2x00lib
+			modprobe rt2x00usb
+			modprobe rt2800lib
+			modprobe rt2800usb
 	
 			/etc/scripts/wlan_sta.sh start 		
             ;;
         "stop")
 			echo "[WLAN] Stopping BRCM STATION ..."
 			/etc/scripts/wlan_sta.sh stop
+
+			rmmod rt2800usb
+			rmmod rt2800lib
+			rmmod rt2x00usb
+			rmmod rt2x00lib
+
 			rmmod rtl8192eu
             ;;
 esac
