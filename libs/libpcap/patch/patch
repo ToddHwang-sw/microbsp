@@ -1,7 +1,8 @@
-diff -uNr libpcap-1.9.1-original/libpcap.pc.in libpcap-1.9.1/libpcap.pc.in
---- libpcap-1.9.1-original/libpcap.pc.in	2019-09-30 07:38:32.000000000 -0700
-+++ libpcap-1.9.1/libpcap.pc.in	2022-11-06 20:17:34.820965754 -0800
-@@ -5,14 +5,14 @@
+diff --git a/libpcap.pc.in b/libpcap.pc.in
+index 629e662a..49a7c3cf 100644
+--- a/libpcap.pc.in
++++ b/libpcap.pc.in
+@@ -5,15 +5,15 @@
  # libdir may be defined in terms of prefix and exec_prefix, so the
  # latter must be defined as well.
  #
@@ -17,7 +18,8 @@ diff -uNr libpcap-1.9.1-original/libpcap.pc.in libpcap-1.9.1/libpcap.pc.in
  Name: libpcap
  Description: Platform-independent network traffic capture library
  Version: @PACKAGE_VERSION@
- Libs: -L${libdir} -l@PACKAGE_NAME@
--Libs.private: @LIBS@
+ Requires.private: @REQUIRES_PRIVATE@
+ Libs: -L${libdir} @RPATH@ -l@PACKAGE_NAME@
+-Libs.private: @LIBS_PRIVATE@
 +Libs.private: -lnl-genl-3 -lnl-3 -ldl -lpthread
  Cflags: -I${includedir}

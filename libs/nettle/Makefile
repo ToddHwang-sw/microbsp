@@ -1,5 +1,5 @@
 DIR=nettle
-LOC=https://git.lysator.liu.se/nettle
+LOC=https://github.com/gnutls
 
 include $(TOPDIR)/scripts/env.mk
 

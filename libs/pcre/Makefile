@@ -1,16 +1,16 @@
-DIR=pcre-8.45
-LOC=https://sourceforge.net/projects/pcre/files/pcre/8.45
+DIR=pcre
+LOC=https://github.com/luvit
 
 include $(TOPDIR)/scripts/env.mk
 
 MICB_CONFIGURE_OPTS += \
-	--enable-pcre2-8 \
-	--enable-pcre2-16 \
-	--enable-pcre2-32
+	--enable-pcre8 \
+	--enable-pcre16 \
+	--enable-pcre32
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.bz2 ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.bz2; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare: 
 	@cd $(BUILDDIR)/$(DIR); \

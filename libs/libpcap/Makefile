@@ -1,19 +1,24 @@
-DIR=libpcap-1.9.1
-LOC=https://www.tcpdump.org/release
+DIR=libpcap
+LOC=https://github.com/the-tcpdump-group
 
 include $(TOPDIR)/scripts/env.mk
+
+MICB_CMAKE_COMMON_OPTS +=                 \
+	-D PKG_CONFIG_EXECUTABLE=$(MICB_MESON_PKG_CONFIG) \
+	-D LIBNL_LIBRARIES=$(INSTALLDIR) \
+	-D BUILD_SHARED_LIBS=ON
 
 MICB_DEPENDS=libnl-3.0 
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
-prepare: 
+prepare:
 	@cd $(BUILDDIR)/$(DIR); \
-		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
+		$(MICB_CMAKE_RUNENV) cmake $(MICB_CMAKE_COMMON_OPTS) ../../../$(MICBSRC)/$(DIR) 
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) VERBOSE=1 $@ )
 

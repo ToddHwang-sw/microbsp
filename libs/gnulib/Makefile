@@ -1,5 +1,5 @@
 DIR=gnulib
-LOC=-b stable-202207 https://git.savannah.gnu.org/git
+LOC=-b stable-202207 https://github.com/coreutils
 
 include $(TOPDIR)/scripts/env.mk
 
