@@ -1,5 +1,5 @@
 DIR=termcap-1.3.1
-LOC=ftp://ftp.gnu.org/gnu/termcap
+LOC=https://ftp.gnu.org/gnu/termcap
 
 ifeq ($(_CORE_),aarch64)
 	MICB_CONFIGURE_PLATFORM=arm-linux

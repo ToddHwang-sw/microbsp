@@ -1,5 +1,5 @@
 DIR=readline-8.1-rc3
-LOC=ftp://ftp.gnu.org/gnu/readline
+LOC=https://ftp.gnu.org/gnu/readline
 
 include $(TOPDIR)/scripts/env.mk
 

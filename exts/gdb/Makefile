@@ -1,5 +1,5 @@
 DIR=gdb-11.2
-LOC=ftp://ftp.gnu.org/pub/gnu/gdb
+LOC=https://ftp.gnu.org/pub/gnu/gdb
 
 include $(TOPDIR)/scripts/extenv.mk
 

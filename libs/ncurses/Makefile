@@ -1,5 +1,5 @@
 DIR=ncurses-6.3
-LOC=ftp://ftp.gnu.org/gnu/ncurses
+LOC=https://ftp.gnu.org/gnu/ncurses
 
 include $(TOPDIR)/scripts/env.mk
 
