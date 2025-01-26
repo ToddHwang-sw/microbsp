@@ -1,5 +1,7 @@
-DIR=ipv6calc-2.2.0
-LOC=ftp://ftp.bieringer.de/pub/linux/IPv6/ipv6calc/
+#DIR=ipv6calc-2.2.0
+#LOC=https://ftp.bieringer.de/pub/linux/IPv6/ipv6calc/
+DIR=ipv6calc
+LOC=https://github.com/pbiering
 	
 include $(TOPDIR)/scripts/extenv.mk
 
@@ -10,7 +12,7 @@ MICB_CONFIGURE_PRG = ./configure
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR).tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_DUP_SOURCES)

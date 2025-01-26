@@ -1,72 +1,14 @@
-diff -uNr linux-pam-original/conf/pam.conf linux-pam/conf/pam.conf
---- linux-pam-original/conf/pam.conf	2023-02-19 17:00:25.000842816 -0800
-+++ linux-pam/conf/pam.conf	2023-02-20 15:57:42.941613838 -0800
-@@ -9,18 +9,6 @@
- # name	type	   flag							     #
- # ---------------------------------------------------------------------------#
+diff -uNr linux-pam-orig/conf/pam.conf linux-pam/conf/pam.conf
+--- linux-pam-orig/conf/pam.conf	2025-01-25 19:41:51.453621359 -0800
++++ linux-pam/conf/pam.conf	2025-01-25 19:44:37.015628286 -0800
+@@ -118,3 +118,14 @@
+ # The PAM configuration file for the `xlock' service
  #
--# The PAM configuration file for the `chfn' service
--#
--chfn	auth       required   pam_unix.so
--chfn	account    required   pam_unix.so
--chfn	password   required   pam_unix.so shadow md5 use_authtok
--#
--# The PAM configuration file for the `chsh' service
--#
--chsh	auth       required   pam_unix.so
--chsh	account    required   pam_unix.so
--chsh	password   required   pam_unix.so shadow md5 use_authtok
--#
- # The PAM configuration file for the `ftp' service
- #
- ftp	auth       requisite  pam_listfile.so \
-@@ -29,48 +17,15 @@
- ftp	auth       required   pam_unix.so
- ftp	account    required   pam_unix.so
- #
--# The PAM configuration file for the `imap' service
--#
--imap	auth       required   pam_unix.so
--imap	account    required   pam_unix.so
--#
--# The PAM configuration file for the `login' service
--#
--login	auth       requisite  pam_securetty.so
--login	auth       required   pam_unix.so
--login	auth       optional   pam_group.so
--login	account    requisite  pam_time.so
--login	account    required   pam_unix.so
--login	password   required   pam_unix.so shadow md5 use_authtok
--login	session    required   pam_unix.so
--#
--# The PAM configuration file for the `netatalk' service
--#
--netatalk	auth       required   pam_unix.so
--netatalk	account    required   pam_unix.so
--#
--# The PAM configuration file for the `other' service
--#
--other	auth       required   pam_deny.so
--other	auth       required   pam_warn.so
--other	account    required   pam_deny.so
--other	password   required   pam_deny.so
--other	password   required   pam_warn.so
--other	session    required   pam_deny.so
--#
--# The PAM configuration file for the `passwd' service
-+# The PAM configuration file for the `sshd' service
- #
--passwd	password   required   pam_unix.so shadow md5 use_authtok
--#
--# The PAM configuration file for the `rexec' service
--#
--rexec	auth       requisite  pam_securetty.so
--rexec	auth       requisite  pam_nologin.so
--rexec	auth       sufficient pam_rhosts_auth.so
--rexec	auth       required   pam_unix.so
--rexec	account    required   pam_unix.so
--rexec	session    required   pam_unix.so
--rexec	session    required   pam_limits.so
+ xlock	auth       required   pam_unix.so
++
++#
++# SSH 
++#
 +sshd	auth       requisite  pam_securetty.so
 +sshd	auth       required   pam_unix.so
 +sshd	auth       optional   pam_group.so
@@ -74,47 +16,12 @@ diff -uNr linux-pam-original/conf/pam.conf linux-pam/conf/pam.conf
 +sshd	account    required   pam_unix.so
 +sshd	password   required   pam_unix.so shadow md5 use_authtok
 +sshd	session    required   pam_unix.so
- #
- # The PAM configuration file for the `rlogin' service
- # this application passes control to `login' if it fails
-@@ -92,29 +47,3 @@
- rsh	account    required   pam_unix.so
- rsh	session    required   pam_unix.so
- rsh	session    required   pam_limits.so
--#
--# The PAM configuration file for the `samba' service
--#
--samba	auth       required   pam_unix.so
--samba	account    required   pam_unix.so
--#
--# The PAM configuration file for the `su' service
--#
--su	auth       required   pam_wheel.so
--su	auth       sufficient pam_rootok.so
--su	auth       required   pam_unix.so
--su	account    required   pam_unix.so
--su	session    required   pam_unix.so
--#
--# The PAM configuration file for the `vlock' service
--#
--vlock	auth       required   pam_unix.so
--#
--# The PAM configuration file for the `xdm' service
--#
--xdm	auth       required   pam_unix.so
--xdm	account    required   pam_unix.so
--#
--# The PAM configuration file for the `xlock' service
--#
--xlock	auth       required   pam_unix.so
-diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
---- linux-pam-original/configure.ac	2023-02-19 17:00:25.004842822 -0800
-+++ linux-pam/configure.ac	2023-02-19 19:46:37.264123694 -0800
-@@ -38,22 +38,14 @@
-         then
+diff -uNr linux-pam-orig/configure.ac linux-pam/configure.ac
+--- linux-pam-orig/configure.ac	2025-01-25 19:41:51.647621367 -0800
++++ linux-pam/configure.ac	2025-01-25 19:48:54.634639066 -0800
+@@ -39,21 +39,12 @@
                  sbindir="/sbin"
          fi
-+
  dnl If we use /usr as prefix, use /usr/share/man for manual pages
 -        if test ${mandir} = '${prefix}/man'
 -        then
@@ -133,14 +40,14 @@ diff -uNr linux-pam-original/configure.ac linux-pam/configure.ac
 -        then
 -                localstatedir="/var"
 -        fi
-+        ${localstatedir} = '${prefix}/var'
++	localstatedir="${prefix}/var"
  
  fi
  
 diff -uNr linux-pam-orig/Makefile.am linux-pam/Makefile.am
---- linux-pam-orig/Makefile.am	2024-08-17 21:55:08.206173686 -0700
-+++ linux-pam/Makefile.am	2024-08-17 21:56:48.011274934 -0700
-@@ -46,6 +46,7 @@
+--- linux-pam-orig/Makefile.am	2025-01-25 19:41:51.646621367 -0800
++++ linux-pam/Makefile.am	2025-01-25 19:46:01.143631806 -0800
+@@ -47,8 +47,10 @@
  		rm -f $(distdir)/ChangeLog &&				\
  		mv $(distdir)/ChangeLog.new $(distdir)/ChangeLog;	\
  	fi
@@ -148,3 +55,6 @@ diff -uNr linux-pam-orig/Makefile.am linux-pam/Makefile.am
  
  dist-hook: gen-ChangeLog
  .PHONY: gen-ChangeLog
+ 
+ export TAR_OPTIONS = --owner=0 --group=0 --numeric-owner --mode=go-w,go+rX
++

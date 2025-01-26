@@ -20,13 +20,15 @@ GIT_IGNORE=$TOPDIR/scripts/gitignore.template
 
 do_git_setup() {
 	[ -d $DSTFILE/$1/.git ] || \rm -rf $DSTFILE/$1/.git
-	[ ! -f $GIT_IGNORE ] || cp -f $GIT_IGNORE $DSTFILE/$1/.gitignore 
-	cd $DSTFILE/$1 && \
+	[ ! -f $GIT_IGNORE ] || ( \
+		[ ! -d $DSTFILE/$1 ] || cp -f $GIT_IGNORE $DSTFILE/$1/.gitignore )
+	[ ! -d $DSTFILE/$1 ] || ( \
+		cd $DSTFILE/$1 && \
             git init && \
             git add -A . && \
             git config user.name    "`whoami`" && \
             git config user.email   "`whoami`@someplace.com" && \
-            git commit -m "Importing" . 
+            git commit -m "Importing" . )
 }
 
 FILENM=${SRCFILE/${SRCFILE%/*}}

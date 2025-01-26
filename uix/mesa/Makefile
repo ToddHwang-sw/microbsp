@@ -1,5 +1,5 @@
-DIR=mesa-21.2.2
-LOC=https://mesa.freedesktop.org/archive/
+DIR=mesa-23.0.0
+LOC=https://archive.mesa3d.org
 
 include $(TOPDIR)/scripts/uixenv.mk
 
@@ -21,8 +21,7 @@ MICB_MESON_OPTS +=\
 	-D glx-direct=true         \
 	-D base-install=$(UIXINSTDIR)/..
 
-##MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
-##
+MICB_PKGCONFIG_PATH := $(MICB_PKGCONFIG_PATH):$(WAYLAND_LOCATION)/lib/$(HOSTSYSTEM)-gnu/pkgconfig
 
 MICB_DEPENDS = libdrm libzstd expat zlib \
 		x11 x11-xcb xcb xcb-glx xcb-present xcb-randr xcb-dri2 xcb-dri3 xcb-shm xcb-xf86dri xcb-xfixies \
