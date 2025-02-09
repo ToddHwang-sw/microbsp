@@ -1,23 +1,7 @@
-diff --git a/Makefile.am b/Makefile.am
-index 409ab7d..69ace2e 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -47,10 +47,6 @@ dist_noinst_SCRIPTS = \
- 
- SUBDIRS = \
- 	src \
--	doc \
--	examples \
--	po \
--	tests \
- 	tools
- 
- # Convenience targets to build libfl only
-diff --git a/configure.ac b/configure.ac
-index 9b5afd2..b7b1994 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -174,11 +174,6 @@ AC_CHECK_FUNCS([pow setlocale reallocarr reallocarray])
+diff -uNr flex-orig/configure.ac flex/configure.ac
+--- flex-orig/configure.ac	2025-01-25 19:11:33.263545283 -0800
++++ flex/configure.ac	2025-01-25 19:13:44.673550781 -0800
+@@ -199,15 +199,9 @@
  
  AC_CONFIG_FILES(
  Makefile
@@ -29,10 +13,27 @@ index 9b5afd2..b7b1994 100644
  src/libfl.pc
  src/Makefile
  tools/Makefile
-diff --git a/src/libmain.c b/src/libmain.c
-index bb2fe35..37cfe31 100644
---- a/src/libmain.c
-+++ b/src/libmain.c
+-tests/Makefile
+ )
+ 
+ AC_OUTPUT
+diff -uNr flex-orig/Makefile.am flex/Makefile.am
+--- flex-orig/Makefile.am	2025-01-25 19:11:33.181545279 -0800
++++ flex/Makefile.am	2025-01-25 19:13:11.293549384 -0800
+@@ -48,10 +48,6 @@
+ 
+ SUBDIRS = \
+ 	src \
+-	doc \
+-	examples \
+-	po \
+-	tests \
+ 	tools
+ 
+ # Convenience targets to build libfl only
+diff -uNr flex-orig/src/libmain.c flex/src/libmain.c
+--- flex-orig/src/libmain.c	2025-01-25 19:11:33.201545280 -0800
++++ flex/src/libmain.c	2025-01-25 19:14:44.225553273 -0800
 @@ -23,7 +23,8 @@
  
  #include <stdlib.h>
