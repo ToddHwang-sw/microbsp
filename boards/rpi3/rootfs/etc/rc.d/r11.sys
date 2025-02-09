@@ -5,6 +5,11 @@ ASK='xcfgcli.sh get '
 WAN=`$ASK wan/name`
 LAN=`$ASK lan/name`
 
+#
+# Check LAN mode
+LANMODE=`$ASK lan/mode`
+[ "$LANMODE" != "none" ] || exit 1
+
 # 10.5.5.1
 APIP=`$ASK lan/ip`
 

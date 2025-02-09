@@ -2,6 +2,10 @@
 
 ASK='xcfgcli.sh get '
 
+## check LAN mode ...
+LANMODE=`$ASK lan/mode`
+[ "$LANMODE" != "none" ] || exit 1
+
 case $1 in
 	"start")
 		echo "[WLAN] BRCM Loading modules..."

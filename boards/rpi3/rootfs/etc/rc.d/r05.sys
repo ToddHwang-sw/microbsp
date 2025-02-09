@@ -1,5 +1,11 @@
 #!/bin/sh
 
+ASK='xcfgcli.sh get '
+
+## check wan interface name 
+WANNAME=`$ASK wan/name`
+[ "$WANNAME" != "eth0" ] || exit 1
+
 case $1 in
 	"start")
 		echo "[WLAN] Loading all WLAN modules..."
