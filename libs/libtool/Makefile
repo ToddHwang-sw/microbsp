@@ -1,20 +1,13 @@
-DIR=libtool
-LOC=https://github.com/frida
+DIR=libtool-2.4.5
+LOC=https://ftp.gnu.org/pub/gnu/libtool/
 
 include $(TOPDIR)/scripts/env.mk
 
-MICB_CONFIGURE_PRG = ./configure
-
-MICB_CONFIGURE_AUTOCONF_CMD = $(MICB_BOOTSTRAP_CMD) --skip-git
-
-MICB_CONFIGURE_OPTS += 
-
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
+	@[ -f $(MICBSRC)/$(DIR).tar.xz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).tar.xz; $(MICB_PATCH) )
 
 prepare: 
-	@$(MICB_CONFIGURE_AUTOCONF) 
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 

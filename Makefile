@@ -10,6 +10,20 @@ export BDDIR=$(TOPDIR)/boards/$(TBOARD)
 # Host system name such as "x86_64-linux" or "i686-linux"
 export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}')
 
+#
+# Current Linux Ubuntu version
+#
+# This has been tested with either Ubuntu 22.04 or Ubuntu 24.04
+#
+export UBUNTU_VERSION=$(firstword $(subst ., ,$(shell echo `lsb_release -a | grep Description | awk '{print $$3}'`)))
+
+#
+# Python version second number 3.10.x --> 10
+#
+export PYTHON_VER1=$(word 1, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
+export PYTHON_VER2=$(word 2, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
+export PYTHON_VERSION=$(PYTHON_VER1).$(PYTHON_VER2)
+
 # Patch file name 
 export DEV_PATCH_FILE=patch.develop
 
@@ -170,9 +184,10 @@ export INCFLAGS_NAME=$(BUILDDIR)/flags.incs
 export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 
 ##
-## It means that we are now supporting Ubuntu-22.04.
+## Python version for MicroBSP is .. 3.10.8
 ##
 export PYTHON_SYSVER=3.10
+export PYTHON_REV=8
 
 ##
 ## Essential applications 
@@ -238,7 +253,7 @@ export MICBSRC=source
 CONSOLECMD=`cat $(BDDIR)/rootfs/etc/inittab | head -n 1`
 
 ## made feom WSL2 compilation 
-installcomps:  
+installcomps:
 	@echo ""
 	@echo "Installing required SW sets..."
 	@echo ""
@@ -273,6 +288,17 @@ installcomps:
 	@pip install pkgconfig mako Jinja2
 	@pip install package_name setuptools --user
 
+##
+## Currently only ubuntu 22.04 and 24.04 are supported !!
+##
+ubuntu_check:
+	@[ "$(UBUNTU_VERSION)" = "24" -o "$(UBUNTU_VERSION)" = "22" ] || ( \
+			echo "";  \
+			echo "This was verified with only Ubuntu distribution 22.04 and 24.04."; \
+			echo "";  \
+			exit 1    \
+	)
+
 compiler_check:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
 		[ -f $(TOOLCHAIN_ROOT)/bin/$(CC) ] || ( \
@@ -292,7 +318,36 @@ compiler_check:
 		echo "" ; \
 		exit 1 )
 
-checkfirst: compiler_check
+python_check:
+	@[ "$(UBUNTU_VERSION)" = "22" ] || ( \
+		[ "$(PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                                \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "Ubuntu 24.04 - Installing Python3.10 for MicroBSP installation."                        && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo add-apt-repository ppa:deadsnakes/ppa    "                                       && \
+		echo "# sudo apt update                               "                                       && \
+		echo "# sudo apt upgrade                              "                                       && \
+		echo "# sudo apt install python$(PYTHON_SYSVER)       "                                       && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "For switching between Python3.10 & Unbuntu built-in version (3.12)"                     && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 2 "   && \
+		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 "   && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "User can select python 3.10 with the following command."                                && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo update-alternatives --config python3 "                                           && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		exit 1 ))
+
+checkfirst: compiler_check ubuntu_check python_check
 	@if [ ! -d $(INSTALLDIR) ]; then \
 		mkdir -p $(INSTALLDIR);                                     \
 		mkdir -p $(INSTALLDIR)/etc;                                 \
@@ -740,7 +795,7 @@ cleanup:
 		$(call DO_EXCL_SINGLE,\
 			[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM) )
 
-toolchain:
+toolchain: ubuntu_check
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
@@ -825,7 +880,7 @@ toolchain:
 #
 #########################################################################################################################
 
-vm%:
+vm%: ubuntu_check
 	@if [ "$(subst vm,,$@)" = "run" ]; then                                \
 		make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) run ;       \
 	elif [ "$(subst vm,,$@)" = "stop" ]; then                              \
@@ -834,7 +889,7 @@ vm%:
 		echo "Only two commands; vmrun vmstop " ;                          \
 	fi
 
-pkglist:
+pkglist: ubuntu_check
 	@for dir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 	\
 		for subdir in $(LIBSSUBDIR) ; do 			            \
 	    		[ ! -d $$dir$$subdir/pkgconfig ] || 		    \

@@ -1,5 +1,5 @@
 DIR=iproute2-6.0.0
-LOC=https://mirrors.edge.kernel.org/pub/linux/utils/net/iproute2/
+LOC=https://www.kernel.org/pub/linux/utils/net/iproute2/
 
 include $(TOPDIR)/scripts/extenv.mk
 

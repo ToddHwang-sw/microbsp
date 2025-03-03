@@ -17,6 +17,10 @@ MICB_CONFIGURE_OPTS += \
 
 MICB_DEPENDS = iconv intl glib-2.0 openssl gnutls pam libzstd nettle 
 
+## Updated...
+MICB_CONFIGURE_RUNENV=\
+		PKG_CONFIG_PATH=$(MICB_PKGCONFIG_PATH)
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR)  ] || ( \
@@ -30,5 +34,5 @@ prepare:
 
 all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
-                cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
+		cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 

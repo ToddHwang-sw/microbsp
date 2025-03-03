@@ -1,4 +1,4 @@
-PYTHONVER=$(PYTHON_SYSVER).8
+PYTHONVER=$(PYTHON_SYSVER).$(PYTHON_REV)
 DIR=Python-$(PYTHONVER)
 LOC=https://www.python.org/ftp/python/$(PYTHONVER)
 FILENM=$(DIR).tar.xz
@@ -9,19 +9,22 @@ PYTHONTINSTD=__install__
 include $(TOPDIR)/scripts/extenv.mk
 
 MICB_CONFIGURE_RUNENV += \
-	ac_cv_have_chflags=no \
+	ac_cv_have_chflags=no      \
 	ac_cv_buggy_getaddrinfo=no \
-	ac_cv_file__dev_ptmx=yes \
+	ac_cv_file__dev_ptmx=yes   \
 	ac_cv_file__dev_ptc=yes
 
 MICB_CONFIGURE_OPTS += \
-	--enable-optimizations \
-	--disable-profiling    \
-	--with-ensurepip=install
+	--enable-optimizations        \
+	--disable-profiling           \
+	--with-ensurepip=install      \
+	--without-system-libmpdec     \
+	--without-decimal-contextvar  \
+	--with-build-python=python$(PYTHON_SYSVER)
 
 MICB_CONFIGURE_PRG = ./configure
 
-MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3
+MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3 uuid
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR)   ] || mkdir -p $(BUILDDIR)/$(DIR)
