@@ -2,10 +2,11 @@
 1. [Why not Yocto](#whynotyocto)
 2. [MicroBSP](#microbsp)
 3. [Summary](#summary)
-4. [Folder Hieararchy](#folder)
-5. [Overlay Root File System](#overlayrootfs)
-6. [Setting up Prerequisite Utilities/Libraries](#prereq)
-7. [Raspberry PI](#rpi3)
+4. [Ubuntu 24.04 support](#ubuntu24)
+5. [Folder Hieararchy](#folder)
+6. [Overlay Root File System](#overlayrootfs)
+7. [Setting up Prerequisite Utilities/Libraries](#prereq)
+8. [Raspberry PI](#rpi3)
 	1. [Poor man's gadgets](#rpi3_component)
 	2. [How it looks](#rpi3_look)
 	3. [Device operation](#rpi3_operation)
@@ -19,7 +20,7 @@
 		6. [Bootable SD Card](#rpi3_sdcard)
 		7. [WLAN Configuration](#rpi3_wlan)
 		8. [Available Packages](#rpi3_packages)
-8. [ASUS Tinker](#tinker)
+9. [ASUS Tinker](#tinker)
 	1. [Testbed components](#tinker_component)
 	2. [How it looks](#tinker_look)
 	3. [Device operation](#tinker_operation)
@@ -32,7 +33,7 @@
 		5. [Bootable SD Card](#tinker_sdcard)
 		6. [WLAN Configuration](#tinker_wlan)
 		7. [Available Packages](#tinker_packages)
-9. [MBSP VM](#qemu) 
+10. [MBSP VM](#qemu) 
 	1. [Testbed components](#qemu_component)
 	2. [Setup](#qemu_setup) 
 	3. [Booting Shot](#qemu_boot)
@@ -53,7 +54,7 @@
 		3. [NAT network configuration](#qemu_nat)
 		4. [DHCP/DNS configuration](#qemu_dns)
 		5. [Host Network Setup Script](#qemu_script)
-10. [MilkV RiscV Duo](#milkv)
+11. [MilkV RiscV Duo](#milkv)
 	1. [Testbed components](#milkv_component)
 	2. [Setup](#milkv_setup)
 	3. [Booting Shot](#milkv_boot)
@@ -61,8 +62,8 @@
 		1. [Downloading sources](#milkv_download)
 		2. [Toolchain](#milkv_toolchain)
 		3. [Libraries, Applications, Extra Applications](#milkv_library)
-11. [Selective Compilation](#selective_compile)
-12. [How Python](#python)
+12. [Selective Compilation](#selective_compile)
+13. [How Python](#python)
 	1. [Setting up PIP](#python_pip)
 	2. [Upgrading PIP](#python_upgrade_pip)
 
@@ -164,6 +165,15 @@
 * MicroBSP has **Overlay File System** basis booting policy. 
 * Total booting disk image has the following hierarchy. 
 
+## Ubuntu 24.04 support <a name="ubuntu24"></a>
+
+* MicroBSP has started being developed under Ubuntu 22.04. 
+
+* MicroBSP keeps going with Python 3.10.8 even with Python 3.12 basis ubuntu 24.04.
+
+* User may have a message to install Python 3.10.x if you are using Ubuntu 24.04. 
+
+* Top-level Makefile checks the version of current system Python. 
 
 ## Folder Hierarchy <a name="folder"></a>
 
