@@ -17,6 +17,11 @@ export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}
 #
 export UBUNTU_VERSION=$(firstword $(subst ., ,$(shell echo `lsb_release -a | grep Description | awk '{print $$3}'`)))
 
+##
+## Environment variable LD_LIBRARY_PATH mnakes an error impact on toolchain build.
+##
+export ENV_CHECK_CMD=$(shell echo `export | grep LD_LIBRARY_PATH | wc -l`)
+
 #
 # Python version second number 3.10.x --> 10
 #
@@ -289,33 +294,46 @@ installcomps:
 	@pip install package_name setuptools --user
 
 ##
+## Environment check
+##
+env_check:
+	@[ "$(ENV_CHECK_CMD)" = "0" ] || ( \
+		echo "";                                                        \
+		echo "LD_LIBRARY_PATH shouldn't be in the environment setup." ; \
+		echo "";                                                        \
+		echo "# unset LD_LIBRARY_PATH ";                                \
+		echo "";                                                        \
+		exit 1                                                          \
+	)
+
+##
 ## Currently only ubuntu 22.04 and 24.04 are supported !!
 ##
 ubuntu_check:
 	@[ "$(UBUNTU_VERSION)" = "24" -o "$(UBUNTU_VERSION)" = "22" ] || ( \
-			echo "";  \
+			echo "";                                                                 \
 			echo "This was verified with only Ubuntu distribution 22.04 and 24.04."; \
-			echo "";  \
-			exit 1    \
+			echo "";                                                                 \
+			exit 1                                                                   \
 	)
 
 compiler_check:
 	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
 		[ -f $(TOOLCHAIN_ROOT)/bin/$(CC) ] || ( \
-			echo ""; \
+			echo "";                                                                                 \
 			echo "Two more cross compilers $(CC) have been installed in the system. Please check. "; \
-			echo ""; \
-			exit 1 \
+			echo "";                                                                                 \
+			exit 1                                                                                   \
 		) )
 	@[ "$(CHECK_TOOLCHAIN)" != "0" ] || ( \
-		echo ""; \
-		echo "$(CC) seems not to be ready" ; \
-		if [ ! -f $(TOOLCHAIN_ROOT)/bin/$(CC) ]; then \
-			echo "Please run \"make toolchain\" first. It will take long time. " ; \
-		else \
-			echo "Please run \"export PATH=\$$PATH:$(TOOLCHAIN_ROOT)/bin\" simply." ; \
-		fi; \
-		echo "" ; \
+		echo "";                                                                       \
+		echo "$(CC) seems not to be ready" ;                                           \
+		if [ ! -f $(TOOLCHAIN_ROOT)/bin/$(CC) ]; then                                  \
+			echo "Please run \"make toolchain\" first. It will take long time. " ;     \
+		else                                                                           \
+			echo "Please run \"export PATH=\$$PATH:$(TOOLCHAIN_ROOT)/bin\" simply." ;  \
+		fi;                                                                            \
+		echo "" ;                                                                      \
 		exit 1 )
 
 python_check:
@@ -347,7 +365,7 @@ python_check:
 		echo ""                                                                                       && \
 		exit 1 ))
 
-checkfirst: compiler_check ubuntu_check python_check
+checkfirst: compiler_check ubuntu_check python_check env_check
 	@if [ ! -d $(INSTALLDIR) ]; then \
 		mkdir -p $(INSTALLDIR);                                     \
 		mkdir -p $(INSTALLDIR)/etc;                                 \
@@ -795,7 +813,7 @@ cleanup:
 		$(call DO_EXCL_SINGLE,\
 			[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM) )
 
-toolchain: ubuntu_check
+toolchain: ubuntu_check env_check
 	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
