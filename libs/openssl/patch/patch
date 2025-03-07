@@ -1,0 +1,11 @@
+diff -uNr openssl-orig/Configurations/10-main.conf openssl/Configurations/10-main.conf
+--- openssl-orig/Configurations/10-main.conf	2025-03-07 14:32:09.248888769 -0800
++++ openssl/Configurations/10-main.conf	2025-03-07 14:34:24.962073479 -0800
+@@ -704,7 +704,6 @@
+     },
+     "linux-latomic" => {
+         inherit_from     => [ "linux-generic32" ],
+-        ex_libs          => add(threads("-latomic")),
+     },
+     "linux-generic64" => {
+         inherit_from     => [ "linux-generic32" ],
