@@ -6,7 +6,8 @@ include $(TOPDIR)/scripts/uixenv.mk
 GSTREAMER_OPTS += \
 	-D doc=disabled \
 	-D examples=disabled \
-	-D tests=disabled
+	-D tests=disabled \
+	-D gtk3=disabled
 
 MICB_DEPENDS = intl iconv gio-unix-2.0 x11 alsa \
 		   cairo cairo-gobject gdk-pixbuf-2.0 libjpeg \

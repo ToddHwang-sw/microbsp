@@ -257,8 +257,40 @@ export MICBSRC=source
 ##
 CONSOLECMD=`cat $(BDDIR)/rootfs/etc/inittab | head -n 1`
 
+##
+## Only python3.10.x is possibly used with MicroBSP.
+##
+python_check:
+	@[ "$(UBUNTU_VERSION)" = "22" ] || ( \
+		[ "$(PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                                \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "Ubuntu 24.04 - Installing Python3.10 for MicroBSP installation."                        && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo add-apt-repository ppa:deadsnakes/ppa    "                                       && \
+		echo "# sudo apt update                               "                                       && \
+		echo "# sudo apt upgrade                              "                                       && \
+		echo "# sudo apt install python$(PYTHON_SYSVER)       "                                       && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "For switching between Python3.10 & Unbuntu built-in version (3.12)"                     && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 2 "   && \
+		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 "   && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "User can select python 3.10 with the following command."                                && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		echo "# sudo update-alternatives --config python3 "                                           && \
+		echo ""                                                                                       && \
+		echo ""                                                                                       && \
+		exit 1 ))
+
 ## made feom WSL2 compilation 
-installcomps:
+installcomps: python_check
 	@echo ""
 	@echo "Installing required SW sets..."
 	@echo ""
@@ -289,7 +321,7 @@ installcomps:
 		python3-xcbgen      python2               xorriso         mtools            \
 		device-tree-compiler swig                 triehash
 	@sudo apt --no-install-recommends install \
-		xsltproc 			xmlto 			      fop 
+		xsltproc 			xmlto 			      fop
 	@pip install pkgconfig mako Jinja2
 	@pip install package_name setuptools --user
 
@@ -335,35 +367,6 @@ compiler_check:
 		fi;                                                                            \
 		echo "" ;                                                                      \
 		exit 1 )
-
-python_check:
-	@[ "$(UBUNTU_VERSION)" = "22" ] || ( \
-		[ "$(PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                                \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "Ubuntu 24.04 - Installing Python3.10 for MicroBSP installation."                        && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo add-apt-repository ppa:deadsnakes/ppa    "                                       && \
-		echo "# sudo apt update                               "                                       && \
-		echo "# sudo apt upgrade                              "                                       && \
-		echo "# sudo apt install python$(PYTHON_SYSVER)       "                                       && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "For switching between Python3.10 & Unbuntu built-in version (3.12)"                     && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 2 "   && \
-		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 "   && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "User can select python 3.10 with the following command."                                && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo update-alternatives --config python3 "                                           && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		exit 1 ))
 
 checkfirst: compiler_check ubuntu_check python_check env_check
 	@if [ ! -d $(INSTALLDIR) ]; then \

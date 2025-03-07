@@ -1,6 +1,6 @@
 diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
 --- mesa-21.2.2-orig/meson.build	2021-09-21 09:54:05.946658600 -0700
-+++ mesa-21.2.2/meson.build	2024-09-21 16:17:09.175759698 -0700
++++ mesa-21.2.2/meson.build	2025-03-05 19:57:28.793959907 -0800
 @@ -195,7 +195,7 @@
  with_dri_r200 = dri_drivers.contains('r200')
  with_dri_nouveau = dri_drivers.contains('nouveau')
@@ -20,7 +20,24 @@ diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
        ]
      elif ['mips', 'mips64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
        gallium_drivers = [
-@@ -1897,21 +1896,21 @@
+@@ -945,16 +944,6 @@
+ endif
+ 
+ prog_python = import('python').find_installation('python3')
+-has_mako = run_command(
+-  prog_python, '-c',
+-  '''
+-from distutils.version import StrictVersion
+-import mako
+-assert StrictVersion(mako.__version__) > StrictVersion("0.8.0")
+-  ''')
+-if has_mako.returncode() != 0
+-  error('Python (3.x) mako module >= 0.8.0 required to build mesa.')
+-endif
+ 
+ if cc.get_id() == 'gcc' and cc.version().version_compare('< 4.4.6')
+   error('When using GCC, version 4.4.6 or later is required.')
+@@ -1897,21 +1886,21 @@
  # TODO: symbol mangling
  
  if with_platform_wayland
@@ -51,7 +68,7 @@ diff -uNr mesa-21.2.2-orig/meson.build mesa-21.2.2/meson.build
    )
 diff -uNr mesa-21.2.2-orig/meson_options.txt mesa-21.2.2/meson_options.txt
 --- mesa-21.2.2-orig/meson_options.txt	2021-09-21 09:54:05.946658600 -0700
-+++ mesa-21.2.2/meson_options.txt	2024-09-21 16:16:02.009647351 -0700
++++ mesa-21.2.2/meson_options.txt	2025-03-05 19:56:35.029910513 -0800
 @@ -45,6 +45,13 @@
  )
  

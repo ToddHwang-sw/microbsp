@@ -9,6 +9,7 @@ MICB_CONFIGURE_OPTS += \
 	--disable-xml-docs \
 	--disable-doxygen-docs \
 	--disable-ducktype-docs \
+	--disable-selinux \
 	--enable-systemd=no
 
 MICB_CONFIGURE_MAKEOPTS += V=1 

@@ -19,20 +19,29 @@ MICB_CONFIGURE_OPTS += \
 	--disable-profiling           \
 	--with-ensurepip=install      \
 	--without-system-libmpdec     \
-	--without-decimal-contextvar  \
-	--with-build-python=python$(PYTHON_SYSVER)
+	--without-decimal-contextvar
 
 MICB_CONFIGURE_PRG = ./configure
 
 MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3 uuid
+
+## System Library ...
+SYS_X86_LIBDIR=/lib/x86_64-linux-gnu
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR)   ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -f $(MICBSRC)/$(FILENM) ] || ( $(UNCOMPRESS) $(LOC)/$(FILENM) ; $(MICB_PATCH) )
 
 prepare:
+	@[ "$(_ARCH_)" != "x86_64-vm" ] || ( \
+		[ -f $(SYS_X86_LIBDIR)/libtinfow.so.6 ] || ( \
+			[ ! -f $(SYS_X86_LIBDIR)/libtic.so.6 ] || ( \
+				echo ""                        ; \
+				echo "Linking libtinfow.so.6 " ; \
+				echo ""                        ; \
+				sudo ln -s $(SYS_X86_LIBDIR)/libtic.so.6 $(SYS_X86_LIBDIR)/libtinfow.so.6  ) ) )
 	@$(MICB_DUP_SOURCES)
-	cd $(BUILDDIR)/$(DIR); \
+	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)
 
 all: 

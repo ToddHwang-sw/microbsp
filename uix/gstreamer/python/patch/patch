@@ -1,8 +1,18 @@
-diff --git a/meson.build b/meson.build
-index e8fac63..d82aa2a 100644
---- a/meson.build
-+++ b/meson.build
-@@ -91,6 +91,6 @@ configinc = include_directories('.')
+diff -uNr gst-python-orig/meson.build gst-python/meson.build
+--- gst-python-orig/meson.build	2025-03-05 21:47:33.292664403 -0800
++++ gst-python/meson.build	2025-03-05 21:49:04.734503035 -0800
+@@ -49,10 +49,6 @@
+       message('pylib_loc = @0@'.format(pylib_loc))
+     endif
+ 
+-    assert(
+-      run_command(python, '-c', check_path_exists, join_paths(pylib_loc, pylib_ldlibrary)).returncode() == 0,
+-      'Python dynamic library path could not be determined'
+-    )
+   endif
+ endif
+ 
+@@ -91,6 +87,6 @@
  
  subdir('gi')
  subdir('plugin')

@@ -7,6 +7,7 @@ MICB_MESON_OPTS+=\
 	 -D man=false \
 	 -D gcov=false \
 	 -D tests=false \
+	 -D gtk=disabled \
 	 -D database=simple \
 	 -D bluez5=false  \
 	 -D gstreamer=enabled 

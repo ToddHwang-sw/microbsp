@@ -5,7 +5,9 @@ include $(TOPDIR)/scripts/uixenv.mk
 
 MICB_DEPENDS = zlib libpng libpng16
 
-MICB_CONFIGURE_OPTS += --without-harfbuzz
+MICB_CONFIGURE_OPTS += \
+	--without-harfbuzz \
+	--with-brotli=no
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

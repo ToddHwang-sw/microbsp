@@ -3,6 +3,10 @@ LOC=https://gitlab.freedesktop.org/pixman
 
 include $(TOPDIR)/scripts/uixenv.mk
 
+MICB_MESON_OPTS +=\
+	-D tests=disabled             \
+	-D demos=disabled
+
 MICB_DEPENDS = libpng libpng16
 
 download:

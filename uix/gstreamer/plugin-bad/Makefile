@@ -7,6 +7,7 @@ GSTREAMER_OPTS += \
 	-D doc=disabled \
 	-D examples=disabled \
 	-D tests=disabled \
+	-D webp=disabled \
 	-D wayland=enabled \
 	-D x11=enabled \
 	-D base-install=$(UIXINSTDIR)/..

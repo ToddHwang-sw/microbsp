@@ -1,5 +1,5 @@
-DIR=mesa-23.0.0
-LOC=https://archive.mesa3d.org
+DIR=mesa-21.2.2
+LOC=https://archive.mesa3d.org/older-versions/21.x
 
 include $(TOPDIR)/scripts/uixenv.mk
 

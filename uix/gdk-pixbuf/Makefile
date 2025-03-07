@@ -6,7 +6,9 @@ include $(TOPDIR)/scripts/uixenv.mk
 MICB_MESON_OPTS +=\
 	-D gtk_doc=false \
 	-D docs=false \
+	-D tests=false \
 	-D man=false \
+	-D tiff=disabled \
 	-D installed_tests=false \
 	-D introspection=disabled 
 

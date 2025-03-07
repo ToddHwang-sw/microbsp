@@ -8,7 +8,7 @@ MICB_CONFIGURE_PRG = ./configure
 MICB_CONFIGURE_OPTS += \
 	--with-kernel=$(KERNDIR)/$(KERNELVER) 
 
-MICB_DEPENDS = libnftnl
+MICB_DEPENDS = libnftnl libmnl
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

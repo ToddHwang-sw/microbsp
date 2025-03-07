@@ -173,7 +173,6 @@ _UIDIR_=\
 	gstreamer/python       \
 	gstreamer/vaapi        \
 	microwindows	       \
-	vncserver              \
 	pulseaudio             \
 	qt
 export _UIDIR_

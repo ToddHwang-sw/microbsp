@@ -20,3 +20,40 @@ diff -uNr Python-3.10.8-orig/Misc/python.pc.in Python-3.10.8/Misc/python.pc.in
 +Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
  Libs:
  Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
+diff -uNr Python-3.10.8-orig/setup.py Python-3.10.8/setup.py
+--- Python-3.10.8-orig/setup.py	2022-10-11 04:21:44.000000000 -0700
++++ Python-3.10.8/setup.py	2024-05-03 20:02:38.638248819 -0700
+@@ -679,12 +679,12 @@
+         finally:
+             os.unlink(tmpfile)
+ 
+-        if multiarch_path_component != '':
+-            add_dir_to_list(self.compiler.library_dirs,
+-                            '/usr/lib/' + multiarch_path_component)
+-            add_dir_to_list(self.compiler.include_dirs,
+-                            '/usr/include/' + multiarch_path_component)
+-            return
++        ## if multiarch_path_component != '':
++        ##    add_dir_to_list(self.compiler.library_dirs,
++        ##                    '/usr/lib/' + multiarch_path_component)
++        ##    add_dir_to_list(self.compiler.include_dirs,
++        ##                    '/usr/include/' + multiarch_path_component)
++        ##    return
+ 
+         if not find_executable('dpkg-architecture'):
+             return
+@@ -701,10 +701,10 @@
+             if ret == 0:
+                 with open(tmpfile) as fp:
+                     multiarch_path_component = fp.readline().strip()
+-                add_dir_to_list(self.compiler.library_dirs,
+-                                '/usr/lib/' + multiarch_path_component)
+-                add_dir_to_list(self.compiler.include_dirs,
+-                                '/usr/include/' + multiarch_path_component)
++                ## add_dir_to_list(self.compiler.library_dirs,
++                ##                '/usr/lib/' + multiarch_path_component)
++                ## add_dir_to_list(self.compiler.include_dirs,
++                ##                '/usr/include/' + multiarch_path_component)
+         finally:
+             os.unlink(tmpfile)
+ 
