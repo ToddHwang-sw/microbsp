@@ -8,6 +8,7 @@ MICB_MESON_OPTS +=\
         -D tests=false \
 		-D audit=false \
 		-D seccomp=true \
+		-D selinux=false \
 		-D tpm=false \
 		-D tpm2=false
 
