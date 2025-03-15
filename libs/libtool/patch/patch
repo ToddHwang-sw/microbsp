@@ -1,0 +1,11 @@
+diff -uNr libtool-2.4.5-orig/build-aux/config.sub libtool-2.4.5/build-aux/config.sub
+--- libtool-2.4.5-orig/build-aux/config.sub	2015-01-16 11:05:43.000000000 -0800
++++ libtool-2.4.5/build-aux/config.sub	2025-03-15 09:06:05.881128625 -0700
+@@ -371,6 +371,7 @@
+ 	580-* \
+ 	| a29k-* \
+ 	| aarch64-* | aarch64_be-* \
++	| riscv64-* \
+ 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
+ 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
+ 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* | arceb-* \
