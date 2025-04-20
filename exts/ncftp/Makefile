@@ -1,5 +1,5 @@
-DIR=ncftp-3.2.7
-LOC=https://www.ncftp.com/downloads/ncftp
+DIR=ncftp
+LOC=https://github.com/deepin-community
 
 include $(TOPDIR)/scripts/extenv.mk
 
@@ -14,7 +14,7 @@ MICB_CONFIGURE_MAKEOPTS += \
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(DIR)-src.tar.gz ] || ( $(UNCOMPRESS) $(LOC)/$(DIR)-src.tar.gz; $(MICB_PATCH) )
+	@[ -d $(MICBSRC)/$(DIR)  ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )
 
 prepare:
 	@$(MICB_DUP_SOURCES)
