@@ -1,4 +1,4 @@
-PYTHONVER=$(PYTHON_SYSVER).$(PYTHON_REV)
+PYTHONVER=$(PYTHON_SYSVER).$(PYTHON_SYSREV)
 DIR=Python-$(PYTHONVER)
 LOC=https://www.python.org/ftp/python/$(PYTHONVER)
 FILENM=$(DIR).tar.xz
@@ -21,6 +21,16 @@ MICB_CONFIGURE_OPTS += \
 	--without-system-libmpdec     \
 	--without-decimal-contextvar
 
+## Ubuntu 24.04 used python 3.12.3 and it needs this parameter... 
+ifeq ($(UBUNTU_VERSION),24)
+MICB_CONFIGURE_OPTS += \
+	--with-build-python=python$(PYTHON_SYSVER)
+endif
+
+## partial copy from scripts/uiext.mk
+export CROSS_USER_CFLAGS += \
+	-DSSIZE_MAX=2147483647
+
 MICB_CONFIGURE_PRG = ./configure
 
 MICB_DEPENDS = expat openssl ncurses ncursesw libffi sqlite3 uuid
@@ -30,16 +40,25 @@ SYS_X86_LIBDIR=/lib/x86_64-linux-gnu
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR)   ] || mkdir -p $(BUILDDIR)/$(DIR)
-	@[ -f $(MICBSRC)/$(FILENM) ] || ( $(UNCOMPRESS) $(LOC)/$(FILENM) ; $(MICB_PATCH) )
+	@[ -f $(MICBSRC)/$(FILENM) ] || ( \
+			$(UNCOMPRESS) $(LOC)/$(FILENM) ;                        \
+			cd $(MICBSRC)/$(DIR) ;                                  \
+			cat ../../$(MICB_PATCH_FN)$(PYTHON_SYSVER) | patch -p 1 \
+	)
 
-prepare:
+## clean up previous install...
+try_cleanbuild:
+	@echo "Cleaning previous installation"
+	@find $(EXTINSTDIR) -name "python3*" -type d -exec \rm -rf {} \; > /dev/null
+
+prepare: try_cleanbuild
 	@[ "$(_ARCH_)" != "x86_64-vm" ] || ( \
 		[ -f $(SYS_X86_LIBDIR)/libtinfow.so.6 ] || ( \
 			[ ! -f $(SYS_X86_LIBDIR)/libtic.so.6 ] || ( \
 				echo ""                        ; \
 				echo "Linking libtinfow.so.6 " ; \
 				echo ""                        ; \
-				sudo ln -s $(SYS_X86_LIBDIR)/libtic.so.6 $(SYS_X86_LIBDIR)/libtinfow.so.6  ) ) )
+				sudo ln -s $(SYS_X86_LIBDIR)/libtic.so.6 $(SYS_X86_LIBDIR)/libtinfow.so.6 ) ) )
 	@$(MICB_DUP_SOURCES)
 	@cd $(BUILDDIR)/$(DIR); \
 		$(COMP_CMDS) $(MICB_CONFIGURE_CMD) $(MICB_CONFIGURE_OPTS)

@@ -27,7 +27,9 @@ export ENV_CHECK_CMD=$(shell echo `export | grep LD_LIBRARY_PATH | wc -l`)
 #
 export PYTHON_VER1=$(word 1, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
 export PYTHON_VER2=$(word 2, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
-export PYTHON_VERSION=$(PYTHON_VER1).$(PYTHON_VER2)
+export PYTHON_VER3=$(word 3, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
+export PYTHON_SYSVER=$(PYTHON_VER1).$(PYTHON_VER2)
+export PYTHON_SYSREV=$(PYTHON_VER3)
 
 # Patch file name 
 export DEV_PATCH_FILE=patch.develop
@@ -190,9 +192,9 @@ export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 
 ##
 ## Python version for MicroBSP is .. 3.10.8
+## Disabled currently
 ##
-export PYTHON_SYSVER=3.10
-export PYTHON_REV=8
+export FORCED_PYTHON_VERSION=3.10
 
 ##
 ## Essential applications 
@@ -257,12 +259,15 @@ export MICBSRC=source
 ##
 CONSOLECMD=`cat $(BDDIR)/rootfs/etc/inittab | head -n 1`
 
+python_check:
+
 ##
 ## Only python3.10.x is possibly used with MicroBSP.
+## Disabled currently
 ##
-python_check:
+python_check_unused:
 	@[ "$(UBUNTU_VERSION)" = "22" ] || ( \
-		[ "$(PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                                \
+		[ "$(FORCED_PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                         \
 		echo ""                                                                                       && \
 		echo ""                                                                                       && \
 		echo "Ubuntu 24.04 - Installing Python3.10 for MicroBSP installation."                        && \
@@ -920,3 +925,15 @@ pkglist: ubuntu_check
 
 folders:
 	@echo $(SUBDIR)
+
+
+change: 
+	for grp in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do \
+		for dir in $(LIBSSUBDIR) ; do  \
+			if [ -f $$grp$$dir/pkgconfig/*.pc ] ; then \
+				echo "
+				$(TOPDIR)/scripts/filterlibs.sh \
+					$(BDDIR) $$grp$$dir/pkgconfig/$$dep.pc $$grp$$dir ; \
+			fi ; \
+		done ; \
+	done

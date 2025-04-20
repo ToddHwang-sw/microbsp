@@ -1,0 +1,22 @@
+diff -uNr Python-3.12.3-orig/Misc/python-embed.pc.in Python-3.12.3/Misc/python-embed.pc.in
+--- Python-3.12.3-orig/Misc/python-embed.pc.in	2024-04-09 01:09:14.000000000 -0700
++++ Python-3.12.3/Misc/python-embed.pc.in	2025-04-20 09:11:55.644460196 -0700
+@@ -8,6 +8,6 @@
+ Description: Embed Python into an application
+ Requires:
+ Version: @VERSION@
+-Libs.private: @LIBS@
++Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
+ Libs: -L${libdir} -lpython@VERSION@@ABIFLAGS@
+ Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
+diff -uNr Python-3.12.3-orig/Misc/python.pc.in Python-3.12.3/Misc/python.pc.in
+--- Python-3.12.3-orig/Misc/python.pc.in	2024-04-09 01:09:14.000000000 -0700
++++ Python-3.12.3/Misc/python.pc.in	2025-04-20 09:11:33.213098945 -0700
+@@ -8,6 +8,6 @@
+ Description: Build a C extension for Python
+ Requires:
+ Version: @VERSION@
+-Libs.private: @LIBS@
++Libs.private: -lcrypt -ldl -lcrypto -ldl -lexpat -lffi -lformw -lmenuw -lncursesw -lpanelw -lpthread -lssl -ltinfow -pthread -lpthread -lm
+ Libs: -L${libdir} @LIBPYTHON@
+ Cflags: -I${includedir}/python@VERSION@@ABIFLAGS@
