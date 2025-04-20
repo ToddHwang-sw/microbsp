@@ -242,7 +242,7 @@ echo "LPPS "
 echo ""
 LPPSDIR=/var/tmp/lpps
 [ -d $LPPSDIR ] || mkdir -p $LPPSDIR
-/usr/bin/lpps --syslog=1 --daemon=1 $LPPSDIR
+/usr/bin/lpps --user=root --syslog=1 --daemon=1 $LPPSDIR
 
 echo ""
 echo "WEBUI "
