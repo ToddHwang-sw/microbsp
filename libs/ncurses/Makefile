@@ -44,4 +44,7 @@ all install uninstall clean:
 	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
                 cd $(BUILDDIR)/$(DIR); make $(MICB_CONFIGURE_MAKEOPTS) $@ )
 
+install_ss:
+	@[ ! -d $(BUILDDIR)/$(DIR) ] || ( \
+                cd $(BUILDDIR)/$(DIR); make V=1 DESTDIR=$(TOPDIR)/libs/ncurses/a_install $@ )
 
