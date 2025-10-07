@@ -15,7 +15,7 @@ MICB_CONFIGURE_RUNENV += \
 	ac_cv_file__dev_ptc=yes
 
 MICB_CONFIGURE_OPTS += \
-	--enable-optimizations        \
+	--disable-optimizations        \
 	--disable-profiling           \
 	--with-ensurepip=install      \
 	--without-system-libmpdec     \
