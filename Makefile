@@ -10,6 +10,9 @@ export BDDIR=$(TOPDIR)/boards/$(TBOARD)
 # Host system name such as "x86_64-linux" or "i686-linux"
 export HOSTSYSTEM=$(shell echo `uname -m`-`uname -s` | awk '{print tolower($$0)}')
 
+# Verbose mode compilation
+export QUEIT=@
+
 #
 # Current Linux Ubuntu version
 #
@@ -23,7 +26,7 @@ export UBUNTU_VERSION=$(firstword $(subst ., ,$(shell echo `lsb_release -a | gre
 export ENV_CHECK_CMD=$(shell echo `export | grep LD_LIBRARY_PATH | wc -l`)
 
 #
-# Python version second number 3.10.x --> 10
+# Python version in current system
 #
 export PYTHON_VER1=$(word 1, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
 export PYTHON_VER2=$(word 2, $(subst ., ,$(shell echo `python3 --version | awk '{print $$2}'`)))
@@ -191,12 +194,6 @@ export INCFLAGS_NAME=$(BUILDDIR)/flags.incs
 export LIBFLAGS_NAME=$(BUILDDIR)/flags.libs
 
 ##
-## Python version for MicroBSP is .. 3.10.8
-## Disabled currently
-##
-export FORCED_PYTHON_VERSION=3.10
-
-##
 ## Essential applications 
 ##
 export BASH=bash-5.1.8
@@ -259,57 +256,22 @@ export MICBSRC=source
 ##
 CONSOLECMD=`cat $(BDDIR)/rootfs/etc/inittab | head -n 1`
 
-python_check:
-
-##
-## Only python3.10.x is possibly used with MicroBSP.
-## Disabled currently
-##
-python_check_unused:
-	@[ "$(UBUNTU_VERSION)" = "22" ] || ( \
-		[ "$(FORCED_PYTHON_VERSION)" = "$(PYTHON_SYSVER)" ] || (                                         \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "Ubuntu 24.04 - Installing Python3.10 for MicroBSP installation."                        && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo add-apt-repository ppa:deadsnakes/ppa    "                                       && \
-		echo "# sudo apt update                               "                                       && \
-		echo "# sudo apt upgrade                              "                                       && \
-		echo "# sudo apt install python$(PYTHON_SYSVER)       "                                       && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "For switching between Python3.10 & Unbuntu built-in version (3.12)"                     && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 2 "   && \
-		echo "# sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 "   && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "User can select python 3.10 with the following command."                                && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		echo "# sudo update-alternatives --config python3 "                                           && \
-		echo ""                                                                                       && \
-		echo ""                                                                                       && \
-		exit 1 ))
-
 ## made feom WSL2 compilation 
-installcomps: python_check
-	@echo ""
-	@echo "Installing required SW sets..."
-	@echo ""
-	@echo ""
-	@echo "These menu was tested and validated in Ubuntu LTS 20.04,"
-	@echo "but not yet perfectly probed for LTS 22.04"
-	@echo "User may get errors in ..."
-	@echo "  uix/systemd, "
-	@echo "  uix/mesa,    " 
-	@echo ""
-	@echo ""
-	@sudo apt --fix-broken install 
-	@sudo apt update 
-	@sudo apt install -y \
+installcomps:
+	$(QUEIT)echo ""
+	$(QUEIT)echo "Installing required SW sets..."
+	$(QUEIT)echo ""
+	$(QUEIT)echo ""
+	$(QUEIT)echo "These menu was tested and validated in Ubuntu LTS 20.04,"
+	$(QUEIT)echo "but not yet perfectly probed for LTS 22.04"
+	$(QUEIT)echo "User may get errors in ..."
+	$(QUEIT)echo "  uix/systemd, "
+	$(QUEIT)echo "  uix/mesa,    "
+	$(QUEIT)echo ""
+	$(QUEIT)echo ""
+	$(QUEIT)sudo apt --fix-broken install 
+	$(QUEIT)sudo apt update 
+	$(QUEIT)sudo apt install -y \
 		build-essential     cmake                 automake        autoconf          \
 		m4                  autopoint             unzip           p7zip-full        \
 		autoconf-archive    autogen               texlive         flex              \
@@ -325,16 +287,16 @@ installcomps: python_check
 		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
 		python3-xcbgen      python2               xorriso         mtools            \
 		device-tree-compiler swig                 triehash
-	@sudo apt --no-install-recommends install \
+	$(QUEIT)sudo apt --no-install-recommends install \
 		xsltproc 			xmlto 			      fop
-	@pip install pkgconfig mako Jinja2
-	@pip install package_name setuptools --user
+	$(QUEIT)pip install pkgconfig mako Jinja2
+	$(QUEIT)pip install package_name setuptools --user
 
 ##
 ## Environment check
 ##
 env_check:
-	@[ "$(ENV_CHECK_CMD)" = "0" ] || ( \
+	$(QUEIT)[ "$(ENV_CHECK_CMD)" = "0" ] || ( \
 		echo "";                                                        \
 		echo "LD_LIBRARY_PATH shouldn't be in the environment setup." ; \
 		echo "";                                                        \
@@ -347,7 +309,7 @@ env_check:
 ## Currently only ubuntu 22.04 and 24.04 are supported !!
 ##
 ubuntu_check:
-	@[ "$(UBUNTU_VERSION)" = "24" -o "$(UBUNTU_VERSION)" = "22" ] || ( \
+	$(QUEIT)[ "$(UBUNTU_VERSION)" = "24" -o "$(UBUNTU_VERSION)" = "22" ] || ( \
 			echo "";                                                                 \
 			echo "This was verified with only Ubuntu distribution 22.04 and 24.04."; \
 			echo "";                                                                 \
@@ -355,14 +317,14 @@ ubuntu_check:
 	)
 
 compiler_check:
-	@[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
+	$(QUEIT)[ "$(CHECK_TOOLCHAIN)" = "0" ] || ( \
 		[ -f $(TOOLCHAIN_ROOT)/bin/$(CC) ] || ( \
 			echo "";                                                                                 \
 			echo "Two more cross compilers $(CC) have been installed in the system. Please check. "; \
 			echo "";                                                                                 \
 			exit 1                                                                                   \
 		) )
-	@[ "$(CHECK_TOOLCHAIN)" != "0" ] || ( \
+	$(QUEIT)[ "$(CHECK_TOOLCHAIN)" != "0" ] || ( \
 		echo "";                                                                       \
 		echo "$(CC) seems not to be ready" ;                                           \
 		if [ ! -f $(TOOLCHAIN_ROOT)/bin/$(CC) ]; then                                  \
@@ -374,7 +336,7 @@ compiler_check:
 		exit 1 )
 
 checkfirst: compiler_check ubuntu_check python_check env_check
-	@if [ ! -d $(INSTALLDIR) ]; then \
+	$(QUEIT)if [ ! -d $(INSTALLDIR) ]; then \
 		mkdir -p $(INSTALLDIR);                                     \
 		mkdir -p $(INSTALLDIR)/etc;                                 \
 		mkdir -p $(INSTALLDIR)/dev;                                 \
@@ -402,7 +364,7 @@ checkfirst: compiler_check ubuntu_check python_check env_check
 		ln -s /var/tmp/shadow  $(INSTALLDIR)/etc/shadow;            \
 		ln -s /var/tmp/resolv.conf $(INSTALLDIR)/etc/resolv.conf;   \
 	fi
-	@[ -d $(STAGEDIR) ] || ( \
+	$(QUEIT)[ -d $(STAGEDIR) ] || ( \
 		mkdir -p $(STAGEDIR); \
 		mkdir -p $(STAGEDIR)/up;   \
 		mkdir -p $(STAGEDIR)/work; \
@@ -410,7 +372,7 @@ checkfirst: compiler_check ubuntu_check python_check env_check
 		mkdir -p $(STAGEDIR)/usr/home; \
 		mkdir -p $(EXTINSTDIR); \
 	)
-	@[ -d $(UIXINSTDIR) ] || ( \
+	$(QUEIT)[ -d $(UIXINSTDIR) ] || ( \
 		mkdir -p $(UIXINSTDIR); \
 		mkdir -p $(UIXINSTDIR)/include; \
 		mkdir -p $(UIXINSTDIR)/lib; \
@@ -420,22 +382,22 @@ checkfirst: compiler_check ubuntu_check python_check env_check
 		mkdir -p $(UIXINSTDIR)/local/share; \
 		mkdir -p $(UIXINSTDIR)/local/share/aclocal; \
 	)
-	@[ ! -f $(BDDIR)/$(LIBPATHFILE) ] || \rm -rf $(BDDIR)/$(LIBPATHFILE)  
-	@touch $(BDDIR)/$(LIBPATHFILE) 
-	@for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do	\
+	$(QUEIT)[ ! -f $(BDDIR)/$(LIBPATHFILE) ] || \rm -rf $(BDDIR)/$(LIBPATHFILE)
+	$(QUEIT)touch $(BDDIR)/$(LIBPATHFILE)
+	$(QUEIT)for libdir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do	\
 		for subdir in $(LIBSSUBDIR) ; do 			\
 			echo $$libdir$$subdir >> $(BDDIR)/$(LIBPATHFILE) ; \
 			mkdir -p $$libdir$$subdir ;	 		\
 		done ;							\
 	done
-	@[ -d $(BUILD_FOLDER)      ] || mkdir -p $(BUILD_FOLDER)
-	@[ -d $(BUILD_LOCK_FOLDER) ] || mkdir -p $(BUILD_LOCK_FOLDER)
+	$(QUEIT)[ -d $(BUILD_FOLDER)      ] || mkdir -p $(BUILD_FOLDER)
+	$(QUEIT)[ -d $(BUILD_LOCK_FOLDER) ] || mkdir -p $(BUILD_LOCK_FOLDER)
 
 ##
 ## libs
 ##
 lib: checkfirst
-	@cd libs; \
+	$(QUEIT)cd libs; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || (          \
 				$(call SETUP_BUILDOUT,$$dir)                     && \
@@ -449,7 +411,7 @@ lib: checkfirst
 ## lib_[download/prepare/all/install]
 ##
 lib_%: checkfirst
-	@cd libs; \
+	$(QUEIT)cd libs; \
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
@@ -501,7 +463,7 @@ app_%: checkfirst
 ## exts
 ##
 ext: checkfirst
-	@cd exts; \
+	$(QUEIT)cd exts; \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || (          \
 				$(call SETUP_BUILDOUT,$$dir)                     && \
@@ -515,7 +477,7 @@ ext: checkfirst
 ## ext_[download/prepare/all/install]
 ##
 ext_%: checkfirst
-	@cd exts; \
+	$(QUEIT)cd exts; \
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
@@ -534,7 +496,7 @@ ext_%: checkfirst
 ## uix
 ##
 ui: checkfirst llvm_okay
-	@cd uix && \
+	$(QUEIT)cd uix && \
 		for dir in $(SUBDIR); do         \
 			[ ! -d $$dir ] || (          \
 				$(call SETUP_BUILDOUT,$$dir)                     && \
@@ -549,7 +511,7 @@ ui: checkfirst llvm_okay
 ## ui_[prepare/all/install]
 ##
 ui_%: checkfirst llvm_okay
-	@cd uix; \
+	$(QUEIT)cd uix; \
 		for dir in $(SUBDIR); do                     \
 			[ ! -d $$dir ] ||  (                     \
 				$(call SETUP_BUILDOUT,$$dir)      && \
@@ -568,19 +530,19 @@ ui_%: checkfirst llvm_okay
 ## projects
 ##
 proj: checkfirst 
-	@make -C $(BDDIR)/projects destination=$(EXTINSTDIR) prepare all install
-	@$(CLEAN_LIBLA)
+	$(QUEIT)make -C $(BDDIR)/projects destination=$(EXTINSTDIR) prepare all install
+	$(QUEIT)$(CLEAN_LIBLA)
 
 proj_%: checkfirst 
-	@make -C $(BDDIR)/projects destination=$(EXTINSTDIR) $(subst proj_,,$@) 
-	@$(CLEAN_LIBLA)
+	$(QUEIT)make -C $(BDDIR)/projects destination=$(EXTINSTDIR) $(subst proj_,,$@)
+	$(QUEIT)$(CLEAN_LIBLA)
 
 
 ##
 ## LLVM compiler -- reuqired by UI sets...
 ##
 llvm_okay:
-	@[ -f $(TOOLCHAIN_ROOT)/bin/$(PLATFORM)-gcc ] || ( \
+	$(QUEIT)[ -f $(TOOLCHAIN_ROOT)/bin/$(PLATFORM)-gcc ] || ( \
 		echo ""; \
 		echo "Base cross-compiler should be installed " ; \
 		echo ""; \
@@ -588,19 +550,19 @@ llvm_okay:
 		)	
 
 llvm: llvm_okay
-	@make -C gnu/llvm prepare all install
-	@$(CLEAN_LIBLA)
+	$(QUEIT)make -C gnu/llvm prepare all install
+	$(QUEIT)$(CLEAN_LIBLA)
 
 llvm_%: llvm_okay
-	@make -C gnu/llvm $(subst llvm_,,$@)
-	@$(CLEAN_LIBLA)
+	$(QUEIT)make -C gnu/llvm $(subst llvm_,,$@)
+	$(QUEIT)$(CLEAN_LIBLA)
 
 
 ##
 ## clean
 ##
 clean: checkfirst
-	@for cat in $(COMPDIR); do                 \
+	$(QUEIT)for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || make -C $$dir clean || exit 1; \
@@ -613,7 +575,7 @@ clean: checkfirst
 ## distclean
 ##
 distclean: checkfirst
-	@for cat in $(COMPDIR); do                 \
+	$(QUEIT)for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
@@ -630,9 +592,9 @@ distclean: checkfirst
 ## download
 ##
 download_prologue:
-	@make -C gnu/sources -f ../Makefile download
-	@[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
-	@for cat in $(COMPDIR); do                 \
+	$(QUEIT)make -C gnu/sources -f ../Makefile download
+	$(QUEIT)[ -d $(KERNDIR)/$(KERNELVER) ] || make -C $(BDDIR)/kernel prepare
+	$(QUEIT)for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
@@ -643,7 +605,7 @@ download_prologue:
 	done
 
 download_epilogue:
-	@for cat in $(COMPDIR); do                 \
+	$(QUEIT)for cat in $(COMPDIR); do                 \
 		cd $$cat ;                             \
 		for dir in $(SUBDIR); do               \
 			[ ! -d $$dir ] || (                \
@@ -661,7 +623,7 @@ download: compiler_check download_prologue lib_download app_download ext_downloa
 ## cleanup everything 
 ##
 wipeout:
-	@for cdir in $(COMPDIR); do                 						        \
+	$(QUEIT)for cdir in $(COMPDIR); do                 						        \
 		for dir in $(SUBDIR); do               						            \
 			if [ -f $$cdir/$$dir/Makefile ] &&  					            \
 					[ -d $$cdir/$$dir/$(MICBSRC) ]; then 			            \
@@ -681,17 +643,17 @@ wipeout:
 ## extdisk_clean
 ##
 extdisk: compiler_check
-	@cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
-	@$(call DO_EXCL_SINGLE,\
+	$(QUEIT)cd gnu; make -f Makefile hdrpath=$(EXTINSTDIR) setup_headers
+	$(QUEIT)$(call DO_EXCL_SINGLE,\
 	       $(TOPDIR)/scripts/setupdisk.sh build $(STAGEDIR) $(EXTDISK) $(BDDIR)/$(EXTDISKNM) $(EXTDISKBLKS) )
-	@[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(EXT4CFG) bs=1M count=$(CFGDISKBLKS)
-	@[ -z $(CFGDISKNM) ] || sudo mkfs.ext4 -j -F -L $(CFGVOLNM) $(EXT4CFG)
+	$(QUEIT)[ -z $(CFGDISKNM) ] || sudo dd if=/dev/zero of=$(EXT4CFG) bs=1M count=$(CFGDISKBLKS)
+	$(QUEIT)[ -z $(CFGDISKNM) ] || sudo mkfs.ext4 -j -F -L $(CFGVOLNM) $(EXT4CFG)
 
 
 extdisk_clean: compiler_check 
-	@$(call DO_EXCL_SINGLE, \
+	$(QUEIT)$(call DO_EXCL_SINGLE, \
 		$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM))
-	@[ -z $(CFGDISKNM) ] || ( [ ! -f $(BDDIR)/$(CFGDISKNM) ] || \rm -rf $(BDDIR)/$(CFGDISKNM) )
+	$(QUEIT)[ -z $(CFGDISKNM) ] || ( [ ! -f $(BDDIR)/$(CFGDISKNM) ] || \rm -rf $(BDDIR)/$(CFGDISKNM) )
 			
 
 ##
@@ -699,12 +661,12 @@ extdisk_clean: compiler_check
 ## uidisk_clean
 ##
 uidisk: compiler_check 
-	@[ "$(UIDISK)" = "" ] ||  ( \
+	$(QUEIT)[ "$(UIDISK)" = "" ] ||  ( \
 		$(call DO_EXCL_SINGLE,\
 			$(TOPDIR)/scripts/setupdisk.sh build $(BDDIR)/_uidir $(UIDISK) $(BDDIR)/$(UIDISKNM) $(UIDISKBLKS)) )
 
 uidisk_clean: compiler_check 
-	@[ "$(UIDISK)" = "" ] ||  ( \
+	$(QUEIT)[ "$(UIDISK)" = "" ] ||  ( \
 		$(call DO_EXCL_SINGLE,\
 			$(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(UIDISKNM) ) )
 			
@@ -713,25 +675,25 @@ uidisk_clean: compiler_check
 ## BUILDUP_ROOTFS --> Please refer to boards/$(TBOARD)/env.mk 
 ##
 run_bootstrap: checkfirst
-	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
-	@make -C apps/busybox  destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install   | tee -a $(BOARD_BUILDOUT)
-	@make -C apps/bash     destination=$(XBASEDIR) install                                              | tee -a $(BOARD_BUILDOUT)
-	@$(shell $(BUILDUP_ROOTFS)) > /dev/null                                                             | tee -a $(BOARD_BUILDOUT)
-	@[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
-	@[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
+	$(QUEIT)[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
+	$(QUEIT)make -C apps/busybox  destination=$(XBASEDIR) -f Makefile.bootstrap download prepare all install   | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C apps/bash     destination=$(XBASEDIR) install                                              | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)$(shell $(BUILDUP_ROOTFS)) > /dev/null                                                             | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ ! -f $(XBASEDIR)/etc/init.d/rcS ]         || chmod ugo+x $(XBASEDIR)/etc/init.d/rcS
+	$(QUEIT)[ ! -f $(XBASEDIR)/etc/init.d/rc.shutdown ] || chmod ugo+x $(XBASEDIR)/etc/init.d/rc.shutdown
 
 boot_%: checkfirst
-	@echo ""
-	@echo "Bootloader configuration/cleanup"
-	@echo ""
-	@make -C $(BDDIR)/boot isodir=$(ISODIR) $(subst boot_,,$@)
+	$(QUEIT)echo ""
+	$(QUEIT)echo "Bootloader configuration/cleanup"
+	$(QUEIT)echo ""
+	$(QUEIT)make -C $(BDDIR)/boot isodir=$(ISODIR) $(subst boot_,,$@)
 
 kernel_%: checkfirst
-	@echo ""
-	@echo "Kernel configuration/cleanup"
-	@echo ""
-	@make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) $(subst kernel_,,$@)
-	@if [ "$(subst kernel_,,$@)" = "clean" ] ; then \
+	$(QUEIT)echo ""
+	$(QUEIT)echo "Kernel configuration/cleanup"
+	$(QUEIT)echo ""
+	$(QUEIT)make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) $(subst kernel_,,$@)
+	$(QUEIT)if [ "$(subst kernel_,,$@)" = "clean" ] ; then \
 		echo ""	                     ; \
 		echo "Cleaning image..."     ; \
 		echo ""                      ; \
@@ -739,161 +701,161 @@ kernel_%: checkfirst
 	fi
 
 modules_%: checkfirst
-	@if [ "$(subst mod_,,$@)" = "install" ] ; then \
+	$(QUEIT)if [ "$(subst mod_,,$@)" = "install" ] ; then \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) install ;              \
 		make -C $(BDDIR)        destination=$(INSTALLDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install ; \
 	fi
 
 board: run_bootstrap
-	@[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
-	@touch $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Preparing board ..."                                               | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare                    2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Building kernel ..."                                               | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) dnfw prepare all    2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "External modules ..."                                              | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR)/kernel KERNDIR=$(KERNDIR) destination=$(INSTALLDIR) extmod            2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Copying static rootfs ..."                                         | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Collecting $(INSTALLDIR) and GLIB to $(FINDIR) ..."                | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@[ ! -d $(FINDIR) ] || \rm -rf $(FINDIR)
-	@mkdir -p $(FINDIR)
-	@cd $(XBASEDIR) ; find . -depth -print | cpio -pdm $(FINDIR)
-	@make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc      2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) ... "  | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
-	@cd $(FINDIR)/$(INSTSUBFN)/lib ; \
+	$(QUEIT)[ ! -f $(BOARD_BUILDOUT) ] || rm $(BOARD_BUILDOUT)
+	$(QUEIT)touch $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Preparing board ..."                                               | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR) destination=$(INSTALLDIR) isodir=$(ISODIR) prepare                    2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Building kernel ..."                                               | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) dnfw prepare all    2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "External modules ..."                                              | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR)/kernel KERNDIR=$(KERNDIR) destination=$(INSTALLDIR) extmod            2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Copying static rootfs ..."                                         | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)cp -rf $(BDDIR)/rootfs/* $(INSTALLDIR)/
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Collecting $(INSTALLDIR) and GLIB to $(FINDIR) ..."                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ ! -d $(FINDIR) ] || \rm -rf $(FINDIR)
+	$(QUEIT)mkdir -p $(FINDIR)
+	$(QUEIT)cd $(XBASEDIR) ; find . -depth -print | cpio -pdm $(FINDIR)
+	$(QUEIT)make -C apps/glibc destination=$(FINDIR)/$(INSTSUBFN) install_glibc      2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Setting for copying $(BOOTSTRAP_LIBS) and $(BOOTSTRAP_LDRS) ... "  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                  | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)cd $(FINDIR)/$(INSTSUBFN)/lib ; \
 		for fn in $(BOOTSTRAP_LIBS); do [ ! -f $$fn ] || cp -f $$fn ../../lib/ ; done
-	@cd $(FINDIR); \
+	$(QUEIT)cd $(FINDIR); \
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
-	@cd $(FINDIR)/$(INSTSUBFN); \
+	$(QUEIT)cd $(FINDIR)/$(INSTSUBFN); \
 		[ -d $(dir $(BOOTSRTAP_LDRS)) ] || mkdir -p $(dir $(BOOTSTRAP_LDRS))
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/$(INSTSUBFN)/lib64 ..."         | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@[ -f $(FINDIR)/$(INSTSUBFN)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ] || \
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/$(INSTSUBFN)/lib64 ..."         | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ -f $(FINDIR)/$(INSTSUBFN)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ] || \
 		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/$(INSTSUBFN)/lib64
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib64 ..."                      | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@[ -f $(FINDIR)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ]              || \
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib64 ..."                      | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ -f $(FINDIR)/lib64/$(notdir $(BOOTSTRAP_LDRS)) ]              || \
 		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib64
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib ..."                        | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
-	@[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || \
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Copying $(notdir $(BOOTSTRAP_LDRS)) to $(FINDIR)/lib ..."                        | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ -f $(FINDIR)/lib/$(notdir $(BOOTSTRAP_LDRS)) ]                || \
 		cp -rf  $(INSTALLED_LDRS)  $(FINDIR)/lib
 
 ramdisk: checkfirst
-	@[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
-	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo "Compiling kernel and combining squash image ..."                                 2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) install                 2>&1 | tee -a $(BOARD_BUIDLOUT)
-	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo "Build up image ..."                                                              2>&1 | tee -a $(BOARD_BUILDOUT)
-	@echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
-	@make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install                         2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)[ -f $(BOARD_BUILDOUT) ] || touch $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Compiling kernel and combining squash image ..."                                 2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR)/kernel destination=$(FINDIR) isodir=$(ISODIR) install                 2>&1 | tee -a $(BOARD_BUIDLOUT)
+	$(QUEIT)echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo "Build up image ..."                                                              2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)echo ""                                                                                2>&1 | tee -a $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install                         2>&1 | tee -a $(BOARD_BUILDOUT)
 
 cleanup:
-	@[ ! -d $(XBASEDIR)   ] || \rm -rf $(XBASEDIR)
-	@[ ! -d $(STAGEDIR)   ] || \rm -rf $(STAGEDIR)
-	@[ ! -d $(UIXINSTDIR) ] || \rm -rf $(UIXINSTDIR)
-	@[ ! -d $(FINDIR)     ] || \rm -rf $(FINDIR)
-	@[ ! -f $(BOARD_BUILDOUT)  ] || \rm -rf $(BOARD_BUILDOUT)
-	@make -C $(BDDIR)        isodir=$(ISODIR) isoname=$(IMAGENAME) uninstall
-	@make -C $(BDDIR)/kernel uninstall
-	@cd $(BDDIR); \
+	$(QUEIT)[ ! -d $(XBASEDIR)   ] || \rm -rf $(XBASEDIR)
+	$(QUEIT)[ ! -d $(STAGEDIR)   ] || \rm -rf $(STAGEDIR)
+	$(QUEIT)[ ! -d $(UIXINSTDIR) ] || \rm -rf $(UIXINSTDIR)
+	$(QUEIT)[ ! -d $(FINDIR)     ] || \rm -rf $(FINDIR)
+	$(QUEIT)[ ! -f $(BOARD_BUILDOUT)  ] || \rm -rf $(BOARD_BUILDOUT)
+	$(QUEIT)make -C $(BDDIR)        isodir=$(ISODIR) isoname=$(IMAGENAME) uninstall
+	$(QUEIT)make -C $(BDDIR)/kernel uninstall
+	$(QUEIT)cd $(BDDIR); \
 		$(call DO_EXCL_SINGLE,\
 			[ ! -f $(BDDIR)/$(EXTDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(EXTDISKNM) )
-	@cd $(BDDIR); \
+	$(QUEIT)cd $(BDDIR); \
 		$(call DO_EXCL_SINGLE,\
 			[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM) )
 
 toolchain: ubuntu_check env_check
-	@[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Preparing sources ... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@$(call DO_EXCL_SINGLE,make -C gnu/sources -f ../Makefile download)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "BINUTILS ..."                          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@[ -d gnu/binutils/build/$(_ARCH_)/$(BINUTILS) ] || mkdir -p gnu/binutils/build/$(_ARCH_)/$(BINUTILS)
-	@cd gnu/binutils/build/$(_ARCH_)/$(BINUTILS); \
+	$(QUEIT)[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "Preparing sources ... "                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)$(call DO_EXCL_SINGLE,make -C gnu/sources -f ../Makefile download)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "BINUTILS ..."                          2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)[ -d gnu/binutils/build/$(_ARCH_)/$(BINUTILS) ] || mkdir -p gnu/binutils/build/$(_ARCH_)/$(BINUTILS)
+	$(QUEIT)cd gnu/binutils/build/$(_ARCH_)/$(BINUTILS); \
 		$(call DO_EXCL_SINGLE, \
 			make -f $(TOPDIR)/gnu/Makefile config_binutils 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
 		make -f $(TOPDIR)/gnu/Makefile setup_binutils  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "Kernel Headers ..."                    2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@[ -d $(KERNDIR)/$(KERNELVER) ] || \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "Kernel Headers ..."                    2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)[ -d $(KERNDIR)/$(KERNELVER) ] || \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) prepare 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@cd gnu; \
+	$(QUEIT)cd gnu; \
 		$(call DO_EXCL_SINGLE, \
 			make -f Makefile hdrpath=$(TOOLCHAIN_ROOT)/$(PLATFORM) setup_headers 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT))
-	@[ ! -f $(TOOLCHAIN_ROOT)/$(PLATFORM)/include/asm/.install ] || ( \
+	$(QUEIT)[ ! -f $(TOOLCHAIN_ROOT)/$(PLATFORM)/include/asm/.install ] || ( \
 		echo ""  ;                     \
 		echo "Cleaning up kernel folder ..." ; \
 		echo ""  ;                     \
 		\rm -rf $(KERNDIR)/$(KERNELVER) ; )
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Bootstrap ..."                     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@[ -d gnu/gcc/build/$(_ARCH_)/$(GCC) ] || mkdir -p gnu/gcc/build/$(_ARCH_)/$(GCC)
-	@cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "GCC Bootstrap ..."                     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)[ -d gnu/gcc/build/$(_ARCH_)/$(GCC) ] || mkdir -p gnu/gcc/build/$(_ARCH_)/$(GCC)
+	$(QUEIT)cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
 		$(call DO_EXCL_SINGLE, \
 			make -f $(TOPDIR)/gnu/Makefile config_gcc 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
 		make -f $(TOPDIR)/gnu/Makefile setup_gcc  2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Bootstrap ..."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@[ -d gnu/glibc/build/$(_ARCH_)/$(GLIBC) ] || mkdir -p gnu/glibc/build/$(_ARCH_)/$(GLIBC)
-	@cd gnu/glibc/build/$(_ARCH_)/$(GLIBC); \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "GLIBC Bootstrap ..."                   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)[ -d gnu/glibc/build/$(_ARCH_)/$(GLIBC) ] || mkdir -p gnu/glibc/build/$(_ARCH_)/$(GLIBC)
+	$(QUEIT)cd gnu/glibc/build/$(_ARCH_)/$(GLIBC); \
 		$(call DO_EXCL_SINGLE, \
 			make -f $(TOPDIR)/gnu/Makefile config_glibc 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)) && \
 		make -f $(TOPDIR)/gnu/Makefile setup_glibc      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Host Compiler ..."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "GCC Host Compiler ..."                 2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
 		make -f $(TOPDIR)/gnu/Makefile setup_gcc_2     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GLIBC Host Library ..."                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@cd gnu/glibc/build/$(_ARCH_)/$(GLIBC); \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "GLIBC Host Library ..."                2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)cd gnu/glibc/build/$(_ARCH_)/$(GLIBC); \
 		make -f $(TOPDIR)/gnu/Makefile setup_glibc_2   2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo "GCC Extra Libraries ..."               2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
-	@cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo "GCC Extra Libraries ..."               2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+	$(QUEIT)cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
 		make -f $(TOPDIR)/gnu/Makefile setup_gcc_3     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 
 #########################################################################################################################
@@ -909,14 +871,14 @@ toolchain: ubuntu_check env_check
 vm%: ubuntu_check
 	@if [ "$(subst vm,,$@)" = "run" ]; then                                \
 		make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) run ;       \
-	elif [ "$(subst vm,,$@)" = "stop" ]; then                              \
+	elif [ "$(subst vm,,$$@)" = "stop" ]; then                              \
 		make -C $(BDDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) stop ;      \
 	else                                                                   \
 		echo "Only two commands; vmrun vmstop " ;                          \
 	fi
 
 pkglist: ubuntu_check
-	@for dir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 	\
+	$(QUEIT)for dir in $(INSTALLDIR) $(EXTINSTDIR) $(UIXINSTDIR) ; do 	\
 		for subdir in $(LIBSSUBDIR) ; do 			            \
 	    		[ ! -d $$dir$$subdir/pkgconfig ] || 		    \
 				find $$dir$$subdir -name "*.pc" ; 	            \
@@ -924,7 +886,7 @@ pkglist: ubuntu_check
 		done
 
 folders:
-	@echo $(SUBDIR)
+	$(QUEIT)echo $(SUBDIR)
 
 
 change: 
