@@ -22,6 +22,8 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
+WGETCMD='wget --no-check-certificate'
+
 ##
 ## USB hotplug...
 ##
@@ -36,7 +38,7 @@ USE_EMBEDDED_INITRD=`cat $(BUILDDIR)/$(KERNELVER)/.config | grep CONFIG_EMBEDDED
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
-	@[ -f source/$(FILENM) ] || wget -P source $(LOC)/$(FILENM);
+	@[ -f source/$(FILENM) ] || $(WGETCMD) -P source $(LOC)/$(FILENM);
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || ( \
 		tar zxvf source/$(FILENM) -C $(BUILDDIR) ;                       \
 		cp patch/$(KERNELVER).patch   $(BUILDDIR)/$(KERNELVER)/;         \
@@ -70,7 +72,7 @@ dnfw:
 		[ ! -d $(HOTPLUGFWTMPDIR) ] || \rm -rf $(HOTPLUGFWTMPDIR);   \
 		mkdir -p $(HOTPLUGFWTMPDIR) ;                                \
 		mkdir -p $(HOTPLUGFWTMPDIR)/INSTALL ;                        \
-		wget  -P $(HOTPLUGFWTMPDIR) $(HOTPLUGFWURL);                 \
+		$(WGETCMD) -P $(HOTPLUGFWTMPDIR) $(HOTPLUGFWURL);            \
 		tar zxvf $(HOTPLUGFWTMPDIR)/$(HOTPLUGFWFILE).tar.gz -C $(HOTPLUGFWTMPDIR)/INSTALL ;    \
 		cp -rf $(HOTPLUGFWTMPDIR)/INSTALL/$(HOTPLUGFWFILE)/etc/*  $(XBASEDIR)/etc ;            \
 		cp -rf $(HOTPLUGFWTMPDIR)/INSTALL/$(HOTPLUGFWFILE)/sbin/* $(XBASEDIR)/sbin ;           \

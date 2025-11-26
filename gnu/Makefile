@@ -1,9 +1,9 @@
 RP=../../..
 
 download:
-	@[ -f $(BINUTILS).tar.bz2 ] || wget https://ftp.gnu.org/pub/gnu/binutils/$(BINUTILS).tar.bz2
-	@[ -f $(GCC).tar.gz       ] || wget https://ftp.gnu.org/pub/gnu/gcc/$(GCC)/$(GCC).tar.gz
-	@[ -f $(GLIBC).tar.gz     ] || wget https://ftp.gnu.org/pub/gnu/glibc/$(GLIBC).tar.gz
+	@[ -f $(BINUTILS).tar.bz2 ] || wget --no-check-certificate https://ftp.gnu.org/pub/gnu/binutils/$(BINUTILS).tar.bz2
+	@[ -f $(GCC).tar.gz       ] || wget --no-check-certificate https://ftp.gnu.org/pub/gnu/gcc/$(GCC)/$(GCC).tar.gz
+	@[ -f $(GLIBC).tar.gz     ] || wget --no-check-certificate https://ftp.gnu.org/pub/gnu/glibc/$(GLIBC).tar.gz
 
 config_binutils:
 	@[ -d $(RP)/$(BINUTILS) ] || tar jxvf $(RP)/../sources/$(BINUTILS).tar.bz2 -C $(RP)

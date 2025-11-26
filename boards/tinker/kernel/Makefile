@@ -15,6 +15,8 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
+WGETCMD='wget --no-check-certificate'
+
 EXTMDIRS=rtl8192eu
 
 ##
@@ -50,7 +52,7 @@ CRDAFWTMPDIR=\
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || ( \
-		[ -f source/$(FILENM) ] || ( cd source; wget $(LOC) ) )
+		[ -f source/$(FILENM) ] || ( cd source; $(WGETCMD) $(LOC) ) )
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		tar xvf source/$(FILENM) -C $(BUILDDIR) ;                  \
 		cd $(BUILDDIR)/$(KERNELVER);                               \

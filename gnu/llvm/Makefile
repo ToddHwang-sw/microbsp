@@ -61,7 +61,7 @@ notice:
 prepare: 
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/host/build   ] || mkdir -p $(BUILDDIR)/host/build
-	@[ -f $(SRCDIR)/$(DIR).zip  ] || wget -P $(SRCDIR) $(LOC)/$(DIR).zip
+	@[ -f $(SRCDIR)/$(DIR).zip  ] || wget --no-check-certificate -P $(SRCDIR) $(LOC)/$(DIR).zip
 	@[ -d $(BUILDDIR)/$(LLVMDN) ] || ( \
 		$(UNCOMPRESS) $(SRCDIR)/$(DIR).zip $(BUILDDIR) ;                 \
 		[ ! -f patch/patch ] ||     (                                    \

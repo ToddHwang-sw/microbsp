@@ -18,6 +18,8 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
+WGETCMD='wget --no-check-certificate'
+
 ## Check EMBEDDED_INITRD is used now ???
 RPI_KVER=$(shell cat $(BUILDDIR)/$(KERNELVER)/include/config/kernel.release)
 
@@ -89,7 +91,7 @@ CRDATMPTMP=\
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || ( \
-		[ -f source/$(FILENM) ] || ( cd source; wget $(LOC) ) )
+		[ -f source/$(FILENM) ] || ( cd source; $(WGETCMD) $(LOC) ) )
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		unzip source/$(FILENM) -d $(BUILDDIR) ;                    \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
@@ -156,7 +158,7 @@ dnfw:
 				echo "" ;                                \
 				mkdir -p $(BRCMFWTMPDIR);                \
 				cd $(BRCMFWTMPDIR);                      \
-				wget $(BRCMFWLOC);                       \
+				$(WGETCMD) $(BRCMFWLOC);                 \
 				ar x $(BRCMFWFN) ;                       \
 				tar xvf data.tar.xz ;                    \
 				cd $(BDDIR)/kernel                       \

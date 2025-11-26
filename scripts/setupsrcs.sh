@@ -14,6 +14,9 @@ else
 	DSTFILE=${1%/*}
 fi
 
+# wget command
+WGETCMD='wget --no-check-certificate'
+
 FINAL_DATE=`cat $TOPDIR/date.inc`
 
 GIT_IGNORE=$TOPDIR/scripts/gitignore.template
@@ -34,19 +37,19 @@ do_git_setup() {
 FILENM=${SRCFILE/${SRCFILE%/*}}
 
 if [[ ${SRCFILE} == *.tar.gz ]]; then 
-	[ -f source$FILENM ] || wget -P $DSTFILE $SRCFILE
+	[ -f source$FILENM ] || $WGETCMD -P $DSTFILE $SRCFILE
 	tar zxvf source$FILENM  -C $DSTFILE > /dev/null
 	do_git_setup ${FILENM/.tar.gz/} 
 elif [[ ${SRCFILE} == *.tar.bz2 ]]; then
-	[ -f source$FILENM ] || wget -P $DSTFILE $SRCFILE
+	[ -f source$FILENM ] || $WGETCMD -P $DSTFILE $SRCFILE
 	tar jxvf source$FILENM  -C $DSTFILE > /dev/null
 	do_git_setup ${FILENM/.tar.bz2/} 
 elif [[ ${SRCFILE} == *.tar.xz ]]; then
-	[ -f source$FILENM ] || wget -P $DSTFILE $SRCFILE
+	[ -f source$FILENM ] || $WGETCMD -P $DSTFILE $SRCFILE
 	tar xvf source$FILENM  -C $DSTFILE > /dev/null
 	do_git_setup ${FILENM/.tar.xz/} 
 elif [[ ${SRCFILE} == *.zip ]]; then
-	[ -f source$FILENM ] || wget -P $DSTFILE $SRCFILE
+	[ -f source$FILENM ] || $WGETCMD -P $DSTFILE $SRCFILE
 	unzip source$FILENM  -d $DSTFILE 
 	do_git_setup ${FILENM/.zip/} 
 elif [[ ${SRCFILE} == *.git ]]; then
@@ -61,7 +64,7 @@ elif [[ ${SRCFILE} == *.git ]]; then
 	[ "${BRANCH_NAME}" == "" ] || \
 			git checkout -q `git rev-list -n 1 --until=\"${FINAL_DATE}\" ${BRANCH_NAME}`
 elif [[ ${SRCFILE} == *.deb ]]; then 
-	[ -f source$FILENM ] || wget -P $DSTFILE $SRCFILE
+	[ -f source$FILENM ] || $WGETCMD -P $DSTFILE $SRCFILE
 	ar x --output $DSTFILE source$FILENM > /dev/null
 	do_git_setup ${FILENM/.deb/}
 else
