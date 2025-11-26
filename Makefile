@@ -335,7 +335,7 @@ compiler_check:
 		echo "" ;                                                                      \
 		exit 1 )
 
-checkfirst: compiler_check ubuntu_check python_check env_check
+checkfirst: compiler_check ubuntu_check env_check
 	$(QUEIT)if [ ! -d $(INSTALLDIR) ]; then \
 		mkdir -p $(INSTALLDIR);                                     \
 		mkdir -p $(INSTALLDIR)/etc;                                 \
