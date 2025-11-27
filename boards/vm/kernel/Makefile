@@ -22,7 +22,7 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
-WGETCMD='wget --no-check-certificate'
+WGETCMD=wget --no-check-certificate
 
 ##
 ## USB hotplug...

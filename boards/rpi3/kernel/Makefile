@@ -18,7 +18,7 @@ endif
 ROOTFSIMAGE=$(ROOTFSIMAGEFN)
 ROOTFSIMAGEBLKS=500
 
-WGETCMD='wget --no-check-certificate'
+WGETCMD=wget --no-check-certificate
 
 ## Check EMBEDDED_INITRD is used now ???
 RPI_KVER=$(shell cat $(BUILDDIR)/$(KERNELVER)/include/config/kernel.release)
