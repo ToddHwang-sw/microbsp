@@ -134,5 +134,7 @@ Simply just by now, the following things are tested and released.
 
     ```
 
+Currently, Linux 6.6.22 for X86 64 Qemu mode does not accept "default" direct IO mode. User should has to use "cat -n " instead of "cat", i.e, "cat -n hello?wait &". 
+
 
       
