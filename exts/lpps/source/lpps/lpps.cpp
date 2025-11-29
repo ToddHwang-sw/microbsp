@@ -1496,9 +1496,14 @@ static void *lpps_init(struct fuse_conn_info *conn, struct fuse_config *cfg)
 	//
 	// Not sure the following conn-> fields are needed to be initialized like this...
 	//
-	conn->capable |= FUSE_CAP_EXPORT_SUPPORT; // lookup support 
-	conn->capable |= FUSE_CAP_ASYNC_READ;     // Asynchronous read
-	conn->capable |= FUSE_CAP_ASYNC_DIO;      // Asynchronous direct I/O
+	conn->want |= FUSE_CAP_EXPORT_SUPPORT;
+	conn->want |= FUSE_CAP_ASYNC_DIO;
+	conn->want &= ~FUSE_CAP_ASYNC_READ;
+	conn->want &= ~FUSE_CAP_WRITEBACK_CACHE;
+	conn->want &= ~FUSE_CAP_SPLICE_READ;
+	conn->want &= ~FUSE_CAP_SPLICE_WRITE;
+	conn->want &= ~FUSE_CAP_CACHE_SYMLINKS;
+	conn->want &= ~FUSE_CAP_PARALLEL_DIROPS;
 	conn->time_gran = 1000000000;  		  // Nanoseconds
 	conn->max_background = options.background;// Max background threads
 
@@ -2364,6 +2369,10 @@ static int lpps_open(const char *apath, struct fuse_file_info *fi)
 
 	if (bit_includes(option,OPTION_DEBUG))
 		bit_adds(p->flags,OPTION_DEBUG);
+
+	//
+	// DIRECT IO
+	fi->direct_io = 1;
 
 	//
 	// private data structure 
