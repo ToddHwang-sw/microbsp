@@ -1,4 +1,4 @@
-#include <fuse.h>
+#nclude <fuse.h>
 #include <fuse_opt.h>
 #include <fuse_i.h>
 #include <fuse_lowlevel.h>
@@ -2371,8 +2371,12 @@ static int lpps_open(const char *apath, struct fuse_file_info *fi)
 		bit_adds(p->flags,OPTION_DEBUG);
 
 	//
-	// DIRECT IO
-	fi->direct_io = 1;
+	// DIRECT IO - fix up bug with kernel 6.6.x
+	//
+	fi->direct_io     = 1;
+	fi->keep_cache    = 0;
+	fi->cache_readdir = 0;
+	fi->nonseekable   = 1;
 
 	//
 	// private data structure 
