@@ -1,4 +1,4 @@
-#nclude <fuse.h>
+#include <fuse.h>
 #include <fuse_opt.h>
 #include <fuse_i.h>
 #include <fuse_lowlevel.h>
