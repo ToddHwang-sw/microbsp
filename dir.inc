@@ -89,6 +89,7 @@ _EXTDIR_=\
 	json                       \
 	jq                         \
 	texinfo                    \
+	postgresql                 \
 	help2man                   \
 	mtdev                      \
 	ethtool                    \

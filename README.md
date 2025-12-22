@@ -4511,6 +4511,11 @@ Installing collected packages: pip
 Successfully installed pip-22.3
 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 bash-5.1# 
+bash-5.1# 
+bash-5.1# pip install --upgrade setuptools pip twine build
+..
+..
+
 ```
 
 
