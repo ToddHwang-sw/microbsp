@@ -1,23 +1,12 @@
-diff --git a/pygobject-3.0.pc.in b/pygobject-3.0.pc.in
-index ca494231..07cfd659 100644
---- a/pygobject-3.0.pc.in
-+++ b/pygobject-3.0.pc.in
-@@ -4,17 +4,12 @@ includedir=@includedir@
- datarootdir=@datarootdir@
- datadir=@datadir@
+diff -uNr pygobject-origin/meson.build pygobject/meson.build
+--- pygobject-origin/meson.build	2025-12-27 08:23:28.019675003 -0800
++++ pygobject/meson.build	2025-12-27 08:24:02.882740589 -0800
+@@ -21,7 +21,7 @@
  
--# you can use the --variable=pygobjectincludedir argument to
--# pkg-config to get this value. You might want to use this to
--# install additional headers.
--pygobjectincludedir=${includedir}/pygobject-3.0
--
- Name: PyGObject
- Description: Python bindings for GObject
- Requires: gobject-2.0
- Requires.private: libffi
- Version: @VERSION@
--Cflags: -I${pygobjectincludedir}
-+Cflags: -I${includedir}/pygobject-3.0
+ python_dep = python.dependency()
  
- # overridesdir has now moved to the gi module
- # third parties can access it in a python script:
+-glib_version_req = '>= 2.64.0'
++glib_version_req = '>= 1.00.0'
+ gi_version_req = '>= 1.64.0'
+ pycairo_version_req = '>= 1.16.0'
+ libffi_version_req = '>= 3.0'
