@@ -1,5 +1,5 @@
 DIR=gobject-introspection
-LOC=-b 1.66.0 https://gitlab.gnome.org/GNOME
+LOC=-b 1.75.4 https://gitlab.gnome.org/GNOME
 
 include $(TOPDIR)/scripts/extenv.mk
 

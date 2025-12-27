@@ -17,7 +17,7 @@ MICB_CONFIGURE_OPTS +=\
 
 MICB_CONFIGURE_PRG = ./configure 
 
-MICB_DEPENDS = readline zlib pam openssl python-3.12 libxml-2.0 libffi
+MICB_DEPENDS = readline zlib pam openssl python-$(PYTHON_SYSVER) libxml-2.0 libffi
 
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)

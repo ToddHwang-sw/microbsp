@@ -259,19 +259,14 @@ CONSOLECMD=`cat $(BDDIR)/rootfs/etc/inittab | head -n 1`
 ## made feom WSL2 compilation 
 installcomps:
 	$(QUEIT)echo ""
+	$(QUEIT)echo ""
 	$(QUEIT)echo "Installing required SW sets..."
-	$(QUEIT)echo ""
-	$(QUEIT)echo ""
-	$(QUEIT)echo "These menu was tested and validated in Ubuntu LTS 20.04,"
-	$(QUEIT)echo "but not yet perfectly probed for LTS 22.04"
-	$(QUEIT)echo "User may get errors in ..."
-	$(QUEIT)echo "  uix/systemd, "
-	$(QUEIT)echo "  uix/mesa,    "
+	$(QUEIT)echo "Tested/verfied in Ubuntu 20.04/22.04/24.04."
 	$(QUEIT)echo ""
 	$(QUEIT)echo ""
 	$(QUEIT)sudo apt --fix-broken install 
 	$(QUEIT)sudo apt update 
-	$(QUEIT)sudo apt install -y \
+	$(QUEIT)sudo apt install -y --no-install-recommends \
 		build-essential     cmake                 automake        autoconf          \
 		m4                  autopoint             unzip           p7zip-full        \
 		autoconf-archive    autogen               texlive         flex              \
@@ -286,11 +281,10 @@ installcomps:
 	  	ragel               gengetopt             python3-venv    python3-jinja2    \
 		gtk-doc-tools       uml-utilities         bridge-utils    genisoimage       \
 		python3-xcbgen      python2               xorriso         mtools            \
-		device-tree-compiler swig                 triehash
-	$(QUEIT)sudo apt --no-install-recommends install \
+		device-tree-compiler swig                 triehash                          \
 		xsltproc 			xmlto 			      fop
-	$(QUEIT)pip install pkgconfig mako Jinja2
-	$(QUEIT)pip install package_name setuptools --user
+	$(QUEIT)pip install --break-system-packages --user                              \
+		pkgconfig mako Jinja2 package_name setuptools
 
 ##
 ## Environment check

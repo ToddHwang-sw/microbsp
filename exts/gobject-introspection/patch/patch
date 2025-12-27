@@ -1,58 +1,25 @@
-diff --git a/giscanner/meson.build b/giscanner/meson.build
-index a3b06f37..4f403487 100644
---- a/giscanner/meson.build
-+++ b/giscanner/meson.build
-@@ -49,15 +49,16 @@ install_subdir('doctemplates', install_dir: giscannerdir)
+Binary files gobject-introspection-orig/.git/index and gobject-introspection/.git/index differ
+diff -uNr gobject-introspection-orig/.git/logs/HEAD gobject-introspection/.git/logs/HEAD
+--- gobject-introspection-orig/.git/logs/HEAD	2025-12-26 15:50:04.006628802 -0800
++++ gobject-introspection/.git/logs/HEAD	2025-12-26 15:50:22.040658291 -0800
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 26998a2dfa169c4e02f0d2f0370c9026bb5cce11 Todd Hwang <sejin89x@gmail.com> 1766793004 -0800	clone: from https://gitlab.gnome.org/GNOME/gobject-introspection.git
++0000000000000000000000000000000000000000 26998a2dfa169c4e02f0d2f0370c9026bb5cce11 Todd Hwang <sejin89x@gmail.com> 1766793022 -0800	clone: from https://gitlab.gnome.org/GNOME/gobject-introspection.git
+diff -uNr gobject-introspection-orig/.git/logs/refs/remotes/origin/HEAD gobject-introspection/.git/logs/refs/remotes/origin/HEAD
+--- gobject-introspection-orig/.git/logs/refs/remotes/origin/HEAD	2025-12-26 15:50:04.006628802 -0800
++++ gobject-introspection/.git/logs/refs/remotes/origin/HEAD	2025-12-26 15:50:22.040658291 -0800
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 43ae0b53c23b39b0a700b66a9640c1180b10de00 Todd Hwang <sejin89x@gmail.com> 1766793004 -0800	clone: from https://gitlab.gnome.org/GNOME/gobject-introspection.git
++0000000000000000000000000000000000000000 43ae0b53c23b39b0a700b66a9640c1180b10de00 Todd Hwang <sejin89x@gmail.com> 1766793022 -0800	clone: from https://gitlab.gnome.org/GNOME/gobject-introspection.git
+diff -uNr gobject-introspection-orig/meson.build gobject-introspection/meson.build
+--- gobject-introspection-orig/meson.build	2025-12-26 15:50:04.095628940 -0800
++++ gobject-introspection/meson.build	2025-12-26 15:50:53.763717915 -0800
+@@ -125,7 +125,7 @@
  
- # XXX: this doesn't track the input, but there is nothing to copy many files
- # in meson.
--doc_templates = custom_target('copy-templates',
--  input : 'doctemplates',
--  output : 'doctemplates',
--  command : [
--    python, '-c',
--      'import sys, shutil;' +
--      'shutil.rmtree(sys.argv[2], ignore_errors=True);' +
--      'shutil.copytree(sys.argv[1], sys.argv[2])',
--    '@INPUT@', '@OUTPUT@'])
-+# doc_templates = custom_target('copy-templates',
-+#  input : 'doctemplates',
-+#  output : 'doctemplates',
-+#  command : [
-+#    python, '-c',
-+#      'import sys, shutil;' +
-+#      'shutil.rmtree(sys.argv[2], ignore_errors=True);' +
-+#      'shutil.copytree(sys.argv[1], sys.argv[2])',
-+#    '@INPUT@', '@OUTPUT@'])
-+doc_templates = []
+ # Reset to 0 if g-i micro version exceeds GLib's
+ glib_micro_version = 0  # gi_version[2]
+-glib_version = '>=2.@0@.@1@'.format(gi_versions[1], glib_micro_version)
++glib_version = '>=0.0.0.1'
  
- flex = find_program('flex', 'win_flex')
- bison = find_program('bison', 'win_bison')
-diff --git a/meson.build b/meson.build
-index 9a1589ba..f3903a1f 100644
---- a/meson.build
-+++ b/meson.build
-@@ -283,13 +283,13 @@ pkg.generate(
- # FIXME: meson.override_dependency() and declare_dependency()'s variable arguments
- # are new in Meson 0.54.0, older versions of Meson won't be able to use g-i as
- # subproject anyway
--if meson.version().version_compare('>=0.54.0')
--  girepo_dep = declare_dependency(
--    sources: typelibs,
--    dependencies: girepo_dep,
--    variables: {
--      'girdir': meson.current_build_dir() / 'gir',
--    },
--  )
--  meson.override_dependency('gobject-introspection-1.0', girepo_dep)
--endif
-+##if meson.version().version_compare('>=0.54.0')
-+##  girepo_dep = declare_dependency(
-+##    sources: typelibs,
-+##    dependencies: girepo_dep,
-+##    variables: {
-+##      'girdir': meson.current_build_dir() / 'gir',
-+##    },
-+##  )
-+##  meson.override_dependency('gobject-introspection-1.0', girepo_dep)
-+##endif
+ glib_dep = dependency('glib-2.0', version: glib_version)
+ gobject_dep = dependency('gobject-2.0', version: glib_version)
