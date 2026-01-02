@@ -4,6 +4,8 @@ include $(TOPDIR)/scripts/env.mk
 
 CROSS_USER_CFLAGS += 
 
+MICB_CONFIGURE_PRG=./configure
+
 prepare:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@$(MICB_CONFIGURE_AUTOCONF)

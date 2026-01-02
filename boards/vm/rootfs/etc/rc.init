@@ -249,7 +249,9 @@ echo "WEBUI "
 echo ""
 WEBUIEN=`$ASK http/en`
 if [ "$WEBUIEN" = "1" ]; then 
-	[ ! -f /etc/httpd/etc/run.sh ] || /etc/httpd/etc/run.sh 
+	[ ! -f /usr/etc/httpd/etc/run.sh ] || ( \
+		/usr/etc/httpd/etc/run.sh  &&
+		echo "  --> Port is 8080." )
 fi
 
 echo ""

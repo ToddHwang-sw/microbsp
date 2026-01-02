@@ -16,10 +16,10 @@ echo 2097152 > /proc/sys/net/core/rmem_default
 echo 2097152 > /proc/sys/net/core/rmem_max
 
 ## For HTTPS 
-[ -f /etc/httpd/etc/cert.pem ] || ( \
-    cd /etc/httpd/etc ; \
+[ -f /usr/etc/httpd/etc/cert.pem ] || ( \
+    cd /usr/etc/httpd/etc ; \
     ./genkey.sh ./ ; \
     cat ./key.pem >> ./cert.pem )
 
 ## HTTP server 
-lighttpd -f /etc/httpd/etc/lighttpd.conf 
+lighttpd -f /usr/etc/httpd/etc/lighttpd.conf
