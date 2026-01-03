@@ -1,16 +1,24 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title></title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Configuration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <script language="javascript" type="text/javascript" src="js/myscript.js"></script>
 <script language="javascript">
 
-function WriteDone( jsontext )
-{ /* nothing... */ }
+function idleWait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-function ApplyLan()
+function WriteDone( jsontext ) { /* nothing... */ }
+
+async function ApplyNetwork()
 {
+	document.getElementById("loadingOverlay").classList.remove("hidden");
+
 	// ip
 	var ipaddr = document.getElementById("lan_ipaddr").value;
 
@@ -26,105 +34,24 @@ function ApplyLan()
 	var cmd;
 
 	/* ip address Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ip";
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan0/ip";
 	XHRPost(WriteDone,  cmd, ipaddr, true);
 
 	/* netmask Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/netmask";
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan0/netmask";
 	XHRPost(WriteDone,  cmd, netmask, true);
 
 	/* gateway Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/gateway";
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan0/gateway";
 	XHRPost(WriteDone,  cmd, gateway, true);
 
 	/* dns Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/dns";
+	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan0/dns";
 	XHRPost(WriteDone,  cmd, dns, true);
-}
 
-function ApplyIPv6Lan()
-{
-	// prefix 
-	var prefix = document.getElementById("lan_ipv6prefix").value;
+	await idleWait(1000*4);
 
-	// prefix length 
-	var plen = document.getElementById("lan_ipv6plen").value;
-
-	// id
-	var id = document.getElementById("lan_ipv6id").value;
-
-	var cmd;
-
-	/* ip address Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ipv6/global";
-	XHRPost(WriteDone,  cmd, prefix, true);
-
-	/* netmask Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ipv6/plen";
-	XHRPost(WriteDone,  cmd, plen, true);
-
-	/* gateway Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=lan/ipv6/id";
-	XHRPost(WriteDone,  cmd, id, true);
-}
-
-function ApplyNet1()
-{
-	// ip
-	var ipaddr = document.getElementById("net1_ipaddr").value;
-
-	// netmask 
-	var netmask = document.getElementById("net1_netmask").value;
-
-	// gateway 
-	var gateway = document.getElementById("net1_gateway").value;
-
-	// dns
-	var dns = document.getElementById("net1_dns").value;
-
-	var cmd;
-
-	/* ip address Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/ip";
-	XHRPost(WriteDone,  cmd, ipaddr, true);
-
-	/* netmask Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/netmask";
-	XHRPost(WriteDone,  cmd, netmask, true);
-
-	/* gateway Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/gateway";
-	XHRPost(WriteDone,  cmd, gateway, true);
-
-	/* dns Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/dns";
-	XHRPost(WriteDone,  cmd, dns, true);
-}
-
-function ApplyIPv6Net1()
-{
-	// prefix 
-	var prefix = document.getElementById("net1_ipv6prefix").value;
-
-	// prefix length 
-	var plen = document.getElementById("net1_ipv6plen").value;
-
-	// id
-	var id = document.getElementById("net1_ipv6id").value;
-
-	var cmd;
-
-	/* ip address Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/ipv6/global";
-	XHRPost(WriteDone,  cmd, prefix, true);
-
-	/* netmask Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/ipv6/plen";
-	XHRPost(WriteDone,  cmd, plen, true);
-
-	/* gateway Writing...*/
-	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=net1/ipv6/id";
-	XHRPost(WriteDone,  cmd, id, true);
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 function RetrieveLan( JsonText )
@@ -144,251 +71,83 @@ function RetrieveLan( JsonText )
 	document.getElementById("lan_netmask").value = obj.netmask;
 	document.getElementById("lan_gateway").value = obj.gateway;
 	document.getElementById("lan_dns").value = obj.dns;
-
-	/* check Pv6 */
-	if (obj.ipv6) {
-		var ipv6 = obj.ipv6;
-
-		document.getElementById("lan_ipv6prefix").value = ipv6.global;
-		document.getElementById("lan_ipv6plen").value = ipv6.plen;
-		document.getElementById("lan_ipv6id").value = ipv6.id;
-	} else {
-		document.getElementById("lan_ipv6prefix").disabled = true;
-		document.getElementById("lan_ipv6plen").disabled = true;
-		document.getElementById("lan_ipv6id").disabled = true;
-
-		document.getElementById("LanIPv6Apply").disabled = true;
-	} 
 }
 
-function RetrieveNet1( JsonText )
+async function OnLoadNetwork()
 {
-	var errstr = "error";
-	var res = JsonText.substr(0,errstr.length); /* for error check */
+	XHRGet( RetrieveLan, "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=lan0", true ); 
 
-	/* Net1 attribute is optional */
-	if (res == errstr) {
-		/* mode selection ... */
-		document.getElementById("net1_dhcp").disabled = true;
-		document.getElementById("net1_static").disabled = true;
-		document.getElementById("net1_none").disabled = true;
+	await idleWait(2000);
 
-		/* disabling... input box */
-		document.getElementById("net1_ipaddr").disabled = true;
-		document.getElementById("net1_netmask").disabled = true;
-		document.getElementById("net1_gateway").disabled = true;
-		document.getElementById("net1_dns").disabled = true;
-
-		document.getElementById("net1_ipv6prefix").disabled = true;
-		document.getElementById("net1_ipv6plen").disabled = true;
-		document.getElementById("net1_ipv6id").disabled = true;
-
-		/* disabling... button */
-		document.getElementById("Net1Apply").disabled = true;
-		document.getElementById("Net1IPv6Apply").disabled = true;
-	} else {
-		var obj = JSON.parse( JsonText );
-
-		if (obj.mode == "static") {
-			document.getElementById("net1_static").checked = true;
-		} else 
-		if (obj.mode == "dhcp") {
-			document.getElementById("net1_dhcp").checked = true;
-		} else {
-			document.getElementById("net1_none").checked = true;
-		}
-
-		document.getElementById("net1_ipaddr").value = obj.ip;
-		document.getElementById("net1_netmask").value = obj.netmask;
-		document.getElementById("net1_gateway").value = obj.gateway;
-		document.getElementById("net1_dns").value = obj.dns;
-	
-		/* check Pv6 */
-		if (obj.ipv6) {
-			var ipv6 = obj.ipv6;
-
-			document.getElementById("net1_ipv6prefix").value = ipv6.global;
-			document.getElementById("net1_ipv6plen").value = ipv6.plen;
-			document.getElementById("net1_ipv6id").value = ipv6.id;
-		} else {
-			document.getElementById("net1_ipv6prefix").disabled = true;
-			document.getElementById("net1_ipv6plen").disabled = true;
-			document.getElementById("net1_ipv6id").disabled = true;
-
-			document.getElementById("Net1IPv6Apply").disabled = true;
-		}	 
-	}
-}
-
-function OnLoadNetwork()
-{
-	XHRGet( RetrieveLan,   "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=lan", true );
-	XHRGet( RetrieveNet1,  "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=net1", true );
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 </script>
-<link rel="stylesheet" type="text/css" href="css/design.css">
-<body onload="OnLoadNetwork()">
-	<table class="table_title">
-    		<tr><td>Network Settings</tr></td>
-	</table>
-	<br/>
-	<br/>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center" onload="OnLoadNetwork()">
+  <div class="w-full max-w-2xl">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h1 class="text-2xl font-semibold mb-6">Network Configuration</h1>
 
-	<!-- LAN table  -->
-	<table class="table_content">
-	<form>
-    		<tr><td>L A N</tr></td>
-		<col width=200>
-		<col width=550>
-		<tr>
-			<td class="table_dark" colspan="3">IPv4</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">MODE</td>
-			<td class="table_white" colspan="3">
-				<input type="radio" name="lan_mode" id="lan_dhcp" value="DHCP">DHCP&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="lan_mode" id="lan_static" value="STATIC">STATIC&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="lan_mode" id="lan_none" value="DISABLE">DISABLE&nbsp;&nbsp;&nbsp;
-			</td>
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">IP</td>
-			<td class="table_white">
-				<input type="text" id="lan_ipaddr">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Netmask</td>
-			<td class="table_white">
-				<input type="text" id="lan_netmask">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Gateway</td>
-			<td class="table_white">
-				<input type="text" id="lan_gateway">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">DNS</td>
-			<td class="table_white">
-				<input type="text" id="lan_dns">
-			</td>
-		</tr>
-		<tr>	
-			<td class="table_white" colspan="2" align="right">
-				<input type="button" class="pbutton" id="LanApply" value="Apply" onclick="ApplyLan()">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_dark" colspan="3">IPv6</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Prefix</td>
-			<td class="table_white">
-				<input type="text" id="lan_ipv6prefix">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Prefix Length</td>
-			<td class="table_white">
-				<input type="text" id="lan_ipv6plen">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Host ID</td>
-			<td class="table_white">
-				<input type="text" id="lan_ipv6id">
-			</td>
-		</tr>
-		<tr>	
-			<td class="table_white" colspan="2" align="right">
-				<input type="button" class="pbutton" id="LanIPv6Apply" value="Apply" onclick="ApplyIPv6Lan()">
-			</td>
-		</tr>
-	</form>
-	</table>
-	<br/>
-	<br/>
+     <!-- Loading Overlay -->
+     <div id="loadingOverlay"
+        	class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+     	<div class="bg-white rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl"> 
+     		<div class="w-12 h-12 border-4 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>
+        		<p class="text-slate-700 text-sm"> Please wait ...  </p>
+     	</div>
+   	  </div>
 
-	<!-- Net1 table  -->
-	<table class="table_content">
-	<form id="net1_table">
-    		<tr><td>N E T 1</tr></td>
-		<col width=200>
-		<col width=550>
-		<tr>
-			<td class="table_dark" colspan="3">IPv4</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">MODE</td>
-			<td class="table_white" colspan="3">
-				<input type="radio" name="net1_mode" id="net1_dhcp" value="DHCP">DHCP&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="net1_mode" id="net1_static" value="STATIC">STATIC&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="net1_mode" id="net1_none" value="DISABLE">DISABLE&nbsp;&nbsp;&nbsp;
-			</td>
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">IP</td>
-			<td class="table_white">
-				<input type="text" id="net1_ipaddr">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Netmask</td>
-			<td class="table_white">
-				<input type="text" id="net1_netmask">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Gateway</td>
-			<td class="table_white">
-				<input type="text" id="net1_gateway">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">DNS</td>
-			<td class="table_white">
-				<input type="text" id="net1_dns">
-			</td>
-		</tr>
-		<tr>	
-			<td class="table_white" colspan="2" align="right">
-				<input type="button" class="pbutton" id="Net1Apply" value="Apply" onclick="ApplyNet1()">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_dark" colspan="3">IPv6</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Prefix</td>
-			<td class="table_white">
-				<input type="text" id="net1_ipv6prefix">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Prefix Length</td>
-			<td class="table_white">
-				<input type="text" id="net1_ipv6plen">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Host ID</td>
-			<td class="table_white">
-				<input type="text" id="net1_ipv6id">
-			</td>
-		</tr>
-		<tr>	
-			<td class="table_white" colspan="2" align="right">
-				<input type="button" class="pbutton" id="Net1IPv6Apply" value="Apply" onclick="ApplyIPv6Net1()">
-			</td>
-		</tr>
-	</form>
-	</table>
-	<br/>
-	<br/>
+      <!-- Network Mode -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-slate-700 mb-2">Network Mode</label>
+        <div class="flex gap-4">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="mode" id="lan_dhcp" value="dhcp" class="accent-blue-600" />
+            <span>DHCP</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="mode" id="lan_static" value="static" class="accent-blue-600" />
+            <span>Static</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="mode" id="lan_none" value="none" class="accent-blue-600" />
+            <span>None</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- IP Settings -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700">IP Address</label>
+          <input type="text" id="lan_ipaddr"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Netmask</label>
+          <input type="text" id="lan_netmask"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Gateway</label>
+          <input type="text" id="lan_gateway"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">DNS Server</label>
+          <input type="text" id="lan_dns"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-3 mt-8">
+        <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300">Cancel</button>
+        <button class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700" onclick="ApplyNetwork()">Apply</button>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>
+

@@ -1,20 +1,28 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title></title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Configuration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <script language="javascript" type="text/javascript" src="js/myscript.js"></script>
 <script language="javascript">
 
-function WriteDone( jsontext )
-{ /* nothing... */ }
+function idleWait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-function ApplyUser()
+function WriteDone( jsontext ) { /* nothing... */ }
+
+async function ApplyUser()
 {
-	var index = [ "u0", "u1", "u2", "u3", "u4", "u5", "u6", "u7" ];
+	var index = [ "u0", "u1", "u2", "u3", "u4" ];
 	var ix;
 
-	for (ix = 0; ix < 8; ix++) {
+	document.getElementById("loadingOverlay").classList.remove("hidden");
+
+	for (ix = 0; ix < 5; ix++) {
 		var xname = index[ ix ] + "_uname";
 		var xpasswd = index[ ix ] + "_password";
 		var xbutton;
@@ -23,208 +31,207 @@ function ApplyUser()
 		if (document.getElementById( xbutton ).disabled) 
 			continue;
 
-		cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/valid";
+		cmd = "/usr/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/valid";
 		if (document.getElementById( xbutton ).checked)
 			XHRPost(WriteDone,  cmd, "1", true);
 		else
 			XHRPost(WriteDone,  cmd, "0", true);
 		
-		cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/name";
-		var uname = document.getElementById( xname ).value;
-		XHRPost(WriteDone,  cmd,  uname,  true);
+		cmd = "/usr/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/name";
+		XHRPost(WriteDone,  cmd,  document.getElementById( xname ).value, true);
 
-		cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/passwd";
-		var upasswd = document.getElementById( xname ).value;
-		XHRPost(WriteDone,  cmd,  upasswd ,  true);
+		cmd = "/usr/sbin/server.fcgi?Command=PUTSERVICE&Path=user/" + index[ ix ] + "/passwd";
+		XHRPost(WriteDone,  cmd,  document.getElementById( xpasswd ).value, true);
 	}
+
+	await idleWait(1000*10);
+
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 function RetrieveUser( JsonText )
 {
 	var obj = JSON.parse( JsonText );
-	var index = [ "u0", "u1", "u2", "u3", "u4", "u5", "u6", "u7" ];
+	var index = [ "u0", "u1", "u2", "u3", "u4" ];
 	var ix;
-	var xbutton;
 
-	for (ix = 0; ix < 8; ix++) {
-		var user = obj[ index[ ix ] ];
-		var xname = index[ ix ] + "_uname";
-		var xpasswd = index[ ix ] + "_password";
+	for (ix = 0; ix < 5; ix++) {
+		var user      = obj[ index[ ix ] ];
+		var xname     = index[ ix ] + "_uname";
+		var xpasswd   = index[ ix ] + "_password";
+		var xvalid    = index[ ix ] + "_valid";
+		var xinvalid  = index[ ix ] + "_invalid";
 
-		if (user) { 
-
-			/* button */
-			if (user.valid == "1") {
-				xbutton = index[ ix ] + "_valid";
-			} else {
-				xbutton = index[ ix ] + "_invalid";
-			}
-			document.getElementById( xbutton ).checked = true;
-
-			/* name */
-			document.getElementById( xname ).value = user.name;
-
-			/* password */
-			document.getElementById( xpasswd ).value = user.passwd;
+		if (user.valid == "1") {     /* validity */
+			document.getElementById( xvalid   ).checked = true;
+			document.getElementById( xinvalid ).checked = false;
 		} else {
-			xbutton = index[ ix ] + "_valid";
-
-			document.getElementById( xbutton ).disabled = true;
-	
-			/* name */
-			document.getElementById( xname ).disabled = true;
-
-			/* password */
-			document.getElementById( xpasswd ).disabled = true;
+			document.getElementById( xvalid   ).checked = false;
+			document.getElementById( xinvalid ).checked = true;
 		}
+
+		document.getElementById( xname   ).value = user.name;   /* name */
+		document.getElementById( xpasswd ).value = user.passwd; /* password */
 	}
 }
 
-function OnLoadUser()
+async function OnLoadUser()
 {
-	XHRGet( RetrieveUser,   "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=user", true );
+	XHRGet( RetrieveUser, "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=user", true );
+
+	await idleWait(1000);
+
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 </script>
-<link rel="stylesheet" type="text/css" href="css/design.css">
-<body onload="OnLoadUser()">
-	<table class="table_title">
-    		<tr><td>User Settings</tr></td>
-	</table>
-	<br/>
-	<br/>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center" onload="OnLoadUser()">
 
-	<!-- LAN table  -->
-	<table class="table_content">
-	<form>
-    		<tr><td>U S E R</tr></td>
-		<tr>
-			<th class="table_shaded">Active</th>
-			<th class="table_shaded">User Name</th>
-			<th class="table_shaded">Password</th>
-		</tr>
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <h1 class="text-xl font-semibold mb-4 text-slate-800">User Configuration</h1>
 
-		<!-- u0 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u0_mode" id="u0_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u0_mode" id="u0_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u0_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u0_password">
-			</td>
-		</tr>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        	class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+       <div class="bg-white rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl"> 
+     		<div class="w-12 h-12 border-4 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>
+        		<p class="text-slate-700 text-sm"> Please wait ...  </p>
+       </div>
+   	</div>
 
-		<!-- u1 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u1_mode" id="u1_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u1_mode" id="u1_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u1_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u1_password">
-			</td>
-		</tr>
+    <table class="border-collapse border border-slate-300">
+      <thead>
+        <tr class="bg-slate-200">
+          <th class="border border-slate-300 px-4 py-2">Active</th>
+          <th class="border border-slate-300 px-4 py-2">User Name</th>
+          <th class="border border-slate-300 px-4 py-2">Password</th>
+        </tr>
+      </thead>
+      <tbody>
+	    <!-- u0 -->
+        <tr class="hover:bg-slate-50">
+          <td class="border border-slate-300 px-4 py-2">
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u0" id="u0_valid" class="accent-blue-600" />
+                <span>Enable</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u0" id="u0_invalid" class="accent-blue-600" />
+                <span>Disable</span>
+              </label>
+            </div>
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u0_uname"
+              class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u0_password"
+               class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+        </tr>
+	    <!-- u1 -->
+        <tr class="hover:bg-slate-50">
+          <td class="border border-slate-300 px-4 py-2">
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u1" id="u1_valid" class="accent-blue-600" />
+                <span>Enable</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u1" id="u1_invalid" class="accent-blue-600" />
+                <span>Disable</span>
+              </label>
+            </div>
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u1_uname"
+              class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u1_password"
+               class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+        </tr>
+	    <!-- u2 -->
+        <tr class="hover:bg-slate-50">
+          <td class="border border-slate-300 px-4 py-2">
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u2" id="u2_valid" class="accent-blue-600" />
+                <span>Enable</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u2" id="u2_invalid" class="accent-blue-600" />
+                <span>Disable</span>
+              </label>
+            </div>
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u2_uname"
+              class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u2_password"
+               class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+        </tr>
+	    <!-- u3 -->
+        <tr class="hover:bg-slate-50">
+          <td class="border border-slate-300 px-4 py-2">
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u3" id="u3_valid" class="accent-blue-600" />
+                <span>Enable</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u3" id="u3_invalid" class="accent-blue-600" />
+                <span>Disable</span>
+              </label>
+            </div>
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u3_uname"
+              class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u3_password"
+               class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+        </tr>
+	    <!-- u4 -->
+        <tr class="hover:bg-slate-50">
+          <td class="border border-slate-300 px-4 py-2">
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u4" id="u4_valid" class="accent-blue-600" />
+                <span>Enable</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="u4" id="u4_invalid" class="accent-blue-600" />
+                <span>Disable</span>
+              </label>
+            </div>
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u4_uname"
+              class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+		  <td class="border border-slate-300 px-4 py-2">
+            <input type="text" id="u4_password"
+               class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+		  </td>
+        </tr>
+      </tbody>
+    </table>
 
-		<!-- u2-->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u2_mode" id="u2_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u2_mode" id="u2_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u2_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u2_password">
-			</td>
-		</tr>
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300">Cancel</button>
+      <button class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700" onclick="ApplyUser()">Apply</button>
+    </div>
 
-		<!-- u3 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u3_mode" id="u3_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u3_mode" id="u3_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u3_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u3_password">
-			</td>
-		</tr>
-
-		<!-- u4 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u4_mode" id="u4_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u4_mode" id="u4_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u4_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u4_password">
-			</td>
-		</tr>
-
-		<!-- u5 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u5_mode" id="u5_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u5_mode" id="u5_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u5_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u5_password">
-			</td>
-		</tr>
-
-		<!-- u6 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u6_mode" id="u6_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u6_mode" id="u6_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u6_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u6_password">
-			</td>
-		</tr>
-
-		<!-- u7 -->
-		<tr>
-			<td class="table_white" colspan="1">
-				<input type="radio" name="u7_mode" id="u7_valid" value="VALID">Enable&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="u7_mode" id="u7_invalid" value="INVALID">Disable&nbsp;&nbsp;&nbsp;
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u7_uname">
-			</td>
-			<td class="table_white" colspan="1">
-				<input type="text" id="u7_password">
-			</td>
-		</tr>
-
-		<tr>	
-			<td class="table_white" colspan="3" align="right">
-				<input type="button" class="pbutton" id="UserApply" value="Apply" onclick="ApplyUser()">
-			</td>
-		</tr>
-	</form>
-	</table>
-	<br/>
-	<br/>
-
+  </div>
 </body>
 </html>

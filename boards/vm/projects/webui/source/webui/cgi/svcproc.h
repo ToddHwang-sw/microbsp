@@ -1,7 +1,10 @@
 #ifndef __SERVICE_PROC_HEADER__
 #define __SERVICE_PROC_HEADER__
 
-#define EXECUTOR	"/sbin/xcfgcli.sh"
+#define ENVP		"LD_LIBRARY_PATH=/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64 " \
+					"PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin "  \
+					"COMPILER_PATH=/"
+#define EXECUTOR	"/usr/sbin/xcfgcli.sh"
 #define TMPPATH		"/var/tmp"
 #define DELIMITER	'#'
 #define CHARSET		"charset="

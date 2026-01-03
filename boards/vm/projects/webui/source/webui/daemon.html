@@ -1,121 +1,140 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title></title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daemon Configuration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <script language="javascript" type="text/javascript" src="js/myscript.js"></script>
 <script language="javascript">
 
+function idleWait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function WriteDone( jsontext )
 { /* nothing... */ }
 
-function ApplyDaemon()
+async function ApplyDaemon()
 {
 	// httpport 
-	var httpport = document.getElementById("httpport").value;
-	if (!(httpport >= 80 && httpport <= 65000)) {
+	var http_port = document.getElementById("http_port").value;
+	if (!(http_port >= 80 && http_port <= 65000)) {
 		alert("HTTP port should 80 ~ 65000");
 		return ;
 	}
 
 	// sysport 
-	var sysport = document.getElementById("sysport").value;
-	if(!(sysport >= 5000 && sysport <= 65000)) {
+	var sys_port = document.getElementById("sys_port").value;
+	if(!(sys_port >= 5000 && sys_port <= 65000)) {
 		alert("SYS port should 5000 ~ 65000");
 		return ;
 	}
 
 	// timeout 
-	var timeout = document.getElementById("timeout").value;
-	if(!(timeout >= 1 && timeout <= 10)) {
-		alert("TIMEOUT port should 1 ~ 10");
+	var sys_timeout = document.getElementById("sys_timeout").value;
+	if(!(sys_timeout >= 1 && sys_timeout <= 10)) {
+		alert("TIMEOUT should 1 ~ 10");
 		return ;
 	}
 
 	// syncexpire 
-	var syncexpire = document.getElementById("syncexpire").value;
-	if(!(syncexpire >= 1000 && syncexpire <= 10000)) {
-		alert("TIMEOUT port should 1000 ~ 10000");
+	var sync_interval = document.getElementById("sync_interval").value;
+	if(!(sync_interval >= 1000 && sync_interval <= 10000)) {
+		alert("INTERVAL should 1000 ~ 10000");
 		return ;
 	}
 
 	var cmd;
 
+	document.getElementById("loadingOverlay").classList.remove("hidden");
+
 	/* HTTPPORT Writing...*/
 	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/httpport";
-	XHRPost(WriteDone,  cmd, httpport, true);
+	XHRPost(WriteDone,  cmd, http_port, true);
 
 	/* SYSPORT Writing...*/
 	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/sysport";
-	XHRPost(WriteDone,  cmd, sysport, true);
+	XHRPost(WriteDone,  cmd, sys_port, true);
 
 	/* TIMEOUT Writing...*/
 	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/timeout";
-	XHRPost(WriteDone,  cmd, timeout, true);
+	XHRPost(WriteDone,  cmd, sys_timeout, true);
 
 	/* SYNCEXPIRE Writing...*/
 	cmd = "/sbin/server.fcgi?Command=PUTSERVICE&Path=xcfgd/syncexpire";
-	XHRPost(WriteDone,  cmd, syncexpire, true);
+	XHRPost(WriteDone,  cmd, sync_interval, true);
+
+	await idleWait(3000);
+
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 function RetrieveXCFGD( JsonText )
 {
 	var obj = JSON.parse( JsonText );
 
-	document.getElementById("httpport").value = obj.httpport;
-	document.getElementById("sysport").value = obj.sysport;
-	document.getElementById("timeout").value = obj.timeout;
-	document.getElementById("syncexpire").value = obj.syncexpire;
+	document.getElementById("http_port").value = obj.httpport;
+	document.getElementById("sys_port").value = obj.sysport;
+	document.getElementById("sys_timeout").value = obj.timeout;
+	document.getElementById("sync_interval").value = obj.syncexpire;
 }
 
-function OnLoadDaemon()
+async function OnLoadDaemon()
 {
 	XHRGet( RetrieveXCFGD,  "/usr/sbin/server.fcgi?Command=GETSERVICE&Path=xcfgd", true );
+
+	await idleWait(1000);
+
+	document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
 </script>
-<link rel="stylesheet" type="text/css" href="css/design.css">
-<body onload="OnLoadDaemon()">
-	<table class="table_title">
-    		<tr><td>Configurator Settings</tr></td>
-	</table>
-	<br/>
-	<br/>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center" onload="OnLoadDaemon()">
+  <div class="w-full max-w-2xl">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h1 class="text-2xl font-semibold mb-6">Daemon Configuration</h1>
 
-	<table class="table_content">
-	<form>
-		<col width=200>
-		<col width=550>
-		<tr>
-			<td class="table_shaded">HTTP Port</td>
-			<td class="table_white">
-				<input type="text" id="httpport" maxlength="5">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">System Port</td>
-			<td class="table_white">
-				<input type="text" id="sysport" maxlength="5">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Timeout</td>
-			<td class="table_white">
-				<input type="text" id="timeout" maxlength="2">
-			</td>
-		</tr>
-		<tr>
-			<td class="table_shaded">Sync Expire</td>
-			<td class="table_white">
-				<input type="text" id="syncexpire" maxlength="4">
-			</td>
-		</tr>
-		<tr>	
-			<td class="table_white" colspan="2" align="right">
-				<input type="button" class="pbutton" id="DaemonApply" value="Apply" onclick="ApplyDaemon()">
-			</td>
-		</tr>
-	</form>
-	</table>
+    <!-- Loading Overlay -->
+      <div id="loadingOverlay"
+        	class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+         <div class="bg-white rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl"> 
+     		<div class="w-12 h-12 border-4 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>
+        		<p class="text-slate-700 text-sm"> Please wait ...  </p>
+         </div>
+   	  </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700">HTTP Port</label>
+          <input type="text" id="http_port"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">System Port</label>
+          <input type="text" id="sys_port"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Timeout</label>
+          <input type="text" id="sys_timeout"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Sync Interval</label>
+          <input type="text" id="sync_interval"
+            class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-3 mt-8">
+        <button class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300">Cancel</button>
+        <button class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700" onclick="ApplyDaemon()">Apply</button>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>

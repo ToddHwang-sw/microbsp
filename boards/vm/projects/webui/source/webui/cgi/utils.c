@@ -19,7 +19,7 @@ static long get_usec_time( void )
 
 int run_xcfgd( char *param , char *payload, char * retstr , int len )
 {
-	char tmpfile[ 128 ];
+	char tmpfile[ 512 ];
 	FILE *tmpfp;
 	char command[ 1024 ];
 	struct stat st;
@@ -30,7 +30,7 @@ int run_xcfgd( char *param , char *payload, char * retstr , int len )
 	/* temporary file name */
 	srand( get_usec_time() );
 	memset(tmpfile,0,128);
-	snprintf(tmpfile,128-strlen(TMPPATH)-16, "%sxcfgd_%d.tmp",TMPPATH,rand());
+	snprintf(tmpfile,128-strlen(TMPPATH)-16, "%s/xcfgd_%d.tmp",TMPPATH,rand());
 
 	/* temporary file creation */
 	tmpfp = fopen(tmpfile,"w");
@@ -42,10 +42,11 @@ int run_xcfgd( char *param , char *payload, char * retstr , int len )
 
 	/* command execution */
 	memset(command,0,1024);
-	if (payload) 
-		sprintf(command, "%s %s %s >& %s" , EXECUTOR, param, payload, tmpfile ); /* PUT */
-	else
-		sprintf(command, "%s %s >& %s" , EXECUTOR, param, tmpfile ); /* GET */
+	if (payload) {
+		sprintf(command, "%s %s %s %s >& %s" , ENVP, EXECUTOR, param, payload, tmpfile ); /* PUT */
+	} else {
+		sprintf(command, "%s %s %s >& %s" , ENVP, EXECUTOR, param, tmpfile ); /* GET */
+	}
 
 	syslog(LOG_INFO, "Command is \"%s\" \n",command);
 
@@ -74,6 +75,8 @@ int run_xcfgd( char *param , char *payload, char * retstr , int len )
 		syslog(LOG_ERR, "read(.. %d) = %d failed\n",amount,r_amount);
 		goto err_return;
 	}
+
+	syslog(LOG_INFO, "Temporary file %s deleted.\n",tmpfile);
 
 	remove(tmpfile);
 	return 0;
