@@ -777,7 +777,7 @@ cleanup:
 		$(call DO_EXCL_SINGLE,\
 			[ ! -f $(BDDIR)/$(CFGDISKNM) ] || $(TOPDIR)/scripts/setupdisk.sh clean $(BDDIR)/$(CFGDISKNM) )
 
-toolchain: ubuntu_check env_check
+toolchain_legacy: ubuntu_check env_check
 	$(QUEIT)[ -f $(TOOLCHAIN_BUILDOUT) ] || touch $(TOOLCHAIN_BUILDOUT)
 	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
@@ -851,6 +851,19 @@ toolchain: ubuntu_check env_check
 	$(QUEIT)echo ""                                      2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
 	$(QUEIT)cd gnu/gcc/build/$(_ARCH_)/$(GCC); \
 		make -f $(TOPDIR)/gnu/Makefile setup_gcc_3     2>&1 | tee -a $(TOOLCHAIN_BUILDOUT)
+
+toolchain: toolchain_legacy
+	@if [ `echo "$(GLIBC_VER) > 2.40" | bc` -eq 1 ]; then  \
+		echo ""                                                 ;\
+		echo " GLIBC ver2.40+ does not have crypto libraries. " ;\
+		echo ""                                                 ;\
+		cd libs                                                 ;\
+		$(call DO_EXCL_DN,libxcrypt,download,lib,$(TOOLCHAIN_ROOT)/$(PLATFORM));\
+		$(call SETUP_BUILDOUT,libxcrypt)                                       ;\
+		$(call DO_EXCL,   libxcrypt,prepare,lib,$(TOOLCHAIN_ROOT)/$(PLATFORM)) ;\
+		$(call DO_NORM,   libxcrypt,all,    lib,$(TOOLCHAIN_ROOT)/$(PLATFORM)) ;\
+		$(call DO_NORM,   libxcrypt,install,lib,$(TOOLCHAIN_ROOT)/$(PLATFORM)) ;\
+	fi
 
 #########################################################################################################################
 #

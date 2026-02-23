@@ -3,7 +3,11 @@ LOC=https://github.com/linux-pam
 
 include $(TOPDIR)/scripts/env.mk
 
+##
+## RPI4 : no-error=implicit-function-declaration
+##
 CROSS_USER_CFLAGS += \
+	-Wno-error=implicit-function-declaration \
 	-DLOGIN_NAME_MAX=256 \
 	-DLINE_MAX=2048
 

@@ -27,7 +27,11 @@ config_gcc:
 			--disable-multiarch \
 			--enable-libstdcxx \
 			--enable-languages=$(SUPPORTED_LANGUAGES) \
-			--without-gmp --without-mpfr --without-mpc --without-isl --disable-multilib \
+			--without-gmp      \
+			--without-mpfr     \
+			--without-mpc      \
+			--without-isl      \
+			--disable-multilib \
 			$(GCC_ARCH_OPTIONS)
 
 setup_gcc:

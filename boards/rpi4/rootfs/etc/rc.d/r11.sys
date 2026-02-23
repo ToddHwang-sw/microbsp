@@ -1,0 +1,73 @@
+#!/bin/sh
+
+ASK='xcfgcli.sh get '
+
+WAN=`$ASK wan/name`
+LAN=`$ASK lan/name`
+
+#
+# Check LAN mode
+LANMODE=`$ASK lan/mode`
+[ "$LANMODE" != "none" ] || exit 1
+
+# 10.5.5.1
+APIP=`$ASK lan/ip`
+
+# 255.255.255.0
+NETMASK=`$ASK lan/netmask`
+
+# 10.5.5
+APNET=${APIP%.*}
+
+# 1
+APNODE=${APIP##*.}
+
+APMASK=`$ASK lan/netmask`
+
+DHCPSTART=`$ASK lan/start`
+DHCPEND=`$ASK lan/end`
+
+IPTABLES=/usr/sbin/iptables
+
+DNSMASQD=/var/tmp/dnsmasq
+DNSMASQ_CONF=dnsmasq.conf
+DNSMASQ_LEASE=dnsmasq.leases
+
+## Required by IP tables...
+[ -d /run      ] || mkdir -p /run
+[ -d $DNSMASQD ] || mkdir -p $DNSMASQD
+
+case $1 in
+    "start")
+        $IPTABLES -P INPUT ACCEPT
+        $IPTABLES -F INPUT
+        $IPTABLES -P OUTPUT ACCEPT
+        $IPTABLES -F OUTPUT
+        $IPTABLES -P FORWARD ACCEPT
+        $IPTABLES -F FORWARD
+        $IPTABLES -t nat -F
+        $IPTABLES -t nat -A POSTROUTING -s $APNET.0/24 -o $WAN -j MASQUERADE
+
+        # IPv4 forwarding enable 
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+        echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+
+        # DNSMASQ configuration file ..
+        cat > $DNSMASQD/$DNSMASQ_CONF <<-EOF
+        server=8.8.8.8@$WAN
+        interface=$LAN
+        dhcp-range=$APNET.$DHCPSTART,$APNET.$DHCPEND,12h
+        dhcp-option=option:router,$APIP
+        dhcp-option=option:dns-server,$APIP
+        dhcp-option=option:ntp-server,$APIP
+        dhcp-option=option:netmask,$NETMASK
+        dhcp-leasefile=$DNSMASQD/$DNSMASQ_LEASE
+        dhcp-rapid-commit
+		EOF
+
+        /usr/sbin/dnsmasq -C $DNSMASQD/$DNSMASQ_CONF -u root 
+        ;;
+    "stop")
+        ;;
+esac
+

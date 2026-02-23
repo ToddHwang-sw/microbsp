@@ -8,6 +8,9 @@ MICB_CONFIGURE_PRG=./configure
 MICB_CONFIGURE_OPTS += \
 	--disable-bootstrap 
 
+## RPI4
+CROSS_USER_CFLAGS += -Wno-error=implicit-function-declaration 
+
 download:
 	@[ -d $(BUILDDIR)/$(DIR) ] || mkdir -p $(BUILDDIR)/$(DIR)
 	@[ -d $(MICBSRC)/$(DIR) ] || ( $(UNCOMPRESS) $(LOC)/$(DIR).git; $(MICB_PATCH) )

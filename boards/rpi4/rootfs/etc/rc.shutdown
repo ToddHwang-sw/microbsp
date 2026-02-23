@@ -1,0 +1,18 @@
+#!/bin/sh
+
+## mount file systems
+umount -f /proc /var /sys
+
+## deleting device nodes
+\rm -rf /dev/*
+
+echo "INIT FILE STOPS ..."
+cnt=0
+while true 
+do
+	[ "$cnt" -ne "99" ] || break 
+	prefix=`printf %02d $cnt`
+	[ -f /etc/rc.d/r$prefix.sys ] || break
+	/etc/rc.d/r$prefix.sys stop
+	cnt=`expr $cnt + 1`
+done

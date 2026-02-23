@@ -1,0 +1,26 @@
+#!/bin/sh
+
+ASK='xcfgcli.sh get '
+
+## check LAN mode ...
+LANMODE=`$ASK lan/mode`
+[ "$LANMODE" != "none" ] || exit 1
+
+case $1 in
+	"start")
+		echo "[WLAN] BRCM Loading modules..."
+		modprobe brcmutil
+		modprobe brcmfmac
+	
+		/etc/scripts/wlan_ap.sh start 		
+		;;
+	"stop")
+		/etc/scripts/wlan_ap.sh stop
+
+		echo "[WLAN] BRCM Unloading modules..."
+		rmmod brcmfmac
+		rmmod brcmutil
+		;;
+	"*")
+		;;
+esac

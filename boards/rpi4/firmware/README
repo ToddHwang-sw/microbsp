@@ -1,0 +1,2 @@
+
+- bootcode.bin , start4.elf , fixup4.dat are copied from github.com/raspberrypi/firmware master branch. 
