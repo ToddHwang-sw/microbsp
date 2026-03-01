@@ -63,7 +63,7 @@ fi
 done=0
 while [ $done != 1 ];
 do
-	res=`mount | grep $1 | head -n 1 | awk '{print $3}'`
+	res=`mount | grep /dev/$1 | head -n 1 | awk '{print $3}'`
 	if [ "$res" != "" ]; then
 		echo "Unmounting $res"
 		sudo umount $res

@@ -1,6 +1,6 @@
-diff -uNr strace-5.3-original/defs.h strace-5.3/defs.h
---- strace-5.3-original/defs.h	2019-09-24 18:02:03.000000000 -0700
-+++ strace-5.3/defs.h	2020-06-30 11:10:11.798453001 -0700
+diff -uNr strace-5.3-orig/defs.h strace-5.3/defs.h
+--- strace-5.3-orig/defs.h	2019-09-24 18:02:03.000000000 -0700
++++ strace-5.3/defs.h	2026-02-25 22:30:42.456114018 -0800
 @@ -24,6 +24,11 @@
  # include <unistd.h>
  # include <stdlib.h>
@@ -13,3 +13,36 @@ diff -uNr strace-5.3-original/defs.h strace-5.3/defs.h
  /* Open-coding isprint(ch) et al proved more efficient than calling
   * generalized libc interface. We don't *want* to do non-ASCII anyway.
   */
+diff -uNr strace-5.3-orig/sched_attr.h strace-5.3/sched_attr.h
+--- strace-5.3-orig/sched_attr.h	2018-12-30 07:35:21.000000000 -0800
++++ strace-5.3/sched_attr.h	2026-02-25 22:30:59.126646512 -0800
+@@ -10,7 +10,7 @@
+ 
+ # include <stdint.h>
+ 
+-struct sched_attr {
++struct _sched_attr {
+ 	uint32_t size;
+ 	uint32_t sched_policy;
+ 	uint64_t sched_flags;
+diff -uNr strace-5.3-orig/sched.c strace-5.3/sched.c
+--- strace-5.3-orig/sched.c	2019-05-22 04:05:13.000000000 -0700
++++ strace-5.3/sched.c	2026-02-25 22:31:12.139282964 -0800
+@@ -92,7 +92,7 @@
+ print_sched_attr(struct tcb *const tcp, const kernel_ulong_t addr,
+ 		 unsigned int usize)
+ {
+-	struct sched_attr attr = {};
++	struct _sched_attr attr = {};
+ 	unsigned int size;
+ 
+ 	if (usize) {
+@@ -146,7 +146,7 @@
+ 		tprintf("%d, ", (int) tcp->u_arg[0]);
+ 		print_sched_attr(tcp, tcp->u_arg[1], 0);
+ 	} else {
+-		struct sched_attr attr;
++		struct _sched_attr attr;
+ 
+ 		if (verbose(tcp) && tcp->u_error == E2BIG
+ 		    && umove(tcp, tcp->u_arg[1], &attr.size) == 0) {

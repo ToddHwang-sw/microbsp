@@ -1,5 +1,5 @@
 export CROSS_COMP_PREFIX=$(PLATFORM)-
-export CROSS_COMP_FLAGS=-mlittle-endian -mabi=lp64 -mpc-relative-literal-loads -march=armv8-a+crc -mtune=cortex-a72 -mno-outline-atomics
+export CROSS_COMP_FLAGS=-mlittle-endian -mabi=lp64 -mpc-relative-literal-loads -march=armv8-a -mtune=cortex-a72 -mno-outline-atomics -Wno-error=implicit-function-declaration  -Wno-error=implicit-int
 
 CC=$(CROSS_COMP_PREFIX)gcc
 CXX=$(CROSS_COMP_PREFIX)g++
@@ -41,17 +41,7 @@ export SUPPORTED_LANGUAGES=c,c++
 ##
 export BINUTILS=binutils-2.45
 export GCC=gcc-14.1.0
-export GCC_ARCH_OPTIONS=\
-	--enable-plugin \
-	--enable-default-pie \
-	--with-system-zlib \
-	--with-target-system-zlib=auto \
-	--without-included-gettext \
-	--enable-threads=posix \
-	--enable-nls \
-	--enable-clocale=gnu \
-	--disable-werror \
-	--enable-fix-cortex-a53-843419
+export GCC_ARCH_OPTIONS=
 export GLIBC_VER=2.42
 export GLIBC=glibc-$(GLIBC_VER)
 export GLIBC_ARCH_OPTIONS=

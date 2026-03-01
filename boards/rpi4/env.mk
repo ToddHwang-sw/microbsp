@@ -18,6 +18,12 @@ export KERNELMAKE=make ARCH=arm64 V=1 CROSS_COMPILE=$(CROSS_COMP_PREFIX) CFLAGS_
 export COMPDIR=libs apps exts
 
 ##
+## GLIBC 2.42
+##
+export _LIBDIR_+=\
+		libxcrypt
+
+##
 ## folders to be included
 ##
 export _EXTDIR_+=\

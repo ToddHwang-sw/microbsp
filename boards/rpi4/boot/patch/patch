@@ -1,0 +1,53 @@
+diff -uNr u-boot-v2025.10-rc5/cmd/Kconfig u-boot-v2025.10-rc5-patched/cmd/Kconfig
+--- u-boot-v2025.10-rc5/cmd/Kconfig	2025-09-23 06:33:47.000000000 -0700
++++ u-boot-v2025.10-rc5-patched/cmd/Kconfig	2026-02-28 22:06:05.671248548 -0800
+@@ -162,6 +162,14 @@
+ 	  command.  This provides information of which options are enabled on
+ 	  the running U-Boot.
+ 
++config CMD_XCONFIG
++	bool "xcfg"
++	default n
++	help
++		Micro BSP specific configuration block parser
++		It will be refered ahead of the choice of kernel to boot up. 
++		CRC check will be performed 
++
+ config CMD_CONSOLE
+ 	bool "coninfo"
+ 	default y
+diff -uNr u-boot-v2025.10-rc5/cmd/Makefile u-boot-v2025.10-rc5-patched/cmd/Makefile
+--- u-boot-v2025.10-rc5/cmd/Makefile	2025-09-23 06:33:47.000000000 -0700
++++ u-boot-v2025.10-rc5-patched/cmd/Makefile	2026-02-28 22:06:05.672248482 -0800
+@@ -48,6 +48,7 @@
+ obj-$(CONFIG_CMD_CLK) += clk.o
+ obj-$(CONFIG_CMD_CLS) += cls.o
+ obj-$(CONFIG_CMD_CONFIG) += config.o
++obj-$(CONFIG_CMD_XCONFIG) += xconfig.o
+ obj-$(CONFIG_CMD_CONITRACE) += conitrace.o
+ obj-$(CONFIG_CMD_CONSOLE) += console.o
+ obj-$(CONFIG_CMD_CPU) += cpu.o
+diff -uNr u-boot-v2025.10-rc5/cmd/nvedit.c u-boot-v2025.10-rc5-patched/cmd/nvedit.c
+--- u-boot-v2025.10-rc5/cmd/nvedit.c	2025-09-23 06:33:47.000000000 -0700
++++ u-boot-v2025.10-rc5-patched/cmd/nvedit.c	2026-02-28 22:06:05.672248482 -0800
+@@ -184,6 +184,20 @@
+ #endif
+ #endif /* CONFIG_XPL_BUILD */
+ 
++/*
++ * MBSP - This function is totally different from env_set in that it incurs
++ * callback fucntion. The callback function only responds to a flag "H_INTERACTIVE".
++ */
++int xenv_set(const char *varname, const char *varvalue)
++{
++	const char * const argv[4] = { "setenv", varname, varvalue, NULL };
++
++	if (varvalue == NULL || varvalue[0] == '\0')
++		return 1;
++
++	return env_do_env_set(0, 3, (char * const *)argv, H_INTERACTIVE);
++}
++
+ #ifndef CONFIG_XPL_BUILD
+ static int do_env_set(struct cmd_tbl *cmdtp, int flag, int argc,
+ 		      char *const argv[])

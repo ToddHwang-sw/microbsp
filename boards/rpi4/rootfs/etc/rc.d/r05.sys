@@ -10,7 +10,7 @@ case $1 in
 	"start")
 		echo "[WLAN] Loading all WLAN modules..."
 		modprobe 8192eu
-		modprobe 8812bu
+		modprobe 88x2bu
 
 		/etc/scripts/wlan_sta.sh start
 		;;

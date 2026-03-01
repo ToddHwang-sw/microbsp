@@ -695,9 +695,11 @@ kernel_%: checkfirst
 	fi
 
 modules_%: checkfirst
-	$(QUEIT)if [ "$(subst mod_,,$@)" = "install" ] ; then \
+	$(QUEIT)if [ "$(subst modules_,,$@)" = "install" ] ; then \
 		make -C $(BDDIR)/kernel destination=$(INSTALLDIR) isodir=$(ISODIR) install ;              \
 		make -C $(BDDIR)        destination=$(INSTALLDIR) isodir=$(ISODIR) isoname=$(IMAGENAME) install ; \
+	else \
+		make -C $(BDDIR)/kernel KERNDIR=$(KERNDIR) destination=$(INSTALLDIR) $(subst modules_,,$@) ; \
 	fi
 
 board: run_bootstrap

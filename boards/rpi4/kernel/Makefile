@@ -31,7 +31,61 @@ KERNEL_FILES=vmlinuz System.map config
 ##
 ## External modules
 ##
-EXTMDIRS=
+EXTMDIRS=\
+		rtl88x2bu
+
+##
+## Broadcom WiFi FWs required.... 
+## Cypress  Power regulartor FWs also required....
+##
+##    https://www.linuxquestions.org/questions/slackware-arm-108/raspberry-pi-3-b-wifi-nic-not-found-4175627137/
+##
+BRCMFWDIR=brcm
+CYPRESSFWDIR=cypress
+BRCMFWFN=firmware-brcm80211_20210315-3+rpt7_all.deb
+BRCMFWLOC=https://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/$(BRCMFWFN)
+BRCMFWS=\
+	$(BRCMFWDIR)/bcm43xx-0.fw \
+	$(BRCMFWDIR)/bcm43xx_hdr-0.fw \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.bin \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.txt \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.clm_blob \
+	$(CYPRESSFWDIR)/cyfmac43455-sdio-standard.bin \
+	$(CYPRESSFWDIR)/cyfmac43455-sdio.clm_blob
+BRCMFWTMPDIR=\
+	/tmp/___rpi_linuxswtree_linux-broadcom_firmware___
+
+##
+## Realtek WiFi FWs required....
+##
+LINFWNM=linux-firmware
+RTKWIFIDIR=rtlwifi
+RTKFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/firmware/$(LINFWNM).git 
+RTKFWTAG=tags/20191215
+RTKFWS=\
+	$(RTKWIFIDIR)/rtl8192eu_ap_wowlan.bin \
+	$(RTKWIFIDIR)/rtl8192eu_nic.bin \
+	$(RTKWIFIDIR)/rtl8192eu_wowlan.bin
+RTKFWTMPDIR=\
+	/tmp/___rpi_linuxswtree_linux-realtek_firmware____
+
+##
+## Regulatory FWs
+##
+CRDAFWNM=wireless-regdb
+CRDAFWLOC=git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/$(CRDAFWNM).git
+CRDAFW0S=\
+	regulatory.bin \
+	sforshee.x509.pem \
+	sforshee.key.pub.pem
+CRDAFW1S=\
+	regulatory.db \
+	regulatory.db.p7s
+CRDAFWTMPDIR=\
+	/tmp/___rpi_linuxswtree_linux-crda_firmware____
+CRDATMPTMP=\
+	/tmp/___rpi_linuxswtree_linux-crda_signature___
 
 prepare:
 	@[ -d $(BUILDDIR) ] || mkdir -p $(BUILDDIR)
@@ -40,6 +94,7 @@ prepare:
 	@[ -d $(BUILDDIR)/$(KERNELVER) ] || (                          \
 		unzip source/$(FILENM) -d $(BUILDDIR) ;                    \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
+		cat ../../../patch/patch-$(BRANCH)  | patch -p 1;          \
 		cp ../../../patch/$(KERNELVER).config .config;             \
 		$(LINUXMAKE) olddefconfig )
 
@@ -69,6 +124,83 @@ clean:
 		$(LINUXMAKE) clean )
 
 dnfw:
+	@echo ""
+	@echo "Downloading Firmwares"
+	@echo ""
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(RTKWIFIDIR) ] || mkdir -p $(BDDIR)/rootfs/lib/firmware/$(RTKWIFIDIR)
+	@for f in $(RTKFWS); do \
+		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
+			[ -d $(RTKFWTMPDIR) ] || ( \
+				echo "" ;                                   \
+				echo "Cloning $(LINFWNM) from $(RTKFWLOC)" ;\
+				echo "" ;                                   \
+				mkdir -p $(RTKFWTMPDIR);                    \
+				cd $(RTKFWTMPDIR);                          \
+				$(TOPDIR)/scripts/gitclone.sh "" "$(RTKFWLOC)" "" "$(RTKFWTAG)" ;  \
+			) ;                                             \
+			cp -rf $(RTKFWTMPDIR)/$(LINFWNM)/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} \
+		) ; \
+	done
+	@\rm -rf $(RTKFWTMPDIR)
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ] || ( \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ; \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR) )
+	@echo ""
+	@echo "Moving $(BRCMFWDIR) binary file "
+	@echo ""
+	@for f in $(BRCMFWS); do \
+		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
+			[ -d $(BRCMFWTMPDIR) ] || ( \
+				echo "" ;                                \
+				echo "Copying $(BRCMFWLOC)" ;            \
+				echo "" ;                                \
+				mkdir -p $(BRCMFWTMPDIR);                \
+				cd $(BRCMFWTMPDIR);                      \
+				$(WGETCMD) $(BRCMFWLOC);                 \
+				ar x $(BRCMFWFN) ;                       \
+				tar xvf data.tar.xz ;                    \
+				cd $(BDDIR)/kernel                       \
+			) ;                                          \
+			cp -rf $(BRCMFWTMPDIR)/lib/firmware/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} ; \
+		) ; \
+	done
+	@echo ""
+	@echo "Moving $(CYPRESSFWDIR) binary file "
+	@echo ""
+	@mv $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR)/cyfmac43455-sdio-standard.bin \
+		$(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR)/cyfmac43455-sdio.bin
+	@\rm -rf $(BRCMFWTMPDIR)
+	@[ -d $(BDDIR)/rootfs/lib/crda ] || mkdir -p $(BDDIR)/rootfs/lib/crda
+	@for f in $(CRDAFW0S); do \
+		[ -f $(BDDIR)/rootfs/lib/crda/$$f ] || ( \
+			[ -d $(CRDAFWTMPDIR) ] || ( \
+				echo "" ;                                 \
+				echo "Copyiing $(CRDAFWNM) from $(CRDAFWLOC)" ; \
+				echo "" ;                                \
+				mkdir -p $(CRDAFWTMPDIR);                \
+				cd $(CRDAFWTMPDIR);                      \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)" ; \
+				cd $(BDDIR)/kernel                       \
+			) ;                                          \
+			cp -rf $(CRDAFWTMPDIR)/$(CRDAFWNM)/$$f $(BDDIR)/rootfs/lib/crda/$$f \
+		) ; \
+	done
+	@[ -d $(BDDIR)/rootfs/lib/firmware ] || mkdir -p $(BDDIR)/rootfs/lib/firmware
+	@for f in $(CRDAFW1S); do \
+		[ -f $(BDDIR)/rootfs/lib/firmware/$$f ] || ( \
+			[ -d $(CRDAFWTMPDIR) ] || ( \
+				echo "" ;                                 \
+				echo "Copyiing $(CRDAFWNM) from $(CRDAFWLOC)" ; \
+				echo "" ;                                \
+				mkdir -p $(CRDAFWTMPDIR);                \
+				cd $(CRDAFWTMPDIR);                      \
+				$(TOPDIR)/scripts/gitclone.sh "--single-branch" "$(CRDAFWLOC)";  \
+				cd $(BDDIR)/kernel                       \
+			) ;                                          \
+			cp -rf $(CRDAFWTMPDIR)/$(CRDAFWNM)/$$f $(BDDIR)/rootfs/lib/firmware/$$f \
+		) ; \
+	done
+	@\rm -rf $(CRDAFWTMPDIR)
 
 install: 
 	@[ ! -f $(BDDIR)/$(ROOTFSIMAGEFN) ] || \rm -rf $(BDDIR)/$(ROOTFSIMAGEFN)
