@@ -42,15 +42,17 @@ EXTMDIRS=\
 ##
 BRCMFWDIR=brcm
 CYPRESSFWDIR=cypress
-BRCMFWFN=firmware-brcm80211_20210315-3+rpt7_all.deb
+BRCMFWFN=firmware-brcm80211_20230625-2+rpt3_all.deb
 BRCMFWLOC=https://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/$(BRCMFWFN)
 BRCMFWS=\
 	$(BRCMFWDIR)/bcm43xx-0.fw \
 	$(BRCMFWDIR)/bcm43xx_hdr-0.fw \
 	$(BRCMFWDIR)/brcmfmac43455-sdio.bin \
 	$(BRCMFWDIR)/brcmfmac43455-sdio.txt \
-	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt \
 	$(BRCMFWDIR)/brcmfmac43455-sdio.clm_blob \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,4-model-b.bin \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,4-model-b.txt \
+	$(BRCMFWDIR)/brcmfmac43455-sdio.raspberrypi,4-model-b.clm_blob \
 	$(CYPRESSFWDIR)/cyfmac43455-sdio-standard.bin \
 	$(CYPRESSFWDIR)/cyfmac43455-sdio.clm_blob
 BRCMFWTMPDIR=\
@@ -142,9 +144,10 @@ dnfw:
 		) ; \
 	done
 	@\rm -rf $(RTKFWTMPDIR)
-	@[ -d $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ] || ( \
-			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR) ; \
-			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR) )
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR)    ] || \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(BRCMFWDIR)
+	@[ -d $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR) ] || \
+			mkdir -p $(BDDIR)/rootfs/lib/firmware/$(CYPRESSFWDIR)
 	@echo ""
 	@echo "Moving $(BRCMFWDIR) binary file "
 	@echo ""
@@ -158,7 +161,7 @@ dnfw:
 				cd $(BRCMFWTMPDIR);                      \
 				$(WGETCMD) $(BRCMFWLOC);                 \
 				ar x $(BRCMFWFN) ;                       \
-				tar xvf data.tar.xz ;                    \
+				tar zxvf data.tar.gz ;                   \
 				cd $(BDDIR)/kernel                       \
 			) ;                                          \
 			cp -rf $(BRCMFWTMPDIR)/lib/firmware/$$f $(BDDIR)/rootfs/lib/firmware/$${f%/*} ; \

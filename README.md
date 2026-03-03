@@ -21,6 +21,9 @@
 		7. [WLAN Configuration](#rpi3_wlan)
 		8. [Available Packages](#rpi3_packages)
 9. [Raspberry PI 4 B](#rpi4)
+	1. [How it looks](#rpi4_look)
+	2. [Device operation](#rpi4_operation)
+	3. [Booting Shot](#rpi4_boot)
 10. [ASUS Tinker](#tinker)
 	1. [Testbed components](#tinker_component)
 	2. [How it looks](#tinker_look)
@@ -2692,7 +2695,638 @@ bash-5.1# reboot -f
 
 ## Raspberry PI 4 B <a name="rpi4"></a>
 
+### How it looks <a name="rpi4_look"></a>
 
+<img src="./doc/rpi4.png" width=500 height=700 />
+
+### Device operation <a name="rpi4_operation"></a>
+
+* Home Gateway
+* LAN
+  - Ethernet : 1G Built-in ethernet
+  - WLAN1 : NOT YET SUPPORTED
+* WAN
+  - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8812BU</strong>)
+* UART baudrate = 921600bps (not 115200bps)
+
+### Booting Shot <a name="rpi4_boot"></a>
+
+  ```
+
+U-Boot 2025.10-rc5 (Mar 03 2026 - 10:18:01 -0800)
+
+DRAM:  948 MiB (total 3.9 GiB)
+RPI 4 Model B (0xc03111)
+Core:  215 devices, 16 uclasses, devicetree: board
+MMC:   mmcnr@7e300000: 1, mmc@7e340000: 0
+Loading Environment from FAT... Unable to read "uboot.env" from mmc0:1... 
+In:    serial
+Out:   serial
+Err:   serial
+Net:   eth0: ethernet@7d580000
+Hit any key to stop autoboot: 0
+switch to partitions #0, OK
+mmc0 is current device
+24188936 bytes read in 1023 ms (22.5 MiB/s)
+56008 bytes read in 17 ms (3.1 MiB/s)
+Moving Image from 0x80000 to 0x200000, end=0x19a0000
+## Flattened Device Tree blob at 02600000
+   Booting using the fdt blob at 0x2600000
+Working FDT set to 2600000
+   Using Device Tree in place at 0000000002600000, end 0000000002610ac7
+Working FDT set to 2600000
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd083]
+[    0.000000] Linux version 6.10.14-v7l (todd@todd-asus) (aarch64-mbsp-linux-gnu-gcc (GCC) 14.1.0, GNU ld (GNU Binutils) 2.45) #1 SMP PREEMPT Tue Mar  3 10:27:31 PST 
+2026
+[    0.000000] Machine model: Raspberry Pi 4 Model B Rev 1.1
+[    0.000000] Reserved memory: created CMA memory pool at 0x0000000010000000, size 512 MiB
+[    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+[    0.000000] OF: reserved mem: 0x0000000010000000..0x000000002fffffff (524288 KiB) map reusable linux,cma
+[    0.000000] OF: reserved mem: 0x000000003ef72dc0..0x000000003ef72ea1 (0 KiB) nomap non-reusable nvram@0
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000000000-0x000000003fffffff]
+[    0.000000]   DMA32    [mem 0x0000000040000000-0x00000000fbffffff]
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000000000-0x000000003b3fffff]
+[    0.000000]   node   0: [mem 0x0000000040000000-0x00000000fbffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x00000000fbffffff]
+[    0.000000] On node 0, zone DMA32: 19456 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA32: 16384 pages in unavailable ranges
+[    0.000000] percpu: Embedded 31 pages/cpu s86888 r8192 d31896 u126976
+[    0.000000] Detected PIPT I-cache on CPU0
+[    0.000000] CPU features: detected: Spectre-v2
+[    0.000000] CPU features: detected: Spectre-v4
+[    0.000000] CPU features: detected: Spectre-BHB
+[    0.000000] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 video=HDMI-A-1:640x480M@60D vc_mem.mem_
+base=0x3ec00000 vc_mem.mem_size=0x40000000  dwg_otg.lpm_enable=0 8250.nr_uarts=1 console=ttyS0,921600 root=/dev/mmcblk0p2 rootfstype=squashfs rootwait
+[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 1012736
+[    0.000000] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+[    0.000000] software IO TLB: area num 4.
+[    0.000000] software IO TLB: mapped [mem 0x0000000037400000-0x000000003b400000] (64MB)
+[    0.000000] Memory: 3354740K/4050944K available (14720K kernel code, 2310K rwdata, 4644K rodata, 1792K init, 501K bss, 171916K reserved, 524288K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] ftrace: allocating 45400 entries in 178 pages
+[    0.000000] ftrace: allocated 178 pages with 4 groups
+[    0.000000] trace event string verifier disabled
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000]  Trampoline variant of Tasks RCU enabled.
+[    0.000000]  Rude variant of Tasks RCU enabled.
+[    0.000000]  Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.000000] RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=4.
+[    0.000000] RCU Tasks Rude: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=4.
+[    0.000000] RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=4.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GIC: Using split EOI/Deactivate mode
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 timer(s) running at 54.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0xc743ce346, max_idle_ns: 440795203123 ns
+[    0.000000] sched_clock: 56 bits at 54MHz, resolution 18ns, wraps every 4398046511102ns
+[    0.000166] Console: colour dummy device 80x30
+[    0.000200] Calibrating delay loop (skipped), value calculated using timer frequency.. 108.00 BogoMIPS (lpj=54000)
+[    0.000208] pid_max: default: 32768 minimum: 301
+[    0.000239] LSM: initializing lsm=capability
+[    0.000344] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.000370] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.000810] cgroup: Disabling memory control group subsystem
+[    0.001880] rcu: Hierarchical SRCU implementation.
+[    0.001886] rcu:     Max phase no-delay instances is 400.
+[    0.002557] smp: Bringing up secondary CPUs ...
+[    0.002882] Detected PIPT I-cache on CPU1
+[    0.002949] CPU1: Booted secondary processor 0x0000000001 [0x410fd083]
+[    0.003313] Detected PIPT I-cache on CPU2
+[    0.003351] CPU2: Booted secondary processor 0x0000000002 [0x410fd083]
+[    0.003664] Detected PIPT I-cache on CPU3
+[    0.003702] CPU3: Booted secondary processor 0x0000000003 [0x410fd083]
+[    0.003736] smp: Brought up 1 node, 4 CPUs
+[    0.003741] SMP: Total of 4 processors activated.
+[    0.003744] CPU: All CPU(s) started at EL2
+[    0.003747] CPU features: detected: 32-bit EL0 Support
+[    0.003750] CPU features: detected: CRC32 instructions
+[    0.003780] alternatives: applying system-wide alternatives
+[    0.004502] devtmpfs: initialized
+[    0.008834] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.008856] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.017606] 26720 pages in range for non-PLT usage
+[    0.017617] 518240 pages in range for PLT usage
+[    0.017850] pinctrl core: initialized pinctrl subsystem
+[    0.018557] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.019192] DMA: preallocated 1024 KiB GFP_KERNEL pool for atomic allocations
+[    0.019296] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.019465] DMA: preallocated 1024 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.019516] audit: initializing netlink subsys (disabled)
+[    0.019625] audit: type=2000 audit(0.019:1): state=initialized audit_enabled=0 res=1
+[    0.019866] thermal_sys: Registered thermal governor 'step_wise'
+[    0.019889] cpuidle: using governor menu
+[    0.019966] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.020014] ASID allocator initialised with 65536 entries
+[    0.020098] Serial: AMBA PL011 UART driver
+[    0.022804] bcm2835-mbox fe00b880.mailbox: mailbox enabled
+[    0.024839] raspberrypi-firmware soc:firmware: Attached to firmware from 2025-08-20T17:02:31, variant start
+[    0.025841] raspberrypi-firmware soc:firmware: Firmware hash is cd866525580337c0aee4b25880e1f5f9f674fb24
+[    0.028464] platform fd500000.pcie: Fixed dependency cycle(s) with /scb/pcie@7d500000
+[    0.030201] bcm2835-dma fe007000.dma-controller: DMA legacy API manager, dmachans=0x1
+[    0.032334] SCSI subsystem initialized
+[    0.032418] usbcore: registered new interface driver usbfs
+[    0.032433] usbcore: registered new interface driver hub
+[    0.032451] usbcore: registered new device driver usb
+[    0.032609] pps_core: LinuxPPS API ver. 1 registered
+[    0.032612] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.032622] PTP clock support registered
+[    0.033257] vgaarb: loaded
+[    0.033473] clocksource: Switched to clocksource arch_sys_counter
+[    0.434053] VFS: Disk quotas dquot_6.6.0
+[    0.434081] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.438080] NET: Registered PF_INET protocol family
+[    0.438323] IP idents hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.440175] tcp_listen_portaddr_hash hash table entries: 2048 (order: 3, 32768 bytes, linear)
+[    0.440218] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.440231] TCP established hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.440350] TCP bind hash table entries: 32768 (order: 8, 1048576 bytes, linear)
+[    0.441315] TCP: Hash tables configured (established 32768 bind 32768)
+[    0.441440] UDP hash table entries: 2048 (order: 4, 65536 bytes, linear)
+[    0.441500] UDP-Lite hash table entries: 2048 (order: 4, 65536 bytes, linear)
+[    0.441677] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.442081] RPC: Registered named UNIX socket transport module.
+[    0.442088] RPC: Registered udp transport module.
+[    0.442090] RPC: Registered tcp transport module.
+[    0.442092] RPC: Registered tcp-with-tls transport module.
+[    0.442095] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.442588] PCI: CLS 0 bytes, default 64
+[    0.443327] Initialise system trusted keyrings
+[    0.443431] workingset: timestamp_bits=46 max_order=20 bucket_order=0
+[    0.443627] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.443773] NFS: Registering the id_resolver key type
+[    0.443798] Key type id_resolver registered
+[    0.443801] Key type id_legacy registered
+[    0.443811] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+[    0.443815] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
+[    0.443827] ntfs3: Enabled Linux POSIX ACLs support
+[    0.443829] ntfs3: Warning: Activated 64 bits per cluster. Windows does not support this
+[    0.443831] ntfs3: Read-only LZX/Xpress compression included
+[    0.444005] Key type asymmetric registered
+[    0.444010] Asymmetric key parser 'x509' registered
+[    0.444044] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 247)
+[    0.444114] io scheduler mq-deadline registered
+[    0.444118] io scheduler kyber registered
+[    0.444134] io scheduler bfq registered
+[    0.445329] pinctrl-bcm2835 fe200000.gpio: GPIO_OUT persistence: yes
+[    0.446117] brcm-pcie fd500000.pcie: host bridge /scb/pcie@7d500000 ranges:
+[    0.446128] brcm-pcie fd500000.pcie:   No bus range found for /scb/pcie@7d500000, using [bus 00-ff]
+[    0.446144] brcm-pcie fd500000.pcie:      MEM 0x0600000000..0x067fffffff -> 0x0080000000
+[    0.446158] brcm-pcie fd500000.pcie:   IB MEM 0x0000000000..0x00bfffffff -> 0x0400000000
+[    0.446836] brcm-pcie fd500000.pcie: PCI host bridge to bus 0000:00
+[    0.446844] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.446850] pci_bus 0000:00: root bus resource [mem 0x600000000-0x67fffffff] (bus address [0x80000000-0xffffffff])
+[    0.446873] pci 0000:00:00.0: [14e4:2711] type 01 class 0x060400 PCIe Root Port
+[    0.446888] pci 0000:00:00.0: PCI bridge to [bus 01]
+[    0.446895] pci 0000:00:00.0:   bridge window [mem 0x678000000-0x6780fffff]
+[    0.446930] pci 0000:00:00.0: PME# supported from D0 D3hot
+[    0.448434] pci_bus 0000:01: supply vpcie3v3 not found, using dummy regulator
+[    0.448506] pci_bus 0000:01: supply vpcie3v3aux not found, using dummy regulator
+[    0.448530] pci_bus 0000:01: supply vpcie12v not found, using dummy regulator
+[    0.551482] brcm-pcie fd500000.pcie: clkreq-mode set to default
+[    0.553539] brcm-pcie fd500000.pcie: link up, 5.0 GT/s PCIe x1 (SSC)
+[    0.553601] pci 0000:01:00.0: [1106:3483] type 00 class 0x0c0330 PCIe Endpoint
+[    0.553625] pci 0000:01:00.0: BAR 0 [mem 0x00000000-0x00000fff 64bit]
+[    0.553724] pci 0000:01:00.0: PME# supported from D0 D3cold
+[    0.553914] pci 0000:00:00.0: bridge window [mem 0x600000000-0x6000fffff]: assigned
+[    0.553922] pci 0000:01:00.0: BAR 0 [mem 0x600000000-0x600000fff 64bit]: assigned
+[    0.553964] pci 0000:00:00.0: PCI bridge to [bus 01]
+[    0.553969] pci 0000:00:00.0:   bridge window [mem 0x600000000-0x6000fffff]
+[    0.554089] pcieport 0000:00:00.0: enabling device (0000 -> 0002)
+[    0.554153] pcieport 0000:00:00.0: PME: Signaling with IRQ 26
+[    0.554484] bcm2708_fb soc:fb: FB found 1 display(s)
+[    0.556554] Console: switching to colour frame buffer device 80x30
+[    0.557186] bcm2708_fb soc:fb: Registered framebuffer for display 0, size 640x480
+[    0.560077] Serial: 8250/16550 driver, 1 ports, IRQ sharing enabled
+[    0.560880] iproc-rng200 fe104000.rng: hwrng registered
+[    0.560898] random: crng init done
+[    0.560975] vc-mem: phys_addr:0x00000000 mem_base=0x3ec00000 mem_size:0x40000000(1024 MiB)
+[    0.565198] brd: module loaded
+[    0.567929] loop: module loaded
+[    0.568184] Loading iSCSI transport class v2.0-870.
+[    0.569941] bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
+[    0.745506] unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
+[    0.745962] Broadcom 43xx driver loaded [ Features: PNLS ]
+[    0.745986] Broadcom 43xx-legacy driver loaded [ Features: PLID ]
+[    0.746091] usbcore: registered new device driver r8152-cfgselector
+[    0.746107] usbcore: registered new interface driver r8152
+[    0.746120] usbcore: registered new interface driver lan78xx
+[    0.746136] usbcore: registered new interface driver smsc95xx
+[    0.747352] xhci_hcd 0000:01:00.0: enabling device (0000 -> 0002)
+[    0.747440] xhci_hcd 0000:01:00.0: xHCI Host Controller
+[    0.747452] xhci_hcd 0000:01:00.0: new USB bus registered, assigned bus number 1
+[    0.748301] xhci_hcd 0000:01:00.0: hcc params 0x002841eb hci version 0x100 quirks 0x0300240000000890
+[    0.748800] xhci_hcd 0000:01:00.0: xHCI Host Controller
+[    0.748808] xhci_hcd 0000:01:00.0: new USB bus registered, assigned bus number 2
+[    0.748815] xhci_hcd 0000:01:00.0: Host supports USB 3.0 SuperSpeed
+[    0.748986] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 6.10
+[    0.748993] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.748998] usb usb1: Product: xHCI Host Controller
+[    0.749002] usb usb1: Manufacturer: Linux 6.10.14-v7l xhci-hcd
+[    0.749006] usb usb1: SerialNumber: 0000:01:00.0
+[    0.749279] hub 1-0:1.0: USB hub found
+[    0.749332] hub 1-0:1.0: 1 port detected
+[    0.749726] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 6.10
+[    0.749732] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.749737] usb usb2: Product: xHCI Host Controller
+[    0.749741] usb usb2: Manufacturer: Linux 6.10.14-v7l xhci-hcd
+[    0.749744] usb usb2: SerialNumber: 0000:01:00.0
+[    0.749945] hub 2-0:1.0: USB hub found
+[    0.749999] hub 2-0:1.0: 4 ports detected
+[    0.750537] dwc_otg: version 3.00a 10-AUG-2012 (platform bus)
+[    0.750760] usbcore: registered new interface driver uas
+[    0.750786] usbcore: registered new interface driver usb-storage
+[    0.750865] mousedev: PS/2 mouse device common for all mice
+[    0.752077] sdhci: Secure Digital Host Controller Interface driver
+[    0.752083] sdhci: Copyright(c) Pierre Ossman
+[    0.752163] sdhci-pltfm: SDHCI platform and OF driver helper
+[    0.754060] ledtrig-cpu: registered to indicate activity on CPUs
+[    0.754261] hid: raw HID events driver (C) Jiri Kosina
+[    0.754310] usbcore: registered new interface driver usbhid
+[    0.754314] usbhid: USB HID core driver
+[    0.756941] hw perfevents: enabled with armv8_cortex_a72 PMU driver, 7 counters available
+[    0.758243] xt_time: kernel timezone is -0000
+[    0.758349] Initializing XFRM netlink socket
+[    0.758383] NET: Registered PF_PACKET protocol family
+[    0.758433] Key type dns_resolver registered
+[    0.769578] Timer migration: 1 hierarchy levels; 8 children per group; 1 crossnode level
+[    0.769762] registered taskstats version 1
+[    0.769909] Loading compiled-in X.509 certificates
+[    0.773813] Key type .fscrypt registered
+[    0.773827] Key type fscrypt-provisioning registered
+[    0.777574] uart-pl011 fe201000.serial: there is not valid maps for state default
+[    0.777786] uart-pl011 fe201000.serial: cts_event_workaround enabled
+[    0.777968] fe201000.serial: ttyAMA1 at MMIO 0xfe201000 (irq = 39, base_baud = 0) is a PL011 rev2
+[    0.778081] serial serial0: tty port ttyAMA1 registered
+[    0.778817] bcm2835-aux-uart fe215040.serial: there is not valid maps for state default
+[    0.779063] printk: legacy console [ttyS0] disabled
+[    0.779259] fe215040.serial: ttyS0 at MMIO 0xfe215040 (irq = 40, base_baud = 62500000) is a 16550
+[    0.779289] printk: legacy console [ttyS0] enabled
+[    0.965881] bcm2835-wdt bcm2835-wdt: Broadcom BCM2835 watchdog timer
+[    0.967055] bcm2835-power bcm2835-power: Broadcom BCM2835 power domains driver
+[    0.968341] mmc-bcm2835 fe300000.mmcnr: mmc_debug:0 mmc_debug2:0
+[    0.969128] mmc-bcm2835 fe300000.mmcnr: DMA channel allocated
+[    0.995236] of_cfs_init
+[    0.995612] of_cfs_init: OK
+[    0.996045] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    0.998007] Loaded X.509 cert 'benh@debian.org: 577e021cb980e0e820821ba7b54b4961b8b4fadf'
+[    0.999402] Loaded X.509 cert 'romain.perier@gmail.com: 3abbc6ec146e09d1b6016ab9d6cf71dd233f0328'
+[    1.000877] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    1.001933] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    1.002933] clk: Disabling unused clocks
+[    1.003536] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+[    1.003620] PM: genpd: Disabling unused power domains
+[    1.004658] cfg80211: failed to load regulatory.db
+[    1.035050] mmc0: SDHCI controller on fe340000.mmc [fe340000.mmc] using ADMA
+[    1.036109] Waiting for root device /dev/mmcblk0p2...
+[    1.076436] mmc1: new high speed SDIO card at address 0001
+[    1.079482] usb 1-1: new high-speed USB device number 2 using xhci_hcd
+[    1.178397] mmc0: new ultra high speed DDR50 SDHC card at address 1388
+[    1.179650] mmcblk0: mmc0:1388 USD00 29.5 GiB
+[    1.182492]  mmcblk0: p1 p2 p3 p4 < p5 p6 >
+[    1.183509] mmcblk0: mmc0:1388 USD00 29.5 GiB
+[    1.192047] VFS: Mounted root (squashfs filesystem) readonly on device 179:2.
+[    1.193919] devtmpfs: mounted
+[    1.196696] Freeing unused kernel memory: 1792K
+[    1.197400] Run /sbin/init as init process
+[    1.209056] usb 1-1: New USB device found, idVendor=2109, idProduct=3431, bcdDevice= 4.21
+[    1.210140] usb 1-1: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+[    1.211068] usb 1-1: Product: USB2.0 Hub
+[    1.213526] hub 1-1:1.0: USB hub found
+[    1.214260] hub 1-1:1.0: 4 ports detected
+[    1.461163] EXT4-fs (mmcblk0p3): recovery complete
+[    1.462546] EXT4-fs (mmcblk0p3): mounted filesystem 2015cb4d-3a7c-4a60-b0c0-8412547a6864 r/w with ordered data mode. Quota mode: none.
+[    1.468101] exFAT-fs (mmcblk0p5): invalid boot record signature
+[    1.468887] exFAT-fs (mmcblk0p5): failed to read boot sector
+[    1.469622] exFAT-fs (mmcblk0p5): failed to recognize exfat type
+[    1.470641] ntfs3: mmcblk0p5: Primary boot signature is not NTFS.
+[    1.471439] ntfs3: mmcblk0p5: try to read out of volume at offset 0xfffffe00
+[    1.472588] ntfs3: mmcblk0p5: Primary boot signature is not NTFS.
+[    1.473385] ntfs3: mmcblk0p5: try to read out of volume at offset 0xfffffe00
+mount: mounting /dev/mmcblk0p5 on /ui failed: Invalid argument
+Mounting...
+[    1.478293] overlayfs: "xino" feature enabled using 2 upper inode bits.
+Device file system
+Change root !!
+[    1.497500] usb 1-1.1: new high-speed USB device number 3 using xhci_hcd
+[    1.576262] usb 1-1.1: New USB device found, idVendor=2357, idProduct=0138, bcdDevice= 2.10
+[    1.577372] usb 1-1.1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    1.578323] usb 1-1.1: Product: 802.11ac NIC
+[    1.578882] usb 1-1.1: Manufacturer: Realtek
+[    1.579437] usb 1-1.1: SerialNumber: 123456
+mount: mounting devfs on /dev failed: Device or resource busy
+chpasswd: password for 'root' changed
+
+XCFGD Configurator - wait 5
+
+[    1.776035] EXT4-fs (mmcblk0p6): recovery complete
+[    1.777340] EXT4-fs (mmcblk0p6): mounted filesystem 39434fc7-f9d6-48c9-8dc7-69cdc656da93 r/w with ordered data mode. Quota mode: none.
+Waiting it for getting ready to work..
+Daemon Running...
+DBG:main                :649  TEMPORARY FILE - SYNC : /var/tmp/xcfgXFtPYId
+DBG:main                :673  XML1 : /etc/config.xml
+DBG:main                :669  DEV : /config/db
+DBG:main                :665  STANDADLONE MODE
+DBG:main                :752  TEMPORARY DIRECTORY = (/var/tmp/132)
+MSG:xml_storage_open    :1222 /config/db Physical Information = ( 4 x 128 Kbytes + 2 x 1024 Kbytes ) 4 
+DBG:xml_storage_open    :1253 /config/db has been opened
+MSG:xml_storage_open    :1262 FILE /config/db SIZE=2621440 
+DBG:xml_storage_open    :1306 HEADER[ 0 ] FLAGS=0 DIRTY=0 
+DBG:xml_storage_open    :1306 HEADER[ 1 ] FLAGS=0 DIRTY=0 
+DBG:xml_storage_open    :1306 HEADER[ 2 ] FLAGS=0 DIRTY=1 
+DBG:xml_storage_open    :1306 HEADER[ 3 ] FLAGS=0 DIRTY=0 
+MSG:xml_storage_open    :1312 xml_storage_open : HEADER ANALSYS [4/4] 
+MSG:xml_storage_open    :1320 xml_storage_open : HEADER LOCATION = ( 00000000 00020000 00040000 00060000 )
+MSG:xml_storage_open    :1351 DATA[ 0 ] has 8 blocks 
+MSG:xml_storage_open    :1351 DATA[ 1 ] has 8 blocks 
+MSG:xml_storage_open    :1364 xml_storage_open : DATA LOCATION = ( 00080000 00180000 )
+DBG:xml_storage_open    :1386 /config/db configured and prepared before 
+DBG:_xml_storage_header_print:862  [[DUMP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[BROKEN FIXUP]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY+ONDIRTY CHECK]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[RECOVER BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[DIRTY BLOCK PROCESS]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_print:862  [[FINALLY WRITTEN]]
+DBG:_xml_storage_header_print:867  INFO HEAD[ 0 ]=0x00000000 dirty=0 flags=0 crc=d7e7 size=c98 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 1 ]=0x00020000 dirty=0 flags=0 crc=9b15 size=92c 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 2 ]=0x00040000 dirty=1 flags=0 crc=ecbd size=92f 
+DBG:_xml_storage_header_print:867  INFO HEAD[ 3 ]=0x00060000 dirty=0 flags=0 crc=0 size=0 
+DBG:_xml_storage_header_print:870  ===========
+DBG:_xml_storage_header_fetch:767  DIRTY HEADER[ 2  ] START = 0x60000 / DATA OFFSET = 524288 FLAG=0000 
+MSG:xml_storage_validate:1440 HEADER[2 ]::MAGIC=OK 
+MSG:xml_storage_validate:1441 HEADER[2 ]::RSIZE=2351 
+MSG:xml_storage_validate:1442 HEADER[2 ]::START=80000 
+MSG:xml_storage_validate:1443 HEADER[2 ]::CRC  =ecbd 
+MSG:xml_storage_validate:1493 Temporary XML file name : (/var/tmp/132/config.xml) 
+DBG:xml_storage_validate:1507 /etc/config.xml write 2351/2351 
+MSG:xml_storage_validate:1519 STORAGE VALIDATED [2] 
+DBG:config_xml_merge    :401  VERSION (1.0.0.1 vs 1.0.0.1) 
+DBG:config_xml_merge    :404  CURRENTLY LATEST VERSION
+3
+2
+1
+
+
+DATE 
+
+Wed Mar  1 12:00:00 UTC 2023
+
+Logging daemon
+
+
+USER 
+
+chpasswd: password for 'todd' changed
+User [ todd/12345678 ] created
+
+GIT 
+
+
+PYTHON  
+
+
+QT Runtime environment
+
+
+SSH SERVER 
+
+
+SSH key setup in /root/.ssh 
+
+
+SSH daemon
+
+
+RASPBERRY PI SPECIFIC INIT
+
+
+LPPS 
+
+/etc/rc.init: line 219: /usr/bin/lpps: No such file or directory
+
+INIT FILE STARTS ...
+
+[WLAN] Loading all WLAN modules...
+modprobe: module '8192eu' not found
+[    5.924954] 88x2bu: loading out-of-tree module taints kernel.
+[    6.302329] usbcore: registered new interface driver rtl88x2bu
+[WLAN] Building up /var/tmp/wpa_supplicant/1.conf
+ifconfig: SIOCSIFHWADDR: Operation not permitted
+[WLAN] Running WPA Suppplicant !!
+Successfully initialized wpa_supplicant
+rfkill: [    7.476597] warning: `wpa_supplicant' uses wireless extensions which will stop working for Wi-Fi 7 hardware; use nl80211
+Cannot open RFKILL control device
+ioctl[SIOCSIWAP]: Operation not permitted
+Waiting Connect .. 0
+Waiting Connect .. 1
+Waiting Connect .. 2
+Waiting Connect .. 3
+Waiting Connect .. 4
+Waiting Connect .. 5
+Waiting Connect .. 6
+Waiting Connect .. 7
+IPv4 DHCP ...
+Waiting IP .. 0
+Waiting IP .. 1
+Waiting IP .. 2
+Waiting IP .. 3
+Waiting IP .. 4
+[WLAN] BRCM Loading modules...
+modprobe: module 'brcmutil' not found
+modprobe: module 'brcmfmac' not found
+[   21.577117] NET: Registered PF_INET6 protocol family
+[   21.578588] Segment Routing with IPv6
+[   21.579086] In-situ OAM (IOAM) with IPv6
+[   21.600214] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+[WLAN] Building up /var/tmp/hostapd/1.conf
+[ETH] Ethernet and Bridge
+[   21.970793] bcmgenet fd580000.ethernet: configuring instance for external RGMII (RX delay)
+[   21.973024] bcmgenet fd580000.ethernet eth0: Link is Down
+[   21.980355] br0: port 1(eth0) entered blocking state
+[   21.981049] br0: port 1(eth0) entered disabled state
+[   21.981733] bcmgenet fd580000.ethernet eth0: entered allmulticast mode
+[   21.982709] bcmgenet fd580000.ethernet eth0: entered promiscuous mode
+[AP] Adding APs...
+[WLAN] Running AP Suppplicant for wlan2
+random: Trying to read entropy from /dev/random
+Configuration file: /var/tmp/hostapd/0.conf
+Could not read interface wlan2 flags: No such device
+nl80211: Driver does not support authentication/association or connect commands
+nl80211: deinit ifname=wlan2 disabled_11b_rates=0
+nl80211: Remove monitor interface: refcount=0
+netlink: Operstate: ifindex=0 linkmode=0 (kernel-control), operstate=6 (IF_OPER_UP)
+Could not read interface wlan2 flags: No such device
+nl80211: Set mode ifindex 0 iftype 2 (STATION)
+nl80211: Failed to set interface 0 to mode 2: -19 (No such device)
+nl80211 driver initialization failed.
+hostapd_interface_deinit_free(0x34aa4d0)
+hostapd_interface_deinit_free: num_bss=1 conf->num_bss=1
+hostapd_interface_deinit(0x34aa4d0)
+wlan2: interface state UNINITIALIZED->DISABLED
+hostapd_bss_deinit: deinit bss wlan2
+wlan2: AP-DISABLED 
+hostapd_cleanup(hapd=0x34ab900 (wlan2))
+wlan2: CTRL-EVENT-TERMINATING 
+hostapd_free_hapd_data: Interface wlan2 wasn't started
+hostapd_interface_deinit_free: driver=(nil) drv_priv=(nil) -> hapd_deinit
+hostapd_interface_free(0x34aa4d0)
+hostapd_interface_free: free hapd 0x34ab900
+hostapd_cleanup_iface(0x34aa4d0)
+hostapd_cleanup_iface_partial(0x34aa4d0)
+hostapd_cleanup_iface: free iface=0x34aa4d0
+[BRIDGE] Bridge adding wlan2
+brctl: iface wlan2: No such device
+[WLAN] Running AP Suppplicant for wlan1
+random: Trying to read entropy from /dev/random
+Configuration file: /var/tmp/hostapd/1.conf
+Could not read interface wlan1 flags: No such device
+nl80211: Driver does not support authentication/association or connect commands
+nl80211: deinit ifname=wlan1 disabled_11b_rates=0
+nl80211: Remove monitor interface: refcount=0
+netlink: Operstate: ifindex=0 linkmode=0 (kernel-control), operstate=6 (IF_OPER_UP)
+Could not read interface wlan1 flags: No such device
+nl80211: Set mode ifindex 0 iftype 2 (STATION)
+nl80211: Failed to set interface 0 to mode 2: -19 (No such device)
+nl80211 driver initialization failed.
+hostapd_interface_deinit_free(0x667a4d0)
+hostapd_interface_deinit_free: num_bss=1 conf->num_bss=1
+hostapd_interface_deinit(0x667a4d0)
+wlan1: interface state UNINITIALIZED->DISABLED
+hostapd_bss_deinit: deinit bss wlan1
+wlan1: AP-DISABLED 
+hostapd_cleanup(hapd=0x667b900 (wlan1))
+wlan1: CTRL-EVENT-TERMINATING 
+hostapd_free_hapd_data: Interface wlan1 wasn't started
+hostapd_interface_deinit_free: driver=(nil) drv_priv=(nil) -> hapd_deinit
+hostapd_interface_free(0x667a4d0)
+hostapd_interface_free: free hapd 0x667b900
+hostapd_cleanup_iface(0x667a4d0)
+hostapd_cleanup_iface_partial(0x667a4d0)
+hostapd_cleanup_iface: free iface=0x667a4d0
+[BRIDGE] Bridge adding wlan1
+brctl: iface wlan1: No such device
+[WLAN] WiFi Monitoring Start
+[IPV6] START .....
+Waiting for My IP6...
+Waiting 0
+ip: either "dev" is duplicate, or "permanent" is garbage
+Waiting 1
+[   26.079800] bcmgenet fd580000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+[   26.080897] br0: port 1(eth0) entered blocking state
+[   26.081552] br0: port 1(eth0) entered forwarding state
+Waiting 2
+Waiting 3
+Waiting 4
+Waiting 5
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+br0       Link encap:Ethernet  HWaddr DC:A6:32:1C:DD:47  
+          inet addr:100.5.5.1  Bcast:100.5.5.255  Mask:255.255.255.0
+          inet6 addr: fe80::dea6:32ff:fe1c:dd47/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:76 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:15 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:9251 (9.0 KiB)  TX bytes:1643 (1.6 KiB)
+
+eth0      Link encap:Ethernet  HWaddr DC:A6:32:1C:DD:47  
+          inet6 addr: fe80::dea6:32ff:fe1c:dd47/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:76 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:21 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:10315 (10.0 KiB)  TX bytes:2159 (2.1 KiB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:444 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:444 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:32503 (31.7 KiB)  TX bytes:32503 (31.7 KiB)
+
+wlan0     Link encap:Ethernet  HWaddr 9C:53:22:60:F7:1E  
+          inet addr:192.167.0.216  Bcast:192.167.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::9e53:22ff:fe60:f71e/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:48 errors:0 dropped:1 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:9137 (8.9 KiB)  TX bytes:5122 (5.0 KiB)
+
+
+
+nameserver 127.0.0.1
+nameserver 192.167.0.1
+nameserver 8.8.8.8
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+QT initialization
+
+Linux Terminal ...
+
+
+NTP 
+
+Shutting down DHCP
+Tue, 03 Mar 2026 19:35:13 +0000
+Starting DHCP
+ 
+
+_____                 _                              _____ _____ 
+|  __ \               | |                            |  __ \_   _|
+| |__) |__ _ ___ _ __ | |__   ___ _ __ _ __ _   _    | |__) || |  
+|  _  // _` / __| '_ \| '_ \ / _ \ '__| '__| | | |   |  ___/ | |  
+| | \ \ (_| \__ \ |_) | |_) |  __/ |  | |  | |_| |   | |    _| |_ 
+|_|  \_\__,_|___/ .__/|_.__/ \___|_|  |_|   \__, |   |_|   |_____|
+                | |                          __/ |              
+                |_|                         |___/               
+
+
+
+bash-5.1# 
+
+  ```
+
+### Procedures <a name="rpi4_procedures"></a>
+
+Please refer to the same subection for Raspberry PI 3. 
 
 ## MBSP VM <a name="qemu"></a>
 

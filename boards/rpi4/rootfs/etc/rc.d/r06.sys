@@ -11,6 +11,7 @@ case $1 in
 		echo "[WLAN] BRCM Loading modules..."
 		modprobe brcmutil
 		modprobe brcmfmac
+		modprobe bridge
 	
 		/etc/scripts/wlan_ap.sh start 		
 		;;
