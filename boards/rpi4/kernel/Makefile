@@ -97,6 +97,7 @@ prepare:
 		unzip source/$(FILENM) -d $(BUILDDIR) ;                    \
 		cd $(BUILDDIR)/$(KERNELVER);                               \
 		cat ../../../patch/patch-$(BRANCH)  | patch -p 1;          \
+		cat ../../../patch/natbyp-$(BRANCH) | patch -p 1;          \
 		cp ../../../patch/$(KERNELVER).config .config;             \
 		$(LINUXMAKE) olddefconfig )
 
