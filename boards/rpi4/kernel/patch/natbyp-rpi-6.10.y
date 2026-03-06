@@ -1,6 +1,6 @@
 diff -uNr linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c
 --- linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2026-03-03 22:49:40.128338598 -0800
++++ linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2026-03-05 19:56:39.930541763 -0800
 @@ -41,6 +41,10 @@
  
  #include "bcmgenet.h"
@@ -23,20 +23,17 @@ diff -uNr linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c l
  	index = skb_get_queue_mapping(skb);
  	/* Mapping strategy:
  	 * queue_mapping = 0, unclassified, packet xmited through ring16
-@@ -2372,8 +2380,13 @@
+@@ -2372,6 +2380,10 @@
  		if (dma_flag & DMA_RX_MULT)
  			dev->stats.multicast++;
  
 +#ifdef CONFIG_NET_NATBYP
-+		if ( natbyp_ingress(skb) != NATBYP_BYPASSED )
-+			napi_gro_receive(&ring->napi, skb);
-+#else
++		if ( natbyp_ingress(skb) == NATBYP_BYPASSED )
++			goto next;
++#endif
  		/* Notify kernel */
  		napi_gro_receive(&ring->napi, skb);
-+#endif
  		netif_dbg(priv, rx_status, dev, "pushed up to kernel\n");
- 
- next:
 diff -uNr linux-rpi-6.10.y-orig/include/linux/skbuff.h linux-rpi-6.10.y/include/linux/skbuff.h
 --- linux-rpi-6.10.y-orig/include/linux/skbuff.h	2024-10-15 01:17:47.000000000 -0700
 +++ linux-rpi-6.10.y/include/linux/skbuff.h	2026-03-03 22:47:32.099880456 -0800
@@ -2719,3 +2716,29 @@ diff -uNr linux-rpi-6.10.y-orig/net/Kconfig linux-rpi-6.10.y/net/Kconfig
  config NETFILTER_ADVANCED
  	bool "Advanced netfilter configuration"
  	depends on NETFILTER
+diff -uNr linux-rpi-6.10.y-orig/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-6.10.y/net/netfilter/nf_conntrack_proto_tcp.c
+--- linux-rpi-6.10.y-orig/net/netfilter/nf_conntrack_proto_tcp.c	2024-10-15 01:17:47.000000000 -0700
++++ linux-rpi-6.10.y/net/netfilter/nf_conntrack_proto_tcp.c	2026-03-05 19:51:34.508047372 -0800
+@@ -1250,6 +1250,14 @@
+ 		break;
+ 	}
+ 
++#ifndef CONFIG_NET_NATBYP
++    /* This is very important thing...
++    NAT bypass mode enforces connection tracking module keep silent
++    due to its driver-driver copying. Connection tracker may clean up the
++    channel due to the absense of packets. This patch will prevent such 
++    a sudden connection shutdown.
++    */
++
+ 	res = tcp_in_window(ct, dir, index,
+ 			    skb, dataoff, th, state);
+ 	switch (res) {
+@@ -1263,6 +1271,7 @@
+ 	case NFCT_TCP_ACCEPT:
+ 		break;
+ 	}
++#endif
+      in_window:
+ 	/* From now on we have got in-window packets */
+ 	ct->proto.tcp.last_index = index;

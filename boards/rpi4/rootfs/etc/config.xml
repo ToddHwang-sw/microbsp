@@ -61,8 +61,8 @@
         <mac>random</mac>
         <name>br0</name>
         <interfaces>
-            <wlan0>wlan2</wlan0>
-            <wlan1>wlan1</wlan1>
+            <wlan0>wlan1</wlan0>
+            <wlan1>0</wlan1>
             <wlan2>0</wlan2>
             <wlan3>0</wlan3>
             <wlan4>0</wlan4>

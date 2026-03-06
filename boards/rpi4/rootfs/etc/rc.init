@@ -173,12 +173,6 @@ echo ""
 
 
 echo ""
-echo "PYTHON  "
-echo ""
-[ ! -f /usr/bin/python_env.sh ] || source /usr/bin/python_env.sh / 
-
-
-echo ""
 echo "QT Runtime environment"
 echo ""
 QT=Qt-5.12.12
