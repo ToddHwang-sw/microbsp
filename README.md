@@ -2704,7 +2704,7 @@ bash-5.1# reboot -f
 * Home Gateway
 * LAN
   - Ethernet : 1G Built-in ethernet
-  - WLAN1 : NOT YET SUPPORTED
+  - WLAN1 : Raspberry PI Built-in WLAN (<strong>Broadcom BRCM43455</strong>)
 * WAN
   - WLAN0 : TP-Link USB WiFi Dongle (<strong>Realtek RTL8812BU</strong>)
 * UART baudrate = 921600bps (not 115200bps)
