@@ -1,6 +1,6 @@
 diff -uNr linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c
 --- linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2026-03-05 19:56:39.930541763 -0800
++++ linux-rpi-6.10.y/drivers/net/ethernet/broadcom/genet/bcmgenet.c	2026-03-07 20:56:37.006925085 -0800
 @@ -41,6 +41,10 @@
  
  #include "bcmgenet.h"
@@ -36,7 +36,7 @@ diff -uNr linux-rpi-6.10.y-orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c l
  		netif_dbg(priv, rx_status, dev, "pushed up to kernel\n");
 diff -uNr linux-rpi-6.10.y-orig/include/linux/skbuff.h linux-rpi-6.10.y/include/linux/skbuff.h
 --- linux-rpi-6.10.y-orig/include/linux/skbuff.h	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/include/linux/skbuff.h	2026-03-03 22:47:32.099880456 -0800
++++ linux-rpi-6.10.y/include/linux/skbuff.h	2026-03-07 20:56:37.051922945 -0800
 @@ -1062,6 +1062,14 @@
  
  	); /* end headers group */
@@ -54,7 +54,7 @@ diff -uNr linux-rpi-6.10.y-orig/include/linux/skbuff.h linux-rpi-6.10.y/include/
  	sk_buff_data_t		end;
 diff -uNr linux-rpi-6.10.y-orig/include/net/natbyp.h linux-rpi-6.10.y/include/net/natbyp.h
 --- linux-rpi-6.10.y-orig/include/net/natbyp.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-6.10.y/include/net/natbyp.h	2026-03-03 22:47:15.251346564 -0800
++++ linux-rpi-6.10.y/include/net/natbyp.h	2026-03-07 20:56:37.052922897 -0800
 @@ -0,0 +1,35 @@
 +#ifndef __NATBYP_HEADERS__
 +
@@ -93,7 +93,7 @@ diff -uNr linux-rpi-6.10.y-orig/include/net/natbyp.h linux-rpi-6.10.y/include/ne
 +#endif /* __NATBYP_HEADERS__ */
 diff -uNr linux-rpi-6.10.y-orig/net/core/Makefile linux-rpi-6.10.y/net/core/Makefile
 --- linux-rpi-6.10.y-orig/net/core/Makefile	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/net/core/Makefile	2026-03-03 22:48:09.627842261 -0800
++++ linux-rpi-6.10.y/net/core/Makefile	2026-03-07 20:56:37.052922897 -0800
 @@ -43,3 +43,4 @@
  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
  obj-$(CONFIG_OF)	+= of_net.o
@@ -101,8 +101,8 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/Makefile linux-rpi-6.10.y/net/core/Make
 +obj-$(CONFIG_NET_NATBYP) += natbyp.o
 diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natbyp.c
 --- linux-rpi-6.10.y-orig/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-6.10.y/net/core/natbyp.c	2026-03-03 22:46:56.508865065 -0800
-@@ -0,0 +1,2596 @@
++++ linux-rpi-6.10.y/net/core/natbyp.c	2026-03-07 20:57:46.054067937 -0800
+@@ -0,0 +1,2595 @@
 +/*
 + * Formatting: astyle --style=linux -A4 --unpad-paren --pad-oper --pad-first-paren-out <this file>
 + */
@@ -181,11 +181,10 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +} natbyp_dev_t;
 +
 +/* size of socket queue */
-+#define MAX_SKB_QUEUE			256
++#define MAX_SKB_QUEUE			1024
 +
 +/* queue structure to store socket buffer */
 +typedef struct {
-+
 +    /*
 +    * Socket buffers temporarily saved in this list to keep packet order.
 +    */
@@ -201,7 +200,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +        struct sk_buff *pkt;
 +    } skbs[ MAX_SKB_QUEUE ];
 +
-+} skbq_t;
++}__attribute__((aligned)) skbq_t;
 +
 +/* NAT TCP flow container */
 +typedef struct {
@@ -263,7 +262,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +
 +    skbq_t skbq;         /* socket buffer queue */
 +
-+} natbyp_flow_t;
++}__attribute__((aligned)) natbyp_flow_t;
 +
 +/*
 + * NATBYP_UL/NATBYP_DL  - include/net/natbyp.h
@@ -342,7 +341,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +    /* Device array */
 +    natbyp_dev_t ndevs[ MAX_NATBYP_DEVS ];
 +
-+} natbyp_db_t;
++}__attribute__((aligned)) natbyp_db_t;
 +
 +static natbyp_db_t * natbyp_db;
 +
@@ -1261,7 +1260,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +		++ flow->natbyp_count;
 +        break;
 +    case NETDEV_TX_BUSY:
-+        natbyp_errmsg ("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname (dir));
++        /* natbyp_errmsg ("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname (dir)); */
 +        ++ natbyp_db->pkt_drop[ dir ];
 +        break;
 +    default:
@@ -1270,7 +1269,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +        break;
 +    }
 +
-+    return 0;
++    return rc;
 +}
 +
 +/* actual packet handler ... */
@@ -1324,9 +1323,9 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +
 +        natbyp_reset_counter (flow);   /* update counter */
 +
-+        if (natbyp_skb_send (skb, flow->dir)) {
-+            natbyp_errmsg ("FLOW[%-2d] SEND ERROR\n", flow->index);
-+            continue;
++        if (natbyp_skb_send (skb, flow->dir) != NETDEV_TX_OK) {
++            natbyp_errmsg ("FLOW[%-2d] TRANSMIT STOP\n", flow->index);
++			break;
 +        }
 +
 +        ++ count;
@@ -2701,7 +2700,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +#endif /* defined(CONFIG_NETFILTER) */
 diff -uNr linux-rpi-6.10.y-orig/net/Kconfig linux-rpi-6.10.y/net/Kconfig
 --- linux-rpi-6.10.y-orig/net/Kconfig	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/net/Kconfig	2026-03-03 22:47:54.698255283 -0800
++++ linux-rpi-6.10.y/net/Kconfig	2026-03-07 20:56:37.053922850 -0800
 @@ -202,6 +202,13 @@
  
  if NETFILTER
@@ -2718,7 +2717,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/Kconfig linux-rpi-6.10.y/net/Kconfig
  	depends on NETFILTER
 diff -uNr linux-rpi-6.10.y-orig/net/netfilter/nf_conntrack_proto_tcp.c linux-rpi-6.10.y/net/netfilter/nf_conntrack_proto_tcp.c
 --- linux-rpi-6.10.y-orig/net/netfilter/nf_conntrack_proto_tcp.c	2024-10-15 01:17:47.000000000 -0700
-+++ linux-rpi-6.10.y/net/netfilter/nf_conntrack_proto_tcp.c	2026-03-05 19:51:34.508047372 -0800
++++ linux-rpi-6.10.y/net/netfilter/nf_conntrack_proto_tcp.c	2026-03-07 20:56:37.054922802 -0800
 @@ -1250,6 +1250,14 @@
  		break;
  	}

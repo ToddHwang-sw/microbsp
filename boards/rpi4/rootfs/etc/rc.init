@@ -99,11 +99,6 @@ echo "Waiting it for getting ready to work.."
 busywait 3
 
 ##
-## NAT Bypass 
-##
-[ ! -f /proc/natbyp ] || echo en > /proc/natbyp
-
-##
 ## Macros needed to access configuration
 ##
 ASK='xcfgcli.sh get'
@@ -273,6 +268,11 @@ if [ "$NTPEN" = "1" ]; then
         /etc/scripts/dhcpc.sh start $STAINT
     fi
 fi
+
+##
+## NAT Bypass 
+##
+[ ! -f /proc/natbyp ] || echo en > /proc/natbyp
 
 sleep 1
 
