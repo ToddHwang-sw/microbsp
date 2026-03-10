@@ -1,2 +1,13 @@
 #!/bin/sh
 
+case $1 in
+	"start")
+		modprobe spidev
+		modprobe spi-bcm2835
+		;;
+	"stop")
+		rmmod spi-bcm2835
+		rmmod spidev
+		;;
+esac
+

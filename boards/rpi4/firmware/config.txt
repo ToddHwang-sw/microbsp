@@ -50,5 +50,6 @@ dtoverlay=vc4-kms-v3d
 ##
 ## SPI enable 
 ##
+dtparam=spi=on
 dtoverlay=spi1-3cs
 

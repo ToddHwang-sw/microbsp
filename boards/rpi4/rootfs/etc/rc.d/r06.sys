@@ -9,9 +9,12 @@ LANMODE=`$ASK lan/mode`
 case $1 in
 	"start")
 		echo "[WLAN] BRCM Loading modules..."
+		## wlan1
 		modprobe brcmutil
 		modprobe brcmfmac
 		modprobe brcmfmac-wcc
+		## eth0
+		modprobe genet
 		modprobe bridge
 		modprobe br_netfilter
 	
@@ -21,8 +24,12 @@ case $1 in
 		/etc/scripts/wlan_ap.sh stop
 
 		echo "[WLAN] BRCM Unloading modules..."
+		## wlan1
+		rmmod brcmfmac-wcc
 		rmmod brcmfmac
 		rmmod brcmutil
+		## eth0
+		rmmod genet
 		;;
 	"*")
 		;;
