@@ -26,3 +26,18 @@ diff -uNr linux-rpi-6.10.y-orig/net/wireless/sme.c linux-rpi-6.10.y/net/wireless
  		cfg80211_connect_result_release_bsses(wdev, cr);
  		return;
  	}
+diff -uNr linux-rpi-6.10.y-orig/arch/arm/boot/dts/broadcom/bcm2711-rpi-4-b.dts linux-rpi-6.10.y/arch/arm/boot/dts/broadcom/bcm2711-rpi-4-b.dts
+--- linux-rpi-6.10.y-orig/arch/arm/boot/dts/broadcom/bcm2711-rpi-4-b.dts	2024-10-15 01:17:47.000000000 -0700
++++ linux-rpi-6.10.y/arch/arm/boot/dts/broadcom/bcm2711-rpi-4-b.dts	2026-03-12 09:19:40.764383148 -0700
+@@ -267,6 +267,11 @@
+ 	status = "okay";
+ };
+ 
++/* Todd - spi / It is required due to dtparam spi=on is interrupted by U-boot. */
++&spi0 {
++	status = "okay";
++};
++
+ &vc4 {
+ 	status = "okay";
+ };

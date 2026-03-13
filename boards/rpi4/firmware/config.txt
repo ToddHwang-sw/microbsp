@@ -48,8 +48,7 @@ kernel=u-boot.bin
 dtoverlay=vc4-kms-v3d
 
 ##
-## SPI enable 
+## SPI enable - "dtparam=spi=on" didn't work. 
 ##
-dtparam=spi=on
 dtoverlay=spi1-3cs
 

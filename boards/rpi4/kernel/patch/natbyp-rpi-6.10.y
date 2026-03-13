@@ -101,8 +101,8 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/Makefile linux-rpi-6.10.y/net/core/Make
 +obj-$(CONFIG_NET_NATBYP) += natbyp.o
 diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natbyp.c
 --- linux-rpi-6.10.y-orig/net/core/natbyp.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-rpi-6.10.y/net/core/natbyp.c	2026-03-08 15:52:35.813359731 -0700
-@@ -0,0 +1,2595 @@
++++ linux-rpi-6.10.y/net/core/natbyp.c	2026-03-11 23:30:29.325436814 -0700
+@@ -0,0 +1,2614 @@
 +/*
 + * Formatting: astyle --style=linux -A4 --unpad-paren --pad-oper --pad-first-paren-out <this file>
 + */
@@ -181,7 +181,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +} natbyp_dev_t;
 +
 +/* size of socket queue */
-+#define MAX_SKB_QUEUE			1024
++#define MAX_SKB_QUEUE			256
 +
 +/* queue structure to store socket buffer */
 +typedef struct {
@@ -459,25 +459,29 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +    return 0; /* success !! */
 +}
 +
-+/* GET */
-+static __inline__ struct sk_buff * natbyp_skbq_get (skbq_t *queue)
++/* PEEP */
++static __inline__ struct sk_buff * natbyp_skbq_peep (skbq_t *queue, int *pos)
 +{
 +    struct sk_buff * pskb;
 +    int nhead;
 +    int found = 0;
 +
 +    if (!queue) {
++		*pos = -1;
 +        return NULL;
 +    }
 +
 +    do {
 +        /* empty queue ? */
-+        if (queue->head == queue->tail)
++        if (queue->head == queue->tail) {
++			*pos = -1;
 +            return NULL;
++		}
 +
 +        /* next head */
 +        nhead = queue->head + 1;
 +        if (nhead >= MAX_SKB_QUEUE) {
++			*pos = -1;
 +            nhead = 0;
 +        }
 +
@@ -496,20 +500,32 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +
 +        pskb = queue->skbs[ queue->head ].pkt;
 +
-+        /* invalidating.. */
-+        queue->skbs[ queue->head ].valid = 0;
-+
-+        /* update head */
-+        queue->head = nhead;
++		*pos = queue->head;
 +
 +        found = 1;
 +
 +    }
 +    while (!found);
 +
-+    -- (queue->occu);
-+
 +    return pskb; /* success !! */
++}
++
++/* CONSUME - Removing from a queue */
++static __inline__ void natbyp_skbq_consume (skbq_t *queue, int pos)
++{
++	int nhead;
++
++	queue->skbs[ pos ].valid = 0;
++
++	/* next head */
++	nhead = pos + 1;
++	if (nhead >= MAX_SKB_QUEUE)
++		nhead = 0;
++
++	/* update head */
++	queue->head = nhead;
++
++	-- (queue->occu);
 +}
 +
 +/* test function  - check NAT information is changed !! */
@@ -1245,12 +1261,10 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +     * may depend on the structure of device interface implementation.
 +     *
 +     */
-+    /*
-+     * 	{
++	/*
++    {
 +    	rc = dev_queue_xmit( skb );
-+    	}
-+     *
-+    */
++    } */
 +    {
 +        struct net_device *netdev = skb->dev;
 +        rc = netdev->netdev_ops->ndo_start_xmit (skb, netdev);
@@ -1261,7 +1275,6 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +        break;
 +    case NETDEV_TX_BUSY:
 +        /* natbyp_errmsg ("FLOW[%-2d] DEV_TX_BUSY[%s] \n", flow->index, dirname (dir)); */
-+        ++ natbyp_db->pkt_drop[ dir ];
 +        break;
 +    default:
 +        natbyp_errmsg ("FLOW[%-2d] DEV_TX_DROP[%s] %08x \n", flow->index, dirname (dir), rc);
@@ -1276,7 +1289,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +static __inline__ int handle_packets (int dir)
 +{
 +    int index;
-+    int count = 0;
++    int count = 0,  pos;
 +    natbyp_flow_t *flow;
 +    struct sk_buff *skb;
 +    struct net_device * dev;
@@ -1300,7 +1313,7 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +            continue;
 +
 +        /* processing packets */
-+        skb = natbyp_skbq_get (& (flow->skbq));
++        skb = natbyp_skbq_peep (& (flow->skbq), &pos);
 +        if (!skb)
 +            continue;
 +
@@ -1308,12 +1321,14 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +        dev = skb->dev;
 +        if (!dev) {
 +            natbyp_errmsg ("FLOW[%-2d] NULL DEV, SKB DELETED \n", flow->index);
++        	natbyp_skbq_consume (& (flow->skbq), pos);
 +            dev_kfree_skb (skb);
 +            continue;
 +        }
 +
 +        if (! ((flow->dir == NATBYP_UL) || (flow->dir == NATBYP_DL))) {
 +            natbyp_errmsg ("FLOW[%-2d] INVALID DIRECTION\n", flow->index);
++        	natbyp_skbq_consume (& (flow->skbq), pos);
 +            dev_kfree_skb (skb);
 +            continue;
 +        }
@@ -1324,9 +1339,13 @@ diff -uNr linux-rpi-6.10.y-orig/net/core/natbyp.c linux-rpi-6.10.y/net/core/natb
 +        natbyp_reset_counter (flow);   /* update counter */
 +
 +        if (natbyp_skb_send (skb, flow->dir) != NETDEV_TX_OK) {
-+            natbyp_errmsg ("FLOW[%-2d] TRANSMIT STOP\n", flow->index);
++			/* flow re-mapping again */
++    		natbyp_flow_map (flow, skb);
 +			break;
 +        }
++
++		/* removing skbv from a flow queue */
++        natbyp_skbq_consume (& (flow->skbq), pos);
 +
 +        ++ count;
 +
