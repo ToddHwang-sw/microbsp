@@ -77,7 +77,12 @@ static void cuse_fll_fsync(fuse_req_t req, fuse_ino_t ino, int datasync,
 	req_clop(req)->fsync(req, datasync, fi);
 }
 
+/* Todd MBSP - Raspberry PI 4 */
+#if defined(__GLIBC__) && ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 42))
+static void cuse_fll_ioctl(fuse_req_t req, fuse_ino_t ino, int cmd, void *arg,
+#else
 static void cuse_fll_ioctl(fuse_req_t req, fuse_ino_t ino, unsigned int cmd, void *arg,
+#endif
 			   struct fuse_file_info *fi, unsigned int flags,
 			   const void *in_buf, size_t in_bufsz, size_t out_bufsz)
 {

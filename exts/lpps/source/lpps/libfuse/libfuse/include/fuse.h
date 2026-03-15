@@ -1198,7 +1198,11 @@ int fuse_fs_removexattr(struct fuse_fs *fs, const char *path,
 			const char *name);
 int fuse_fs_bmap(struct fuse_fs *fs, const char *path, size_t blocksize,
 		 uint64_t *idx);
+#if defined(__GLIBC__) && ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 42))
+int fuse_fs_ioctl(struct fuse_fs *fs, const char *path, int cmd,
+#else
 int fuse_fs_ioctl(struct fuse_fs *fs, const char *path, unsigned int cmd,
+#endif
 		  void *arg, struct fuse_file_info *fi, unsigned int flags,
 		  void *data);
 int fuse_fs_poll(struct fuse_fs *fs, const char *path,

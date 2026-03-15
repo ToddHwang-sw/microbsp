@@ -18,6 +18,7 @@ prepare:
 	( tar zxvf $(MICBSRC)/$(FILENM) -C $(BUILDDIR) ; \
 		cd $(BUILDDIR)/$(DIR); \
 		tar --strip-components=1 -zxf ../../../$(MICBSRC)/$(CROSS_PATCH); \
+		cat ../../../patch/patch | patch -p 1; \
 		./configure \
 			-Accflags="$(CROSS_COMP_FLAGS)" \
 			-Dusethreads \

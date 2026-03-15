@@ -2311,7 +2311,12 @@ int fuse_fs_removexattr(struct fuse_fs *fs, const char *path, const char *name)
 	}
 }
 
+/* Todd MBSP - Raspberry PI 4 */
+#if defined(__GLIBC__) && ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 42))
+int fuse_fs_ioctl(struct fuse_fs *fs, const char *path, int cmd,
+#else
 int fuse_fs_ioctl(struct fuse_fs *fs, const char *path, unsigned int cmd,
+#endif
 		  void *arg, struct fuse_file_info *fi, unsigned int flags,
 		  void *data)
 {
@@ -4256,7 +4261,11 @@ static void fuse_lib_bmap(fuse_req_t req, fuse_ino_t ino, size_t blocksize,
 		reply_err(req, err);
 }
 
+#if defined(__GLIBC__) && ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 42))
+static void fuse_lib_ioctl(fuse_req_t req, fuse_ino_t ino, int cmd,
+#else
 static void fuse_lib_ioctl(fuse_req_t req, fuse_ino_t ino, unsigned int cmd,
+#endif
 			   void *arg, struct fuse_file_info *llfi,
 			   unsigned int flags, const void *in_buf,
 			   size_t in_bufsz, size_t out_bufsz)
